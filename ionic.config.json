@@ -1,0 +1,7 @@
+{
+  "name": "bizz-deal-FE",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

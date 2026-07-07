@@ -1,0 +1,165 @@
+<ion-content [fullscreen]="true">
+  <div class="login-wrapper">
+    <!-- Main Content (Vertically Centered) -->
+    <div class="main-content">
+      <!-- Header Section -->
+      <header class="logo-section">
+        <div class="logo-box">
+          <img src="assets/icon/BizzDeal.png" alt="BIZZ DEAL Logo" class="logo-image" />
+        </div>
+        <h1 class="app-title">BizzDeal</h1>
+        <p class="app-subtitle">
+          {{ authService.authStep() === 'phone' ? 'Your Success Is Our Deal' : 'Enter your PIN to continue' }}
+        </p>
+      </header>
+
+      <!-- Phone Login Card -->
+      <section class="login-card bd-card">
+        <form [formGroup]="authService.loginForm" (ngSubmit)="authService.submitForm()">
+          <!-- Phone Number Field -->
+          <label class="input-label" for="phoneInput">Phone Number <span class="required-star">*</span></label>
+          <div
+            class="input-container"
+            [class.focused]="authService.isPhoneFocused()"
+            [class.readonly]="authService.authStep() === 'pin'"
+            [class.error]="authService.loginForm.controls.phoneNumber.invalid && authService.loginForm.controls.phoneNumber.touched && authService.authStep() === 'phone'"
+          >
+            <ion-icon name="phone-portrait-outline" class="input-icon" />
+            <div class="input-divider"></div>
+            <input
+              id="phoneInput"
+              type="tel"
+              inputmode="numeric"
+              maxlength="10"
+              placeholder="10-digit mobile number"
+              formControlName="phoneNumber"
+              class="phone-input"
+              [readonly]="authService.authStep() === 'pin'"
+              (focus)="authService.setPhoneFocused(true)"
+              (blur)="authService.setPhoneFocused(false)"
+            />
+          </div>
+
+          @if (authService.authStep() === 'phone') {
+            <div class="error-container">
+              @if (authService.loginForm.controls.phoneNumber.invalid && authService.loginForm.controls.phoneNumber.touched) {
+                <span class="error-text">Please enter a valid 10-digit mobile number</span>
+              }
+            </div>
+
+            <button
+              type="submit"
+              class="submit-btn bd-btn-primary"
+            >
+              <ion-icon name="keypad-outline" class="btn-icon" />
+              <span>Enter PIN</span>
+            </button>
+          }
+
+          @if (authService.authStep() === 'pin') {
+            <!-- PIN Field -->
+            <label class="input-label pin-label" for="pinInput">PIN <span class="required-star">*</span></label>
+            <div
+              class="input-container pin-container"
+              [class.focused]="authService.isPinFocused()"
+              [class.error]="authService.loginForm.controls.pin.invalid && authService.loginForm.controls.pin.touched"
+            >
+              <div class="pin-badge">123</div>
+              <input
+                id="pinInput"
+                type="password"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="Enter 4-digit PIN"
+                formControlName="pin"
+                class="phone-input"
+                (focus)="authService.setPinFocused(true)"
+                (blur)="authService.setPinFocused(false)"
+              />
+            </div>
+
+            <div class="error-container">
+              @if (authService.loginForm.controls.pin.invalid && authService.loginForm.controls.pin.touched) {
+                <span class="error-text">Please enter a valid 4-digit PIN</span>
+              }
+            </div>
+
+            <div class="forgot-pin-box">
+              <a href="javascript:void(0)" (click)="authService.forgotPin()" class="forgot-link">Forgot PIN?</a>
+            </div>
+
+            <button
+              type="submit"
+              class="submit-btn bd-btn-primary"
+              [disabled]="authService.isSubmitting()"
+            >
+              <ion-icon name="log-in-outline" class="btn-icon" />
+              <span>{{ authService.isSubmitting() ? 'Logging in...' : 'Login' }}</span>
+            </button>
+
+            <div class="switch-number-box">
+              <a href="javascript:void(0)" (click)="authService.switchNumber()" class="switch-link">Use different number</a>
+            </div>
+          }
+        </form>
+      </section>
+
+      <!-- What You Get Section (Hidden in PIN step!) -->
+      @if (authService.authStep() === 'phone') {
+        <section class="features-section">
+          <h2 class="features-heading">What you get</h2>
+          
+          <div class="features-list">
+            @for (feature of authService.features; track feature.title) {
+              <div class="feature-row">
+                <div class="feature-icon-box">
+                  <ion-icon [name]="feature.icon" class="feature-icon" />
+                </div>
+                <div class="feature-text">
+                  <h3 class="feature-title">{{ feature.title }}</h3>
+                  <p class="feature-description">{{ feature.description }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+
+    <!-- Footer Section (Always at Bottom of Viewport) -->
+    <footer class="footer-section">
+      <p class="footer-text">
+        New to BIZZ DEAL?
+        <a href="javascript:void(0)" (click)="authService.joinAsMember()" class="join-link">Join As Member</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Join As Member Modal -->
+  <ion-modal [isOpen]="authService.isJoinModalOpen()" (didDismiss)="authService.closeJoinModal()" class="join-member-modal">
+    <ng-template>
+      <div class="modal-card">
+        <div class="modal-icon-circle">
+          <ion-icon name="briefcase-outline" class="modal-icon"></ion-icon>
+        </div>
+        
+        <h2 class="modal-title">Join as Member</h2>
+        <p class="modal-description">
+          Pay the one-time registration fee to unlock member features — offers, vouchers, referrals & analytics.
+        </p>
+
+        <div class="fee-badge">
+          <span>Registration Fee: ₹10,000</span>
+        </div>
+
+        <button type="button" class="pay-now-btn bd-btn-primary" (click)="authService.proceedToRegistration()">
+          Pay Now
+        </button>
+
+        <button type="button" class="not-now-btn" (click)="authService.closeJoinModal()">
+          Not Now
+        </button>
+      </div>
+    </ng-template>
+  </ion-modal>
+</ion-content>

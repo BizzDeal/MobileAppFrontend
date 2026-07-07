@@ -1,0 +1,425 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+ion-content {
+  --background: var(--bizzdeal-bg-main);
+}
+
+.login-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 16px var(--bizzdeal-spacing-md);
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+// ----------------------------------------------------------------------------
+// 1. Logo & Header Section
+// ----------------------------------------------------------------------------
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-box {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(25, 118, 210, 0.4);
+  margin-bottom: 12px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .logo-image {
+    width: 130%; // Scale up to cleanly crop out the white border/padding present in the PNG image file
+    height: 130%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+}
+
+.app-title {
+  font-size: 25px;
+  font-weight: 800;
+  color: var(--bizzdeal-text-primary);
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.app-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--bizzdeal-text-secondary);
+  margin: 4px 0 0 0;
+}
+
+// ----------------------------------------------------------------------------
+// 2. Phone Login Card
+// ----------------------------------------------------------------------------
+.login-card {
+  margin-bottom: 20px;
+  
+  .input-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+    margin-bottom: 6px;
+  }
+
+  .input-container {
+    display: flex;
+    align-items: center;
+    background: var(--bizzdeal-bg-surface);
+    border: 1.5px solid var(--bizzdeal-border-color);
+    border-radius: var(--bizzdeal-radius-md);
+    padding: 0 var(--bizzdeal-spacing-md);
+    height: 48px;
+    transition: all 0.2s ease;
+
+    &.focused {
+      border-color: var(--ion-color-primary);
+      box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+    }
+
+    &.readonly {
+      background: var(--bizzdeal-bg-surface-tertiary, #F8FAFC);
+      border-color: var(--ion-color-primary);
+      box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.1);
+      cursor: default;
+
+      .phone-input {
+        cursor: default;
+      }
+    }
+
+    &.error {
+      border-color: var(--ion-color-danger);
+    }
+
+    .input-icon {
+      font-size: 20px;
+      color: var(--ion-color-primary);
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .input-divider {
+      width: 1px;
+      height: 20px;
+      background-color: var(--bizzdeal-border-color);
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .phone-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 15px;
+      color: var(--bizzdeal-text-primary);
+      font-family: var(--bizzdeal-font-family);
+
+      &::placeholder {
+        color: var(--bizzdeal-text-placeholder);
+      }
+    }
+  }
+
+  .pin-label {
+    margin-top: 14px;
+  }
+
+  .pin-container {
+    background: var(--bizzdeal-bg-surface-tertiary, #F8FAFC);
+    border-color: transparent;
+
+    &.focused {
+      background: var(--bizzdeal-bg-surface);
+      border-color: var(--ion-color-primary);
+      box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+    }
+  }
+
+  .pin-badge {
+    background: var(--ion-color-primary);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: 6px;
+    margin-right: 12px;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .forgot-pin-box {
+    text-align: right;
+    margin-top: 6px;
+
+    .forgot-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--bizzdeal-text-link);
+      text-decoration: none;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .switch-number-box {
+    text-align: center;
+    margin-top: 14px;
+
+    .switch-link {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--bizzdeal-text-link);
+      text-decoration: none;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .error-container {
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+
+    .error-text {
+      display: block;
+      font-size: 12px;
+      color: var(--ion-color-danger);
+      margin: 2px 0 0 4px;
+    }
+  }
+
+  .submit-btn {
+    width: 100%;
+    height: 48px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 15px;
+
+    .btn-icon {
+      font-size: 18px;
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ----------------------------------------------------------------------------
+// 3. What You Get Section
+// ----------------------------------------------------------------------------
+.features-section {
+  margin-bottom: 12px;
+
+  .features-heading {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--bizzdeal-text-primary);
+    margin: 0 0 12px 0;
+  }
+
+  .features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .feature-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .feature-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(30, 136, 229, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    .feature-icon {
+      font-size: 20px;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .feature-text {
+    .feature-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--bizzdeal-text-primary);
+      margin: 0 0 1px 0;
+    }
+
+    .feature-description {
+      font-size: 12px;
+      color: var(--bizzdeal-text-secondary);
+      margin: 0;
+      line-height: 1.35;
+    }
+  }
+}
+
+// ----------------------------------------------------------------------------
+// 4. Footer Section
+// ----------------------------------------------------------------------------
+.footer-section {
+  text-align: center;
+  padding-top: 12px;
+  padding-bottom: 8px;
+
+  .footer-text {
+    font-size: 13px;
+    color: var(--bizzdeal-text-secondary);
+    margin: 0;
+  }
+
+  .join-link {
+    font-weight: 600;
+    color: var(--bizzdeal-text-link);
+    text-decoration: underline;
+    margin-left: 4px;
+    cursor: pointer;
+  }
+}
+
+// ----------------------------------------------------------------------------
+// 5. Join As Member Modal
+// ----------------------------------------------------------------------------
+ion-modal.join-member-modal {
+  --height: auto;
+  --max-width: 380px;
+  --width: 90%;
+  --border-radius: 28px;
+  --box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --background: var(--bizzdeal-bg-surface);
+  align-items: center;
+  justify-content: center;
+
+  .modal-card {
+    padding: 32px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: var(--bizzdeal-bg-surface);
+
+    .modal-icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--bizzdeal-gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(0, 102, 255, 0.3);
+
+      .modal-icon {
+        font-size: 32px;
+        color: #ffffff;
+      }
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--bizzdeal-text-primary);
+      margin: 0 0 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .modal-description {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--bizzdeal-text-secondary);
+      margin: 0 0 24px;
+      padding: 0 8px;
+    }
+
+    .fee-badge {
+      width: 100%;
+      background: rgba(0, 102, 255, 0.1);
+      border: 1px solid rgba(0, 102, 255, 0.2);
+      border-radius: var(--bizzdeal-radius-md);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+
+      span {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--bizzdeal-primary);
+      }
+    }
+
+    .pay-now-btn {
+      width: 100%;
+      height: 48px;
+      border-radius: var(--bizzdeal-radius-md);
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .not-now-btn {
+      width: 100%;
+      height: 44px;
+      background: transparent;
+      border: 1px solid var(--bizzdeal-border);
+      border-radius: var(--bizzdeal-radius-md);
+      color: var(--bizzdeal-text-secondary);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.03);
+        color: var(--bizzdeal-text-primary);
+      }
+    }
+  }
+}

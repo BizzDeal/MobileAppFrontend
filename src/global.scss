@@ -33,5 +33,80 @@
  */
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import "@ionic/angular/css/palettes/dark.class.css";
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
+
+/**
+ * BizzDeal Signature Theme & Global Utilities
+ * -----------------------------------------------------
+ */
+body {
+  font-family: var(--bizzdeal-font-family);
+  background-color: var(--bizzdeal-bg-main);
+  color: var(--bizzdeal-text-primary);
+}
+
+/* Global utility classes for BizzDeal design tokens */
+.bd-card {
+  background: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-xl);
+  box-shadow: var(--bizzdeal-shadow-md);
+  border: 1px solid var(--bizzdeal-border-color);
+  padding: var(--bizzdeal-spacing-lg);
+}
+
+.bd-modal-card {
+  background: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-xl);
+  box-shadow: var(--bizzdeal-shadow-lg);
+  padding: var(--bizzdeal-spacing-lg);
+}
+
+.bd-btn-primary {
+  background: var(--bizzdeal-gradient-primary);
+  color: var(--bizzdeal-text-on-primary);
+  border-radius: var(--bizzdeal-radius-md);
+  box-shadow: var(--bizzdeal-shadow-primary);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bd-btn-outline {
+  background: var(--bizzdeal-bg-surface);
+  color: var(--bizzdeal-text-primary);
+  border: 1px solid var(--bizzdeal-border-color);
+  border-radius: var(--bizzdeal-radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bd-icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--bizzdeal-radius-full);
+  background: var(--bizzdeal-gradient-primary);
+  color: var(--bizzdeal-text-on-primary);
+  box-shadow: var(--bizzdeal-shadow-primary-glow);
+}
+
+/* Global placeholder styling with reduced opacity */
+input::placeholder,
+textarea::placeholder,
+ion-input::part(placeholder),
+ion-textarea::part(placeholder),
+ion-select::part(placeholder) {
+  color: var(--bizzdeal-text-placeholder) !important;
+  opacity: 0.75 !important;
+}
+
+/* Required field red star indicator */
+.required-star {
+  color: var(--ion-color-danger, #ff3b30);
+  font-weight: 700;
+  margin-left: 2px;
+}
+

@@ -1,0 +1,98 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/auth/login" (click)="payService.backStep($event)"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Member Payment</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [scrollY]="true">
+  <div class="payment-container">
+    <header class="payment-header">
+      <p class="subtitle">One-time registration fee</p>
+    </header>
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+      <div class="hero-badge">MEMBER ONBOARDING</div>
+      <h2 class="hero-title">Join BIZZ DEAL as Member</h2>
+      <div class="hero-amount">₹10,000</div>
+      <p class="hero-description">
+        Unlock premium networking, verified lead sharing, referral vouchers, and business growth analytics.
+      </p>
+    </div>
+
+    <!-- Payment Details Section -->
+    <section class="details-section">
+      <h3 class="section-title">Payment Details</h3>
+      <div class="details-card">
+        <div class="detail-row">
+          <span class="detail-label">UPI ID</span>
+          <div class="detail-value-box" (click)="payService.copyToClipboard('bizzdeal@upi')">
+            <span class="detail-value font-mono">bizzdeal&#64;upi</span>
+            <ion-icon name="copy-outline" class="copy-icon"></ion-icon>
+          </div>
+        </div>
+        <div class="detail-divider"></div>
+        <div class="detail-row">
+          <span class="detail-label">Account Name</span>
+          <span class="detail-value font-semibold">BIZZ DEAL Pvt Ltd</span>
+        </div>
+        <div class="detail-divider"></div>
+        <div class="detail-row">
+          <span class="detail-label">Amount Payable</span>
+          <span class="detail-value text-primary font-bold">₹10,000</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upload Payment Screenshot Section -->
+    <section class="upload-section">
+      <h3 class="section-title">Upload Payment Screenshot <span class="required-star">*</span></h3>
+      
+      <label class="upload-box" [class.has-file]="payService.receiptPreview()" for="receiptInput">
+        @if (payService.receiptPreview()) {
+          <div class="preview-container">
+            <img [src]="payService.receiptPreview()" alt="Payment receipt preview" class="receipt-img" />
+            <div class="file-info">
+              <ion-icon name="checkmark-circle-outline" class="success-icon"></ion-icon>
+              <span class="file-name">{{ payService.receiptFileName() }}</span>
+            </div>
+            <span class="change-link">Click to replace screenshot</span>
+          </div>
+        } @else {
+          <div class="upload-placeholder">
+            <div class="icon-circle">
+              <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
+            </div>
+            <span class="upload-title">Upload Payment Screenshot</span>
+            <span class="upload-subtitle">PNG, JPG or PDF up to 5MB</span>
+          </div>
+        }
+        <input
+          type="file"
+          id="receiptInput"
+          accept="image/*,application/pdf"
+          (change)="payService.onFileSelected($event)"
+          class="hidden-input"
+        />
+      </label>
+
+      @if (payService.errorMessage()) {
+        <div class="error-banner">
+          <span>{{ payService.errorMessage() }}</span>
+        </div>
+      }
+    </section>
+
+    <!-- Payment Done Button -->
+    <button
+      type="button"
+      class="payment-done-btn bd-btn-primary"
+      (click)="payService.completePayment()"
+    >
+      <span>Payment Done</span>
+    </button>
+  </div>
+</ion-content>

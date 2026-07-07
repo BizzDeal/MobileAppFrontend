@@ -1,2 +1,160 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+// ============================================================================
+// BizzDeal Frontend — Design System & Theme Variables
+// ============================================================================
+// This file defines the mandatory design tokens, colors, gradients, shadows,
+// and shape variables for the entire BizzDeal application, derived from the
+// signature BizzDeal aesthetic (vibrant blue gradient, rounded elevated cards).
+//
+// All components MUST reference these tokens rather than hardcoding values.
+// ============================================================================
+
+:root {
+  // --------------------------------------------------------------------------
+  // 1. Signature BizzDeal Brand Gradients & Shadows
+  // --------------------------------------------------------------------------
+  --bizzdeal-gradient-primary: linear-gradient(90deg, #1565C0 0%, #2196F3 100%);
+  --bizzdeal-gradient-primary-diagonal: linear-gradient(135deg, #0D47A1 0%, #1E88E5 50%, #42A5F5 100%);
+  --bizzdeal-gradient-dark: linear-gradient(135deg, #0A3A8B 0%, #1652B4 100%);
+
+  --bizzdeal-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+  --bizzdeal-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --bizzdeal-shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.14);
+  --bizzdeal-shadow-primary: 0 6px 20px rgba(33, 150, 243, 0.35);
+  --bizzdeal-shadow-primary-glow: 0 8px 24px rgba(33, 150, 243, 0.45);
+
+  // --------------------------------------------------------------------------
+  // 2. Surface & Background Tokens
+  // --------------------------------------------------------------------------
+  --bizzdeal-bg-main: #F3F6F9;
+  --bizzdeal-bg-surface: #FFFFFF;
+  --bizzdeal-bg-surface-secondary: #F8FAFC;
+  --bizzdeal-bg-surface-tertiary: #F1F5F9;
+  --bizzdeal-border-color: #E2E8F0;
+
+  // --------------------------------------------------------------------------
+  // 3. Typography & Text Tokens
+  // --------------------------------------------------------------------------
+  --bizzdeal-font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --ion-font-family: var(--bizzdeal-font-family);
+  --bizzdeal-text-primary: #0F172A;
+  --bizzdeal-text-secondary: #64748B;
+  --bizzdeal-text-tertiary: #94A3B8;
+  --bizzdeal-text-placeholder: #94A3B8;
+  --bizzdeal-text-link: #1D4ED8;
+  --bizzdeal-text-on-primary: #FFFFFF;
+
+  // --------------------------------------------------------------------------
+  // 4. Shape & Spacing Tokens
+  // --------------------------------------------------------------------------
+  --bizzdeal-radius-sm: 8px;
+  --bizzdeal-radius-md: 14px;  // Standard input & small button radius
+  --bizzdeal-radius-lg: 18px;  // Standard button & badge radius
+  --bizzdeal-radius-xl: 26px;  // Signature modal & hero card radius
+  --bizzdeal-radius-full: 9999px;
+
+  --bizzdeal-spacing-xs: 4px;
+  --bizzdeal-spacing-sm: 8px;
+  --bizzdeal-spacing-md: 16px;
+  --bizzdeal-spacing-lg: 24px;
+  --bizzdeal-spacing-xl: 32px;
+
+  // --------------------------------------------------------------------------
+  // 5. Ionic Color Palette Overrides
+  // --------------------------------------------------------------------------
+  /** primary **/
+  --ion-color-primary: #1e88e5;
+  --ion-color-primary-rgb: 30, 136, 229;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1a78ca;
+  --ion-color-primary-tint: #3594e8;
+
+  /** secondary **/
+  --ion-color-secondary: #0ea5e9;
+  --ion-color-secondary-rgb: 14, 165, 233;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #0c91cd;
+  --ion-color-secondary-tint: #26aee3;
+
+  /** tertiary **/
+  --ion-color-tertiary: #6366f1;
+  --ion-color-tertiary-rgb: 99, 102, 241;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #575ad4;
+  --ion-color-tertiary-tint: #7375f2;
+
+  /** success **/
+  --ion-color-success: #10b981;
+  --ion-color-success-rgb: 16, 185, 129;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #0ea372;
+  --ion-color-success-tint: #28c08d;
+
+  /** warning **/
+  --ion-color-warning: #f59e0b;
+  --ion-color-warning-rgb: 245, 158, 11;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #d88b0a;
+  --ion-color-warning-tint: #f6a823;
+
+  /** danger **/
+  --ion-color-danger: #ef4444;
+  --ion-color-danger-rgb: 239, 68, 68;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #d23c3c;
+  --ion-color-danger-tint: #f15757;
+
+  /** light **/
+  --ion-color-light: #f8fafc;
+  --ion-color-light-rgb: 248, 250, 252;
+  --ion-color-light-contrast: #0f172a;
+  --ion-color-light-contrast-rgb: 15, 23, 42;
+  --ion-color-light-shade: #dadcde;
+  --ion-color-light-tint: #f9fbfc;
+
+  /** medium **/
+  --ion-color-medium: #64748b;
+  --ion-color-medium-rgb: 100, 116, 139;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #58667a;
+  --ion-color-medium-tint: #748297;
+
+  /** dark **/
+  --ion-color-dark: #0f172a;
+  --ion-color-dark-rgb: 15, 23, 42;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #0d1425;
+  --ion-color-dark-tint: #272e3f;
+}
+
+// ----------------------------------------------------------------------------
+// Dark Mode Palette Adjustments (Class-based toggle only; Light Theme default)
+// ----------------------------------------------------------------------------
+html.ion-palette-dark,
+body.ion-palette-dark,
+.ion-palette-dark {
+  --bizzdeal-bg-main: #0B1120;
+  --bizzdeal-bg-surface: #0F172A;
+  --bizzdeal-bg-surface-secondary: #1E293B;
+  --bizzdeal-bg-surface-tertiary: #334155;
+  --bizzdeal-border-color: #334155;
+
+  --bizzdeal-text-primary: #F8FAFC;
+  --bizzdeal-text-secondary: #94A3B8;
+  --bizzdeal-text-tertiary: #64748B;
+  --bizzdeal-text-placeholder: #64748B;
+  --bizzdeal-text-link: #38BDF8;
+
+  --bizzdeal-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --bizzdeal-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --bizzdeal-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --bizzdeal-shadow-primary: 0 6px 20px rgba(33, 150, 243, 0.45);
+  --bizzdeal-shadow-primary-glow: 0 8px 24px rgba(33, 150, 243, 0.6);
+}

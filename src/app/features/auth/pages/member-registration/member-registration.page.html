@@ -1,0 +1,197 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/auth/member-payment" (click)="regService.backStep($event)"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Member Registration</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [scrollY]="true">
+  <div class="reg-container">
+    <header class="reg-header">
+      <p class="subtitle">Complete your business profile</p>
+    </header>
+
+    <!-- Upload Profile Photo Placeholder -->
+    <div class="reg-card bd-card">
+      <div class="photo-upload-section">
+      <label class="photo-upload-circle" for="profilePhotoInput">
+        @if (regService.photoPreview()) {
+          <img [src]="regService.photoPreview()" alt="Profile preview" class="preview-img" />
+        } @else {
+          <ion-icon name="camera-outline" class="camera-icon"></ion-icon>
+        }
+        <input
+          type="file"
+          id="profilePhotoInput"
+          accept="image/*"
+          (change)="regService.onFileSelected($event)"
+          class="hidden-input"
+        />
+      </label>
+      <span class="photo-upload-label">Upload Profile Photo</span>
+    </div>
+
+    <!-- Registration Form -->
+    <form [formGroup]="regService.regForm" (ngSubmit)="regService.submitRegistration()" class="reg-form">
+      
+      <!-- Full Name -->
+      <div class="form-group">
+        <label class="input-label">Full Name <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.fullName.invalid && regService.regForm.controls.fullName.touched">
+          <input type="text" formControlName="fullName" placeholder="Your full name" class="custom-input" />
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.fullName.invalid && regService.regForm.controls.fullName.touched) {
+            <span class="error-text">Full name is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="form-group">
+        <label class="input-label">Phone Number (Login) <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.phoneNumber.invalid && regService.regForm.controls.phoneNumber.touched">
+          <input type="tel" formControlName="phoneNumber" placeholder="10-digit mobile number" maxlength="10" class="custom-input" />
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.phoneNumber.invalid && regService.regForm.controls.phoneNumber.touched) {
+            <span class="error-text">Valid 10-digit mobile number is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Login PIN -->
+      <div class="form-group">
+        <label class="input-label">Login PIN <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.loginPin.invalid && regService.regForm.controls.loginPin.touched">
+          <input type="password" formControlName="loginPin" placeholder="...." maxlength="6" class="custom-input" />
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.loginPin.invalid && regService.regForm.controls.loginPin.touched) {
+            <span class="error-text">Secure 4+ digit PIN is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- WhatsApp Number -->
+      <div class="form-group">
+        <label class="input-label">WhatsApp Number <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.whatsappNumber.invalid && regService.regForm.controls.whatsappNumber.touched">
+          <input type="tel" formControlName="whatsappNumber" placeholder="10-digit WhatsApp number" maxlength="10" class="custom-input" />
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.whatsappNumber.invalid && regService.regForm.controls.whatsappNumber.touched) {
+            <span class="error-text">Valid 10-digit WhatsApp number is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="input-label">Email <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.email.invalid && regService.regForm.controls.email.touched">
+          <input type="email" formControlName="email" placeholder="Your email address" class="custom-input" />
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.email.invalid && regService.regForm.controls.email.touched) {
+            <span class="error-text">Valid email address is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="form-group">
+        <label class="input-label">Address <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched">
+          <input type="text" formControlName="address" placeholder="Business or physical address" class="custom-input" />
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched) {
+            <span class="error-text">Address is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Business Name -->
+      <div class="form-group">
+        <label class="input-label">Business Name <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.businessName.invalid && regService.regForm.controls.businessName.touched">
+          <input type="text" formControlName="businessName" placeholder="Your company or shop name" class="custom-input" />
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.businessName.invalid && regService.regForm.controls.businessName.touched) {
+            <span class="error-text">Business name is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Business Category (Dynamic from BE API!) -->
+      <div class="form-group">
+        <label class="input-label">Business Category <span class="required-star">*</span></label>
+        <div class="select-box" [class.input-error]="regService.regForm.controls.businessCategory.invalid && regService.regForm.controls.businessCategory.touched">
+          <ion-select formControlName="businessCategory" placeholder="Select category" interface="action-sheet" class="custom-select">
+            @for (cat of regService.onboardingService.categories(); track cat.id) {
+              <ion-select-option [value]="cat.id">{{ cat.name }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.businessCategory.invalid && regService.regForm.controls.businessCategory.touched) {
+            <span class="error-text">Business category is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Business Description -->
+      <div class="form-group">
+        <label class="input-label">Business Description <span class="required-star">*</span></label>
+        <div class="textarea-box" [class.input-error]="regService.regForm.controls.businessDescription.invalid && regService.regForm.controls.businessDescription.touched">
+          <textarea formControlName="businessDescription" placeholder="Describe your business and services..." rows="3" class="custom-textarea"></textarea>
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.businessDescription.invalid && regService.regForm.controls.businessDescription.touched) {
+            <span class="error-text">Business description is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Website -->
+      <div class="form-group">
+        <label class="input-label">Website <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.website.invalid && regService.regForm.controls.website.touched">
+          <input type="text" formControlName="website" placeholder="https://yourwebsite.com or social link" class="custom-input" />
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.website.invalid && regService.regForm.controls.website.touched) {
+            <span class="error-text">Website URL is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- GST Number -->
+      <div class="form-group">
+        <label class="input-label">GST Number <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.gstNumber.invalid && regService.regForm.controls.gstNumber.touched">
+          <input type="text" formControlName="gstNumber" placeholder="Your 15-digit GSTIN" class="custom-input uppercase-input" />
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.gstNumber.invalid && regService.regForm.controls.gstNumber.touched) {
+            <span class="error-text">GST number is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="submit-btn bd-btn-primary"
+        [disabled]="regService.isSubmitting()"
+      >
+        <span>{{ regService.isSubmitting() ? 'Proceeding...' : 'Submit Registration' }}</span>
+      </button>
+    </form>
+    </div>
+  </div>
+</ion-content>

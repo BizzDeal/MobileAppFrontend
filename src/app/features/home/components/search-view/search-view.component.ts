@@ -1,17 +1,17 @@
-import { Component, ChangeDetectionStrategy, signal, computed, model, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, model, output, signal } from '@angular/core';
 import { IonIcon, IonSearchbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  businessOutline, 
-  pricetagOutline, 
-  chevronForwardOutline, 
-  sparklesOutline, 
-  searchOutline, 
-  star, 
-  locationOutline,
+import {
+  businessOutline,
+  chevronForwardOutline,
   globeOutline,
+  locationOutline,
+  pricetagOutline,
   receiptOutline,
+  searchOutline,
+  sparklesOutline,
+  star,
   timeOutline
 } from 'ionicons/icons';
 import { BusinessDTO, OfferDTO } from '../../models/home.model';

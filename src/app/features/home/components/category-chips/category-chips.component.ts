@@ -1,17 +1,17 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  gridOutline, 
-  fastFoodOutline, 
-  shirtOutline, 
-  fitnessOutline, 
-  hardwareChipOutline, 
-  cutOutline,
-  sparklesOutline,
+import {
   businessOutline,
+  cutOutline,
+  fastFoodOutline,
+  fitnessOutline,
+  gridOutline,
+  hardwareChipOutline,
   homeOutline,
-  schoolOutline
+  schoolOutline,
+  shirtOutline,
+  sparklesOutline
 } from 'ionicons/icons';
 import { BusinessCategoryDTO } from '../../models/home.model';
 

@@ -1,6 +1,6 @@
-import { Injectable, signal, inject, OnDestroy } from '@angular/core';
+import { inject, Injectable, OnDestroy, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 
 @Injectable()

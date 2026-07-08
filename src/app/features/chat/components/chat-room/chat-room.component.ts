@@ -1,27 +1,27 @@
-import { 
-  Component, 
-  ChangeDetectionStrategy, 
-  inject, 
-  signal, 
-  computed,
-  output, 
-  ViewChild, 
-  ElementRef, 
-  effect 
-} from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
-import { 
-  IonIcon, 
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  output,
+  signal,
+  ViewChild
+} from '@angular/core';
+import {
   IonButton,
-  IonHeader,
-  IonToolbar,
   IonButtons,
-  IonTitle
+  IonHeader,
+  IonIcon,
+  IonTitle,
+  IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, personOutline, timeOutline } from 'ionicons/icons';
-import { ChatService } from '../../services/chat.service';
 import { ChatMessage, MessageType } from '../../models/chat.model';
+import { ChatService } from '../../services/chat.service';
 import { ChatBubbleComponent } from '../chat-bubble/chat-bubble.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
 
@@ -29,14 +29,11 @@ import { ChatInputComponent } from '../chat-input/chat-input.component';
   selector: 'app-chat-room',
   standalone: true,
   imports: [
-    DatePipe,
     NgClass,
     IonIcon,
-    IonButton,
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonTitle,
     ChatBubbleComponent,
     ChatInputComponent
   ],
@@ -46,7 +43,7 @@ import { ChatInputComponent } from '../chat-input/chat-input.component';
 })
 export class ChatRoomComponent {
   private readonly chatService = inject(ChatService);
-  
+
   readonly close = output<void>();
 
   @ViewChild('scrollContainer', { static: false }) private scrollContainer!: ElementRef;
@@ -96,15 +93,15 @@ export class ChatRoomComponent {
     this.close.emit();
   }
 
-  onSendMessage(event: { 
-    text: string | null; 
-    type: MessageType; 
-    mediaUrl?: string; 
-    mediaName?: string; 
-    mediaSize?: string; 
+  onSendMessage(event: {
+    text: string | null;
+    type: MessageType;
+    mediaUrl?: string;
+    mediaName?: string;
+    mediaSize?: string;
   }): void {
     const editMsg = this.editingMessage();
-    
+
     if (editMsg) {
       // Handle Message Editing
       if (event.text) {
@@ -114,14 +111,14 @@ export class ChatRoomComponent {
     } else {
       // Handle normal message send
       this.chatService.sendMessage(
-        event.text, 
-        event.type, 
-        event.mediaUrl, 
-        event.mediaName, 
+        event.text,
+        event.type,
+        event.mediaUrl,
+        event.mediaName,
         event.mediaSize
       );
     }
-    
+
     this.scrollToBottom();
   }
 
@@ -144,16 +141,16 @@ export class ChatRoomComponent {
           this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
         }
       }, 80);
-    } catch (err) {}
+    } catch (err) { }
   }
 
   // Group messages helper for separating by date in html template
   shouldShowDateDivider(index: number, messages: ChatMessage[]): boolean {
     if (index === 0) return true;
-    
+
     const prevDate = new Date(messages[index - 1].created_at).toDateString();
     const currDate = new Date(messages[index].created_at).toDateString();
-    
+
     return prevDate !== currDate;
   }
 

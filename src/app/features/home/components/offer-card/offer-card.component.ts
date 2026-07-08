@@ -1,7 +1,7 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { timeOutline, sparklesOutline, locationOutline, pricetagOutline } from 'ionicons/icons';
+import { locationOutline, pricetagOutline, sparklesOutline, timeOutline } from 'ionicons/icons';
 import { OfferDTO } from '../../models/home.model';
 
 @Component({

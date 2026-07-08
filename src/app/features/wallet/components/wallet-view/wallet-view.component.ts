@@ -1,31 +1,31 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
-import { 
-  IonSpinner, 
-  IonIcon, 
-  IonModal, 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
-  IonButtons, 
-  IonButton 
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  IonButton,
+  IonButtons,
+  IonHeader,
+  IonIcon,
+  IonModal,
+  IonSpinner,
+  IonTitle,
+  IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  walletOutline, 
-  trendingUpOutline, 
-  arrowDownOutline, 
-  arrowUpOutline, 
-  giftOutline, 
-  closeOutline, 
-  receiptOutline, 
-  timeOutline, 
+import {
   alertCircleOutline,
+  arrowDownOutline,
+  arrowUpOutline,
   chevronForwardOutline,
-  sparklesOutline
+  closeOutline,
+  giftOutline,
+  receiptOutline,
+  sparklesOutline,
+  timeOutline,
+  trendingUpOutline,
+  walletOutline
 } from 'ionicons/icons';
-import { WalletService } from '../../services/wallet.service';
 import { WalletTransactionDTO } from '../../models/wallet.model';
+import { WalletService } from '../../services/wallet.service';
 
 @Component({
   selector: 'app-wallet-view',

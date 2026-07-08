@@ -1,37 +1,36 @@
-import { Component, ChangeDetectionStrategy, inject, output, computed, signal } from '@angular/core';
-import { DatePipe, NgClass, JsonPipe } from '@angular/common';
-import { 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
-  IonButtons, 
-  IonButton, 
-  IonIcon, 
+import { DatePipe, NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import {
+  IonButton,
+  IonButtons,
   IonContent,
-  IonList,
+  IonHeader,
+  IonIcon,
   IonItem,
-  IonLabel,
-  IonItemSliding,
-  IonItemOptions,
   IonItemOption,
-  IonBadge,
-  IonModal
+  IonItemOptions,
+  IonItemSliding,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonTitle,
+  IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  closeOutline, 
-  checkmarkDoneOutline, 
-  trashOutline,
-  ticketOutline,
-  walletOutline,
+import {
+  alertCircleOutline,
   calendarOutline,
   chatbubbleOutline,
+  checkmarkDoneOutline,
+  closeOutline,
+  gridOutline,
   informationCircleOutline,
-  alertCircleOutline,
-  gridOutline
+  ticketOutline,
+  trashOutline,
+  walletOutline
 } from 'ionicons/icons';
-import { NotificationService } from '../../services/notification.service';
 import { NotificationDTO, NotificationType } from '../../models/notification.model';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-notifications-page',
@@ -39,7 +38,6 @@ import { NotificationDTO, NotificationType } from '../../models/notification.mod
   imports: [
     DatePipe,
     NgClass,
-    JsonPipe,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -53,7 +51,6 @@ import { NotificationDTO, NotificationType } from '../../models/notification.mod
     IonItemSliding,
     IonItemOptions,
     IonItemOption,
-    IonBadge,
     IonModal
   ],
   templateUrl: './notifications-page.component.html',
@@ -80,9 +77,9 @@ export class NotificationsPageComponent {
   });
 
   constructor() {
-    addIcons({ 
-      closeOutline, 
-      checkmarkDoneOutline, 
+    addIcons({
+      closeOutline,
+      checkmarkDoneOutline,
       trashOutline,
       ticketOutline,
       walletOutline,

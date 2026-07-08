@@ -1,17 +1,17 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  homeOutline, 
-  home, 
-  searchOutline, 
-  search, 
-  chatbubbleOutline, 
-  chatbubble, 
-  walletOutline, 
-  wallet, 
-  personOutline, 
-  person 
+import {
+  chatbubble,
+  chatbubbleOutline,
+  home,
+  homeOutline,
+  person,
+  personOutline,
+  search,
+  searchOutline,
+  wallet,
+  walletOutline
 } from 'ionicons/icons';
 
 export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile';

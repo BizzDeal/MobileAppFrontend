@@ -1,30 +1,27 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, Input } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, Input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
-  IonButtons, 
-  IonButton, 
-  IonIcon, 
-  IonContent, 
-  IonSearchbar, 
-  IonList, 
-  IonItem, 
-  IonAvatar, 
-  IonLabel 
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonSearchbar,
+  IonTitle,
+  IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { closeOutline, searchOutline, personOutline } from 'ionicons/icons';
-import { ChatService } from '../../services/chat.service';
+import { closeOutline, personOutline, searchOutline } from 'ionicons/icons';
 import { ChatPartner } from '../../models/chat.model';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-start-chat-modal',
   standalone: true,
   imports: [
-    NgClass,
     FormsModule,
     IonHeader,
     IonToolbar,
@@ -36,7 +33,6 @@ import { ChatPartner } from '../../models/chat.model';
     IonSearchbar,
     IonList,
     IonItem,
-    IonAvatar,
     IonLabel
   ],
   templateUrl: './start-chat-modal.component.html',
@@ -45,12 +41,12 @@ import { ChatPartner } from '../../models/chat.model';
 })
 export class StartChatModalComponent {
   private readonly chatService = inject(ChatService);
-  
+
   // Output action to dismiss modal
-  @Input() dismiss = () => {}; 
-  
+  @Input() dismiss = () => { };
+
   // Output selection action
-  @Input() selectPartner = (partnerId: string) => {};
+  @Input() selectPartner = (partnerId: string) => { };
 
   readonly searchQuery = signal<string>('');
 
@@ -59,8 +55,8 @@ export class StartChatModalComponent {
     const query = this.searchQuery().toLowerCase().trim();
     if (!query) return contacts;
     return contacts.filter(
-      c => c.full_name.toLowerCase().includes(query) || 
-           c.phone.toLowerCase().includes(query)
+      c => c.full_name.toLowerCase().includes(query) ||
+        c.phone.toLowerCase().includes(query)
     );
   });
 

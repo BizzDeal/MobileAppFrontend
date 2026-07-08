@@ -1,5 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { MessageType, MessageStatus, ChatMessage, ChatConversation, ChatPartner } from '../models/chat.model';
+import { computed, Injectable, signal } from '@angular/core';
+import { ChatConversation, ChatMessage, ChatPartner, MessageStatus, MessageType } from '../models/chat.model';
 
 @Injectable({
   providedIn: 'root',

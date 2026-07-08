@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MemberOnboardingService, MemberRegistrationPayload } from '../../services/member-onboarding.service';

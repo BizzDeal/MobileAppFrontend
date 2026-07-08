@@ -1,20 +1,20 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
+  IonBackButton,
+  IonButtons,
   IonContent,
   IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonBackButton,
   IonIcon,
+  IonTitle,
+  IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  documentTextOutline,
-  cloudUploadOutline,
   checkmarkCircleOutline,
+  cloudUploadOutline,
   copyOutline,
+  documentTextOutline,
 } from 'ionicons/icons';
 import { MemberPaymentService } from './member-payment.service';
 

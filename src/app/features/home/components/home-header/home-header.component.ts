@@ -1,12 +1,12 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IonIcon, IonSearchbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  walletOutline, 
-  notificationsOutline, 
-  searchOutline, 
-  optionsOutline 
+import {
+  notificationsOutline,
+  optionsOutline,
+  searchOutline,
+  walletOutline
 } from 'ionicons/icons';
 import { CustomerProfileDTO, WalletDTO } from '../../models/home.model';
 

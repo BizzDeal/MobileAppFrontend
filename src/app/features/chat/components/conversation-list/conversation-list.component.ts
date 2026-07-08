@@ -1,32 +1,31 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, output } from '@angular/core';
-import { DatePipe, NgClass } from '@angular/common';
-import { 
-  IonIcon, 
-  IonList, 
-  IonItem, 
-  IonLabel, 
-  IonAvatar, 
-  IonSearchbar, 
-  IonFab, 
-  IonFabButton,
-  IonModal,
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import {
   IonBadge,
+  IonFab,
+  IonFabButton,
   IonHeader,
-  IonToolbar,
-  IonTitle
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonSearchbar,
+  IonTitle,
+  IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  chatbubbleEllipsesOutline, 
-  addOutline, 
-  searchOutline, 
-  personOutline,
-  imageOutline,
+import {
+  addOutline,
+  chatbubbleEllipsesOutline,
   documentTextOutline,
-  micOutline
+  imageOutline,
+  micOutline,
+  personOutline,
+  searchOutline
 } from 'ionicons/icons';
-import { ChatService } from '../../services/chat.service';
 import { ChatConversation, ChatMessage } from '../../models/chat.model';
+import { ChatService } from '../../services/chat.service';
 import { StartChatModalComponent } from '../start-chat-modal/start-chat-modal.component';
 
 @Component({
@@ -34,12 +33,10 @@ import { StartChatModalComponent } from '../start-chat-modal/start-chat-modal.co
   standalone: true,
   imports: [
     DatePipe,
-    NgClass,
     IonIcon,
     IonList,
     IonItem,
     IonLabel,
-    IonAvatar,
     IonSearchbar,
     IonFab,
     IonFabButton,
@@ -69,7 +66,7 @@ export class ConversationListComponent {
     const list = this.conversations();
     const query = this.searchFilter().toLowerCase().trim();
     if (!query) return list;
-    return list.filter(c => 
+    return list.filter(c =>
       c.partner.full_name.toLowerCase().includes(query) ||
       c.partner.phone.toLowerCase().includes(query)
     );

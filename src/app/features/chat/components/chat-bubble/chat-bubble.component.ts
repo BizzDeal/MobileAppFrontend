@@ -1,29 +1,29 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, inject } from '@angular/core';
-import { DatePipe, NgClass, DecimalPipe } from '@angular/common';
-import { 
-  IonIcon, 
+import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import {
   IonButton,
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonButtons,
-  IonContent
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonModal,
+  IonTitle,
+  IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  checkmarkOutline, 
-  checkmarkDoneOutline, 
-  documentOutline, 
-  downloadOutline,
-  playOutline,
-  pauseOutline,
-  createOutline,
-  trashOutline,
+import {
+  checkmarkDoneOutline,
+  checkmarkOutline,
+  closeOutline,
   copyOutline,
-  closeOutline
+  createOutline,
+  documentOutline,
+  downloadOutline,
+  pauseOutline,
+  playOutline,
+  trashOutline
 } from 'ionicons/icons';
-import { ChatMessage, MessageType, MessageStatus } from '../../models/chat.model';
+import { ChatMessage, MessageStatus } from '../../models/chat.model';
 
 @Component({
   selector: 'app-chat-bubble',

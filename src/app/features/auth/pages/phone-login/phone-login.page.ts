@@ -1,17 +1,17 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonContent, IonIcon, IonModal } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  phonePortraitOutline,
+  briefcaseOutline,
   chatboxEllipsesOutline,
+  giftOutline,
+  gitNetworkOutline,
   keypadOutline,
   logInOutline,
   peopleOutline,
-  gitNetworkOutline,
-  giftOutline,
-  briefcaseOutline,
+  phonePortraitOutline,
 } from 'ionicons/icons';
 import { PhoneLoginService } from './phone-login.service';
 

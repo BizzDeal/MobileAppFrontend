@@ -1,7 +1,7 @@
-import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { delay, tap, catchError } from 'rxjs/operators';
+import { catchError, delay, tap } from 'rxjs/operators';
 import { ProfileDTO } from '../models/profile.model';
 
 const MOCK_PROFILE: ProfileDTO = {

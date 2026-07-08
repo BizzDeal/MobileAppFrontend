@@ -1,23 +1,23 @@
-import { Component, ChangeDetectionStrategy, inject, signal, effect } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { 
-  IonSpinner, 
-  IonIcon, 
-  IonToast 
+import {
+  IonIcon,
+  IonSpinner,
+  IonToast
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  personOutline, 
-  callOutline, 
-  logoWhatsapp, 
-  mailOutline, 
-  locationOutline, 
-  cameraOutline, 
-  logOutOutline, 
+import {
   alertCircleOutline,
-  checkmarkCircleOutline
+  callOutline,
+  cameraOutline,
+  checkmarkCircleOutline,
+  locationOutline,
+  logOutOutline,
+  logoWhatsapp,
+  mailOutline,
+  personOutline
 } from 'ionicons/icons';
 import { ProfileService } from '../../services/profile.service';
 

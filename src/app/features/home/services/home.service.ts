@@ -1,14 +1,12 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { delay, tap, catchError } from 'rxjs/operators';
+import { catchError, delay, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import {
   CustomerHomeFeedDTO,
   OfferDTO,
-  BusinessDTO,
-  VoucherDTO,
-  BusinessCategoryDTO,
+  VoucherDTO
 } from '../models/home.model';
 
 const FAKE_HOME_FEED: CustomerHomeFeedDTO = {

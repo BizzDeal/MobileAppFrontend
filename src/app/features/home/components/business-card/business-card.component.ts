@@ -1,7 +1,7 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { starOutline, locationOutline, arrowForwardOutline } from 'ionicons/icons';
+import { arrowForwardOutline, locationOutline, starOutline } from 'ionicons/icons';
 import { BusinessDTO } from '../../models/home.model';
 
 @Component({

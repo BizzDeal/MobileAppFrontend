@@ -1,23 +1,23 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
+  IonBackButton,
+  IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonTitle,
   IonToolbar,
-  IonButtons,
-  IonBackButton,
-  IonIcon,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  phonePortraitOutline,
+  arrowBackOutline,
+  checkmarkCircleOutline,
   keypadOutline,
   lockClosedOutline,
-  checkmarkCircleOutline,
+  phonePortraitOutline,
   refreshOutline,
-  arrowBackOutline,
 } from 'ionicons/icons';
 import { ForgotPinService } from './forgot-pin.service';
 

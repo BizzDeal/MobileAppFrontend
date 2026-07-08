@@ -1,7 +1,7 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { ticketOutline, chevronForwardOutline } from 'ionicons/icons';
+import { chevronForwardOutline, ticketOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-quick-actions',

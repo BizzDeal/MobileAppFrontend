@@ -1852,3 +1852,5 @@ Do not overengineer BizzDeal.
 Do not introduce architecture for hypothetical future requirements.
 
 Build the current feature cleanly, keep its boundaries clear, and make the next change easy.
+
+Always ensure that all unused imports are removed from all files after finishing implementation tasks (you can run `npx organize-imports-cli "src/**/*.ts"` to do this automatically).

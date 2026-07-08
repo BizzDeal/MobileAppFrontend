@@ -1,22 +1,21 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, effect } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgClass, DecimalPipe } from '@angular/common';
-import { 
-  IonIcon, 
-  IonButton,
-  IonTextarea,
-  IonActionSheet
+import {
+  IonActionSheet,
+  IonIcon,
+  IonTextarea
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  attachOutline, 
-  micOutline, 
-  sendOutline, 
-  closeCircleOutline, 
-  imageOutline, 
-  documentTextOutline, 
+import {
+  attachOutline,
+  closeCircleOutline,
   closeOutline,
-  ellipse
+  documentTextOutline,
+  ellipse,
+  imageOutline,
+  micOutline,
+  sendOutline
 } from 'ionicons/icons';
 import { ChatMessage, MessageType } from '../../models/chat.model';
 
@@ -25,10 +24,8 @@ import { ChatMessage, MessageType } from '../../models/chat.model';
   standalone: true,
   imports: [
     FormsModule,
-    NgClass,
     DecimalPipe,
     IonIcon,
-    IonButton,
     IonTextarea,
     IonActionSheet
   ],
@@ -39,17 +36,17 @@ import { ChatMessage, MessageType } from '../../models/chat.model';
 export class ChatInputComponent {
   readonly editModeMessage = input<ChatMessage | null>(null);
 
-  readonly send = output<{ 
-    text: string | null; 
-    type: MessageType; 
-    mediaUrl?: string; 
-    mediaName?: string; 
-    mediaSize?: string; 
+  readonly send = output<{
+    text: string | null;
+    type: MessageType;
+    mediaUrl?: string;
+    mediaName?: string;
+    mediaSize?: string;
   }>();
   readonly cancelEdit = output<void>();
 
   readonly inputText = signal<string>('');
-  
+
   // Simulated recording state
   readonly isRecording = signal<boolean>(false);
   readonly recordingSeconds = signal<number>(0);
@@ -109,7 +106,7 @@ export class ChatInputComponent {
       // Normal send
       this.send.emit({ text, type: MessageType.TEXT });
     }
-    
+
     this.inputText.set('');
   }
 
@@ -134,7 +131,7 @@ export class ChatInputComponent {
       'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=80'
     ];
     const randomImg = fakeImages[Math.floor(Math.random() * fakeImages.length)];
-    
+
     this.send.emit({
       text: 'Check this out!',
       type: MessageType.IMAGE,
@@ -183,7 +180,7 @@ export class ChatInputComponent {
   stopRecordingAndSend(): void {
     const duration = this.recordingSeconds();
     this.cleanupRecording();
-    
+
     this.send.emit({
       text: null,
       type: MessageType.VOICE,

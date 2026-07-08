@@ -1,53 +1,53 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { 
-  IonContent, 
-  IonRefresher, 
-  IonRefresherContent, 
-  IonSpinner, 
-  IonToast, 
-  IonModal, 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
-  IonButtons, 
-  IonButton, 
-  IonIcon 
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonModal,
+  IonRefresher,
+  IonRefresherContent,
+  IonSpinner,
+  IonTitle,
+  IonToast,
+  IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  closeOutline, 
-  ticketOutline, 
-  giftOutline, 
-  copyOutline, 
-  sparklesOutline, 
-  shareSocialOutline, 
-  checkmarkCircleOutline, 
+import {
   alertCircleOutline,
-  locationOutline,
-  timeOutline,
-  pricetagOutline,
   chatbubbleOutline,
+  checkmarkCircleOutline,
+  closeOutline,
+  copyOutline,
+  giftOutline,
+  locationOutline,
   personOutline,
+  pricetagOutline,
+  shareSocialOutline,
+  sparklesOutline,
+  ticketOutline,
+  timeOutline,
   walletOutline
 } from 'ionicons/icons';
-import { HomeService } from '../features/home/services/home.service';
-import { HomeHeaderComponent } from '../features/home/components/home-header/home-header.component';
-import { HeroCarouselComponent } from '../features/home/components/hero-carousel/hero-carousel.component';
-import { CategoryChipsComponent } from '../features/home/components/category-chips/category-chips.component';
-import { OfferCardComponent } from '../features/home/components/offer-card/offer-card.component';
-import { BusinessCardComponent } from '../features/home/components/business-card/business-card.component';
-import { QuickActionsComponent } from '../features/home/components/quick-actions/quick-actions.component';
-import { BottomNavComponent, NavTab } from '../features/home/components/bottom-nav/bottom-nav.component';
-import { SearchViewComponent } from '../features/home/components/search-view/search-view.component';
-import { ConversationListComponent } from '../features/chat/components/conversation-list/conversation-list.component';
 import { ChatRoomComponent } from '../features/chat/components/chat-room/chat-room.component';
-import { WalletViewComponent } from '../features/wallet/components/wallet-view/wallet-view.component';
-import { ProfileViewComponent } from '../features/profile/components/profile-view/profile-view.component';
+import { ConversationListComponent } from '../features/chat/components/conversation-list/conversation-list.component';
 import { ChatService } from '../features/chat/services/chat.service';
-import { NotificationService } from '../features/notifications/services/notification.service';
+import { BottomNavComponent, NavTab } from '../features/home/components/bottom-nav/bottom-nav.component';
+import { BusinessCardComponent } from '../features/home/components/business-card/business-card.component';
+import { CategoryChipsComponent } from '../features/home/components/category-chips/category-chips.component';
+import { HeroCarouselComponent } from '../features/home/components/hero-carousel/hero-carousel.component';
+import { HomeHeaderComponent } from '../features/home/components/home-header/home-header.component';
+import { OfferCardComponent } from '../features/home/components/offer-card/offer-card.component';
+import { QuickActionsComponent } from '../features/home/components/quick-actions/quick-actions.component';
+import { SearchViewComponent } from '../features/home/components/search-view/search-view.component';
+import { BusinessDTO, OfferDTO } from '../features/home/models/home.model';
+import { HomeService } from '../features/home/services/home.service';
 import { NotificationsPageComponent } from '../features/notifications/components/notifications-page/notifications-page.component';
-import { OfferDTO, BusinessDTO, VoucherDTO } from '../features/home/models/home.model';
+import { NotificationService } from '../features/notifications/services/notification.service';
+import { ProfileViewComponent } from '../features/profile/components/profile-view/profile-view.component';
+import { WalletViewComponent } from '../features/wallet/components/wallet-view/wallet-view.component';
 
 @Component({
   selector: 'app-home',

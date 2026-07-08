@@ -1,5 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { delay, Observable, of, map } from 'rxjs';
+import { computed, Injectable, signal } from '@angular/core';
+import { delay, Observable, of } from 'rxjs';
 import { NotificationDTO, NotificationType } from '../models/notification.model';
 
 @Injectable({

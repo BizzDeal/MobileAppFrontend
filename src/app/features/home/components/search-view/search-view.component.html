@@ -1,0 +1,120 @@
+<div class="search-page-container">
+  <!-- Search Input Area -->
+  <div class="search-header">
+    <h2 class="search-title">Find Deals & Businesses</h2>
+    <ion-searchbar 
+      mode="ios"
+      placeholder="Search for store names, offers, keywords..." 
+      [value]="searchQuery()"
+      [debounce]="200"
+      (ionInput)="onSearchInput($event)"
+      (ionClear)="onSearchClear()"
+      class="custom-search-page-bar">
+    </ion-searchbar>
+  </div>
+
+  <!-- Tab Switcher -->
+  <div class="tab-switcher">
+    <button 
+      type="button" 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'businesses'" 
+      (click)="setTab('businesses')">
+      <ion-icon name="business-outline" class="tab-icon" />
+      <span class="tab-label">Businesses</span>
+      <span class="count-badge">{{ filteredBusinesses().length }}</span>
+    </button>
+    <button 
+      type="button" 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'offers'" 
+      (click)="setTab('offers')">
+      <ion-icon name="pricetag-outline" class="tab-icon" />
+      <span class="tab-label">Offers & Deals</span>
+      <span class="count-badge">{{ filteredOffers().length }}</span>
+    </button>
+  </div>
+
+  <!-- Content Results -->
+  <div class="results-container">
+    @if (activeTab() === 'businesses') {
+      <!-- BUSINESSES LIST -->
+      @if (filteredBusinesses().length > 0) {
+        <div class="results-list">
+          @for (biz of filteredBusinesses(); track biz.id) {
+            <div class="result-card business-item" (click)="businessClick.emit(biz)">
+              <div class="card-thumbnail" [style.background-image]="'url(' + biz.logoUrl + ')'"></div>
+              
+              <div class="card-info">
+                <div class="card-header">
+                  <h3 class="card-name">{{ biz.name }}</h3>
+                  @if (biz.is_featured) {
+                    <span class="featured-badge">
+                      <ion-icon name="star" /> Featured
+                    </span>
+                  }
+                </div>
+                
+                <span class="card-category-tag">{{ biz.categoryName }}</span>
+                <p class="card-description">{{ biz.description }}</p>
+                
+                <div class="card-meta">
+                  @if (biz.website) {
+                    <span class="meta-item"><ion-icon name="globe-outline" /> {{ biz.website }}</span>
+                  }
+                  @if (biz.gst_number) {
+                    <span class="meta-item"><ion-icon name="receipt-outline" /> GST Registered</span>
+                  }
+                </div>
+              </div>
+              
+              <ion-icon name="chevron-forward-outline" class="action-chevron" />
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <ion-icon name="search-outline" class="empty-icon" />
+          <h3>No Businesses Found</h3>
+          <p>We couldn't find any businesses matching "{{ searchQuery() }}". Try typing another keyword!</p>
+        </div>
+      }
+    } @else {
+      <!-- OFFERS LIST -->
+      @if (filteredOffers().length > 0) {
+        <div class="results-list">
+          @for (offer of filteredOffers(); track offer.id) {
+            <div class="result-card offer-item" (click)="offerClick.emit(offer)">
+              <div class="card-thumbnail" [style.background-image]="'url(' + offer.imageUrl + ')'">
+                <span class="discount-banner">
+                  {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '% OFF' : '₹' + offer.discount_value + ' OFF' }}
+                </span>
+              </div>
+              
+              <div class="card-info">
+                <div class="card-header">
+                  <h3 class="card-name">{{ offer.title }}</h3>
+                </div>
+                
+                <span class="offer-biz-name"><ion-icon name="business-outline" /> {{ offer.businessName }}</span>
+                <p class="card-description">{{ offer.description }}</p>
+                
+                <div class="card-meta">
+                  <span class="meta-item"><ion-icon name="time-outline" /> Expires: {{ offer.end_date | date:'mediumDate' }}</span>
+                </div>
+              </div>
+              
+              <ion-icon name="chevron-forward-outline" class="action-chevron" />
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <ion-icon name="search-outline" class="empty-icon" />
+          <h3>No Offers Found</h3>
+          <p>We couldn't find any active deals or offers matching "{{ searchQuery() }}". Try another keyword!</p>
+        </div>
+      }
+    }
+  </div>
+</div>

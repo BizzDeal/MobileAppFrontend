@@ -1,0 +1,60 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-title>Start New Chat</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close-outline" slot="icon-only" />
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="start-chat-content">
+  <!-- Search Bar -->
+  <div class="search-wrapper">
+    <ion-searchbar 
+      placeholder="Search businesses or contacts..." 
+      [value]="searchQuery()"
+      (ionInput)="onSearchChange($event)"
+      mode="ios"
+      class="custom-searchbar">
+    </ion-searchbar>
+  </div>
+
+  <!-- Contacts List -->
+  @if (filteredContacts().length > 0) {
+    <ion-list lines="inset" class="contacts-list">
+      @for (c of filteredContacts(); track c.id) {
+        <ion-item button (click)="onSelect(c)" class="contact-item">
+          <div class="avatar-wrapper" slot="start">
+            @if (c.profile_pic_url) {
+              <img [src]="c.profile_pic_url" alt="{{ c.full_name }}" class="contact-avatar" />
+            } @else {
+              <div class="avatar-placeholder">
+                <ion-icon name="person-outline" />
+              </div>
+            }
+            @if (c.isOnline) {
+              <span class="status-dot online"></span>
+            }
+          </div>
+          
+          <ion-label>
+            <h3 class="contact-name">{{ c.full_name }}</h3>
+            <p class="contact-role">{{ c.role === 'MEMBER' ? 'Business Partner' : c.role }}</p>
+          </ion-label>
+
+          <ion-button fill="clear" slot="end" class="message-btn">
+            Chat
+          </ion-button>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <div class="empty-state">
+      <ion-icon name="search-outline" class="empty-icon" />
+      <h3>No Contacts Found</h3>
+      <p>Try searching for a different business name or phone number.</p>
+    </div>
+  }
+</ion-content>

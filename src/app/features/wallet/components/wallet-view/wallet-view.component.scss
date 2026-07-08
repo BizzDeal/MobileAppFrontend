@@ -1,0 +1,491 @@
+.wallet-container {
+  padding: var(--bizzdeal-spacing-md);
+  background-color: var(--bizzdeal-bg-main);
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+// 1. Loading & Error States
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+  text-align: center;
+  padding: var(--bizzdeal-spacing-xl) var(--bizzdeal-spacing-lg);
+
+  p {
+    color: var(--bizzdeal-text-secondary);
+    font-size: 14px;
+    margin-top: var(--bizzdeal-spacing-sm);
+  }
+}
+
+.error-state {
+  .error-icon {
+    font-size: 48px;
+    color: var(--ion-color-danger);
+  }
+
+  h3 {
+    margin: var(--bizzdeal-spacing-sm) 0 var(--bizzdeal-spacing-xs);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+  }
+
+  .retry-btn {
+    margin-top: var(--bizzdeal-spacing-md);
+  }
+}
+
+// 2. Balance Card (Premium Gradient Glassmorphism)
+.balance-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--bizzdeal-radius-xl);
+  box-shadow: var(--bizzdeal-shadow-primary-glow);
+  margin-bottom: var(--bizzdeal-spacing-lg);
+  
+  .balance-card-inner {
+    position: relative;
+    z-index: 2;
+    background: var(--bizzdeal-gradient-primary-diagonal);
+    padding: var(--bizzdeal-spacing-lg);
+    color: var(--bizzdeal-text-on-primary);
+  }
+
+  .card-bg-glow {
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 250px;
+    height: 250px;
+    border-radius: var(--bizzdeal-radius-full);
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .balance-section {
+    margin-bottom: var(--bizzdeal-spacing-md);
+
+    .label {
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .amount {
+      font-size: 32px;
+      font-weight: 800;
+      margin: var(--bizzdeal-spacing-xs) 0 0 0;
+      letter-spacing: -0.5px;
+    }
+  }
+
+  .divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.15);
+    margin: var(--bizzdeal-spacing-md) 0;
+  }
+
+  .savings-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .savings-left {
+      display: flex;
+      align-items: center;
+      gap: var(--bizzdeal-spacing-sm);
+    }
+
+    .savings-icon {
+      font-size: 20px;
+      color: #FBBF24; // Amber yellow glow
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    .label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.7);
+      display: block;
+    }
+
+    .savings-amount {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: var(--bizzdeal-spacing-xs) var(--bizzdeal-spacing-sm);
+      border-radius: var(--bizzdeal-radius-lg);
+      backdrop-filter: blur(4px);
+    }
+  }
+}
+
+// 3. Section Header
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--bizzdeal-spacing-sm);
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--bizzdeal-text-primary);
+    margin: 0;
+  }
+
+  .tx-count {
+    font-size: 12px;
+    color: var(--bizzdeal-text-secondary);
+  }
+}
+
+// 4. Filter Chips
+.filter-chips {
+  display: flex;
+  gap: var(--bizzdeal-spacing-sm);
+  margin-bottom: var(--bizzdeal-spacing-md);
+  overflow-x: auto;
+  padding-bottom: var(--bizzdeal-spacing-xs);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; // Firefox
+
+  &::-webkit-scrollbar {
+    display: none; // Chrome/Safari
+  }
+
+  .filter-chip {
+    flex-shrink: 0;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: var(--bizzdeal-radius-full);
+    background-color: var(--bizzdeal-bg-surface-secondary);
+    color: var(--bizzdeal-text-secondary);
+    border: 1px solid var(--bizzdeal-border-color);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &.active {
+      background-color: var(--ion-color-primary);
+      color: var(--bizzdeal-text-on-primary);
+      border-color: var(--ion-color-primary);
+      box-shadow: 0 4px 10px rgba(30, 136, 229, 0.25);
+    }
+  }
+}
+
+// 5. Transactions List
+.tx-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bizzdeal-spacing-sm);
+  padding-bottom: var(--bizzdeal-spacing-xl);
+}
+
+.tx-item {
+  display: flex;
+  align-items: center;
+  gap: var(--bizzdeal-spacing-md);
+  padding: var(--bizzdeal-spacing-md);
+  background-color: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-md);
+  border: 1px solid var(--bizzdeal-border-color);
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:active {
+    background-color: var(--bizzdeal-bg-surface-secondary);
+    transform: scale(0.98);
+  }
+
+  .tx-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--bizzdeal-radius-full);
+    font-size: 18px;
+
+    &.credit {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--ion-color-success);
+    }
+
+    &.debit {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--ion-color-danger);
+    }
+
+    &.saving {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--ion-color-warning);
+    }
+  }
+
+  .tx-details {
+    flex: 1;
+    min-width: 0;
+
+    .tx-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--bizzdeal-text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .tx-meta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--bizzdeal-text-secondary);
+
+      .ref-tag {
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--ion-color-primary);
+      }
+
+      .bullet {
+        color: var(--bizzdeal-text-tertiary);
+      }
+    }
+  }
+
+  .tx-amount-section {
+    display: flex;
+    align-items: center;
+    gap: var(--bizzdeal-spacing-xs);
+
+    .tx-amount {
+      font-size: 14px;
+      font-weight: 700;
+
+      &.credit,
+      &.saving {
+        color: var(--ion-color-success);
+      }
+
+      &.debit {
+        color: var(--bizzdeal-text-primary);
+      }
+    }
+
+    .chevron {
+      font-size: 16px;
+      color: var(--bizzdeal-text-tertiary);
+    }
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bizzdeal-spacing-xl) var(--bizzdeal-spacing-lg);
+  background-color: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-md);
+  border: 1px dashed var(--bizzdeal-border-color);
+  text-align: center;
+
+  .empty-icon {
+    font-size: 40px;
+    color: var(--bizzdeal-text-tertiary);
+    margin-bottom: var(--bizzdeal-spacing-sm);
+  }
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+    margin: 0 0 var(--bizzdeal-spacing-xs) 0;
+  }
+
+  p {
+    font-size: 12px;
+    color: var(--bizzdeal-text-secondary);
+    margin: 0;
+  }
+}
+
+// 6. Transaction Details Drawer Modal Styling
+.details-modal {
+  --height: 480px;
+  --border-radius: var(--bizzdeal-radius-xl) var(--bizzdeal-radius-xl) 0 0;
+  align-items: flex-end;
+
+  &::part(content) {
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  ion-toolbar {
+    --background: var(--bizzdeal-bg-surface);
+    --border-color: var(--bizzdeal-border-color);
+    --color: var(--bizzdeal-text-primary);
+  }
+
+  .modal-content-wrapper {
+    background-color: var(--bizzdeal-bg-surface);
+    padding: var(--bizzdeal-spacing-lg);
+    height: calc(100% - 56px);
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  .receipt-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: var(--bizzdeal-spacing-lg);
+
+    .receipt-icon-ring {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      border-radius: var(--bizzdeal-radius-full);
+      font-size: 26px;
+      margin-bottom: var(--bizzdeal-spacing-sm);
+
+      &.credit {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--ion-color-success);
+      }
+
+      &.debit {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--ion-color-danger);
+      }
+
+      &.saving {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--ion-color-warning);
+      }
+    }
+
+    .receipt-type {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--bizzdeal-text-secondary);
+      margin-bottom: 2px;
+    }
+
+    .receipt-amount {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0 0 var(--bizzdeal-spacing-xs) 0;
+
+      &.credit,
+      &.saving {
+        color: var(--ion-color-success);
+      }
+
+      &.debit {
+        color: var(--bizzdeal-text-primary);
+      }
+    }
+
+    .receipt-title {
+      font-size: 13px;
+      color: var(--bizzdeal-text-secondary);
+      margin: 0;
+      max-width: 85%;
+    }
+  }
+
+  .receipt-body {
+    background-color: var(--bizzdeal-bg-surface-secondary);
+    border-radius: var(--bizzdeal-radius-md);
+    padding: var(--bizzdeal-spacing-md);
+    border: 1px solid var(--bizzdeal-border-color);
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: var(--bizzdeal-spacing-sm) 0;
+      border-bottom: 1px dashed var(--bizzdeal-border-color);
+      gap: var(--bizzdeal-spacing-md);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .detail-label {
+        font-size: 12px;
+        color: var(--bizzdeal-text-secondary);
+      }
+
+      .detail-value {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--bizzdeal-text-primary);
+        text-align: right;
+        word-break: break-all;
+
+        &.mono {
+          font-family: monospace;
+          font-size: 11px;
+          color: var(--bizzdeal-text-secondary);
+        }
+
+        &.status-success {
+          color: var(--ion-color-success);
+          background-color: rgba(16, 185, 129, 0.1);
+          padding: 2px 8px;
+          border-radius: var(--bizzdeal-radius-full);
+          font-size: 10px;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+}
+
+// 7. Mini Animations
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

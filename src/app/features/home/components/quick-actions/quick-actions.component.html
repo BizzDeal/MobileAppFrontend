@@ -1,0 +1,20 @@
+<section class="quick-actions-section">
+  <div class="actions-grid">
+    <!-- My Vouchers Action -->
+    <button type="button" class="action-card voucher-action" (click)="vouchersClick.emit()">
+      <div class="icon-circle voucher-icon-bg">
+        <ion-icon name="ticket-outline" />
+      </div>
+      <div class="action-text">
+        <div class="title-row">
+          <span class="action-title">My Vouchers</span>
+          @if (activeVouchersCount() > 0) {
+            <span class="count-badge">{{ activeVouchersCount() }} Active</span>
+          }
+        </div>
+        <span class="action-subtitle">Pull up codes at store</span>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="arrow-icon" />
+    </button>
+  </div>
+</section>

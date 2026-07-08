@@ -1,0 +1,120 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Notifications</ion-title>
+    <ion-buttons slot="end">
+      @if (unreadCount() > 0) {
+        <ion-button (click)="markAllAsRead()" color="primary" class="mark-all-btn">
+          <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+          Mark all read
+        </ion-button>
+      }
+      <ion-button (click)="closeModal()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light">
+  <div class="chips-container">
+    <button type="button" class="chip-btn" 
+            [class.active]="selectedFilter() === 'ALL'" 
+            (click)="selectedFilter.set('ALL')">
+      <ion-icon name="grid-outline"></ion-icon>
+      <span class="chip-label">All</span>
+    </button>
+    <button type="button" class="chip-btn" 
+            [class.active]="selectedFilter() === 'UNREAD'" 
+            (click)="selectedFilter.set('UNREAD')">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <span class="chip-label">Unread</span>
+    </button>
+    <button type="button" class="chip-btn" 
+            [class.active]="selectedFilter() === 'OFFER'" 
+            (click)="selectedFilter.set('OFFER')">
+      <ion-icon name="ticket-outline"></ion-icon>
+      <span class="chip-label">Offers</span>
+    </button>
+    <button type="button" class="chip-btn" 
+            [class.active]="selectedFilter() === 'WALLET'" 
+            (click)="selectedFilter.set('WALLET')">
+      <ion-icon name="wallet-outline"></ion-icon>
+      <span class="chip-label">Wallet</span>
+    </button>
+    <button type="button" class="chip-btn" 
+            [class.active]="selectedFilter() === 'CHAT'" 
+            (click)="selectedFilter.set('CHAT')">
+      <ion-icon name="chatbubble-outline"></ion-icon>
+      <span class="chip-label">Chats</span>
+    </button>
+  </div>
+
+  @if (filteredNotifications().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline" color="medium"></ion-icon>
+      <h3>No Notifications</h3>
+      <p>Nothing to show here!</p>
+    </div>
+  } @else {
+    <ion-list inset="true">
+      @for (notification of filteredNotifications(); track notification.id) {
+        <ion-item-sliding>
+          <ion-item [button]="true" (click)="openNotification(notification)" [ngClass]="{'unread-item': !notification.is_read}" lines="full" class="notification-item">
+            
+            <div class="icon-container" slot="start">
+              <ion-icon [name]="getIconForType(notification.type)" [color]="getColorForType(notification.type)"></ion-icon>
+              @if (!notification.is_read) {
+                <div class="unread-dot"></div>
+              }
+            </div>
+
+            <ion-label class="ion-text-wrap">
+              <div class="notification-header">
+                <h2>{{ notification.title }}</h2>
+                <span class="time-stamp">{{ notification.created_at | date:'short' }}</span>
+              </div>
+              <p>{{ notification.message }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="deleteNotification(notification.id)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+
+        </ion-item-sliding>
+      }
+    </ion-list>
+  }
+</ion-content>
+
+<!-- Notification Details Modal -->
+<ion-modal [isOpen]="!!selectedNotification()" (didDismiss)="selectedNotification.set(null)" class="notification-detail-modal">
+  <ng-template>
+    @if (selectedNotification(); as detail) {
+      <ion-header mode="ios">
+        <ion-toolbar>
+          <ion-title>Details</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="selectedNotification.set(null)">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="detail-icon-wrapper">
+          <ion-icon [name]="getIconForType(detail.type)" [color]="getColorForType(detail.type)"></ion-icon>
+        </div>
+        <h2 class="detail-title">{{ detail.title }}</h2>
+        <p class="detail-time">{{ detail.created_at | date:'medium' }}</p>
+        
+        <div class="detail-message-card">
+          <p>{{ detail.message }}</p>
+        </div>
+
+      </ion-content>
+    }
+  </ng-template>
+</ion-modal>

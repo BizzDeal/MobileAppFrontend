@@ -1,0 +1,34 @@
+<section class="categories-section">
+  <div class="section-header">
+    <h2 class="section-title">Explore Categories</h2>
+    <span class="filter-hint">Tap to filter</span>
+  </div>
+
+  <div class="chips-container">
+    <!-- All Chip -->
+    <button 
+      type="button"
+      class="chip-btn" 
+      [class.active]="selectedCategoryId() === 'ALL'"
+      (click)="categorySelect.emit('ALL')">
+      <div class="icon-wrapper all-icon">
+        <ion-icon name="grid-outline" />
+      </div>
+      <span class="chip-label">All Deals</span>
+    </button>
+
+    <!-- Dynamic Category Chips -->
+    @for (cat of categories(); track cat.id) {
+      <button 
+        type="button"
+        class="chip-btn" 
+        [class.active]="selectedCategoryId() === cat.id"
+        (click)="categorySelect.emit(cat.id)">
+        <div class="icon-wrapper" [style.background-color]="selectedCategoryId() === cat.id ? 'transparent' : getCategoryColor(cat.color, cat.slug) + '20'" [style.color]="selectedCategoryId() === cat.id ? '#fff' : getCategoryColor(cat.color, cat.slug)">
+          <ion-icon [name]="getIconName(cat.icon, cat.slug)" />
+        </div>
+        <span class="chip-label">{{ cat.name }}</span>
+      </button>
+    }
+  </div>
+</section>

@@ -1,0 +1,99 @@
+@if (activeConversation(); as conv) {
+  <div class="chat-room-container">
+    
+    <!-- 1. Header Toolbar -->
+    <ion-header mode="ios" class="chat-header">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <button type="button" class="back-btn" (click)="onBack()">
+            <ion-icon name="arrow-back-outline" />
+          </button>
+        </ion-buttons>
+        
+        <div class="header-partner-info">
+          <!-- Avatar -->
+          <div class="partner-avatar-wrapper">
+            @if (conv.partner.profile_pic_url) {
+              <img [src]="conv.partner.profile_pic_url" alt="{{ conv.partner.full_name }}" class="partner-avatar" />
+            } @else {
+              <div class="partner-avatar-placeholder">
+                <ion-icon name="person-outline" />
+              </div>
+            }
+            @if (isPartnerOnline()) {
+              <span class="presence-dot online"></span>
+            }
+          </div>
+
+          <!-- Name & presence text -->
+          <div class="name-status-block">
+            <h1 class="partner-name">{{ conv.partner.full_name }}</h1>
+            <span class="partner-status" [ngClass]="{ 'online': isPartnerOnline() }">
+              {{ isPartnerOnline() ? 'Online' : 'Offline' }}
+            </span>
+          </div>
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- 2. Scrollable Messages Area -->
+    <div class="messages-scroll-area" #scrollContainer>
+      @if (activeMessages().length > 0) {
+        <div class="messages-list">
+          @for (msg of activeMessages(); track msg.id; let idx = $index) {
+            
+            <!-- Date Divider -->
+            @if (shouldShowDateDivider(idx, activeMessages())) {
+              <div class="date-divider">
+                <span class="date-text">{{ getDateDividerText(msg.created_at.toString()) }}</span>
+              </div>
+            }
+
+            <!-- Message Bubble -->
+            <app-chat-bubble 
+              [message]="msg"
+              [isMe]="msg.sender_id === 'cust-101'"
+              (edit)="onEditMessage($event)"
+              (delete)="onDeleteMessage($event)" />
+          }
+
+          <!-- Simulated Typing Indicator Bubble -->
+          @if (isPartnerTyping()) {
+            <div class="typing-bubble-row">
+              <div class="typing-bubble">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+              </div>
+              <span class="typing-label">{{ conv.partner.full_name }} is typing...</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- Starter Empty State -->
+        <div class="chat-starter-state">
+          <div class="avatar-large">
+            @if (conv.partner.profile_pic_url) {
+              <img [src]="conv.partner.profile_pic_url" alt="{{ conv.partner.full_name }}" />
+            } @else {
+              <ion-icon name="person-outline" />
+            }
+          </div>
+          <h2>{{ conv.partner.full_name }}</h2>
+          <p class="role-desc">{{ conv.partner.role === 'MEMBER' ? 'Business Partner' : conv.partner.role }}</p>
+          <div class="info-badge">
+            <ion-icon name="time-outline" />
+            <span>This is the start of your message history.</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- 3. Bottom Textbox/Input -->
+    <app-chat-input 
+      [editModeMessage]="editingMessage()"
+      (send)="onSendMessage($event)"
+      (cancelEdit)="onCancelEdit()" />
+
+  </div>
+}

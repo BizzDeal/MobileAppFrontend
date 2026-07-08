@@ -1,0 +1,26 @@
+<div class="business-card" (click)="businessClick.emit(business())">
+  <div class="card-image-box" [style.background-image]="'url(' + (business().bannerUrl || 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&auto=format&fit=crop&q=80') + ')'">
+    <div class="image-overlay"></div>
+    <span class="category-badge">{{ business().categoryName || 'Partner' }}</span>
+  </div>
+
+  <div class="card-content">
+    <div class="biz-header">
+      <img [src]="business().logoUrl || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80'" alt="logo" class="biz-logo" />
+      <div class="title-row">
+        <h3 class="biz-name">{{ business().name }}</h3>
+      </div>
+    </div>
+
+    <p class="biz-desc">{{ business().description }}</p>
+
+    <div class="card-footer">
+      <span class="biz-location">
+        🌐 {{ business().website || 'Verified Partner' }}
+      </span>
+      <span class="explore-link">
+        View Store <ion-icon name="arrow-forward-outline" />
+      </span>
+    </div>
+  </div>
+</div>

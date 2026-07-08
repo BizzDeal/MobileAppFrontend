@@ -1,0 +1,41 @@
+<header class="home-header">
+  <div class="top-row">
+    <!-- Personalized Greeting -->
+    <div class="user-greeting">
+      <h1 class="greeting-title" [title]="customer().name">Hi, <span class="truncate-name">{{ getFirstName(customer().name) }}</span>! 👋</h1>
+    </div>
+
+    <!-- Quick Wallet Balance & Notification Bell -->
+    <div class="header-actions">
+      <!-- Wallet Balance Pill -->
+      <button class="wallet-pill bd-btn-primary" (click)="onWalletClick()" type="button" aria-label="View Wallet">
+        <ion-icon name="wallet-outline" class="wallet-icon" />
+        <div class="wallet-info">
+          <span class="wallet-label">Wallet</span>
+          <span class="wallet-amount">₹{{ (wallet().balance || 0) | number:'1.0-0' }}</span>
+        </div>
+      </button>
+
+      <!-- Notification Bell -->
+      <button class="notif-btn bd-btn-outline" (click)="onNotificationClick()" type="button" aria-label="Notifications">
+        <ion-icon name="notifications-outline" class="notif-icon" />
+        @if ((unreadCount() || 0) > 0) {
+          <span class="notif-badge">{{ unreadCount() }}</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Search Bar Row -->
+  <div class="search-row">
+    <ion-searchbar 
+      mode="ios"
+      placeholder="Search businesses, deals, vouchers..." 
+      [debounce]="300"
+      (ionInput)="onSearchInput($event)"
+      (search)="onSearchSubmit($event)"
+      (keyup.enter)="onSearchSubmit($event)"
+      class="custom-searchbar">
+    </ion-searchbar>
+  </div>
+</header>

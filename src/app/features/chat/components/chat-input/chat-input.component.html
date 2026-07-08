@@ -1,0 +1,71 @@
+<div class="chat-input-container">
+
+  <!-- Editing Banner -->
+  @if (editModeMessage(); as msg) {
+    <div class="edit-banner">
+      <div class="edit-info">
+        <ion-icon name="create-outline" class="edit-icon" />
+        <span class="edit-label">Editing Message:</span>
+        <span class="edit-preview">{{ msg.message }}</span>
+      </div>
+      <button type="button" class="cancel-edit-btn" (click)="onCancelEditClick()">
+        <ion-icon name="close-circle-outline" />
+      </button>
+    </div>
+  }
+
+  <!-- Recording Banner -->
+  @if (isRecording()) {
+    <div class="recording-banner">
+      <div class="rec-status">
+        <ion-icon name="ellipse" class="rec-dot-icon" />
+        <span class="rec-text">Recording simulated audio...</span>
+        <span class="rec-time">0:{{ recordingSeconds() | number:'2.0-0' }}</span>
+      </div>
+      <div class="rec-actions">
+        <button type="button" class="rec-btn cancel" (click)="cancelRecording()">Cancel</button>
+        <button type="button" class="rec-btn send-rec" (click)="stopRecordingAndSend()">Send</button>
+      </div>
+    </div>
+  } @else {
+    
+    <!-- Normal Input Row -->
+    <div class="input-row">
+      <!-- Attachment Toggle -->
+      <button type="button" class="input-action-btn attach-btn" (click)="openAttachments()">
+        <ion-icon name="attach-outline" />
+      </button>
+
+      <!-- Input Textbox -->
+      <div class="input-box-wrapper">
+        <ion-textarea
+          [(ngModel)]="inputText"
+          placeholder="Type a message..."
+          rows="1"
+          autoGrow="true"
+          class="chat-textarea"
+          mode="ios">
+        </ion-textarea>
+      </div>
+
+      <!-- Send or Record Button -->
+      @if (inputText().trim()) {
+        <button type="button" class="input-action-btn send-btn active" (click)="onSendClick()">
+          <ion-icon name="send-outline" />
+        </button>
+      } @else {
+        <button type="button" class="input-action-btn mic-btn" (click)="toggleRecording()">
+          <ion-icon name="mic-outline" />
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<!-- Attachment Options Sheet -->
+<ion-action-sheet
+  [isOpen]="isActionSheetOpen()"
+  header="Attach Simulated Media"
+  [buttons]="actionSheetButtons"
+  (didDismiss)="closeActionSheet()">
+</ion-action-sheet>

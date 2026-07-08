@@ -1,0 +1,130 @@
+.home-header {
+  background: var(--bizzdeal-bg-surface);
+  padding: var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-sm);
+  border-bottom: 1px solid var(--bizzdeal-border-color);
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bizzdeal-spacing-sm);
+  margin-bottom: var(--bizzdeal-spacing-md);
+}
+
+.user-greeting {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  margin-right: var(--bizzdeal-spacing-sm);
+}
+
+.greeting-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--bizzdeal-text-primary);
+  margin: 0;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.truncate-name {
+  display: inline-block;
+  max-width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--bizzdeal-spacing-sm);
+}
+
+.wallet-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--bizzdeal-spacing-sm);
+  padding: 6px 14px;
+  border-radius: var(--bizzdeal-radius-full);
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--bizzdeal-shadow-primary);
+}
+
+.wallet-icon {
+  font-size: 1.3rem;
+}
+
+.wallet-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+
+.wallet-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
+.wallet-amount {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.notif-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--bizzdeal-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.notif-icon {
+  font-size: 1.4rem;
+  color: var(--bizzdeal-text-primary);
+}
+
+.notif-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--ion-color-danger);
+  color: var(--bizzdeal-text-on-primary);
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: var(--bizzdeal-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--bizzdeal-bg-surface);
+}
+
+.search-row {
+  width: 100%;
+}
+
+.custom-searchbar {
+  padding: 0;
+  --background: var(--bizzdeal-bg-surface-tertiary);
+  --border-radius: var(--bizzdeal-radius-md);
+  --box-shadow: none;
+  --placeholder-color: var(--bizzdeal-text-placeholder);
+  --icon-color: var(--bizzdeal-text-secondary);
+  --color: var(--bizzdeal-text-primary);
+}

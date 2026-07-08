@@ -1,0 +1,93 @@
+.quick-actions-section {
+  padding: var(--bizzdeal-spacing-sm) var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md);
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bizzdeal-spacing-sm);
+}
+
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: var(--bizzdeal-spacing-sm);
+  padding: var(--bizzdeal-spacing-md);
+  border-radius: var(--bizzdeal-radius-xl);
+  background: var(--bizzdeal-bg-surface);
+  border: 1px solid var(--bizzdeal-border-color);
+  box-shadow: var(--bizzdeal-shadow-md);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  width: 100%;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:hover {
+    box-shadow: var(--bizzdeal-shadow-lg);
+    border-color: var(--ion-color-primary);
+  }
+}
+
+.icon-circle {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--bizzdeal-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+
+  &.voucher-icon-bg {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    color: #F57C00;
+  }
+}
+
+.action-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.action-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--bizzdeal-text-primary);
+  line-height: 1.2;
+}
+
+.count-badge {
+  background: var(--ion-color-danger);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--bizzdeal-radius-full);
+}
+
+.action-subtitle {
+  font-size: 0.75rem;
+  color: var(--bizzdeal-text-secondary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arrow-icon {
+  font-size: 1.2rem;
+  color: var(--bizzdeal-text-tertiary);
+}

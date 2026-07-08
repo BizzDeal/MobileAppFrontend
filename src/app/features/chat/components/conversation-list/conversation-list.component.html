@@ -1,0 +1,109 @@
+<div class="conv-list-container">
+  <!-- Header -->
+  <ion-header mode="ios" class="chat-list-header">
+    <ion-toolbar>
+      <ion-title>Chats</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Search bar -->
+  <div class="search-section">
+    <ion-searchbar 
+      placeholder="Search chats..." 
+      [value]="searchFilter()"
+      (ionInput)="onSearchChange($event)"
+      mode="ios"
+      class="custom-searchbar">
+    </ion-searchbar>
+  </div>
+
+  <!-- Conversations list -->
+  @if (filteredConversations().length > 0) {
+    <ion-list lines="inset" class="conversations-list">
+      @for (c of filteredConversations(); track c.id) {
+        <ion-item button (click)="onSelectConversation(c)" class="conversation-item">
+          <!-- Avatar slot -->
+          <div class="avatar-container" slot="start">
+            @if (c.partner.profile_pic_url) {
+              <img [src]="c.partner.profile_pic_url" alt="{{ c.partner.full_name }}" class="partner-avatar" />
+            } @else {
+              <div class="avatar-fallback">
+                <ion-icon name="person-outline" />
+              </div>
+            }
+            @if (isOnline(c.partner.id)) {
+              <span class="online-status-indicator online"></span>
+            }
+          </div>
+
+          <!-- Labels -->
+          <ion-label class="item-label">
+            <div class="label-header">
+              <h2 class="partner-name">{{ c.partner.full_name }}</h2>
+              <span class="last-time">
+                @if (getLastMessage(c.id); as lastMsg) {
+                  {{ lastMsg.created_at | date:'shortTime' }}
+                } @else {
+                  {{ c.last_message_at | date:'shortTime' }}
+                }
+              </span>
+            </div>
+
+            <div class="label-body">
+              <div class="msg-snippet-wrapper">
+                @if (getLastMessage(c.id); as lastMsg) {
+                  @if (lastMsg.is_deleted) {
+                    <span class="snippet-text deleted"><ion-icon name="trash-outline" /> deleted</span>
+                  } @else {
+                    @if (lastMsg.message_type === 'TEXT') {
+                      <span class="snippet-text">{{ lastMsg.message }}</span>
+                    }
+                    @if (lastMsg.message_type === 'IMAGE') {
+                      <span class="snippet-text media-snippet"><ion-icon name="image-outline" /> Photo</span>
+                    }
+                    @if (lastMsg.message_type === 'FILE') {
+                      <span class="snippet-text media-snippet"><ion-icon name="document-text-outline" /> File</span>
+                    }
+                    @if (lastMsg.message_type === 'VOICE') {
+                      <span class="snippet-text media-snippet"><ion-icon name="mic-outline" /> Voice Note</span>
+                    }
+                  }
+                } @else {
+                  <span class="snippet-text placeholder">No messages yet</span>
+                }
+              </div>
+
+              <!-- Unread badge -->
+              @if (c.unread_count > 0) {
+                <ion-badge color="primary" class="unread-badge">{{ c.unread_count }}</ion-badge>
+              }
+            </div>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <!-- Empty state -->
+    <div class="empty-conversations-state">
+      <ion-icon name="chatbubble-ellipses-outline" class="empty-icon" />
+      <h3>No Conversations Yet</h3>
+      <p>Tap the + button to search contacts and start a conversation!</p>
+    </div>
+  }
+
+  <!-- Floating Action Button for starting a new chat -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="custom-fab">
+    <ion-fab-button (click)="openNewChat()">
+      <ion-icon name="add-outline" />
+    </ion-fab-button>
+  </ion-fab>
+</div>
+
+<!-- Start Chat modal directory -->
+<ion-modal [isOpen]="isNewChatOpen()" (didDismiss)="closeNewChat()" class="start-chat-modal-view">
+  <ng-template>
+    <app-start-chat-modal 
+      [dismiss]="closeNewChat.bind(this)"
+      [selectPartner]="onSelectContact.bind(this)" />
+  </ng-template>
+</ion-modal>

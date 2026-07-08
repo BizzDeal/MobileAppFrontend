@@ -1,0 +1,187 @@
+<div class="profile-container">
+  @if (loading() && !profile()) {
+    <div class="loading-state">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Loading profile details...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
+      <h3>Could not load profile</h3>
+      <p>{{ error() }}</p>
+      <button class="retry-btn bd-btn-primary" (click)="retryLoad()">Try Again</button>
+    </div>
+  } @else {
+    <!-- 1. Profile Picture Card -->
+    <div class="avatar-card bd-card">
+      <div class="avatar-wrapper">
+        <img 
+          [src]="selectedPhotoUrl() || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'" 
+          alt="Avatar Preview" 
+          class="profile-avatar" />
+        
+        <label for="profileFile" class="edit-badge">
+          <ion-icon name="camera-outline"></ion-icon>
+          <input 
+            type="file" 
+            id="profileFile" 
+            accept="image/*" 
+            (change)="onPhotoSelected($event)" 
+            style="display: none;" />
+        </label>
+      </div>
+      <h2 class="profile-name">{{ profile()?.full_name }}</h2>
+      <span class="profile-role">{{ profile()?.role }}</span>
+    </div>
+
+    <!-- 2. Profile Form -->
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+      <div class="form-section bd-card">
+        <h3 class="section-title">Personal Information</h3>
+
+        <!-- Full Name -->
+        <div class="form-group">
+          <label class="form-label" for="full_name">
+            Full Name <span class="required-star">*</span>
+          </label>
+          <div class="input-wrapper">
+            <ion-icon name="person-outline" class="input-icon"></ion-icon>
+            <input 
+              type="text" 
+              id="full_name" 
+              formControlName="full_name" 
+              class="form-input" 
+              placeholder="Enter your full name" />
+          </div>
+          @if (profileForm.get('full_name')?.touched && profileForm.get('full_name')?.invalid) {
+            <span class="error-message">Full name must be at least 2 characters</span>
+          }
+        </div>
+
+        <!-- Phone Number -->
+        <div class="form-group">
+          <label class="form-label" for="phone">
+            Phone Number <span class="required-star">*</span>
+          </label>
+          <div class="input-wrapper">
+            <ion-icon name="call-outline" class="input-icon"></ion-icon>
+            <input 
+              type="tel" 
+              id="phone" 
+              formControlName="phone" 
+              class="form-input" 
+              placeholder="Enter phone number" />
+          </div>
+          @if (profileForm.get('phone')?.touched && profileForm.get('phone')?.invalid) {
+            <span class="error-message">Valid phone number of at least 10 digits is required</span>
+          }
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="form-group">
+          <label class="form-label" for="whatsapp">WhatsApp Number</label>
+          <div class="input-wrapper">
+            <ion-icon name="logo-whatsapp" class="input-icon"></ion-icon>
+            <input 
+              type="tel" 
+              id="whatsapp" 
+              formControlName="whatsapp" 
+              class="form-input" 
+              placeholder="Enter WhatsApp number (Optional)" />
+          </div>
+        </div>
+
+        <!-- Email Address -->
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <div class="input-wrapper">
+            <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+            <input 
+              type="email" 
+              id="email" 
+              formControlName="email" 
+              class="form-input" 
+              placeholder="Enter email address (Optional)" />
+          </div>
+          @if (profileForm.get('email')?.touched && profileForm.get('email')?.invalid) {
+            <span class="error-message">Please enter a valid email address</span>
+          }
+        </div>
+
+        <!-- Physical Address -->
+        <div class="form-group">
+          <label class="form-label" for="address">Physical Address</label>
+          <div class="input-wrapper textarea-wrapper">
+            <ion-icon name="location-outline" class="input-icon textarea-icon"></ion-icon>
+            <textarea 
+              id="address" 
+              formControlName="address" 
+              class="form-input form-textarea" 
+              rows="3" 
+              placeholder="Enter physical address (Optional)"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Account Settings Section -->
+      <div class="form-section bd-card">
+        <h3 class="section-title">Account Details</h3>
+        
+        <div class="meta-row">
+          <span class="meta-label">Role</span>
+          <span class="meta-badge role-badge">{{ profile()?.role }}</span>
+        </div>
+        
+        <div class="meta-row">
+          <span class="meta-label">Status</span>
+          <span class="meta-badge status-badge" [ngClass]="profile()?.status?.toLowerCase()">
+            {{ profile()?.status }}
+          </span>
+        </div>
+
+        <div class="meta-row">
+          <span class="meta-label">Member Since</span>
+          <span class="meta-value">{{ profile()?.created_at | date:'mediumDate' }}</span>
+        </div>
+
+        <div class="meta-row">
+          <span class="meta-label">Last Updated</span>
+          <span class="meta-value">{{ profile()?.updated_at | date:'short' }}</span>
+        </div>
+      </div>
+
+      <!-- 4. Action Buttons -->
+      <div class="action-buttons">
+        <button 
+          type="submit" 
+          class="bd-btn-primary save-btn" 
+          [disabled]="updating() || profileForm.invalid">
+          @if (updating()) {
+            <ion-spinner name="crescent" size="small" class="btn-spinner"></ion-spinner>
+            Saving Changes...
+          } @else {
+            Save Profile
+          }
+        </button>
+
+        <button 
+          type="button" 
+          class="logout-btn" 
+          (click)="onLogout()">
+          <ion-icon name="log-out-outline" class="btn-icon"></ion-icon>
+          Logout Account
+        </button>
+      </div>
+    </form>
+  }
+</div>
+
+<!-- Toast Alerts -->
+<ion-toast 
+  [isOpen]="!!toastMessage()" 
+  [message]="toastMessage() || ''" 
+  [duration]="2500" 
+  (didDismiss)="toastMessage.set(null)"
+  position="bottom"
+  class="custom-toast">
+</ion-toast>

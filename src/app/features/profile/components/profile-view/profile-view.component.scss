@@ -1,0 +1,353 @@
+.profile-container {
+  padding: var(--bizzdeal-spacing-md);
+  background-color: var(--bizzdeal-bg-main);
+  min-height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bizzdeal-spacing-md);
+}
+
+// 1. Loading & Error States
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+  text-align: center;
+  padding: var(--bizzdeal-spacing-xl) var(--bizzdeal-spacing-lg);
+
+  p {
+    color: var(--bizzdeal-text-secondary);
+    font-size: 14px;
+    margin-top: var(--bizzdeal-spacing-sm);
+  }
+}
+
+.error-state {
+  .error-icon {
+    font-size: 48px;
+    color: var(--ion-color-danger);
+  }
+
+  h3 {
+    margin: var(--bizzdeal-spacing-sm) 0 var(--bizzdeal-spacing-xs);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+  }
+
+  .retry-btn {
+    margin-top: var(--bizzdeal-spacing-md);
+  }
+}
+
+// 2. Avatar Card
+.avatar-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--bizzdeal-spacing-lg);
+  background-color: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-xl);
+  border: 1px solid var(--bizzdeal-border-color);
+  box-shadow: var(--bizzdeal-shadow-sm);
+  text-align: center;
+
+  .avatar-wrapper {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin-bottom: var(--bizzdeal-spacing-md);
+
+    .profile-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--bizzdeal-radius-full);
+      object-fit: cover;
+      border: 3px solid var(--bizzdeal-bg-surface-secondary);
+      box-shadow: var(--bizzdeal-shadow-md);
+    }
+
+    .edit-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--bizzdeal-radius-full);
+      background: var(--bizzdeal-gradient-primary-diagonal);
+      color: var(--bizzdeal-text-on-primary);
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(30, 136, 229, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:active {
+        transform: scale(0.9);
+      }
+    }
+  }
+
+  .profile-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--bizzdeal-text-primary);
+    margin: 0;
+  }
+
+  .profile-role {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    background-color: rgba(30, 136, 229, 0.1);
+    padding: 2px 10px;
+    border-radius: var(--bizzdeal-radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 6px;
+  }
+}
+
+// 3. Form Sections
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bizzdeal-spacing-md);
+}
+
+.form-section {
+  padding: var(--bizzdeal-spacing-lg);
+  background-color: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-xl);
+  border: 1px solid var(--bizzdeal-border-color);
+  box-shadow: var(--bizzdeal-shadow-sm);
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--bizzdeal-text-secondary);
+    margin: 0 0 var(--bizzdeal-spacing-lg) 0;
+    border-left: 3px solid var(--ion-color-primary);
+    padding-left: var(--bizzdeal-spacing-sm);
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--bizzdeal-spacing-md);
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+    margin-bottom: var(--bizzdeal-spacing-xs);
+
+    .required-star {
+      color: var(--ion-color-danger);
+      font-weight: bold;
+    }
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      font-size: 18px;
+      color: var(--bizzdeal-text-tertiary);
+      pointer-events: none;
+      transition: color 0.2s ease;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 12px 0 40px;
+      border: 1px solid var(--bizzdeal-border-color);
+      border-radius: var(--bizzdeal-radius-md);
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--bizzdeal-text-primary);
+      background-color: var(--bizzdeal-bg-surface-secondary);
+      outline: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-sizing: border-box;
+
+      &::placeholder {
+        color: var(--bizzdeal-text-placeholder);
+      }
+
+      &:focus {
+        border-color: var(--ion-color-primary);
+        background-color: var(--bizzdeal-bg-surface);
+        box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+
+        & + .input-icon {
+          color: var(--ion-color-primary);
+        }
+      }
+    }
+
+    &.textarea-wrapper {
+      align-items: flex-start;
+
+      .textarea-icon {
+        top: 14px;
+      }
+
+      .form-textarea {
+        height: auto;
+        padding-top: 12px;
+        resize: none;
+      }
+    }
+  }
+
+  .error-message {
+    font-size: 11px;
+    color: var(--ion-color-danger);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+}
+
+// 4. Read-Only Account Details
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bizzdeal-spacing-sm) 0;
+  border-bottom: 1px solid var(--bizzdeal-bg-surface-secondary);
+  font-size: 13px;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .meta-label {
+    color: var(--bizzdeal-text-secondary);
+    font-weight: 500;
+  }
+
+  .meta-value {
+    color: var(--bizzdeal-text-primary);
+    font-weight: 600;
+  }
+
+  .meta-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--bizzdeal-radius-full);
+    text-transform: uppercase;
+
+    &.role-badge {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--ion-color-tertiary);
+    }
+
+    &.status-badge {
+      &.active {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--ion-color-success);
+      }
+      &.pending {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--ion-color-warning);
+      }
+      &.suspended {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--ion-color-danger);
+      }
+    }
+  }
+}
+
+// 5. Actions Panel
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bizzdeal-spacing-sm);
+  padding: 0 0 var(--bizzdeal-spacing-xl) 0;
+
+  .save-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 48px;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: var(--bizzdeal-radius-lg);
+    background: var(--bizzdeal-gradient-primary-diagonal);
+    color: var(--bizzdeal-text-on-primary);
+    box-shadow: var(--bizzdeal-shadow-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.98);
+      box-shadow: none;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-spinner {
+      margin-right: var(--bizzdeal-spacing-sm);
+      --color: var(--bizzdeal-text-on-primary);
+    }
+  }
+
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--bizzdeal-spacing-sm);
+    width: 100%;
+    height: 48px;
+    border: 1px solid var(--bizzdeal-border-color);
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--bizzdeal-radius-lg);
+    background-color: var(--bizzdeal-bg-surface);
+    color: var(--bizzdeal-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:active {
+      background-color: var(--bizzdeal-bg-surface-secondary);
+      color: var(--ion-color-danger);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-icon {
+      font-size: 18px;
+    }
+  }
+}

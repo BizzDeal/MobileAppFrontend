@@ -1,20 +1,278 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="home-content">
+  <!-- Pull to Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)" mode="ios">
+    <ion-refresher-content pullingText="Pull to refresh deals..." refreshingText="Updating deals & wallet...">
+    </ion-refresher-content>
+  </ion-refresher>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  @if (loading() && !homeFeed()) {
+    <!-- Loading State -->
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary" />
+      <p class="loading-text">Discovering mega deals & savings around you...</p>
+    </div>
+  } @else if (error() && !homeFeed()) {
+    <!-- Error State -->
+    <div class="error-container">
+      <ion-icon name="alert-circle-outline" class="error-icon" />
+      <h3 class="error-title">Oops! Couldn't load deals</h3>
+      <p class="error-desc">{{ error() }}</p>
+      <button type="button" class="retry-btn bd-btn-primary" (click)="retryRefresh()">
+        Try Again
+      </button>
+    </div>
+  } @else if (homeFeed(); as feed) {
+    <!-- Main Home Screen Layout -->
+    <div class="home-layout">
+      @if (activeNavTab() === 'home') {
+        <!-- 1. Header / Top Bar -->
+        <app-home-header 
+          [customer]="feed.customer"
+          [wallet]="feed.wallet"
+          [unreadCount]="unreadNotificationsCount()"
+          (walletClick)="onWalletClick()"
+          (notificationClick)="onNotificationClick()"
+          (searchChange)="onSearchChange($event)"
+          (searchSubmit)="onSearchSubmit($event)" />
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+        <!-- 2. Hero Carousel / Banners -->
+        <app-hero-carousel 
+          [featuredBusinesses]="feed.featuredBusinesses"
+          [megaDeals]="feed.megaDeals"
+          (dealClick)="onDealClick($event)"
+          (businessClick)="onBusinessClick($event)" />
+
+        <!-- 3. Quick Categories (Chips/Grid) -->
+        <app-category-chips 
+          [categories]="feed.categories"
+          [selectedCategoryId]="selectedCategory()"
+          (categorySelect)="onCategorySelect($event)" />
+
+        <!-- 4. Quick Access Actions (Floating / distinct row) -->
+        <app-quick-actions 
+          [activeVouchersCount]="feed.myActiveVouchers.length"
+          (vouchersClick)="openVouchersModal()" />
+
+        <!-- 5. Main Content Feeds (Horizontal Scrolling Sections) -->
+        
+        <!-- Trending Offers Section -->
+        <section class="feed-section">
+          <div class="section-header">
+            <div class="header-left">
+              <ion-icon name="sparkles-outline" class="section-icon spark" />
+              <h2 class="section-title">
+                {{ selectedCategory() === 'ALL' ? 'Trending Offers' : 'Filtered Offers' }}
+              </h2>
+            </div>
+            <span class="count-hint">{{ filteredTrendingBySearch().length }} deals</span>
+          </div>
+
+          @if (filteredTrendingBySearch().length > 0) {
+            <div class="horizontal-scroll-feed">
+              @for (offer of filteredTrendingBySearch(); track offer.id) {
+                <app-offer-card 
+                  [offer]="offer"
+                  (claimClick)="onClaimOffer($event)"
+                  (cardClick)="onDealClick($event)" />
+              }
+            </div>
+          } @else {
+            <div class="empty-feed">
+              <p>No trending offers found for this search or category.</p>
+            </div>
+          }
+        </section>
+
+        <!-- Recommended Businesses Section -->
+        <section class="feed-section mb-extra">
+          <div class="section-header">
+            <div class="header-left">
+              <h2 class="section-title">Recommended Businesses</h2>
+            </div>
+            <span class="count-hint">{{ filteredBizBySearch().length }} stores</span>
+          </div>
+
+          @if (filteredBizBySearch().length > 0) {
+            <div class="horizontal-scroll-feed">
+              @for (biz of filteredBizBySearch(); track biz.id) {
+                <app-business-card 
+                  [business]="biz"
+                  (businessClick)="onBusinessClick($event)" />
+              }
+            </div>
+          } @else {
+            <div class="empty-feed">
+              <p>No businesses found matching your criteria.</p>
+            </div>
+          }
+        </section>
+      } @else if (activeNavTab() === 'search') {
+        <!-- Search View Component -->
+        <app-search-view 
+          [(searchQuery)]="searchQuery"
+          (businessClick)="onBusinessClick($event)"
+          (offerClick)="onDealClick($event)" />
+      } @else if (activeNavTab() === 'chat') {
+        @if (selectedConversationId()) {
+          <app-chat-room (close)="onCloseChatRoom()" />
+        } @else {
+          <app-conversation-list (selectConversation)="onConversationSelect($event)" />
+        }
+      } @else if (activeNavTab() === 'wallet') {
+        <app-wallet-view />
+      } @else {
+        <app-profile-view />
+      }
+    </div>
+  }
+
+  <!-- 6. Bottom Navigation Bar -->
+  <app-bottom-nav 
+    [activeTab]="activeNavTab()"
+    (tabSelect)="onTabSelect($event)" />
 </ion-content>
+
+<!-- Toast Feedback -->
+<ion-toast 
+  [isOpen]="!!toastMessage()" 
+  [message]="toastMessage() || ''" 
+  [duration]="2500" 
+  (didDismiss)="toastMessage.set(null)"
+  position="bottom"
+  class="custom-toast">
+</ion-toast>
+
+<!-- My Vouchers Modal -->
+<ion-modal [isOpen]="isVouchersModalOpen()" (didDismiss)="closeVouchersModal()" class="vouchers-modal">
+  <ng-template>
+    <ion-header mode="ios">
+      <ion-toolbar>
+        <ion-title>My Active Vouchers</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeVouchersModal()">
+            <ion-icon name="close-outline" slot="icon-only" />
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="modal-content-pad">
+      @if (homeFeed()?.myActiveVouchers; as vouchers) {
+        @if (vouchers.length > 0) {
+          <div class="vouchers-list">
+            @for (v of vouchers; track v.id) {
+              <div class="voucher-card bd-card">
+                <div class="v-header">
+                  <span class="v-biz">{{ v.businessName }}</span>
+                  <span class="v-status">{{ v.status }}</span>
+                </div>
+                <h4 class="v-title">{{ v.offerTitle }}</h4>
+                <div class="code-box" (click)="copyVoucherCode(v.voucher_code)">
+                  <span class="code-text">{{ v.voucher_code }}</span>
+                  <ion-icon name="copy-outline" class="copy-icon" />
+                </div>
+                <div class="v-footer">
+                  <span class="v-exp"><ion-icon name="time-outline" /> Expires: {{ v.expires_at | date:'mediumDate' }}</span>
+                  <span class="tap-hint">Show at counter to redeem</span>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-vouchers">
+            <ion-icon name="ticket-outline" class="empty-icon" />
+            <h3>No Active Vouchers</h3>
+            <p>Claim trending deals on the home screen to see your vouchers here!</p>
+          </div>
+        }
+      }
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Deal Details Modal -->
+<ion-modal [isOpen]="!!selectedDealModal()" (didDismiss)="selectedDealModal.set(null)" class="deal-modal">
+  <ng-template>
+    @if (selectedDealModal(); as deal) {
+      <ion-header mode="ios">
+        <ion-toolbar>
+          <ion-title>Deal Details</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="selectedDealModal.set(null)">
+              <ion-icon name="close-outline" slot="icon-only" />
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <div class="deal-detail-view">
+          <div class="detail-hero" [style.background-image]="'url(' + (deal.imageUrl || 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80') + ')'">
+            <span class="detail-discount">{{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' + deal.discount_value + ' OFF' }}</span>
+          </div>
+          <div class="detail-body">
+            <span class="detail-biz">{{ deal.businessName }}</span>
+            <h2 class="detail-title">{{ deal.title }}</h2>
+            <p class="detail-desc">{{ deal.description }}</p>
+            <div class="detail-meta">
+              <span><ion-icon name="pricetag-outline" /> {{ deal.offer_type }}</span>
+              <span><ion-icon name="time-outline" /> Valid until: {{ deal.end_date | date:'mediumDate' }}</span>
+            </div>
+            <button type="button" class="bd-btn-primary full-btn" (click)="onClaimOffer(deal); selectedDealModal.set(null)">
+              Claim This Deal Now
+            </button>
+          </div>
+        </div>
+      </ion-content>
+    }
+  </ng-template>
+</ion-modal>
+
+<!-- Business Details Modal -->
+<ion-modal [isOpen]="!!selectedBizModal()" (didDismiss)="selectedBizModal.set(null)" class="biz-modal">
+  <ng-template>
+    @if (selectedBizModal(); as biz) {
+      <ion-header mode="ios">
+        <ion-toolbar>
+          <ion-title>{{ biz.name }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="selectedBizModal.set(null)">
+              <ion-icon name="close-outline" slot="icon-only" />
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <div class="biz-detail-view">
+          <div class="detail-hero" [style.background-image]="'url(' + (biz.bannerUrl || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&auto=format&fit=crop&q=80') + ')'"></div>
+          <div class="detail-body">
+            <div class="biz-header-row">
+              <img [src]="biz.logoUrl || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80'" alt="logo" class="detail-logo" />
+              <div>
+                <h2 class="detail-title">{{ biz.name }}</h2>
+                <span class="detail-cat">{{ biz.categoryName }} • {{ biz.status }}</span>
+              </div>
+            </div>
+            <p class="detail-desc">{{ biz.description }}</p>
+            <div class="detail-meta">
+              @if (biz.website) {
+                <span>🌐 {{ biz.website }}</span>
+              }
+              @if (biz.gst_number) {
+                <span>🏢 GST: {{ biz.gst_number }}</span>
+              }
+            </div>
+            <button type="button" class="bd-btn-primary full-btn" style="margin-top: var(--bizzdeal-spacing-md); display: flex; align-items: center; justify-content: center;" (click)="onChatWithBusiness(biz.owner_id)">
+              <ion-icon name="chatbubble-outline" style="margin-right: 6px; font-size: 18px;" /> Chat with Us
+            </button>
+          </div>
+        </div>
+      </ion-content>
+    }
+  </ng-template>
+</ion-modal>
+
+<!-- Notifications Modal -->
+<ion-modal [isOpen]="isNotificationsModalOpen()" (didDismiss)="closeNotificationsModal()" class="notifications-modal">
+  <ng-template>
+    <app-notifications-page (close)="closeNotificationsModal()" />
+  </ng-template>
+</ion-modal>

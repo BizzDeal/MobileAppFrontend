@@ -1,0 +1,61 @@
+<nav class="bottom-nav">
+  <button 
+    type="button" 
+    class="nav-item" 
+    [class.active]="activeTab() === 'home'" 
+    (click)="tabSelect.emit('home')"
+    aria-label="Home">
+    <div class="icon-box">
+      <ion-icon [name]="activeTab() === 'home' ? 'home' : 'home-outline'" />
+    </div>
+    <span class="nav-label">Home</span>
+  </button>
+
+  <button 
+    type="button" 
+    class="nav-item" 
+    [class.active]="activeTab() === 'search'" 
+    (click)="tabSelect.emit('search')"
+    aria-label="Search">
+    <div class="icon-box">
+      <ion-icon [name]="activeTab() === 'search' ? 'search' : 'search-outline'" />
+    </div>
+    <span class="nav-label">Search</span>
+  </button>
+
+  <button 
+    type="button" 
+    class="nav-item" 
+    [class.active]="activeTab() === 'chat'" 
+    (click)="tabSelect.emit('chat')"
+    aria-label="Chat">
+    <div class="icon-box">
+      <ion-icon [name]="activeTab() === 'chat' ? 'chatbubble' : 'chatbubble-outline'" />
+    </div>
+    <span class="nav-label">Chat</span>
+  </button>
+
+  <button 
+    type="button" 
+    class="nav-item" 
+    [class.active]="activeTab() === 'wallet'" 
+    (click)="tabSelect.emit('wallet')"
+    aria-label="Wallet">
+    <div class="icon-box">
+      <ion-icon [name]="activeTab() === 'wallet' ? 'wallet' : 'wallet-outline'" />
+    </div>
+    <span class="nav-label">Wallet</span>
+  </button>
+
+  <button 
+    type="button" 
+    class="nav-item" 
+    [class.active]="activeTab() === 'profile'" 
+    (click)="tabSelect.emit('profile')"
+    aria-label="Profile">
+    <div class="icon-box">
+      <ion-icon [name]="activeTab() === 'profile' ? 'person' : 'person-outline'" />
+    </div>
+    <span class="nav-label">Profile</span>
+  </button>
+</nav>

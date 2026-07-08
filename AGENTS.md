@@ -79,8 +79,7 @@ Do not invent API fields, response structures, enum values, routes, business rul
 
 After changing code:
 
-1. Always check the final code for build or import errors (e.g., by running compilation/build checks or verifying imports and syntax) and fix them immediately before finishing the task.
-
+1. **Always check for build and typescript errors**: When finishing an implementation, you MUST verify that there are no active build, compilation, or TypeScript errors before marking the task as complete. Do not assume the build succeeded without checking the terminal output or running a build command.
 ---
 
 ## 4. Architecture

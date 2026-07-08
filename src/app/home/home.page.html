@@ -25,87 +25,31 @@
     <!-- Main Home Screen Layout -->
     <div class="home-layout">
       @if (activeNavTab() === 'home') {
-        <!-- 1. Header / Top Bar -->
-        <app-home-header 
-          [customer]="feed.customer"
-          [wallet]="feed.wallet"
-          [unreadCount]="unreadNotificationsCount()"
-          (walletClick)="onWalletClick()"
-          (notificationClick)="onNotificationClick()"
-          (searchChange)="onSearchChange($event)"
-          (searchSubmit)="onSearchSubmit($event)" />
-
-        <!-- 2. Hero Carousel / Banners -->
-        <app-hero-carousel 
-          [featuredBusinesses]="feed.featuredBusinesses"
-          [megaDeals]="feed.megaDeals"
-          (dealClick)="onDealClick($event)"
-          (businessClick)="onBusinessClick($event)" />
-
-        <!-- 3. Quick Categories (Chips/Grid) -->
-        <app-category-chips 
-          [categories]="feed.categories"
-          [selectedCategoryId]="selectedCategory()"
-          (categorySelect)="onCategorySelect($event)" />
-
-        <!-- 4. Quick Access Actions (Floating / distinct row) -->
-        <app-quick-actions 
-          [activeVouchersCount]="feed.myActiveVouchers.length"
-          (vouchersClick)="openVouchersModal()" />
-
-        <!-- 5. Main Content Feeds (Horizontal Scrolling Sections) -->
-        
-        <!-- Trending Offers Section -->
-        <section class="feed-section">
-          <div class="section-header">
-            <div class="header-left">
-              <ion-icon name="sparkles-outline" class="section-icon spark" />
-              <h2 class="section-title">
-                {{ selectedCategory() === 'ALL' ? 'Trending Offers' : 'Filtered Offers' }}
-              </h2>
-            </div>
-            <span class="count-hint">{{ filteredTrendingBySearch().length }} deals</span>
-          </div>
-
-          @if (filteredTrendingBySearch().length > 0) {
-            <div class="horizontal-scroll-feed">
-              @for (offer of filteredTrendingBySearch(); track offer.id) {
-                <app-offer-card 
-                  [offer]="offer"
-                  (claimClick)="onClaimOffer($event)"
-                  (cardClick)="onDealClick($event)" />
-              }
-            </div>
-          } @else {
-            <div class="empty-feed">
-              <p>No trending offers found for this search or category.</p>
-            </div>
-          }
-        </section>
-
-        <!-- Recommended Businesses Section -->
-        <section class="feed-section mb-extra">
-          <div class="section-header">
-            <div class="header-left">
-              <h2 class="section-title">Recommended Businesses</h2>
-            </div>
-            <span class="count-hint">{{ filteredBizBySearch().length }} stores</span>
-          </div>
-
-          @if (filteredBizBySearch().length > 0) {
-            <div class="horizontal-scroll-feed">
-              @for (biz of filteredBizBySearch(); track biz.id) {
-                <app-business-card 
-                  [business]="biz"
-                  (businessClick)="onBusinessClick($event)" />
-              }
-            </div>
-          } @else {
-            <div class="empty-feed">
-              <p>No businesses found matching your criteria.</p>
-            </div>
-          }
-        </section>
+        @if (userRole() === 'MEMBER') {
+          <app-member-home (notificationClick)="onNotificationClick()" />
+        } @else {
+          <app-customer-home 
+            [feed]="feed"
+            [unreadNotificationsCount]="unreadNotificationsCount()"
+            [selectedCategory]="selectedCategory()"
+            [filteredTrending]="filteredTrendingBySearch()"
+            [filteredBiz]="filteredBizBySearch()"
+            (walletClick)="onWalletClick()"
+            (notificationClick)="onNotificationClick()"
+            (searchChange)="onSearchChange($event)"
+            (searchSubmit)="onSearchSubmit($event)"
+            (dealClick)="onDealClick($event)"
+            (businessClick)="onBusinessClick($event)"
+            (categorySelect)="onCategorySelect($event)"
+            (vouchersClick)="openVouchersModal()"
+            (claimOffer)="onClaimOffer($event)" />
+        }
+      } @else if (activeNavTab() === 'meetings') {
+        <app-my-business />
+      } @else if (activeNavTab() === 'offers') {
+        <app-manage-offers />
+      } @else if (activeNavTab() === 'menu') {
+        <app-menu-view />
       } @else if (activeNavTab() === 'search') {
         <!-- Search View Component -->
         <app-search-view 
@@ -129,6 +73,7 @@
   <!-- 6. Bottom Navigation Bar -->
   <app-bottom-nav 
     [activeTab]="activeNavTab()"
+    [role]="userRole()"
     (tabSelect)="onTabSelect($event)" />
 </ion-content>
 

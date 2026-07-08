@@ -17,7 +17,10 @@ import {
   logOutOutline,
   logoWhatsapp,
   mailOutline,
-  personOutline
+  personOutline,
+  businessOutline,
+  globeOutline,
+  documentTextOutline
 } from 'ionicons/icons';
 import { ProfileService } from '../../services/profile.service';
 
@@ -48,13 +51,18 @@ export class ProfileViewComponent {
 
   readonly toastMessage = signal<string | null>(null);
   readonly selectedPhotoUrl = signal<string | null>(null);
+  readonly selectedBusinessLogoUrl = signal<string | null>(null);
 
   readonly profileForm: FormGroup = this.fb.group({
     full_name: ['', [Validators.required, Validators.minLength(2)]],
     phone: ['', [Validators.required, Validators.minLength(10)]],
     whatsapp: [''],
     email: ['', [Validators.email]],
-    address: ['']
+    address: [''],
+    business_name: [''],
+    business_description: [''],
+    website: [''],
+    gst_number: ['']
   });
 
   constructor() {
@@ -67,7 +75,10 @@ export class ProfileViewComponent {
       cameraOutline,
       logOutOutline,
       alertCircleOutline,
-      checkmarkCircleOutline
+      checkmarkCircleOutline,
+      businessOutline,
+      globeOutline,
+      documentTextOutline
     });
 
     // Synchronize form controls when profile signal updates
@@ -79,11 +90,18 @@ export class ProfileViewComponent {
           phone: p.phone,
           whatsapp: p.whatsapp,
           email: p.email,
-          address: p.address
+          address: p.address,
+          business_name: p.business_name || '',
+          business_description: p.business_description || '',
+          website: p.website || '',
+          gst_number: p.gst_number || ''
         }, { emitEvent: false });
         
         if (p.profile_pic_url && !this.selectedPhotoUrl()) {
           this.selectedPhotoUrl.set(p.profile_pic_url);
+        }
+        if (p.business_logo_url && !this.selectedBusinessLogoUrl()) {
+          this.selectedBusinessLogoUrl.set(p.business_logo_url);
         }
       }
     });
@@ -100,6 +118,21 @@ export class ProfileViewComponent {
         // Inform the service to update local signal picture URL
         this.profileService.updateProfilePic(resultUrl);
         this.showToast('📸 Profile picture updated successfully!');
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  onBusinessLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        const resultUrl = reader.result as string;
+        this.selectedBusinessLogoUrl.set(resultUrl);
+        this.showToast('📸 Brand image updated successfully!');
+        // Note: In real app, we'd also update the profile service/backend
       };
       reader.readAsDataURL(file);
     }

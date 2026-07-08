@@ -1,0 +1,89 @@
+@if (loading()) {
+  <div class="loading-state">Loading your dashboard...</div>
+} @else if (dashboardData(); as data) {
+  <div class="member-dashboard">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="brand-info">
+        <img [src]="profile()?.profile_pic_url" alt="Profile Pic" class="business-logo" />
+        <h1 class="business-name"><span class="truncate-name">{{ getFirstName(profile()?.full_name) }}</span></h1>
+      </div>
+      <button class="notification-btn bd-btn-outline" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
+        <ion-icon name="notifications-outline" class="notif-icon" />
+        @if (data.alerts.length > 0) {
+          <span class="badge"></span>
+        }
+      </button>
+    </header>
+
+  <div class="dashboard-content">
+    <section class="analytics-section">
+      <div class="analytics-grid">
+        <div class="stat-card">
+          <span class="stat-label">Active Offers</span>
+          <h2 class="stat-value">{{ data.analytics.activeOffersCount }}</h2>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Vouchers Redeemed</span>
+          <h2 class="stat-value">{{ data.analytics.vouchersRedeemedToday }}</h2>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Business Growth</span>
+          <h3 class="stat-value highlight">+{{ data.analytics.businessGrowth }}%</h3>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Successful Referrals</span>
+          <h2 class="stat-value">{{ data.analytics.successfulReferrals }}</h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <button class="action-btn primary" (click)="onCreateOffer()">
+        <ion-icon name="add-circle-outline" />
+        <span>Create New Offer</span>
+      </button>
+      <div class="secondary-actions">
+        <button class="action-btn" (click)="onIssueVoucher()">
+          <ion-icon name="ticket-outline" />
+          <span>Issue Voucher</span>
+        </button>
+        <button class="action-btn bd-btn-outline" type="button" (click)="onRedeemVoucher()">
+          <ion-icon name="scan-outline" />
+          Redeem Voucher
+        </button>
+      </div>
+    </section>
+
+    <!-- Important Alerts -->
+    @if (data.alerts.length > 0) {
+      <section class="alerts-section">
+        <h3>Important Alerts</h3>
+        <div class="alerts-list">
+          @for (alert of data.alerts; track alert.id) {
+            <div class="alert-item" [class]="alert.type">
+              <p>{{ alert.message }}</p>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Recent Activity Feed -->
+    <section class="activity-section">
+      <h3>Recent Activity</h3>
+      <div class="activity-list">
+        @for (act of data.recentActivity; track act.id) {
+          <div class="activity-item">
+            <div class="activity-text">
+              <p>{{ act.text }}</p>
+            </div>
+            <span class="time">{{ act.time }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+</div>
+}

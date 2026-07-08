@@ -1,0 +1,62 @@
+// Styles are mostly handled by global or home.page.scss
+.feed-section {
+  margin-bottom: var(--bizzdeal-spacing-lg);
+
+  &.mb-extra {
+    margin-bottom: 80px; /* Space for bottom nav */
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-sm);
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .section-icon {
+        font-size: 1.25rem;
+        &.spark { color: var(--bizzdeal-color-secondary); }
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--bizzdeal-color-text);
+      }
+    }
+
+    .count-hint {
+      font-size: 0.8rem;
+      color: var(--bizzdeal-color-text-light);
+      background: var(--bizzdeal-color-surface);
+      padding: 2px 8px;
+      border-radius: var(--bizzdeal-radius-full);
+      border: 1px solid var(--bizzdeal-border-color);
+    }
+  }
+
+  .horizontal-scroll-feed {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: var(--bizzdeal-spacing-md);
+    padding: 0 var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-sm);
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .empty-feed {
+    padding: var(--bizzdeal-spacing-xl) var(--bizzdeal-spacing-md);
+    text-align: center;
+    color: var(--bizzdeal-color-text-light);
+    font-size: 0.9rem;
+  }
+}

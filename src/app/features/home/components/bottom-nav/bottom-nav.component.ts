@@ -11,10 +11,17 @@ import {
   search,
   searchOutline,
   wallet,
-  walletOutline
+  walletOutline,
+  briefcase,
+  briefcaseOutline,
+  menu,
+  menuOutline,
+  pricetagOutline,
+  calendar,
+  calendarOutline
 } from 'ionicons/icons';
 
-export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile';
+export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile' | 'meetings' | 'menu' | 'offers';
 
 @Component({
   selector: 'app-bottom-nav',
@@ -26,6 +33,7 @@ export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile';
 })
 export class BottomNavComponent {
   readonly activeTab = input<NavTab>('home');
+  readonly role = input<'CUSTOMER' | 'MEMBER' | 'ADMIN'>('CUSTOMER');
   readonly tabSelect = output<NavTab>();
 
   constructor() {
@@ -39,7 +47,14 @@ export class BottomNavComponent {
       walletOutline, 
       wallet, 
       personOutline, 
-      person 
+      person,
+      briefcase,
+      briefcaseOutline,
+      menu,
+      menuOutline,
+      pricetagOutline,
+      calendar,
+      calendarOutline
     });
   }
 }

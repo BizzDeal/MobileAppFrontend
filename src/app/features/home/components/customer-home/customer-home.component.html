@@ -1,0 +1,81 @@
+<!-- 1. Header / Top Bar -->
+<app-home-header 
+  [customer]="feed.customer"
+  [wallet]="feed.wallet"
+  [unreadCount]="unreadNotificationsCount"
+  (walletClick)="walletClick.emit()"
+  (notificationClick)="notificationClick.emit()"
+  (searchChange)="searchChange.emit($event)"
+  (searchSubmit)="searchSubmit.emit($event)" />
+
+<!-- 2. Hero Carousel / Banners -->
+<app-hero-carousel 
+  [featuredBusinesses]="feed.featuredBusinesses"
+  [megaDeals]="feed.megaDeals"
+  (dealClick)="dealClick.emit($event)"
+  (businessClick)="businessClick.emit($event)" />
+
+<!-- 3. Quick Categories (Chips/Grid) -->
+<app-category-chips 
+  [categories]="feed.categories"
+  [selectedCategoryId]="selectedCategory"
+  (categorySelect)="categorySelect.emit($event)" />
+
+<!-- 4. Quick Access Actions (Floating / distinct row) -->
+<app-quick-actions 
+  [activeVouchersCount]="feed.myActiveVouchers.length"
+  (vouchersClick)="vouchersClick.emit()" />
+
+<!-- 5. Main Content Feeds (Horizontal Scrolling Sections) -->
+
+<!-- Trending Offers Section -->
+<section class="feed-section">
+  <div class="section-header">
+    <div class="header-left">
+      <ion-icon name="sparkles-outline" class="section-icon spark" />
+      <h2 class="section-title">
+        {{ selectedCategory === 'ALL' ? 'Trending Offers' : 'Filtered Offers' }}
+      </h2>
+    </div>
+    <span class="count-hint">{{ filteredTrending.length }} deals</span>
+  </div>
+
+  @if (filteredTrending.length > 0) {
+    <div class="horizontal-scroll-feed">
+      @for (offer of filteredTrending; track offer.id) {
+        <app-offer-card 
+          [offer]="offer"
+          (claimClick)="claimOffer.emit($event)"
+          (cardClick)="dealClick.emit($event)" />
+      }
+    </div>
+  } @else {
+    <div class="empty-feed">
+      <p>No trending offers found for this search or category.</p>
+    </div>
+  }
+</section>
+
+<!-- Recommended Businesses Section -->
+<section class="feed-section mb-extra">
+  <div class="section-header">
+    <div class="header-left">
+      <h2 class="section-title">Recommended Businesses</h2>
+    </div>
+    <span class="count-hint">{{ filteredBiz.length }} stores</span>
+  </div>
+
+  @if (filteredBiz.length > 0) {
+    <div class="horizontal-scroll-feed">
+      @for (biz of filteredBiz; track biz.id) {
+        <app-business-card 
+          [business]="biz"
+          (businessClick)="businessClick.emit($event)" />
+      }
+    </div>
+  } @else {
+    <div class="empty-feed">
+      <p>No businesses found matching your criteria.</p>
+    </div>
+  }
+</section>

@@ -123,6 +123,69 @@
         </div>
       </div>
 
+      @if (profile()?.role === 'MEMBER') {
+        <div class="form-section bd-card">
+          <h3 class="section-title">Business Information</h3>
+
+          <!-- Business Logo Picker -->
+          <div class="business-logo-picker" style="width: 100%; height: 140px; margin-bottom: 1.5rem; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--bizzdeal-border-color);">
+            <img 
+              [src]="selectedBusinessLogoUrl() || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80'" 
+              alt="Brand Image Preview" 
+              style="width: 100%; height: 100%; object-fit: cover;" />
+            
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.5)); pointer-events: none;"></div>
+            
+            <label for="businessLogoFile" style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; background: var(--bizzdeal-primary, #1E88E5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1;">
+              <ion-icon name="camera-outline" style="font-size: 18px;"></ion-icon>
+              <input 
+                type="file" 
+                id="businessLogoFile" 
+                accept="image/*" 
+                (change)="onBusinessLogoSelected($event)" 
+                style="display: none;" />
+            </label>
+            <span style="position: absolute; bottom: 12px; left: 12px; color: white; font-size: 0.875rem; font-weight: 600; z-index: 1;">Brand Image</span>
+          </div>
+
+          <!-- Business Name -->
+          <div class="form-group">
+            <label class="form-label" for="business_name">Business Name</label>
+            <div class="input-wrapper">
+              <ion-icon name="business-outline" class="input-icon"></ion-icon>
+              <input type="text" id="business_name" formControlName="business_name" class="form-input" placeholder="Enter business name" />
+            </div>
+          </div>
+
+          <!-- Business Description -->
+          <div class="form-group">
+            <label class="form-label" for="business_description">Business Description</label>
+            <div class="input-wrapper textarea-wrapper">
+              <ion-icon name="document-text-outline" class="input-icon textarea-icon"></ion-icon>
+              <textarea id="business_description" formControlName="business_description" class="form-input form-textarea" rows="3" placeholder="Describe your business"></textarea>
+            </div>
+          </div>
+
+          <!-- Website -->
+          <div class="form-group">
+            <label class="form-label" for="website">Website URL</label>
+            <div class="input-wrapper">
+              <ion-icon name="globe-outline" class="input-icon"></ion-icon>
+              <input type="url" id="website" formControlName="website" class="form-input" placeholder="e.g. https://bizzdeal.com" />
+            </div>
+          </div>
+
+          <!-- GST Number -->
+          <div class="form-group">
+            <label class="form-label" for="gst_number">GST Number</label>
+            <div class="input-wrapper">
+              <ion-icon name="document-text-outline" class="input-icon"></ion-icon>
+              <input type="text" id="gst_number" formControlName="gst_number" class="form-input" placeholder="e.g. 36AAAAA0000A1Z5" />
+            </div>
+          </div>
+        </div>
+      }
+
       <!-- 3. Account Settings Section -->
       <div class="form-section bd-card">
         <h3 class="section-title">Account Details</h3>

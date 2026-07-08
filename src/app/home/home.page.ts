@@ -35,12 +35,6 @@ import { ChatRoomComponent } from '../features/chat/components/chat-room/chat-ro
 import { ConversationListComponent } from '../features/chat/components/conversation-list/conversation-list.component';
 import { ChatService } from '../features/chat/services/chat.service';
 import { BottomNavComponent, NavTab } from '../features/home/components/bottom-nav/bottom-nav.component';
-import { BusinessCardComponent } from '../features/home/components/business-card/business-card.component';
-import { CategoryChipsComponent } from '../features/home/components/category-chips/category-chips.component';
-import { HeroCarouselComponent } from '../features/home/components/hero-carousel/hero-carousel.component';
-import { HomeHeaderComponent } from '../features/home/components/home-header/home-header.component';
-import { OfferCardComponent } from '../features/home/components/offer-card/offer-card.component';
-import { QuickActionsComponent } from '../features/home/components/quick-actions/quick-actions.component';
 import { SearchViewComponent } from '../features/home/components/search-view/search-view.component';
 import { BusinessDTO, OfferDTO } from '../features/home/models/home.model';
 import { HomeService } from '../features/home/services/home.service';
@@ -48,6 +42,12 @@ import { NotificationsPageComponent } from '../features/notifications/components
 import { NotificationService } from '../features/notifications/services/notification.service';
 import { ProfileViewComponent } from '../features/profile/components/profile-view/profile-view.component';
 import { WalletViewComponent } from '../features/wallet/components/wallet-view/wallet-view.component';
+import { ProfileService } from '../features/profile/services/profile.service';
+import { CustomerHomeComponent } from '../features/home/components/customer-home/customer-home.component';
+import { MemberHomeComponent } from '../features/home/components/member-home/member-home.component';
+import { MyBusinessComponent } from '../features/business/components/my-business/my-business.component';
+import { ManageOffersComponent } from '../features/business/components/manage-offers/manage-offers.component';
+import { MenuViewComponent } from '../features/menu/components/menu-view/menu-view.component';
 
 @Component({
   selector: 'app-home',
@@ -66,12 +66,6 @@ import { WalletViewComponent } from '../features/wallet/components/wallet-view/w
     IonButtons,
     IonButton,
     IonIcon,
-    HomeHeaderComponent,
-    HeroCarouselComponent,
-    CategoryChipsComponent,
-    OfferCardComponent,
-    BusinessCardComponent,
-    QuickActionsComponent,
     BottomNavComponent,
     SearchViewComponent,
     ConversationListComponent,
@@ -79,6 +73,11 @@ import { WalletViewComponent } from '../features/wallet/components/wallet-view/w
     WalletViewComponent,
     ProfileViewComponent,
     NotificationsPageComponent,
+    CustomerHomeComponent,
+    MemberHomeComponent,
+    MyBusinessComponent,
+    ManageOffersComponent,
+    MenuViewComponent,
   ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
@@ -88,6 +87,9 @@ export class HomePage {
   private readonly homeService = inject(HomeService);
   private readonly chatService = inject(ChatService);
   private readonly notificationService = inject(NotificationService);
+  private readonly profileService = inject(ProfileService);
+
+  readonly userRole = computed(() => this.profileService.profile()?.role || 'CUSTOMER');
 
   readonly homeFeed = this.homeService.homeFeed;
   readonly loading = this.homeService.loading;

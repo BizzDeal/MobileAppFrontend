@@ -6,7 +6,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/stan
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar],
   template: `
-    <ion-header mode="ios">
+    <ion-header class="ion-no-border premium-header">
       <ion-toolbar>
         <ion-title>Menu</ion-title>
       </ion-toolbar>

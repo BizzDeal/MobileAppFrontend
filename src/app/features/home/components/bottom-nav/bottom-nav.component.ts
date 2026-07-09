@@ -18,10 +18,14 @@ import {
   menuOutline,
   pricetagOutline,
   calendar,
-  calendarOutline
+  calendarOutline,
+  people,
+  peopleOutline,
+  ticket,
+  ticketOutline
 } from 'ionicons/icons';
 
-export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile' | 'meetings' | 'menu' | 'offers';
+export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile' | 'meetings' | 'menu' | 'referrals' | 'vouchers';
 
 @Component({
   selector: 'app-bottom-nav',
@@ -54,7 +58,12 @@ export class BottomNavComponent {
       menuOutline,
       pricetagOutline,
       calendar,
-      calendarOutline
+      calendarOutline,
+      people,
+      peopleOutline,
+      ticket,
+      ticketOutline
     });
   }
 }
+

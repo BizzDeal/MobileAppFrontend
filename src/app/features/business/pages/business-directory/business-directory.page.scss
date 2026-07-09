@@ -1,0 +1,278 @@
+.directory-content {
+  --background: var(--bizzdeal-bg-main);
+}
+
+// 1. Search Bar Layout
+.search-section {
+  padding: var(--bizzdeal-spacing-md);
+  background: var(--bizzdeal-bg-surface);
+  border-bottom: 1px solid var(--bizzdeal-border-color);
+  box-shadow: var(--bizzdeal-shadow-sm);
+}
+
+.search-bar-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--bizzdeal-bg-surface-secondary);
+  border: 1px solid var(--bizzdeal-border-color);
+  border-radius: var(--bizzdeal-radius-md);
+  padding: 2px 12px;
+  gap: var(--bizzdeal-spacing-sm);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+  &:focus-within {
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+  }
+
+  .search-icon {
+    font-size: 20px;
+    color: var(--bizzdeal-text-secondary);
+  }
+
+  .directory-search-input {
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    font-size: 15px;
+    color: var(--bizzdeal-text-primary);
+  }
+
+  .filter-icon {
+    font-size: 20px;
+    color: var(--bizzdeal-text-secondary);
+    cursor: pointer;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+}
+
+// 2. Business Directory List Container
+.directory-list-container {
+  padding: var(--bizzdeal-spacing-md);
+  padding-bottom: 40px;
+}
+
+.directory-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bizzdeal-spacing-md);
+}
+
+// 3. Business Card Design
+.business-card {
+  background: var(--bizzdeal-bg-surface);
+  border: 1px solid var(--bizzdeal-border-color);
+  border-radius: var(--bizzdeal-radius-xl);
+  padding: var(--bizzdeal-spacing-md);
+  box-shadow: var(--bizzdeal-shadow-sm);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:active {
+    transform: translateY(-2px);
+    box-shadow: var(--bizzdeal-shadow-md);
+  }
+}
+
+// Header Row inside Business Card
+.biz-header-row {
+  display: flex;
+  align-items: center;
+  gap: var(--bizzdeal-spacing-md);
+  margin-bottom: var(--bizzdeal-spacing-sm);
+}
+
+.initials-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden; // ensures rounded images
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .initials-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+  }
+}
+
+.biz-title-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+
+  .biz-name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--bizzdeal-text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  .category-badge {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 4px 12px;
+    border-radius: var(--bizzdeal-radius-full);
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+// Description
+.biz-desc {
+  margin: 0 0 var(--bizzdeal-spacing-md) 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--bizzdeal-text-secondary);
+}
+
+// Actions Buttons Grid/Row
+.actions-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--bizzdeal-spacing-sm);
+  border-top: 1px solid var(--bizzdeal-border-color);
+  padding-top: var(--bizzdeal-spacing-md);
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 4px;
+    background: var(--bizzdeal-bg-surface-secondary);
+    border: 1px solid var(--bizzdeal-border-color);
+    border-radius: var(--bizzdeal-radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:active {
+      background: var(--bizzdeal-bg-surface-tertiary);
+      transform: scale(0.97);
+    }
+
+    .action-icon {
+      font-size: 16px;
+      color: var(--ion-color-primary);
+      transition: transform 0.25s ease;
+
+      &.chat-color {
+        color: var(--ion-color-secondary);
+      }
+    }
+
+    &:hover .action-icon {
+      transform: scale(1.15);
+    }
+
+    &.chat-btn {
+      border-color: rgba(14, 165, 233, 0.25);
+      background: rgba(14, 165, 233, 0.04);
+      color: var(--ion-color-secondary);
+
+      &:active {
+        background: rgba(14, 165, 233, 0.1);
+      }
+    }
+  }
+}
+
+// 4. Empty State Styling
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--bizzdeal-spacing-xl) var(--bizzdeal-spacing-md);
+  margin-top: 40px;
+
+  .empty-icon-glow {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(30, 136, 229, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--bizzdeal-spacing-md);
+  }
+
+  .empty-icon {
+    font-size: 32px;
+    color: var(--ion-color-primary);
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+    margin: 0 0 var(--bizzdeal-spacing-sm) 0;
+  }
+
+  p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--bizzdeal-text-secondary);
+    margin: 0;
+    max-width: 260px;
+  }
+}
+
+// Cards Entry Animations
+.animate-card {
+  animation: cardFadeIn 0.3s ease-out both;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Staggered list animations using child indexing
+@for $i from 1 through 6 {
+  .business-card:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.06}s;
+  }
+}
+
+// Dark Mode Palette Adjustments
+:host-context(html.ion-palette-dark) {
+  .search-section, .business-card {
+    background: var(--bizzdeal-bg-surface);
+  }
+  .search-bar-wrapper {
+    background: var(--bizzdeal-bg-surface-secondary);
+  }
+  .actions-row .action-btn {
+    background: var(--bizzdeal-bg-surface-secondary);
+  }
+}

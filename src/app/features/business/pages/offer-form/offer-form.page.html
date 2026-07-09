@@ -1,0 +1,162 @@
+<ion-header class="ion-no-border premium-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="" color="dark"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEditMode() ? 'Edit Offer' : 'Create New Offer' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding form-content">
+  <div class="form-container">
+    <form [formGroup]="offerForm" (ngSubmit)="onSubmit()" class="bizz-form">
+      
+      <div class="form-section bd-card">
+        <h3 class="section-title">Offer Details</h3>
+
+        <!-- Title -->
+        <div class="form-group">
+      <label class="form-label" for="title">Title <span class="required-star">*</span></label>
+      <div class="input-wrapper">
+        <ion-icon name="pricetag-outline" class="input-icon"></ion-icon>
+        <ion-input type="text" id="title" formControlName="title" class="form-input" placeholder="e.g. 50% Off Electronics"></ion-input>
+      </div>
+      <div class="error-container">
+        @if (isFieldInvalid('title')) {
+          <span class="error-message">Title is required and must be at least 3 characters.</span>
+        }
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label class="form-label" for="description">Description <span class="required-star">*</span></label>
+      <div class="input-wrapper textarea-wrapper">
+        <ion-icon name="document-text-outline" class="input-icon textarea-icon"></ion-icon>
+        <ion-textarea id="description" formControlName="description" class="form-input form-textarea" rows="3" placeholder="Describe the offer details and terms..."></ion-textarea>
+      </div>
+      <div class="error-container">
+        @if (isFieldInvalid('description')) {
+          <span class="error-message">Description is required.</span>
+        }
+      </div>
+    </div>
+
+    <!-- Offer Type -->
+    <div class="form-group">
+      <label class="form-label" for="offer_type">Offer Type <span class="required-star">*</span></label>
+      <div class="input-wrapper select-wrapper">
+        <ion-icon name="options-outline" class="input-icon"></ion-icon>
+        <ion-select formControlName="offer_type" placeholder="Select type" interface="action-sheet" class="custom-select">
+          <ion-select-option value="DISCOUNT">Discount</ion-select-option>
+          <ion-select-option value="CASHBACK">Cashback</ion-select-option>
+        </ion-select>
+      </div>
+      <div class="error-container">
+        @if (isFieldInvalid('offer_type')) {
+          <span class="error-message">Offer Type is required.</span>
+        }
+      </div>
+    </div>
+
+    <!-- Discount Value & Type Row -->
+    <div class="form-row">
+      <div class="form-group half-width">
+        <label class="form-label" for="discount_value">Value <span class="required-star">*</span></label>
+        <div class="input-wrapper">
+          <ion-icon name="cash-outline" class="input-icon"></ion-icon>
+          <ion-input type="number" id="discount_value" formControlName="discount_value" class="form-input" placeholder="e.g. 20"></ion-input>
+        </div>
+        <div class="error-container">
+          @if (isFieldInvalid('discount_value')) {
+            <span class="error-message">Value is required.</span>
+          }
+        </div>
+      </div>
+      
+      <div class="form-group half-width">
+        <label class="form-label" for="discount_type">Unit <span class="required-star">*</span></label>
+        <div class="input-wrapper select-wrapper">
+          <ion-icon name="calculator-outline" class="input-icon"></ion-icon>
+          <ion-select formControlName="discount_type" placeholder="Select" interface="action-sheet" class="custom-select">
+            <ion-select-option value="PERCENTAGE">% Percentage</ion-select-option>
+            <ion-select-option value="FIXED_AMOUNT">₹ Fixed Amount</ion-select-option>
+          </ion-select>
+        </div>
+        <div class="error-container">
+          @if (isFieldInvalid('discount_type')) {
+            <span class="error-message">Unit is required.</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Dates -->
+    <div class="form-group">
+      <label class="form-label">Start Date <span class="required-star">*</span></label>
+      <div class="datetime-field">
+        <ion-icon name="calendar-outline" class="datetime-icon"></ion-icon>
+        <ion-datetime-button datetime="start-datetime"></ion-datetime-button>
+      </div>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="start-datetime"
+            presentation="date-time"
+            (ionChange)="onStartDateChange($event)"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <div class="error-container">
+        @if (isFieldInvalid('start_date')) {
+          <span class="error-message">Start Date is required.</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">End Date <span class="required-star">*</span></label>
+      <div class="datetime-field">
+        <ion-icon name="calendar-outline" class="datetime-icon"></ion-icon>
+        <ion-datetime-button datetime="end-datetime"></ion-datetime-button>
+      </div>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="end-datetime"
+            presentation="date-time"
+            (ionChange)="onEndDateChange($event)"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <div class="error-container">
+        @if (isFieldInvalid('end_date')) {
+          <span class="error-message">End Date is required.</span>
+        }
+        @if (offerForm.errors?.['dateMismatch']) {
+          <span class="error-message">End Date must be after Start Date.</span>
+        }
+      </div>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="form-group">
+      <label class="form-label">Offer Image</label>
+      <div class="upload-container" (click)="fileInput.click()">
+        <ion-icon name="image-outline"></ion-icon>
+        <span class="upload-text">{{ selectedImageName() || 'Tap to upload an image (optional)' }}</span>
+        <input type="file" #fileInput (change)="onImageSelected($event)" accept="image/*" hidden />
+      </div>
+    </div>
+
+      </div> <!-- End form-section -->
+
+      <div class="action-buttons">
+        <button type="submit" class="bd-btn-primary save-btn" [disabled]="offerForm.invalid">
+          <ion-icon name="save-outline" class="btn-icon"></ion-icon>
+          {{ isEditMode() ? 'Update Offer' : 'Create Offer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</ion-content>

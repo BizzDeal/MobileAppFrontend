@@ -4,7 +4,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import {
   IonIcon,
+  IonInput,
   IonSpinner,
+  IonTextarea,
   IonToast
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -33,6 +35,8 @@ import { ProfileService } from '../../services/profile.service';
     ReactiveFormsModule,
     IonSpinner,
     IonIcon,
+    IonInput,
+    IonTextarea,
     IonToast
   ],
   templateUrl: './profile-view.component.html',
@@ -56,13 +60,13 @@ export class ProfileViewComponent {
   readonly profileForm: FormGroup = this.fb.group({
     full_name: ['', [Validators.required, Validators.minLength(2)]],
     phone: ['', [Validators.required, Validators.minLength(10)]],
-    whatsapp: [''],
-    email: ['', [Validators.email]],
-    address: [''],
-    business_name: [''],
-    business_description: [''],
-    website: [''],
-    gst_number: ['']
+    whatsapp: ['', [Validators.required, Validators.minLength(10)]],
+    email: ['', [Validators.required, Validators.email]],
+    address: ['', Validators.required],
+    business_name: ['', Validators.required],
+    business_description: ['', Validators.required],
+    website: ['', Validators.required],
+    gst_number: ['', Validators.required]
   });
 
   constructor() {

@@ -1853,3 +1853,13 @@ Do not introduce architecture for hypothetical future requirements.
 Build the current feature cleanly, keep its boundaries clear, and make the next change easy.
 
 Always ensure that all unused imports are removed from all files after finishing implementation tasks (you can run `npx organize-imports-cli "src/**/*.ts"` to do this automatically).
+
+---
+
+## 50. UI & Form Standards
+
+- **IMPORTANT RULE - USE IONIC INPUTS**: NEVER use native HTML `<input>`, `<textarea>`, or `<select>` elements for form fields app-wide.
+- **Always use Ionic equivalents**: You MUST use `<ion-input>`, `<ion-textarea>`, and `<ion-select>`. This is a critical rule to ensure consistency and mobile compatibility across the app.
+- **Custom Wrapper Exceptions**: You may still wrap these ionic components in custom `.form-group` or `.input-wrapper` containers for styling if necessary, but the core input element itself must always be the Ionic component.
+- **Dropdowns**: For dropdowns, use `<ion-select interface="action-sheet" class="custom-select">` to maintain native mobile action-sheet behavior while using our custom caret styling.
+- **Error Messages**: Place error messages below the `.input-wrapper` using `<span class="error-message">`.

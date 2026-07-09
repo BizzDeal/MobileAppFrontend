@@ -70,7 +70,20 @@ export class PhoneLoginService {
     this._isSubmitting.set(true);
     setTimeout(() => {
       this._isSubmitting.set(false);
-      console.info('Logged in successfully with:', this.loginForm.getRawValue());
+      const values = this.loginForm.getRawValue();
+      console.info('Logged in successfully with:', values);
+      
+      // Mock role-based routing for now
+      if (values.phoneNumber === '9999999999') {
+        console.info('Mocking ADMIN role');
+        this.router.navigate(['/admin/dashboard']);
+      } else if (values.phoneNumber === '8888888888') {
+        console.info('Mocking MEMBER role');
+        this.router.navigate(['/home']); 
+      } else {
+        console.info('Mocking CUSTOMER role (Default)');
+        this.router.navigate(['/home']);
+      }
     }, 1000);
   }
 

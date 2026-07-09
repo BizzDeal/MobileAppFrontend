@@ -27,12 +27,14 @@
 
     <div class="card-footer">
       <span class="claim-stats">⚡ Limited Time Deal</span>
-      <button 
-        type="button" 
-        class="claim-btn bd-btn-primary" 
-        (click)="$event.stopPropagation(); claimClick.emit(offer())">
-        Claim Deal
-      </button>
+      @if (!hideClaimButton()) {
+        <button 
+          type="button" 
+          class="claim-btn bd-btn-primary" 
+          (click)="$event.stopPropagation(); claimClick.emit(offer())">
+          Claim Deal
+        </button>
+      }
     </div>
   </div>
 </div>

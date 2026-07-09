@@ -1,0 +1,38 @@
+<div class="meetings-page">
+  <div class="meetings-header">
+    <div class="header-content">
+      <div class="header-icon-box">
+        <ion-icon name="calendar-outline"></ion-icon>
+      </div>
+      <div class="header-text">
+        <h2>My Meetings</h2>
+        <p>Manage your upcoming appointments and reviews.</p>
+      </div>
+    </div>
+  </div>
+
+  <ion-segment [value]="selectedTab()" (ionChange)="onTabChange($event)" class="premium-segment" mode="ios">
+    <ion-segment-button value="upcoming">
+      <ion-label>Upcoming</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="past">
+      <ion-label>Past / Cancelled</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div class="meetings-list">
+    @for (meeting of meetings(); track meeting.id) {
+      <app-meeting-card 
+        [meeting]="meeting" 
+        (rsvpChange)="handleRsvp($event)" />
+    } @empty {
+      <div class="empty-state">
+        <div class="empty-icon-wrapper">
+          <ion-icon name="calendar-outline"></ion-icon>
+        </div>
+        <h3>No {{ selectedTab() }} meetings</h3>
+        <p>You don't have any {{ selectedTab() }} meetings scheduled at the moment.</p>
+      </div>
+    }
+  </div>
+</div>

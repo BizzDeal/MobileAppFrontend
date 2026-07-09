@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -45,9 +46,12 @@ import { WalletViewComponent } from '../features/wallet/components/wallet-view/w
 import { ProfileService } from '../features/profile/services/profile.service';
 import { CustomerHomeComponent } from '../features/home/components/customer-home/customer-home.component';
 import { MemberHomeComponent } from '../features/home/components/member-home/member-home.component';
-import { MyBusinessComponent } from '../features/business/components/my-business/my-business.component';
-import { ManageOffersComponent } from '../features/business/components/manage-offers/manage-offers.component';
+// Force reload referrals page components
+import { ReferralsPageComponent } from '../features/referrals/pages/referrals-page/referrals-page.component';
 import { MenuViewComponent } from '../features/menu/components/menu-view/menu-view.component';
+import { MeetingsPageComponent } from '../features/meetings/pages/meetings-page/meetings-page.component';
+import { VouchersViewComponent } from '../features/vouchers/components/vouchers-view/vouchers-view.component';
+import { CustomerVouchersService } from '../features/vouchers/services/customer-vouchers.service';
 
 @Component({
   selector: 'app-home',
@@ -69,15 +73,17 @@ import { MenuViewComponent } from '../features/menu/components/menu-view/menu-vi
     BottomNavComponent,
     SearchViewComponent,
     ConversationListComponent,
+    // Chat components
     ChatRoomComponent,
     WalletViewComponent,
     ProfileViewComponent,
     NotificationsPageComponent,
     CustomerHomeComponent,
     MemberHomeComponent,
-    MyBusinessComponent,
-    ManageOffersComponent,
+    MeetingsPageComponent,
+    ReferralsPageComponent,
     MenuViewComponent,
+    VouchersViewComponent,
   ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
@@ -88,6 +94,8 @@ export class HomePage {
   private readonly chatService = inject(ChatService);
   private readonly notificationService = inject(NotificationService);
   private readonly profileService = inject(ProfileService);
+  private readonly customerVouchersService = inject(CustomerVouchersService);
+  private readonly route = inject(ActivatedRoute);
 
   readonly userRole = computed(() => this.profileService.profile()?.role || 'CUSTOMER');
 
@@ -148,6 +156,25 @@ export class HomePage {
       personOutline,
       walletOutline
     });
+
+    // Handle tab query parameter for switching active nav tab
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      if (tab) {
+        this.activeNavTab.set(tab as any);
+      }
+    });
+
+    // Guard activeNavTab based on role: customer cannot access chat feature
+    effect(() => {
+      const role = this.userRole();
+      const tab = this.activeNavTab();
+      if (role === 'CUSTOMER' && tab === 'chat') {
+        untracked(() => {
+          this.activeNavTab.set('home');
+        });
+      }
+    });
   }
 
   onRefresh(event: any): void {
@@ -168,6 +195,23 @@ export class HomePage {
   onClaimOffer(offer: OfferDTO): void {
     this.homeService.claimOffer(offer).subscribe({
       next: (voucher) => {
+        this.customerVouchersService.addVoucher({
+          id: voucher.id,
+          voucher_code: voucher.voucher_code,
+          offer_id: voucher.offer_id,
+          customer_id: voucher.customer_id,
+          business_id: voucher.business_id,
+          status: 'ISSUED',
+          issued_at: voucher.issued_at,
+          redeemed_at: null,
+          expires_at: voucher.expires_at,
+          redeemed_by_id: null,
+          created_at: voucher.created_at,
+          updated_at: voucher.updated_at,
+          offerTitle: voucher.offerTitle || 'Promotional Offer',
+          businessName: voucher.businessName || 'BizzDeal Partner',
+          discountText: voucher.discountText || 'Special Offer'
+        });
         this.showToast(`🎉 Deal Claimed! Voucher ${voucher.voucher_code} added to your wallet.`);
       },
       error: (err) => {
@@ -185,6 +229,9 @@ export class HomePage {
   }
 
   onTabSelect(tab: NavTab): void {
+    if (this.userRole() === 'CUSTOMER' && tab === 'chat') {
+      return;
+    }
     this.activeNavTab.set(tab);
   }
 
@@ -244,6 +291,9 @@ export class HomePage {
   }
 
   onChatWithBusiness(ownerId: string): void {
+    if (this.userRole() === 'CUSTOMER') {
+      return;
+    }
     this.selectedBizModal.set(null);
     this.chatService.createOrGetConversation(ownerId);
     this.activeNavTab.set('chat');

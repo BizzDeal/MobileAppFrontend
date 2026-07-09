@@ -1,0 +1,342 @@
+<ion-header class="ion-no-border premium-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" color="dark">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Redeem Voucher</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding auth-content">
+  <div class="auth-container">
+    
+    <!-- STEP 1: VERIFICATION FORM -->
+    @if (step === 'VERIFY') {
+      <div class="auth-header">
+        <h2>Voucher Redemption</h2>
+        <p>Enter the customer's phone and voucher code, or scan their voucher QR code to begin.</p>
+      </div>
+
+      <div class="premium-form-card">
+        <div class="scanner-trigger-box">
+          <button type="button" class="scanner-btn" (click)="openScanner()">
+            <ion-icon name="scan-outline"></ion-icon>
+            <span>Scan Voucher QR Code</span>
+          </button>
+        </div>
+
+        <div class="divider-line">
+          <span>OR ENTER DETAILS</span>
+        </div>
+
+        <form [formGroup]="verificationForm" (ngSubmit)="onVerify()" class="premium-form">
+          <div class="form-group">
+            <label class="form-label">
+              Customer Phone <span class="required-star">*</span>
+            </label>
+            <ion-item class="premium-input-item" lines="none">
+              <ion-input
+                type="tel"
+                formControlName="customer_phone"
+                placeholder="e.g. 9876543210"
+                class="premium-input">
+              </ion-input>
+            </ion-item>
+            <div class="error-container">
+              @if (vf['customer_phone'].invalid && (vf['customer_phone'].dirty || vf['customer_phone'].touched)) {
+                <span class="error-message">
+                  @if (vf['customer_phone'].errors?.['required']) {
+                    Customer phone number is required
+                  }
+                  @if (vf['customer_phone'].errors?.['pattern']) {
+                    Phone number must be exactly 10 digits
+                  }
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Voucher Code <span class="required-star">*</span>
+            </label>
+            <ion-item class="premium-input-item" lines="none">
+              <ion-input
+                type="text"
+                formControlName="voucher_code"
+                placeholder="e.g. VOU-XXXX-XXXX"
+                class="premium-input code-input">
+              </ion-input>
+            </ion-item>
+            <div class="error-container">
+              @if (vf['voucher_code'].invalid && (vf['voucher_code'].dirty || vf['voucher_code'].touched)) {
+                <span class="error-message">
+                  @if (vf['voucher_code'].errors?.['required']) {
+                    Voucher code is required
+                  }
+                  @if (vf['voucher_code'].errors?.['minlength']) {
+                    Voucher code is too short
+                  }
+                </span>
+              }
+            </div>
+          </div>
+
+          @if (errorMessage) {
+            <div class="error-alert">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <span>{{ errorMessage }}</span>
+            </div>
+          }
+
+          <div class="actions">
+            <button type="submit" class="action-btn primary full-width" [disabled]="verificationForm.invalid || isVerifying">
+              @if (isVerifying) {
+                <ion-spinner name="crescent"></ion-spinner>
+              } @else {
+                <span>Verify Voucher</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    <!-- STEP 2: REDEMPTION TRANSACTION FORM -->
+    @if (step === 'REDEEM' && voucherDetails) {
+      <div class="auth-header">
+        <h2>Configure Redemption</h2>
+        <p>Review customer voucher benefits and calculate final billing.</p>
+      </div>
+
+      <!-- Voucher Summary Card -->
+      <div class="voucher-details-card bd-card-premium">
+        <div class="card-title-row">
+          <ion-icon name="ticket-outline" class="card-title-icon"></ion-icon>
+          <h3>{{ voucherDetails.offerTitle }}</h3>
+        </div>
+        <div class="badge-row">
+          <span class="discount-badge">{{ voucherDetails.discountText }}</span>
+          <span class="status-badge active">Valid</span>
+        </div>
+        <div class="divider"></div>
+        <div class="detail-row">
+          <span class="detail-label">Customer Name</span>
+          <span class="detail-val">{{ voucherDetails.customer_name }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Phone</span>
+          <span class="detail-val">{{ voucherDetails.customer_phone }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Voucher Code</span>
+          <span class="detail-val code-highlight">{{ voucherDetails.voucher_code }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Available Wallet</span>
+          <span class="detail-val wallet-val">
+            <ion-icon name="wallet-outline"></ion-icon> ${{ voucherDetails.wallet_balance.toFixed(2) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="premium-form-card redemption-card">
+        <form [formGroup]="redemptionForm" (ngSubmit)="onSubmitRedeem()" class="premium-form">
+          <div class="form-group">
+            <label class="form-label">
+              Total Bill Amount ($) 
+              @if (voucherDetails.discount_type === 'PERCENTAGE') {
+                <span class="required-star">*</span>
+              }
+            </label>
+            <ion-item class="premium-input-item" lines="none">
+              <ion-input
+                type="number"
+                inputmode="decimal"
+                formControlName="bill_amount"
+                placeholder="0.00"
+                class="premium-input">
+              </ion-input>
+            </ion-item>
+            <div class="error-container">
+              @if (rf['bill_amount'].invalid && (rf['bill_amount'].dirty || rf['bill_amount'].touched)) {
+                <span class="error-message">
+                  @if (rf['bill_amount'].errors?.['required']) {
+                    Bill amount is required for percentage discount
+                  }
+                  @if (rf['bill_amount'].errors?.['min']) {
+                    Bill amount must be positive
+                  }
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Wallet Amount to Use ($)
+            </label>
+            <ion-item class="premium-input-item" lines="none">
+              <ion-input
+                type="number"
+                inputmode="decimal"
+                formControlName="wallet_amount_to_use"
+                placeholder="0.00"
+                class="premium-input">
+              </ion-input>
+            </ion-item>
+            <div class="error-container">
+              @if (rf['wallet_amount_to_use'].invalid && (rf['wallet_amount_to_use'].dirty || rf['wallet_amount_to_use'].touched)) {
+                <span class="error-message">
+                  @if (rf['wallet_amount_to_use'].errors?.['min']) {
+                    Wallet amount cannot be negative
+                  }
+                  @if (rf['wallet_amount_to_use'].errors?.['exceedBalance']) {
+                    Cannot exceed available wallet balance (${{ voucherDetails.wallet_balance.toFixed(2) }})
+                  }
+                  @if (rf['wallet_amount_to_use'].errors?.['exceedBill']) {
+                    Cannot exceed remaining bill amount (${{ remainingBill.toFixed(2) }})
+                  }
+                </span>
+              }
+            </div>
+          </div>
+
+          <!-- Live Receipt Calculations -->
+          @if (redemptionForm.value.bill_amount > 0) {
+            <div class="receipt-card">
+              <div class="receipt-header">
+                <ion-icon name="receipt-outline"></ion-icon>
+                <h4>Redemption Summary</h4>
+              </div>
+              <div class="receipt-row">
+                <span>Original Bill</span>
+                <span>${{ redemptionForm.value.bill_amount | number:'1.2-2' }}</span>
+              </div>
+              <div class="receipt-row discount">
+                <span>Voucher Discount ({{ voucherDetails.discountText }})</span>
+                <span>-${{ discountAmount | number:'1.2-2' }}</span>
+              </div>
+              @if (redemptionForm.value.wallet_amount_to_use > 0 && !rf['wallet_amount_to_use'].invalid) {
+                <div class="receipt-row wallet">
+                  <span>Wallet Balance Used</span>
+                  <span>-${{ redemptionForm.value.wallet_amount_to_use | number:'1.2-2' }}</span>
+                </div>
+              }
+              <div class="receipt-divider"></div>
+              <div class="receipt-row total">
+                <span>Final Amount to Pay</span>
+                <span>${{ finalPayment | number:'1.2-2' }}</span>
+              </div>
+              <div class="receipt-footer">
+                <span>New Customer Wallet Balance: ${{ newWalletBalance | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          }
+
+          @if (errorMessage) {
+            <div class="error-alert">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <span>{{ errorMessage }}</span>
+            </div>
+          }
+
+          <div class="actions button-group">
+            <button type="button" class="action-btn secondary" (click)="resetPage()">
+              Cancel
+            </button>
+            <button type="submit" class="action-btn primary" [disabled]="redemptionForm.invalid || isRedeeming">
+              @if (isRedeeming) {
+                <ion-spinner name="crescent"></ion-spinner>
+              } @else {
+                <span>Confirm Redemption</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    <!-- STEP 3: REDEMPTION SUCCESS OVERLAY -->
+    @if (step === 'SUCCESS' && redemptionResult) {
+      <div class="success-screen">
+        <div class="success-icon-box animate-scale">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <h2>Redeemed Successfully!</h2>
+        <p>Voucher transaction processed and database updated.</p>
+
+        <div class="success-details-card bd-card">
+          <div class="success-row">
+            <span class="label">Voucher Code</span>
+            <span class="val">{{ redemptionResult.voucher_code }}</span>
+          </div>
+          <div class="success-row">
+            <span class="label">Discount Applied</span>
+            <span class="val highlight">${{ redemptionResult.discount_amount.toFixed(2) }}</span>
+          </div>
+          @if (redemptionResult.wallet_amount_used > 0) {
+            <div class="success-row">
+              <span class="label">Wallet Balance Used</span>
+              <span class="val highlight">${{ redemptionResult.wallet_amount_used.toFixed(2) }}</span>
+            </div>
+          }
+          <div class="success-row total">
+            <span class="label">Customer Paid</span>
+            <span class="val">${{ redemptionResult.final_bill_amount.toFixed(2) }}</span>
+          </div>
+          <div class="success-row wallet">
+            <span class="label">New Wallet Balance</span>
+            <span class="val">${{ redemptionResult.new_wallet_balance.toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <p class="redirect-notice">Redirecting you to dashboard...</p>
+      </div>
+    }
+
+  </div>
+</ion-content>
+
+<!-- MOCK QR SCANNER MODAL -->
+<ion-modal [isOpen]="isScannerOpen" (didDismiss)="closeScanner()" class="scanner-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="scanner-toolbar">
+        <ion-title>Scan QR Code</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeScanner()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="scanner-content">
+      <div class="scanner-container">
+        <div class="camera-viewport">
+          <div class="scanner-laser"></div>
+          <div class="corner-indicator top-left"></div>
+          <div class="corner-indicator top-right"></div>
+          <div class="corner-indicator bottom-left"></div>
+          <div class="corner-indicator bottom-right"></div>
+          <div class="scanner-guide-text">Align voucher QR code in this window</div>
+        </div>
+
+        <div class="scanner-simulation-panel">
+          <p class="sim-label">Select a simulated customer QR code below:</p>
+          <div class="sim-options-list">
+            @for (qr of mockQRCodes; track qr.code) {
+              <button class="sim-qr-option-btn" (click)="simulateScan(qr.code, qr.phone)">
+                <span class="option-label">{{ qr.label }}</span>
+                <span class="option-code">{{ qr.code }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

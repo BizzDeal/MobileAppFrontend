@@ -6,7 +6,7 @@
     <header class="dashboard-header">
       <div class="brand-info">
         <img [src]="profile()?.profile_pic_url" alt="Profile Pic" class="business-logo" />
-        <h1 class="business-name"><span class="truncate-name">{{ getFirstName(profile()?.full_name) }}</span></h1>
+        <h1 class="business-name"><span class="truncate-name">Hi {{ getFirstName(profile()?.full_name) }}</span></h1>
       </div>
       <button class="notification-btn bd-btn-outline" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
         <ion-icon name="notifications-outline" class="notif-icon" />
@@ -17,25 +17,70 @@
     </header>
 
   <div class="dashboard-content">
-    <section class="analytics-section">
-      <div class="analytics-grid">
-        <div class="stat-card">
+    <section class="business-profile-card bd-card-premium">
+      <div class="biz-profile-main">
+        <div class="logo-wrapper">
+          <img [src]="profile()?.business_logo_url || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80'" alt="Business Logo" class="biz-profile-logo" />
+        </div>
+        <div class="biz-info">
+          <h2 class="biz-profile-name">
+            {{ profile()?.business_name || 'My Business' }}
+            <ion-icon name="checkmark-circle" class="verified-badge"></ion-icon>
+          </h2>
+          <div class="biz-meta">
+            <span class="biz-status" [class.active]="profile()?.status === 'ACTIVE'">
+              {{ profile()?.status | titlecase }}
+            </span>
+            <span class="meta-dot">•</span>
+            <span class="biz-joined">Joined {{ profile()?.created_at | date:'MMM yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="analytics-section feed-section">
+      <div class="horizontal-scroll-feed no-padding">
+        <div class="stat-card scroll-card">
           <span class="stat-label">Active Offers</span>
           <h2 class="stat-value">{{ data.analytics.activeOffersCount }}</h2>
         </div>
-        <div class="stat-card">
+        <div class="stat-card scroll-card">
           <span class="stat-label">Vouchers Redeemed</span>
           <h2 class="stat-value">{{ data.analytics.vouchersRedeemedToday }}</h2>
         </div>
-        <div class="stat-card">
+        <div class="stat-card scroll-card">
           <span class="stat-label">Business Growth</span>
           <h3 class="stat-value highlight">+{{ data.analytics.businessGrowth }}%</h3>
         </div>
-        <div class="stat-card">
+        <div class="stat-card scroll-card">
           <span class="stat-label">Successful Referrals</span>
           <h2 class="stat-value">{{ data.analytics.successfulReferrals }}</h2>
         </div>
       </div>
+    </section>
+
+    <!-- Deals and Offers -->
+    <section class="feed-section member-deals-section">
+      <div class="section-header">
+        <div class="header-left">
+          <ion-icon name="pricetag-outline" class="section-icon spark" />
+          <h2 class="section-title">Deals and Offers</h2>
+        </div>
+      </div>
+      @if (approvedOffers().length > 0) {
+        <div class="horizontal-scroll-feed no-padding-top">
+          @for (offer of approvedOffers(); track offer.id) {
+            <app-offer-card 
+              [offer]="offer"
+              [hideClaimButton]="true"
+              (cardClick)="onDealClick($event)" />
+          }
+        </div>
+      } @else {
+        <div class="empty-feed">
+          <p>You haven't created any deals yet.</p>
+        </div>
+      }
     </section>
 
     <!-- Quick Actions -->
@@ -54,36 +99,66 @@
           Redeem Voucher
         </button>
       </div>
+      <div class="secondary-actions">
+        <button class="action-btn" type="button" (click)="onViewAnalytics()">
+          <ion-icon name="bar-chart-outline" />
+          <span>Analytics</span>
+        </button>
+        <button class="action-btn bd-btn-outline" type="button" (click)="onViewDirectory()">
+          <ion-icon name="business-outline" />
+          Business Directory
+        </button>
+      </div>
     </section>
 
-    <!-- Important Alerts -->
-    @if (data.alerts.length > 0) {
-      <section class="alerts-section">
-        <h3>Important Alerts</h3>
-        <div class="alerts-list">
-          @for (alert of data.alerts; track alert.id) {
-            <div class="alert-item" [class]="alert.type">
-              <p>{{ alert.message }}</p>
+    <!-- Pending Approvals -->
+    @if (pendingOffers().length > 0) {
+      <section class="feed-section pending-approvals-section">
+        <div class="section-header">
+          <div class="header-left">
+            <ion-icon name="hourglass-outline" class="section-icon spark" />
+            <h2 class="section-title">Pending Approvals</h2>
+          </div>
+        </div>
+        <div class="pending-list">
+          @for (offer of pendingOffers(); track offer.id) {
+            <div class="pending-item" (click)="onDealClick(offer)">
+              <div class="pending-item-content">
+                <div class="pending-icon-box">
+                  <ion-icon name="pricetag-outline"></ion-icon>
+                </div>
+                <div class="pending-details">
+                  <h4 class="pending-title">{{ offer.title }}</h4>
+                  <span class="pending-status">Pending Admin Approval</span>
+                </div>
+              </div>
+              <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
             </div>
           }
         </div>
       </section>
     }
 
-    <!-- Recent Activity Feed -->
-    <section class="activity-section">
-      <h3>Recent Activity</h3>
-      <div class="activity-list">
-        @for (act of data.recentActivity; track act.id) {
-          <div class="activity-item">
-            <div class="activity-text">
-              <p>{{ act.text }}</p>
-            </div>
-            <span class="time">{{ act.time }}</span>
+    <!-- Upcoming Meetings -->
+    @if (upcomingMeetings().length > 0) {
+      <section class="feed-section upcoming-meetings-section">
+        <div class="section-header">
+          <div class="header-left">
+            <ion-icon name="calendar-outline" class="section-icon spark" />
+            <h2 class="section-title">Upcoming Meetings</h2>
           </div>
-        }
-      </div>
-    </section>
+        </div>
+        <div class="meetings-feed">
+          @for (meeting of upcomingMeetings(); track meeting.id) {
+            <app-meeting-card 
+              [meeting]="meeting" 
+              (rsvpChange)="handleRsvp($event)" />
+          }
+        </div>
+      </section>
+    }
+
+
   </div>
 </div>
 }

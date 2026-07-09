@@ -1,0 +1,86 @@
+<ion-header class="ion-no-border premium-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn" aria-label="Go Back">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Business Directory</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="directory-content">
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-bar-wrapper">
+      <ion-icon name="search-outline" class="search-icon"></ion-icon>
+      <ion-input
+        type="text"
+        placeholder="Search businesses..."
+        [value]="searchQuery()"
+        (ionInput)="onSearchChange($event)"
+        class="directory-search-input">
+      </ion-input>
+      <ion-icon name="options-outline" class="filter-icon"></ion-icon>
+    </div>
+  </div>
+
+  <!-- Businesses List -->
+  <div class="directory-list-container">
+    <div class="directory-list">
+      @for (biz of filteredBusinesses(); track biz.id) {
+        <div class="business-card bd-card animate-card">
+          <!-- Business header profile row -->
+          <div class="biz-header-row">
+            <div class="initials-avatar" [style.background]="getCategoryTheme(biz.categoryName).gradient">
+              @if (biz.logoUrl) {
+                <img [src]="biz.logoUrl" alt="{{ biz.name }}" class="avatar-img" />
+              } @else {
+                <span class="initials-text">{{ biz.initials }}</span>
+              }
+            </div>
+            <div class="biz-title-info">
+              <h3 class="biz-name">{{ biz.name }}</h3>
+              <span class="category-badge" 
+                    [style.background]="getCategoryTheme(biz.categoryName).bg" 
+                    [style.color]="getCategoryTheme(biz.categoryName).color"
+                    [style.border-color]="getCategoryTheme(biz.categoryName).border">
+                {{ biz.categoryName }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <p class="biz-desc">{{ biz.description }}</p>
+
+          <!-- Quick Action Buttons -->
+          <div class="actions-row">
+            <button class="action-btn" (click)="callBusiness(biz.phone)" type="button">
+              <ion-icon name="call-outline" class="action-icon"></ion-icon>
+              <span>Call</span>
+            </button>
+            @if (userRole() !== 'CUSTOMER') {
+              <button class="action-btn chat-btn" (click)="startChat(biz.owner_id)" type="button">
+                <ion-icon name="chatbubble-ellipses-outline" class="action-icon chat-color"></ion-icon>
+                <span>Chat</span>
+              </button>
+            }
+            <button class="action-btn" (click)="openWebsite(biz.website)" type="button">
+              <ion-icon name="globe-outline" class="action-icon"></ion-icon>
+              <span>Web</span>
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <!-- Empty Search State -->
+        <div class="empty-state">
+          <div class="empty-icon-glow">
+            <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+          </div>
+          <h3>No businesses found</h3>
+          <p>We couldn't find any business matching "{{ searchQuery() }}". Try adjusting your search term.</p>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>

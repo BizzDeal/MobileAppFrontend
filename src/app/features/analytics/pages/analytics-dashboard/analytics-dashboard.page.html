@@ -1,0 +1,119 @@
+<ion-header class="ion-no-border premium-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn" aria-label="Go Back">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Analytics</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="analytics-content">
+  <!-- 1. Stats Grid (2x2) -->
+  <div class="stats-grid">
+    <div class="stat-card bd-card">
+      <div class="card-header">
+        <span class="card-label">Growth</span>
+        <div class="icon-box growth">
+          <ion-icon name="trending-up-outline"></ion-icon>
+        </div>
+      </div>
+      <h2 class="card-value">+24%</h2>
+      <span class="card-comparison positive">vs last month</span>
+    </div>
+
+    <div class="stat-card bd-card">
+      <div class="card-header">
+        <span class="card-label">Referrals</span>
+        <div class="icon-box referrals">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+      </div>
+      <h2 class="card-value">128</h2>
+      <span class="card-comparison">Total shared</span>
+    </div>
+
+    <div class="stat-card bd-card">
+      <div class="card-header">
+        <span class="card-label">Vouchers</span>
+        <div class="icon-box vouchers">
+          <ion-icon name="ticket-outline"></ion-icon>
+        </div>
+      </div>
+      <h2 class="card-value">5,620</h2>
+      <span class="card-comparison">Redeemed value</span>
+    </div>
+
+    <div class="stat-card bd-card">
+      <div class="card-header">
+        <span class="card-label">Offers</span>
+        <div class="icon-box offers">
+          <ion-icon name="pricetag-outline"></ion-icon>
+        </div>
+      </div>
+      <h2 class="card-value">186</h2>
+      <span class="card-comparison">Active claims</span>
+    </div>
+  </div>
+
+  <!-- 2. Growth Trends Chart -->
+  <div class="chart-section-wrapper">
+    <h3 class="section-title">Growth Trends</h3>
+    <div class="chart-card bd-card">
+      <apx-chart
+        [series]="growthChartOptions.series"
+        [chart]="growthChartOptions.chart"
+        [plotOptions]="growthChartOptions.plotOptions"
+        [fill]="growthChartOptions.fill"
+        [dataLabels]="growthChartOptions.dataLabels"
+        [grid]="growthChartOptions.grid"
+        [xaxis]="growthChartOptions.xaxis"
+        [yaxis]="growthChartOptions.yaxis"
+        [tooltip]="growthChartOptions.tooltip">
+      </apx-chart>
+    </div>
+  </div>
+
+  <!-- 3. Referral Statistics Chart -->
+  <div class="chart-section-wrapper">
+    <div class="section-header-row">
+      <h3 class="section-title">Referral Statistics</h3>
+      <ion-segment [value]="referralView()" (ionChange)="onSegmentChange($event)" mode="ios" class="referral-segment">
+        <ion-segment-button value="trend">
+          <ion-label>Trend</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="status">
+          <ion-label>Status</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <div class="chart-card bd-card">
+      @if (referralView() === 'trend') {
+        <apx-chart
+          [series]="referralTrendChartOptions.series"
+          [chart]="referralTrendChartOptions.chart"
+          [plotOptions]="referralTrendChartOptions.plotOptions"
+          [fill]="referralTrendChartOptions.fill"
+          [dataLabels]="referralTrendChartOptions.dataLabels"
+          [grid]="referralTrendChartOptions.grid"
+          [xaxis]="referralTrendChartOptions.xaxis"
+          [yaxis]="referralTrendChartOptions.yaxis"
+          [tooltip]="referralTrendChartOptions.tooltip">
+        </apx-chart>
+      } @else {
+        <apx-chart
+          [series]="referralStatusChartOptions.series"
+          [chart]="referralStatusChartOptions.chart"
+          [labels]="referralStatusChartOptions.labels"
+          [colors]="referralStatusChartOptions.colors"
+          [plotOptions]="referralStatusChartOptions.plotOptions"
+          [dataLabels]="referralStatusChartOptions.dataLabels"
+          [legend]="referralStatusChartOptions.legend"
+          [tooltip]="referralStatusChartOptions.tooltip">
+        </apx-chart>
+      }
+    </div>
+  </div>
+</ion-content>

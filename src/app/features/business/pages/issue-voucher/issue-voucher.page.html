@@ -1,0 +1,88 @@
+<ion-header class="ion-no-border premium-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" color="dark">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Issue Voucher</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding auth-content">
+  <div class="auth-container">
+    <div class="auth-header">
+      <h2>Reward Customers</h2>
+      <p>Issue a voucher directly to a customer for one of your active offers.</p>
+    </div>
+
+    @if (successMessage) {
+      <div class="success-alert">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <span>{{ successMessage }}</span>
+      </div>
+    }
+
+    <form [formGroup]="issueForm" (ngSubmit)="onSubmit()" class="premium-form">
+      <div class="form-group">
+        <label class="form-label">
+          Select Offer <span class="required-star">*</span>
+        </label>
+        <ion-item class="premium-input-item" lines="none">
+          <ion-select formControlName="offer_id" placeholder="Choose an offer" interface="action-sheet" class="premium-select custom-select">
+            @for (offer of dashboardData()?.myOffers; track offer.id) {
+              <ion-select-option [value]="offer.id">{{ offer.title }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <div class="error-container">
+          @if (f['offer_id'].invalid && (f['offer_id'].dirty || f['offer_id'].touched)) {
+            <span class="error-message">Offer selection is required</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          Customer Phone <span class="required-star">*</span>
+        </label>
+        <ion-item class="premium-input-item" lines="none">
+          <ion-input
+            type="tel"
+            formControlName="customer_phone"
+            placeholder="e.g. 9876543210"
+            class="premium-input">
+          </ion-input>
+        </ion-item>
+        <div class="error-container">
+          @if (f['customer_phone'].invalid && (f['customer_phone'].dirty || f['customer_phone'].touched)) {
+            <span class="error-message">
+              @if (f['customer_phone'].errors?.['required']) {
+                Phone number is required
+              }
+              @if (f['customer_phone'].errors?.['minlength']) {
+                Phone number must be at least 10 characters
+              }
+            </span>
+          }
+        </div>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-alert">
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <div class="actions">
+        <button type="submit" class="action-btn primary full-width" [disabled]="issueForm.invalid || isSubmitting">
+          @if (isSubmitting) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <span>Issue Voucher</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</ion-content>

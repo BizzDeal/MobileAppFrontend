@@ -18,11 +18,11 @@
       </div>
       <span class="nav-label">Chat</span>
     </button>
-    <button type="button" class="nav-item" [class.active]="activeTab() === 'offers'" (click)="tabSelect.emit('offers')" aria-label="Offers">
+    <button type="button" class="nav-item" [class.active]="activeTab() === 'referrals'" (click)="tabSelect.emit('referrals')" aria-label="Referrals">
       <div class="icon-box">
-        <ion-icon [name]="activeTab() === 'offers' ? 'pricetag' : 'pricetag-outline'" />
+        <ion-icon [name]="activeTab() === 'referrals' ? 'people' : 'people-outline'" />
       </div>
-      <span class="nav-label">Offers</span>
+      <span class="nav-label">Referrals</span>
     </button>
     <button type="button" class="nav-item" [class.active]="activeTab() === 'profile'" (click)="tabSelect.emit('profile')" aria-label="Profile">
       <div class="icon-box">
@@ -43,11 +43,11 @@
       </div>
       <span class="nav-label">Search</span>
     </button>
-    <button type="button" class="nav-item" [class.active]="activeTab() === 'chat'" (click)="tabSelect.emit('chat')" aria-label="Chat">
+    <button type="button" class="nav-item" [class.active]="activeTab() === 'vouchers'" (click)="tabSelect.emit('vouchers')" aria-label="Vouchers">
       <div class="icon-box">
-        <ion-icon [name]="activeTab() === 'chat' ? 'chatbubble' : 'chatbubble-outline'" />
+        <ion-icon [name]="activeTab() === 'vouchers' ? 'ticket' : 'ticket-outline'" />
       </div>
-      <span class="nav-label">Chat</span>
+      <span class="nav-label">Vouchers</span>
     </button>
     <button type="button" class="nav-item" [class.active]="activeTab() === 'wallet'" (click)="tabSelect.emit('wallet')" aria-label="Wallet">
       <div class="icon-box">

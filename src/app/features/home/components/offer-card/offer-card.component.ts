@@ -14,6 +14,7 @@ import { OfferDTO } from '../../models/home.model';
 })
 export class OfferCardComponent {
   readonly offer = input.required<OfferDTO>();
+  readonly hideClaimButton = input<boolean>(false);
 
   readonly claimClick = output<OfferDTO>();
   readonly cardClick = output<OfferDTO>();

@@ -11,7 +11,7 @@ const MOCK_PROFILE: ProfileDTO = {
   whatsapp: '+91 98765 43210',
   email: 'raviteja@bizzdeal.com',
   address: 'Banjara Hills, Hyderabad',
-  role: 'MEMBER',
+  role: 'ADMIN',
   status: 'ACTIVE',
   profile_pic_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
   business_name: 'BizzDeal HQ',

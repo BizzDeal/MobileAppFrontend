@@ -46,6 +46,20 @@ body {
   color: var(--bizzdeal-text-primary);
 }
 
+.premium-header {
+  ion-toolbar {
+    --background: transparent;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    
+    ion-title {
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+  }
+}
+
 /* Global utility classes for BizzDeal design tokens */
 .bd-card {
   background: var(--bizzdeal-bg-surface);
@@ -108,5 +122,18 @@ ion-select::part(placeholder) {
   color: var(--ion-color-danger, #ff3b30);
   font-weight: 700;
   margin-left: 2px;
+}
+
+/* Global custom select caret styling */
+ion-select.custom-select {
+  &::part(icon) {
+    position: absolute !important;
+    right: 16px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    color: var(--bizzdeal-text-secondary);
+    opacity: 0.8;
+  }
 }
 

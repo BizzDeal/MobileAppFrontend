@@ -1,0 +1,161 @@
+<ion-content class="ion-padding admin-dashboard-content">
+  <div class="dashboard-header">
+    <h1>Platform Overview</h1>
+    <p class="subtitle">Real-time moderation and analytics</p>
+  </div>
+
+  <ng-container *ngIf="analytics$ | async as analytics; else loadingAnalytics">
+    <!-- Platform Health Stats -->
+    <div class="stats-grid">
+      <ion-card class="stat-card primary-card">
+        <ion-card-content>
+          <div class="stat-icon"><ion-icon name="people-outline"></ion-icon></div>
+          <div class="stat-info">
+            <h3>{{ analytics.activeMembers }} / {{ analytics.totalMembers }}</h3>
+            <p>Active Members</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon"><ion-icon name="people-outline"></ion-icon></div>
+          <div class="stat-info">
+            <h3>{{ analytics.totalCustomers }}</h3>
+            <p>Total Customers</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon"><ion-icon name="pricetags-outline"></ion-icon></div>
+          <div class="stat-info">
+            <h3>{{ analytics.totalVouchers }}</h3>
+            <p>Vouchers Claimed</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card success-card">
+        <ion-card-content>
+          <div class="stat-icon"><ion-icon name="cash-outline"></ion-icon></div>
+          <div class="stat-info">
+            <h3>${{ analytics.revenue | number:'1.2-2' }}</h3>
+            <p>Total Revenue</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Revenue Analytics Chart -->
+    <ion-card class="chart-card">
+      <ion-card-header>
+        <ion-card-title>Revenue Analytics</ion-card-title>
+        <ion-button fill="clear" size="small" (click)="toggleChartType()">
+          <ion-icon slot="start" [name]="chartType === 'area' ? 'bar-chart-outline' : 'pulse-outline'"></ion-icon>
+          Toggle View
+        </ion-button>
+      </ion-card-header>
+      <ion-card-content>
+        <apx-chart
+          *ngIf="chartOptions"
+          [series]="chartOptions.series"
+          [chart]="chartOptions.chart"
+          [xaxis]="chartOptions.xaxis"
+          [stroke]="chartOptions.stroke"
+          [dataLabels]="chartOptions.dataLabels"
+          [colors]="chartOptions.colors"
+          [fill]="chartOptions.fill"
+        ></apx-chart>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+
+  <ng-template #loadingAnalytics>
+    <div class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading analytics...</p>
+    </div>
+  </ng-template>
+
+  <!-- Action Required Section -->
+  <div class="action-required-section">
+    <h2>Action Required Queue</h2>
+    
+    <div class="queues-container">
+      <!-- Pending Members -->
+      <ion-card class="queue-card">
+        <ion-card-header>
+          <ion-card-title>Pending Members</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="ion-no-padding">
+          <ng-container *ngIf="pendingMembers$ | async as members; else loadingMembers">
+            <ion-list *ngIf="members.length > 0; else emptyMembers" lines="full">
+              <ion-item *ngFor="let member of members" class="queue-item">
+                <ion-label>
+                  <h3>{{ member.full_name }}</h3>
+                  <p>{{ member.phone }} &bull; Applied: {{ member.created_at | date:'shortDate' }}</p>
+                </ion-label>
+                <div class="action-buttons" slot="end">
+                  <ion-button color="success" fill="clear" (click)="approveMember(member.id)">
+                    <ion-icon slot="icon-only" name="checkmark-circle-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button color="danger" fill="clear" (click)="rejectMember(member.id)">
+                    <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-item>
+            </ion-list>
+            <ng-template #emptyMembers>
+              <div class="empty-state">
+                <p>No pending members at this time.</p>
+              </div>
+            </ng-template>
+          </ng-container>
+          <ng-template #loadingMembers>
+             <ion-progress-bar type="indeterminate"></ion-progress-bar>
+          </ng-template>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Pending Offers -->
+      <ion-card class="queue-card">
+        <ion-card-header>
+          <ion-card-title>Pending Offers</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="ion-no-padding">
+          <ng-container *ngIf="pendingOffers$ | async as offers; else loadingOffers">
+            <ion-list *ngIf="offers.length > 0; else emptyOffers" lines="full">
+              <ion-item *ngFor="let offer of offers" class="queue-item">
+                <ion-label>
+                  <h3>{{ offer.title }}</h3>
+                  <p>{{ offer.business.name }} &bull; Submitted: {{ offer.created_at | date:'shortDate' }}</p>
+                </ion-label>
+                <div class="action-buttons" slot="end">
+                  <ion-button color="success" fill="clear" (click)="approveOffer(offer.id)">
+                    <ion-icon slot="icon-only" name="checkmark-circle-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button color="danger" fill="clear" (click)="rejectOffer(offer.id)">
+                    <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-item>
+            </ion-list>
+            <ng-template #emptyOffers>
+              <div class="empty-state">
+                <p>No pending offers at this time.</p>
+              </div>
+            </ng-template>
+          </ng-container>
+          <ng-template #loadingOffers>
+            <ion-progress-bar type="indeterminate"></ion-progress-bar>
+          </ng-template>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+
+
+</ion-content>

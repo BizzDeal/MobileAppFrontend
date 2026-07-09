@@ -1,0 +1,506 @@
+.referrals-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--bizzdeal-spacing-md);
+  padding-bottom: 110px; /* Space for bottom nav + FAB padding */
+  background: var(--bizzdeal-bg-main);
+  overflow-y: auto;
+}
+
+// 1. Custom Header (consistent with Meetings page design)
+.referrals-header {
+  background: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-lg);
+  padding: var(--bizzdeal-spacing-md);
+  margin-bottom: var(--bizzdeal-spacing-md);
+  box-shadow: var(--bizzdeal-shadow-sm);
+  border: 1px solid var(--bizzdeal-border-color);
+  animation: fadeIn 0.4s ease-out;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--bizzdeal-spacing-md);
+  }
+
+  .header-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--bizzdeal-radius-md);
+    background: var(--bizzdeal-gradient-primary-diagonal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bizzdeal-text-on-primary);
+    box-shadow: var(--bizzdeal-shadow-primary);
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  }
+
+  .header-text {
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--bizzdeal-text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 2px 0 0 0;
+      font-size: 0.85rem;
+      color: var(--bizzdeal-text-secondary);
+    }
+  }
+}
+
+// 2. Analytics Overview Layout
+.analytics-overview {
+  margin-bottom: var(--bizzdeal-spacing-md);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--bizzdeal-spacing-sm);
+}
+
+.analytics-card {
+  background: var(--bizzdeal-bg-surface);
+  border: 1px solid var(--bizzdeal-border-color);
+  border-radius: var(--bizzdeal-radius-lg);
+  padding: var(--bizzdeal-spacing-sm) var(--bizzdeal-spacing-md);
+  text-align: center;
+  box-shadow: var(--bizzdeal-shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 11px;
+    color: var(--bizzdeal-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--bizzdeal-spacing-xs);
+  }
+
+  .stat-value {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--bizzdeal-text-primary);
+  }
+}
+
+// 3. Main List Containers & Sections
+.list-container {
+  padding: 0;
+  margin-top: var(--bizzdeal-spacing-sm);
+}
+
+.section-title {
+  margin: 0 0 var(--bizzdeal-spacing-sm) 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bizzdeal-text-primary);
+  letter-spacing: 0.3px;
+}
+
+.referral-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bizzdeal-spacing-sm);
+}
+
+.referral-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bizzdeal-bg-surface);
+  border: 1px solid var(--bizzdeal-border-color);
+  border-radius: var(--bizzdeal-radius-xl);
+  padding: var(--bizzdeal-spacing-md);
+  box-shadow: var(--bizzdeal-shadow-sm);
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.ref-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bizzdeal-spacing-xs);
+
+  .phone-number {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+  }
+
+  .ref-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--bizzdeal-text-secondary);
+
+    ion-icon {
+      font-size: 14px;
+    }
+  }
+
+  .code-badge {
+    font-size: 11px;
+    background: var(--bizzdeal-bg-surface-secondary);
+    border: 1px dashed var(--bizzdeal-border-color);
+    padding: 2px 6px;
+    border-radius: var(--bizzdeal-radius-sm);
+    color: var(--bizzdeal-text-secondary);
+    width: fit-content;
+    margin-top: 2px;
+  }
+}
+
+.ref-status-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--bizzdeal-spacing-xs);
+}
+
+// Status Badges & Colors
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--bizzdeal-radius-full);
+  font-size: 12px;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 14px;
+  }
+
+  &.status-pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--ion-color-warning);
+  }
+
+  &.status-joined {
+    background: rgba(14, 165, 233, 0.1);
+    color: var(--ion-color-secondary);
+  }
+
+  &.status-cancelled {
+    background: rgba(100, 116, 139, 0.1);
+    color: var(--ion-color-medium);
+  }
+}
+
+// 4. States Banner and Container Styles
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--bizzdeal-spacing-xl) var(--bizzdeal-spacing-md);
+  margin-top: 20px;
+
+  .state-text {
+    margin-top: var(--bizzdeal-spacing-sm);
+    color: var(--bizzdeal-text-secondary);
+    font-size: 14px;
+  }
+}
+
+.empty-state {
+  .icon-glow-box {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--bizzdeal-radius-full);
+    background: rgba(30, 136, 229, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--bizzdeal-spacing-md);
+    box-shadow: 0 0 20px rgba(30, 136, 229, 0.1);
+  }
+
+  .empty-icon {
+    font-size: 38px;
+    color: var(--ion-color-primary);
+  }
+
+  .empty-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+    margin: 0 0 var(--bizzdeal-spacing-sm) 0;
+  }
+
+  .empty-desc {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--bizzdeal-text-secondary);
+    margin: 0 0 var(--bizzdeal-spacing-lg) 0;
+    max-width: 280px;
+  }
+
+  .invite-cta-btn {
+    width: auto;
+    padding-left: var(--bizzdeal-spacing-xl);
+    padding-right: var(--bizzdeal-spacing-xl);
+  }
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--bizzdeal-spacing-sm);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--bizzdeal-radius-md);
+  padding: var(--bizzdeal-spacing-sm) var(--bizzdeal-spacing-md);
+  margin: var(--bizzdeal-spacing-md) 0;
+
+  .error-icon {
+    font-size: 20px;
+    color: var(--ion-color-danger);
+    flex-shrink: 0;
+  }
+
+  .error-message {
+    font-size: 13px;
+    color: var(--ion-color-danger);
+    font-weight: 500;
+  }
+}
+
+// 5. Floating Action Button
+ion-fab {
+  position: fixed !important;
+  bottom: calc(var(--bizzdeal-spacing-md) + 90px) !important; /* Float right above the 90px bottom menu bar */
+  right: var(--bizzdeal-spacing-md) !important;
+  z-index: 99999;
+}
+
+.fab-btn {
+  --background: var(--bizzdeal-gradient-primary);
+  --background-activated: var(--bizzdeal-gradient-dark);
+  --box-shadow: var(--bizzdeal-shadow-primary);
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--bizzdeal-text-on-primary);
+  }
+
+  &:hover {
+    --box-shadow: var(--bizzdeal-shadow-primary-glow);
+  }
+}
+
+// 6. Modal and Form Styling (using direct ion-modal selector to style shadow host)
+ion-modal.referral-modal {
+  --height: 480px;
+  --width: 100%;
+  --max-width: 460px;
+  --border-radius: var(--bizzdeal-radius-xl) var(--bizzdeal-radius-xl) 0 0;
+  --box-shadow: var(--bizzdeal-shadow-lg);
+  --background: var(--bizzdeal-bg-surface);
+  align-items: flex-end;
+
+  @media (min-width: 576px) {
+    align-items: center;
+    --width: 440px;
+    --height: 520px;
+    --border-radius: var(--bizzdeal-radius-xl);
+  }
+}
+
+.modal-content-pad {
+  --background: var(--bizzdeal-bg-surface);
+  --padding-top: var(--bizzdeal-spacing-md);
+  --padding-bottom: var(--bizzdeal-spacing-xl);
+  --padding-start: var(--bizzdeal-spacing-lg);
+  --padding-end: var(--bizzdeal-spacing-lg);
+}
+
+.modal-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+
+  .modal-hero-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--bizzdeal-radius-full);
+    background: rgba(30, 136, 229, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--bizzdeal-spacing-md);
+
+    ion-icon {
+      font-size: 30px;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--bizzdeal-text-primary);
+    margin: 0 0 var(--bizzdeal-spacing-xs) 0;
+  }
+
+  .modal-subtitle {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--bizzdeal-text-secondary);
+    margin: 0 0 var(--bizzdeal-spacing-lg) 0;
+    max-width: 290px;
+  }
+
+  form {
+    width: 100%;
+  }
+}
+
+.form-group {
+  width: 100%;
+  text-align: left;
+  margin-bottom: var(--bizzdeal-spacing-md);
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary);
+    margin-bottom: var(--bizzdeal-spacing-sm);
+
+    .required-star {
+      color: var(--ion-color-danger);
+      margin-left: 2px;
+      font-weight: bold;
+    }
+  }
+}
+
+.input-wrapper {
+  background: var(--bizzdeal-bg-surface-secondary);
+  border: 1.5px solid var(--bizzdeal-border-color);
+  border-radius: var(--bizzdeal-radius-md);
+  padding: 2px 8px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+  &:focus-within {
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+  }
+
+  .custom-input {
+    --padding-start: 4px;
+    --padding-end: 4px;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    color: var(--bizzdeal-text-primary);
+    font-size: 15px;
+    font-weight: 500;
+  }
+}
+
+// Error Container with fixed height to prevent layout shifts
+.error-container {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  padding-left: 4px;
+
+  .error-text {
+    color: var(--ion-color-danger);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+}
+
+// General button styles
+.bd-btn-primary {
+  width: 100%;
+  background: var(--bizzdeal-gradient-primary);
+  color: var(--bizzdeal-text-on-primary);
+  border: none;
+  border-radius: var(--bizzdeal-radius-lg);
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: var(--bizzdeal-shadow-primary);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+    box-shadow: var(--bizzdeal-shadow-sm);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .btn-spinner {
+    width: 18px;
+    height: 18px;
+    --color: var(--bizzdeal-text-on-primary);
+  }
+}
+
+.full-btn {
+  margin-top: var(--bizzdeal-spacing-sm);
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Dark Mode Palette Adjustments
+:host-context(html.ion-palette-dark) {
+  .analytics-overview, .referral-card, .modal-content-pad {
+    background: var(--bizzdeal-bg-surface);
+  }
+  .analytics-card {
+    background: var(--bizzdeal-bg-surface-secondary);
+  }
+  .code-badge {
+    background: var(--bizzdeal-bg-surface-secondary);
+  }
+  .input-wrapper {
+    background: var(--bizzdeal-bg-surface-secondary);
+  }
+}

@@ -1,0 +1,60 @@
+<ion-split-pane contentId="admin-main-content">
+  <!-- Sidebar Menu (Responsive) -->
+  <ion-menu contentId="admin-main-content" type="overlay">
+    <ion-header class="ion-no-border">
+      <ion-toolbar color="primary">
+        <ion-title>BizzDeal Admin</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-list lines="none">
+        <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
+          <ion-item [routerLink]="[p.url]" routerDirection="root" routerLinkActive="selected">
+            <ion-icon slot="start" [name]="p.icon + '-outline'"></ion-icon>
+            <ion-label>{{ p.title }}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Main Content Area -->
+  <div class="ion-page" id="admin-main-content">
+    
+    <!-- Top Header -->
+    <ion-header class="admin-top-header ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+
+        <!-- Global Search (Hides on very small screens, or adapts) -->
+        <div class="search-bar-container">
+          <ion-searchbar placeholder="Search Users, Businesses, Offers..." mode="ios" class="admin-searchbar"></ion-searchbar>
+        </div>
+
+        <ion-buttons slot="end" class="header-right-actions">
+          <!-- System Alerts -->
+          <ion-button class="notification-btn">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <ion-badge color="danger" class="alert-badge">3</ion-badge>
+          </ion-button>
+
+          <!-- Admin Profile -->
+          <ion-button class="profile-btn">
+            <ion-avatar>
+              <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="Admin" />
+            </ion-avatar>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Content Router Outlet -->
+    <ion-content>
+      <ion-router-outlet></ion-router-outlet>
+    </ion-content>
+
+  </div>
+</ion-split-pane>

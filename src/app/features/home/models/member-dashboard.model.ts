@@ -19,4 +19,5 @@ export interface MemberDashboardData {
   analytics: MemberDashboardAnalytics;
   alerts: MemberAlert[];
   recentActivity: any[];
+  myOffers: import('../../home/models/home.model').OfferDTO[];
 }

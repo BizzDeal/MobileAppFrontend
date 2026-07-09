@@ -44,7 +44,7 @@ import { ChatInputComponent } from '../chat-input/chat-input.component';
 export class ChatRoomComponent {
   private readonly chatService = inject(ChatService);
 
-  readonly close = output<void>();
+  readonly closeChat = output<void>();
 
   @ViewChild('scrollContainer', { static: false }) private scrollContainer!: ElementRef;
 
@@ -90,7 +90,7 @@ export class ChatRoomComponent {
 
   onBack(): void {
     this.chatService.setActiveConversation(null);
-    this.close.emit();
+    this.closeChat.emit();
   }
 
   onSendMessage(event: {

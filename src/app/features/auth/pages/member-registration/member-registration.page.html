@@ -1,7 +1,7 @@
-<ion-header class="ion-no-border">
+<ion-header class="ion-no-border premium-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/auth/member-payment" (click)="regService.backStep($event)"></ion-back-button>
+      <ion-back-button defaultHref="/auth/member-payment" (click)="regService.backStep($event)" text="" color="dark"></ion-back-button>
     </ion-buttons>
     <ion-title>Member Registration</ion-title>
   </ion-toolbar>
@@ -40,7 +40,7 @@
       <div class="form-group">
         <label class="input-label">Full Name <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.fullName.invalid && regService.regForm.controls.fullName.touched">
-          <input type="text" formControlName="fullName" placeholder="Your full name" class="custom-input" />
+          <ion-input type="text" formControlName="fullName" placeholder="Your full name" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.fullName.invalid && regService.regForm.controls.fullName.touched) {
@@ -53,7 +53,7 @@
       <div class="form-group">
         <label class="input-label">Phone Number (Login) <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.phoneNumber.invalid && regService.regForm.controls.phoneNumber.touched">
-          <input type="tel" formControlName="phoneNumber" placeholder="10-digit mobile number" maxlength="10" class="custom-input" />
+          <ion-input type="tel" formControlName="phoneNumber" placeholder="10-digit mobile number" maxlength="10" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.phoneNumber.invalid && regService.regForm.controls.phoneNumber.touched) {
@@ -66,7 +66,7 @@
       <div class="form-group">
         <label class="input-label">Login PIN <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.loginPin.invalid && regService.regForm.controls.loginPin.touched">
-          <input type="password" formControlName="loginPin" placeholder="...." maxlength="6" class="custom-input" />
+          <ion-input type="password" formControlName="loginPin" placeholder="...." maxlength="6" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.loginPin.invalid && regService.regForm.controls.loginPin.touched) {
@@ -79,7 +79,7 @@
       <div class="form-group">
         <label class="input-label">WhatsApp Number <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.whatsappNumber.invalid && regService.regForm.controls.whatsappNumber.touched">
-          <input type="tel" formControlName="whatsappNumber" placeholder="10-digit WhatsApp number" maxlength="10" class="custom-input" />
+          <ion-input type="tel" formControlName="whatsappNumber" placeholder="10-digit WhatsApp number" maxlength="10" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.whatsappNumber.invalid && regService.regForm.controls.whatsappNumber.touched) {
@@ -92,7 +92,7 @@
       <div class="form-group">
         <label class="input-label">Email <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.email.invalid && regService.regForm.controls.email.touched">
-          <input type="email" formControlName="email" placeholder="Your email address" class="custom-input" />
+          <ion-input type="email" formControlName="email" placeholder="Your email address" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.email.invalid && regService.regForm.controls.email.touched) {
@@ -105,7 +105,7 @@
       <div class="form-group">
         <label class="input-label">Address <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched">
-          <input type="text" formControlName="address" placeholder="Business or physical address" class="custom-input" />
+          <ion-input type="text" formControlName="address" placeholder="Business or physical address" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched) {
@@ -118,7 +118,7 @@
       <div class="form-group">
         <label class="input-label">Business Name <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.businessName.invalid && regService.regForm.controls.businessName.touched">
-          <input type="text" formControlName="businessName" placeholder="Your company or shop name" class="custom-input" />
+          <ion-input type="text" formControlName="businessName" placeholder="Your company or shop name" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.businessName.invalid && regService.regForm.controls.businessName.touched) {
@@ -148,7 +148,7 @@
       <div class="form-group">
         <label class="input-label">Business Description <span class="required-star">*</span></label>
         <div class="textarea-box" [class.input-error]="regService.regForm.controls.businessDescription.invalid && regService.regForm.controls.businessDescription.touched">
-          <textarea formControlName="businessDescription" placeholder="Describe your business and services..." rows="3" class="custom-textarea"></textarea>
+          <ion-textarea formControlName="businessDescription" placeholder="Describe your business and services..." rows="3" class="custom-textarea"></ion-textarea>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.businessDescription.invalid && regService.regForm.controls.businessDescription.touched) {
@@ -161,7 +161,7 @@
       <div class="form-group">
         <label class="input-label">Website <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.website.invalid && regService.regForm.controls.website.touched">
-          <input type="text" formControlName="website" placeholder="https://yourwebsite.com or social link" class="custom-input" />
+          <ion-input type="text" formControlName="website" placeholder="https://yourwebsite.com or social link" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.website.invalid && regService.regForm.controls.website.touched) {
@@ -174,7 +174,7 @@
       <div class="form-group">
         <label class="input-label">GST Number <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.gstNumber.invalid && regService.regForm.controls.gstNumber.touched">
-          <input type="text" formControlName="gstNumber" placeholder="Your 15-digit GSTIN" class="custom-input uppercase-input" />
+          <ion-input type="text" formControlName="gstNumber" placeholder="Your 15-digit GSTIN" class="custom-input uppercase-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.gstNumber.invalid && regService.regForm.controls.gstNumber.touched) {

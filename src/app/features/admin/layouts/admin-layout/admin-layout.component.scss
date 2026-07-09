@@ -1,0 +1,104 @@
+ion-menu {
+  --background: var(--ion-color-light);
+
+  ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+  }
+
+  ion-item {
+    --background: transparent;
+    --background-hover: rgba(var(--ion-color-primary-rgb), 0.1);
+    --color: var(--ion-color-dark);
+    font-weight: 500;
+    margin: 4px 12px;
+    border-radius: 8px;
+    transition: 0.2s ease-in-out;
+
+    ion-icon {
+      color: var(--ion-color-medium);
+    }
+
+    &.selected {
+      --background: rgba(var(--ion-color-primary-rgb), 0.15);
+      --color: var(--ion-color-primary);
+      
+      ion-icon {
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+}
+
+.admin-top-header {
+  border-bottom: 1px solid var(--ion-color-step-150, #e0e0e0);
+  background: white;
+
+  ion-toolbar {
+    --background: white;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .search-bar-container {
+    flex: 1;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+
+    .admin-searchbar {
+      --background: var(--ion-color-light);
+      --box-shadow: none;
+      --border-radius: 8px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  .header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .notification-btn {
+      position: relative;
+      --padding-start: 8px;
+      --padding-end: 8px;
+      --color: var(--ion-color-medium);
+      
+      ion-icon {
+        font-size: 26px;
+      }
+      
+      .alert-badge {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        font-size: 10px;
+        padding: 3px 5px;
+        border-radius: 50%;
+      }
+    }
+
+    .profile-btn {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      
+      ion-avatar {
+        width: 36px;
+        height: 36px;
+        border: 2px solid var(--ion-color-primary);
+      }
+    }
+  }
+}
+
+// Mobile responsiveness for the header
+@media (max-width: 768px) {
+  .search-bar-container {
+    display: none !important; // Hide search bar on mobile to save space, could add a search icon button instead
+  }
+}

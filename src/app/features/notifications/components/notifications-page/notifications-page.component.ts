@@ -60,7 +60,7 @@ import { NotificationService } from '../../services/notification.service';
 export class NotificationsPageComponent {
   private readonly notificationService = inject(NotificationService);
 
-  readonly close = output<void>();
+  readonly closeNotifications = output<void>();
 
   readonly notifications = this.notificationService.notifications;
   readonly unreadCount = this.notificationService.unreadCount;
@@ -92,7 +92,7 @@ export class NotificationsPageComponent {
   }
 
   closeModal(): void {
-    this.close.emit();
+    this.closeNotifications.emit();
   }
 
   markAllAsRead(): void {

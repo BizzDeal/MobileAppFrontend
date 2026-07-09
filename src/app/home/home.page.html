@@ -26,7 +26,9 @@
     <div class="home-layout">
       @if (activeNavTab() === 'home') {
         @if (userRole() === 'MEMBER') {
-          <app-member-home (notificationClick)="onNotificationClick()" />
+          <app-member-home 
+            (notificationClick)="onNotificationClick()"
+            (showToast)="showToast($event)" />
         } @else {
           <app-customer-home 
             [feed]="feed"
@@ -45,9 +47,9 @@
             (claimOffer)="onClaimOffer($event)" />
         }
       } @else if (activeNavTab() === 'meetings') {
-        <app-my-business />
-      } @else if (activeNavTab() === 'offers') {
-        <app-manage-offers />
+        <app-meetings-page />
+      } @else if (activeNavTab() === 'referrals') {
+        <app-referrals-page />
       } @else if (activeNavTab() === 'menu') {
         <app-menu-view />
       } @else if (activeNavTab() === 'search') {
@@ -58,12 +60,14 @@
           (offerClick)="onDealClick($event)" />
       } @else if (activeNavTab() === 'chat') {
         @if (selectedConversationId()) {
-          <app-chat-room (close)="onCloseChatRoom()" />
+          <app-chat-room (closeChat)="onCloseChatRoom()" />
         } @else {
           <app-conversation-list (selectConversation)="onConversationSelect($event)" />
         }
       } @else if (activeNavTab() === 'wallet') {
         <app-wallet-view />
+      } @else if (activeNavTab() === 'vouchers') {
+        <app-vouchers-view />
       } @else {
         <app-profile-view />
       }
@@ -90,7 +94,7 @@
 <!-- My Vouchers Modal -->
 <ion-modal [isOpen]="isVouchersModalOpen()" (didDismiss)="closeVouchersModal()" class="vouchers-modal">
   <ng-template>
-    <ion-header mode="ios">
+    <ion-header class="ion-no-border premium-header">
       <ion-toolbar>
         <ion-title>My Active Vouchers</ion-title>
         <ion-buttons slot="end">
@@ -138,7 +142,7 @@
 <ion-modal [isOpen]="!!selectedDealModal()" (didDismiss)="selectedDealModal.set(null)" class="deal-modal">
   <ng-template>
     @if (selectedDealModal(); as deal) {
-      <ion-header mode="ios">
+      <ion-header class="ion-no-border premium-header">
         <ion-toolbar>
           <ion-title>Deal Details</ion-title>
           <ion-buttons slot="end">
@@ -175,7 +179,7 @@
 <ion-modal [isOpen]="!!selectedBizModal()" (didDismiss)="selectedBizModal.set(null)" class="biz-modal">
   <ng-template>
     @if (selectedBizModal(); as biz) {
-      <ion-header mode="ios">
+      <ion-header class="ion-no-border premium-header">
         <ion-toolbar>
           <ion-title>{{ biz.name }}</ion-title>
           <ion-buttons slot="end">
@@ -205,9 +209,11 @@
                 <span>🏢 GST: {{ biz.gst_number }}</span>
               }
             </div>
-            <button type="button" class="bd-btn-primary full-btn" style="margin-top: var(--bizzdeal-spacing-md); display: flex; align-items: center; justify-content: center;" (click)="onChatWithBusiness(biz.owner_id)">
-              <ion-icon name="chatbubble-outline" style="margin-right: 6px; font-size: 18px;" /> Chat with Us
-            </button>
+            @if (userRole() !== 'CUSTOMER') {
+              <button type="button" class="bd-btn-primary full-btn" style="margin-top: var(--bizzdeal-spacing-md); display: flex; align-items: center; justify-content: center;" (click)="onChatWithBusiness(biz.owner_id)">
+                <ion-icon name="chatbubble-outline" style="margin-right: 6px; font-size: 18px;" /> Chat with Us
+              </button>
+            }
           </div>
         </div>
       </ion-content>
@@ -218,6 +224,6 @@
 <!-- Notifications Modal -->
 <ion-modal [isOpen]="isNotificationsModalOpen()" (didDismiss)="closeNotificationsModal()" class="notifications-modal">
   <ng-template>
-    <app-notifications-page (close)="closeNotificationsModal()" />
+    <app-notifications-page (closeNotifications)="closeNotificationsModal()" />
   </ng-template>
 </ion-modal>

@@ -1,0 +1,284 @@
+.meeting-card {
+  display: flex;
+  background: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-xl);
+  box-shadow: var(--bizzdeal-shadow-md);
+  border: 1px solid var(--bizzdeal-border-color);
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  animation: cardFadeIn 0.5s ease-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--bizzdeal-shadow-lg);
+  }
+
+  &.cancelled {
+    opacity: 0.75;
+    background: var(--bizzdeal-bg-surface-secondary);
+  }
+
+  &.past {
+    background: var(--bizzdeal-bg-surface-secondary);
+  }
+
+  // Left side accent bar
+  .status-accent {
+    width: 6px;
+    flex-shrink: 0;
+
+    &.invited { background: var(--ion-color-warning); }
+    &.accepted { background: var(--ion-color-success); }
+    &.rejected { background: var(--ion-color-danger); }
+    &.attended { background: var(--ion-color-primary); }
+    &.missed { background: var(--bizzdeal-text-tertiary); }
+  }
+
+  .card-content {
+    flex: 1;
+    padding: var(--bizzdeal-spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--bizzdeal-spacing-md);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--bizzdeal-spacing-md);
+
+    .title-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+
+      .meeting-title {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--bizzdeal-text-primary);
+        line-height: 1.4;
+        letter-spacing: -0.01em;
+      }
+
+      .status-badge {
+        align-self: flex-start;
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: var(--bizzdeal-radius-sm);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &.cancelled {
+          background: rgba(239, 68, 68, 0.1);
+          color: var(--ion-color-danger);
+        }
+
+        &.past {
+          background: var(--bizzdeal-bg-surface-tertiary);
+          color: var(--bizzdeal-text-secondary);
+        }
+      }
+    }
+
+    .user-status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: var(--bizzdeal-radius-lg);
+      background: var(--bizzdeal-bg-surface-secondary);
+      border: 1px solid var(--bizzdeal-border-color);
+
+      &.invited {
+        color: var(--ion-color-warning);
+        background: rgba(245, 158, 11, 0.08);
+        border-color: rgba(245, 158, 11, 0.2);
+      }
+      &.accepted {
+        color: var(--ion-color-success);
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.2);
+      }
+      &.rejected {
+        color: var(--ion-color-danger);
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.2);
+      }
+      &.attended {
+        color: var(--ion-color-primary);
+        background: rgba(30, 136, 229, 0.08);
+        border-color: rgba(30, 136, 229, 0.2);
+      }
+      &.missed {
+        color: var(--bizzdeal-text-secondary);
+        background: rgba(100, 116, 139, 0.08);
+        border-color: rgba(100, 116, 139, 0.2);
+      }
+    }
+  }
+
+  .meeting-desc {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--bizzdeal-text-secondary);
+    line-height: 1.5;
+  }
+
+  // Modern Details Grid Layout
+  .meeting-details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bizzdeal-spacing-md);
+    padding: var(--bizzdeal-spacing-md) 0;
+    border-top: 1px solid var(--bizzdeal-border-color);
+    border-bottom: 1px solid var(--bizzdeal-border-color);
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: var(--bizzdeal-spacing-md);
+
+      .icon-wrapper {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--bizzdeal-radius-md);
+        background: rgba(30, 136, 229, 0.06); // very soft primary overlay
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ion-color-primary);
+
+        ion-icon {
+          font-size: 1.15rem;
+        }
+      }
+
+      .detail-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .detail-label {
+          font-size: 0.72rem;
+          color: var(--bizzdeal-text-tertiary);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+          font-size: 0.88rem;
+          font-weight: 500;
+          color: var(--bizzdeal-text-primary);
+        }
+      }
+
+      &.link-item {
+        .icon-wrapper {
+          background: rgba(14, 165, 233, 0.08);
+          color: var(--ion-color-secondary);
+        }
+
+        .link-action {
+          color: var(--ion-color-primary);
+          text-decoration: none;
+          font-weight: 600;
+          transition: color 0.2s ease;
+
+          &:hover {
+            color: var(--bizzdeal-text-link);
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  // RSVP Action Panel Styling
+  .action-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--bizzdeal-spacing-md);
+    margin-top: 4px;
+
+    .action-prompt {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--bizzdeal-text-primary);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+      justify-content: flex-end;
+      min-width: 220px;
+
+      .rsvp-action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 38px;
+        padding: 0 16px;
+        border-radius: var(--bizzdeal-radius-lg);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid transparent;
+
+        ion-icon {
+          font-size: 1.2rem;
+        }
+
+        &:active {
+          transform: scale(0.96);
+        }
+
+        &.reject-btn {
+          background: var(--bizzdeal-bg-surface-secondary);
+          border-color: var(--bizzdeal-border-color);
+          color: var(--bizzdeal-text-secondary);
+
+          &:hover, &.active {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: var(--ion-color-danger);
+          }
+        }
+
+        &.accept-btn {
+          background: var(--bizzdeal-bg-surface-secondary);
+          border-color: var(--bizzdeal-border-color);
+          color: var(--bizzdeal-text-secondary);
+
+          &:hover, &.active {
+            background: var(--bizzdeal-gradient-primary);
+            color: var(--bizzdeal-text-on-primary);
+            box-shadow: var(--bizzdeal-shadow-primary);
+            border-color: transparent;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

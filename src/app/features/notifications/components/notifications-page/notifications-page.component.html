@@ -1,4 +1,4 @@
-<ion-header class="ion-no-border">
+<ion-header class="ion-no-border premium-header">
   <ion-toolbar>
     <ion-title>Notifications</ion-title>
     <ion-buttons slot="end">
@@ -93,7 +93,7 @@
 <ion-modal [isOpen]="!!selectedNotification()" (didDismiss)="selectedNotification.set(null)" class="notification-detail-modal">
   <ng-template>
     @if (selectedNotification(); as detail) {
-      <ion-header mode="ios">
+      <ion-header class="ion-no-border premium-header">
         <ion-toolbar>
           <ion-title>Details</ion-title>
           <ion-buttons slot="end">

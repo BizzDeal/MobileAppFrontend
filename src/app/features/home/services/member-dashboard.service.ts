@@ -45,7 +45,7 @@ const MOCK_MEMBER_DASHBOARD: MemberDashboardData = {
       business_id: 'biz-1',
       title: '₹200 Cashback on ₹1000 spend',
       description: 'Spend 1000 and get 200 back.',
-      offer_type: 'CASHBACK',
+      offer_type: 'FIXED_AMOUNT',
       discount_value: 200,
       discount_type: 'FIXED_AMOUNT',
       start_date: new Date().toISOString(),

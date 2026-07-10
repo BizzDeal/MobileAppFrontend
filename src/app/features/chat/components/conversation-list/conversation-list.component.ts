@@ -42,9 +42,6 @@ import { StartChatModalComponent } from '../start-chat-modal/start-chat-modal.co
     IonFabButton,
     IonModal,
     IonBadge,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     StartChatModalComponent
   ],
   templateUrl: './conversation-list.component.html',

@@ -1,0 +1,37 @@
+<ion-card class="premium-card m-0 mt-4 mx-4 shadow-md border-radius-xl">
+  <ion-list *ngIf="!loading; else skeleton" lines="none" class="p-0 m-0 bg-transparent">
+    <ion-item *ngFor="let customer of filteredCustomers" button (click)="viewUser(customer)" detail="true" class="premium-item">
+      <ion-avatar slot="start" class="premium-avatar">
+        <img [src]="customer.profile_pic_url || getFallbackAvatar(customer.full_name)" alt="avatar" (error)="customer.profile_pic_url = getFallbackAvatar(customer.full_name)">
+      </ion-avatar>
+      <ion-label>
+        <h2 class="font-bold text-dark">{{ customer.full_name }}</h2>
+        <p class="text-medium mt-1">{{ customer.phone }}</p>
+        <p *ngIf="customer.email" class="text-sm text-gray-500 mt-1"><span class="role-badge">{{ customer.email }}</span></p>
+      </ion-label>
+      <ion-badge slot="end" [color]="getStatusColor(customer.status)" class="status-badge">
+        {{ customer.status }}
+      </ion-badge>
+    </ion-item>
+    
+    <ion-item *ngIf="filteredCustomers.length === 0">
+      <ion-label class="ion-text-center py-4 text-gray-500">No customers found.</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-card>
+
+<ng-template #skeleton>
+  <ion-card class="m-0 mt-4 shadow-sm border-radius-lg">
+    <ion-list class="p-0 m-0">
+      <ion-item *ngFor="let i of [1,2,3,4]">
+        <ion-avatar slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-avatar>
+        <ion-label>
+          <h2><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h2>
+          <p><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+</ng-template>

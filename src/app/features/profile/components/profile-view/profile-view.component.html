@@ -1,4 +1,15 @@
-<div class="profile-container">
+<div class="profile-container" style="padding: var(--bizzdeal-spacing-md);">
+  <div class="page-top-header">
+    <div class="header-content">
+      <div class="header-icon-box">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <div class="header-text">
+        <h2>My Profile</h2>
+        <p>Manage your personal and business details.</p>
+      </div>
+    </div>
+  </div>
   @if (loading() && !profile()) {
     <div class="loading-state">
       <ion-spinner name="crescent" color="primary"></ion-spinner>

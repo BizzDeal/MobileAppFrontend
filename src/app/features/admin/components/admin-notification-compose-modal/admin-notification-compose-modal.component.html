@@ -1,0 +1,103 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="modal-toolbar">
+    <ion-title>Compose Notification</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="modal-content">
+  <form [formGroup]="composeForm" (ngSubmit)="submit()" class="bizz-form">
+    
+    <!-- Audience Selection -->
+    <div class="form-group">
+      <ion-label class="field-label">Target Audience <span class="required-star">*</span></ion-label>
+      <ion-item class="custom-input-item" lines="none">
+        <ion-select formControlName="audience" interface="popover" placeholder="Select Audience">
+          <ion-select-option *ngFor="let option of audienceOptions" [value]="option.value">
+            {{ option.label }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div class="error-container">
+        <span class="error-text" *ngIf="composeForm.get('audience')?.touched && composeForm.get('audience')?.hasError('required')">
+          Target Audience is required.
+        </span>
+      </div>
+    </div>
+
+    <!-- Target IDs (Conditional) -->
+    <div class="form-group" *ngIf="composeForm.get('audience')?.value === 'SINGLE_USER' || composeForm.get('audience')?.value === 'BULK_USERS'">
+      <ion-label class="field-label">User ID(s) <span class="required-star">*</span></ion-label>
+      <ion-item class="custom-input-item" lines="none">
+        <ion-input formControlName="target_ids" placeholder="Enter User ID(s), comma separated"></ion-input>
+      </ion-item>
+      <div class="error-container">
+        <span class="error-text" *ngIf="composeForm.get('target_ids')?.touched && composeForm.get('target_ids')?.hasError('required')">
+          User ID is required for this audience type.
+        </span>
+      </div>
+    </div>
+
+    <!-- Notification Type -->
+    <div class="form-group">
+      <ion-label class="field-label">Notification Type <span class="required-star">*</span></ion-label>
+      <ion-item class="custom-input-item" lines="none">
+        <ion-select formControlName="type" interface="popover" placeholder="Select Type">
+          <ion-select-option *ngFor="let type of typeOptions" [value]="type">
+            {{ type }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div class="error-container">
+        <span class="error-text" *ngIf="composeForm.get('type')?.touched && composeForm.get('type')?.hasError('required')">
+          Notification Type is required.
+        </span>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="form-group">
+      <ion-label class="field-label">Title <span class="required-star">*</span></ion-label>
+      <ion-item class="custom-input-item" lines="none">
+        <ion-input formControlName="title" placeholder="Enter notification title"></ion-input>
+      </ion-item>
+      <div class="error-container">
+        <span class="error-text" *ngIf="composeForm.get('title')?.touched && composeForm.get('title')?.hasError('required')">
+          Title is required.
+        </span>
+      </div>
+    </div>
+
+    <!-- Message -->
+    <div class="form-group">
+      <ion-label class="field-label">Message <span class="required-star">*</span></ion-label>
+      <ion-item class="custom-textarea-item" lines="none">
+        <ion-textarea formControlName="message" placeholder="Enter notification message" [autoGrow]="true" rows="4"></ion-textarea>
+      </ion-item>
+      <div class="error-container">
+        <span class="error-text" *ngIf="composeForm.get('message')?.touched && composeForm.get('message')?.hasError('required')">
+          Message is required.
+        </span>
+      </div>
+    </div>
+
+  </form>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar class="modal-footer-toolbar">
+    <div class="action-buttons">
+      <ion-button fill="outline" color="medium" class="cancel-btn" (click)="dismiss()">
+        Cancel
+      </ion-button>
+      <ion-button class="submit-btn primary-btn" [disabled]="isSubmitting" (click)="submit()">
+        <ion-spinner name="crescent" *ngIf="isSubmitting"></ion-spinner>
+        <span *ngIf="!isSubmitting">Send Notification</span>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

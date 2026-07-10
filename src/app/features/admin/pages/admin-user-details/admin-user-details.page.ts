@@ -1,0 +1,154 @@
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule, ToastController, AlertController, NavController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
+import { AdminUsersService } from '../../services/admin-users.service';
+import { AdminMember, AdminCustomer, UserStatus, UserRole, AdminUser } from '../../models/admin-user.model';
+import { addIcons } from 'ionicons';
+import { 
+  callOutline, logoWhatsapp, mailOutline, locationOutline, 
+  personOutline, calendarOutline, checkmarkCircleOutline, 
+  warningOutline, closeCircleOutline, trashOutline,
+  businessOutline, documentTextOutline, globeOutline, imageOutline
+} from 'ionicons/icons';
+import mediumZoom, { Zoom } from 'medium-zoom';
+
+@Component({
+  selector: 'app-admin-user-details',
+  standalone: true,
+  imports: [CommonModule, IonicModule],
+  templateUrl: './admin-user-details.page.html',
+  styleUrls: ['./admin-user-details.page.scss']
+})
+export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
+  @ViewChild('receiptImage') receiptImageRef?: ElementRef<HTMLImageElement>;
+  user: AdminUser | null = null;
+  loading = true;
+  private zoom?: Zoom;
+  private zoomAttached = false;
+
+  constructor(
+    private route: ActivatedRoute,
+    private adminUsersService: AdminUsersService,
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController,
+    private navCtrl: NavController
+  ) {
+    addIcons({
+      callOutline, logoWhatsapp, mailOutline, locationOutline, 
+      personOutline, calendarOutline, checkmarkCircleOutline, 
+      warningOutline, closeCircleOutline, trashOutline,
+      businessOutline, documentTextOutline, globeOutline, imageOutline
+    });
+  }
+
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadUser(id);
+    } else {
+      this.loading = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.receiptImageRef?.nativeElement && !this.zoomAttached) {
+      this.zoom = mediumZoom(this.receiptImageRef.nativeElement, {
+        margin: 24,
+        background: 'rgba(0,0,0,0.9)'
+      });
+      this.zoomAttached = true;
+    }
+  }
+
+  loadUser(id: string) {
+    this.loading = true;
+    this.adminUsersService.getUserById(id).subscribe(res => {
+      this.user = res.data;
+      this.loading = false;
+      this.zoomAttached = false;
+    });
+  }
+
+  isMember(user: any): user is AdminMember {
+    return user?.role === UserRole.MEMBER;
+  }
+
+  async confirmAction(action: 'approve' | 'reject' | 'suspend' | 'delete') {
+    if (!this.user) return;
+    
+    const actionText = action.charAt(0).toUpperCase() + action.slice(1);
+    const alert = await this.alertCtrl.create({
+      header: `Confirm ${actionText}`,
+      message: `Are you sure you want to ${action} ${this.user.full_name}?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: actionText,
+          role: 'confirm',
+          handler: () => {
+            this.executeAction(action);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private executeAction(action: 'approve' | 'reject' | 'suspend' | 'delete') {
+    if (!this.user) return;
+    
+    let obs$: import('rxjs').Observable<import('../../models/admin-user.model').ApiResponse<any>> | undefined;
+    switch (action) {
+      case 'approve':
+        obs$ = this.adminUsersService.approveMember(this.user.id);
+        break;
+      case 'reject':
+        obs$ = this.adminUsersService.rejectMember(this.user.id);
+        break;
+      case 'suspend':
+        obs$ = this.adminUsersService.suspendMember(this.user.id);
+        break;
+      case 'delete':
+        obs$ = this.adminUsersService.deleteMember(this.user.id);
+        break;
+    }
+
+    if (!obs$) return;
+
+    obs$.subscribe(async (res: any) => {
+      const toast = await this.toastCtrl.create({
+        message: res.message,
+        duration: 2000,
+        color: 'success'
+      });
+      await toast.present();
+      
+      if (action === 'delete') {
+        this.navCtrl.back();
+      } else {
+        if ('status' in (res.data || {}) && this.user) {
+          this.user.status = (res.data as any).status;
+        }
+      }
+    });
+  }
+
+  getStatusColor(status: UserStatus | undefined): string {
+    switch (status) {
+      case UserStatus.ACTIVE: return 'success';
+      case UserStatus.PENDING: return 'warning';
+      case UserStatus.REJECTED: return 'danger';
+      case UserStatus.SUSPENDED: return 'medium';
+      default: return 'primary';
+    }
+  }
+
+  getFallbackAvatar(name: string | undefined | null): string {
+    const fallbackName = name ? encodeURIComponent(name) : 'User';
+    return `https://ui-avatars.com/api/?name=${fallbackName}&background=random&color=fff`;
+  }
+}

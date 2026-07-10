@@ -1,0 +1,180 @@
+<ion-header class="ion-no-border" collapse="fade" [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="font-bold">Analytics & Insights</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light">
+  <div class="analytics-container" *ngIf="analytics$ | async as analytics; else loading">
+    
+    <!-- KPI Summary Section -->
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" size-md="3">
+          <ion-card class="kpi-card">
+            <ion-card-content>
+              <div class="kpi-header">
+                <div class="kpi-icon-wrapper primary">
+                  <ion-icon name="people-outline"></ion-icon>
+                </div>
+                <div class="kpi-title">Total Users</div>
+              </div>
+              <div class="kpi-value">{{ analytics.kpis.totalUsers | number }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6" size-md="3">
+          <ion-card class="kpi-card">
+            <ion-card-content>
+              <div class="kpi-header">
+                <div class="kpi-icon-wrapper secondary">
+                  <ion-icon name="business-outline"></ion-icon>
+                </div>
+                <div class="kpi-title">Active Businesses</div>
+              </div>
+              <div class="kpi-value">{{ analytics.kpis.totalBusinesses | number }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6" size-md="3">
+          <ion-card class="kpi-card">
+            <ion-card-content>
+              <div class="kpi-header">
+                <div class="kpi-icon-wrapper warning">
+                  <ion-icon name="pricetag-outline"></ion-icon>
+                </div>
+                <div class="kpi-title">Vouchers Redeemed</div>
+              </div>
+              <div class="kpi-value">{{ analytics.kpis.totalVouchersRedeemed | number }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6" size-md="3">
+          <ion-card class="kpi-card">
+            <ion-card-content>
+              <div class="kpi-header">
+                <div class="kpi-icon-wrapper success">
+                  <ion-icon name="wallet-outline"></ion-icon>
+                </div>
+                <div class="kpi-title">Wallet Volume</div>
+              </div>
+              <div class="kpi-value">{{ analytics.kpis.totalWalletVolume | currency:'USD':'symbol':'1.0-0' }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Main Charts Section -->
+    <ion-grid>
+      <ion-row>
+        <!-- User Growth -->
+        <ion-col size="12" size-lg="6">
+          <ion-card class="chart-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="trending-up-outline"></ion-icon>
+                User Growth Trend
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <apx-chart *ngIf="userGrowthChartOptions"
+                [series]="userGrowthChartOptions.series"
+                [chart]="userGrowthChartOptions.chart"
+                [xaxis]="userGrowthChartOptions.xaxis"
+                [stroke]="userGrowthChartOptions.stroke"
+                [colors]="userGrowthChartOptions.colors"
+                [dataLabels]="userGrowthChartOptions.dataLabels"
+                [legend]="userGrowthChartOptions.legend"
+                [fill]="userGrowthChartOptions.fill"
+              ></apx-chart>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        
+        <!-- Wallet Volume -->
+        <ion-col size="12" size-lg="6">
+          <ion-card class="chart-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="wallet-outline"></ion-icon>
+                Wallet Volume (Credits vs Debits)
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <apx-chart *ngIf="walletVolumeChartOptions"
+                [series]="walletVolumeChartOptions.series"
+                [chart]="walletVolumeChartOptions.chart"
+                [xaxis]="walletVolumeChartOptions.xaxis"
+                [stroke]="walletVolumeChartOptions.stroke"
+                [colors]="walletVolumeChartOptions.colors"
+                [dataLabels]="walletVolumeChartOptions.dataLabels"
+                [legend]="walletVolumeChartOptions.legend"
+                [fill]="walletVolumeChartOptions.fill"
+              ></apx-chart>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <!-- Voucher Performance -->
+        <ion-col size="12" size-lg="8">
+          <ion-card class="chart-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="bar-chart-outline"></ion-icon>
+                Voucher Performance (Issued vs Redeemed)
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <apx-chart *ngIf="voucherPerformanceChartOptions"
+                [series]="voucherPerformanceChartOptions.series"
+                [chart]="voucherPerformanceChartOptions.chart"
+                [plotOptions]="voucherPerformanceChartOptions.plotOptions"
+                [xaxis]="voucherPerformanceChartOptions.xaxis"
+                [stroke]="voucherPerformanceChartOptions.stroke"
+                [colors]="voucherPerformanceChartOptions.colors"
+                [dataLabels]="voucherPerformanceChartOptions.dataLabels"
+                [legend]="voucherPerformanceChartOptions.legend"
+                [fill]="voucherPerformanceChartOptions.fill"
+              ></apx-chart>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- Business Distribution -->
+        <ion-col size="12" size-lg="4">
+          <ion-card class="chart-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="pie-chart-outline"></ion-icon>
+                Business Distribution
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <apx-chart *ngIf="businessDistributionChartOptions"
+                [series]="businessDistributionChartOptions.series"
+                [chart]="businessDistributionChartOptions.chart"
+                [labels]="businessDistributionChartOptions.labels"
+                [colors]="businessDistributionChartOptions.colors"
+                [plotOptions]="businessDistributionChartOptions.plotOptions"
+                [legend]="businessDistributionChartOptions.legend"
+              ></apx-chart>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <ng-template #loading>
+    <div class="loading-state">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Loading analytics...</p>
+    </div>
+  </ng-template>
+</ion-content>

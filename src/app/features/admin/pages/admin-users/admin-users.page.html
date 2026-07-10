@@ -1,0 +1,28 @@
+<ion-header class="ion-no-border" collapse="fade" [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="font-bold">Manage Users</ion-title>
+  </ion-toolbar>
+  <ion-toolbar class="px-2 pt-3">
+    <ion-searchbar [value]="searchQuery" (ionInput)="onSearch($event)" placeholder="Search users..." mode="ios" animated="true" class="premium-searchbar"></ion-searchbar>
+  </ion-toolbar>
+  <ion-toolbar class="px-2 pb-2">
+    <ion-segment [value]="segmentValue" (ionChange)="segmentChanged($event)" mode="ios" class="premium-segment">
+      <ion-segment-button value="members">
+        <ion-label>Members</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="customers">
+        <ion-label>Customers</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light">
+  <div [ngSwitch]="segmentValue">
+    <app-admin-members-list *ngSwitchCase="'members'" [searchQuery]="searchQuery"></app-admin-members-list>
+    <app-admin-customers-list *ngSwitchCase="'customers'" [searchQuery]="searchQuery"></app-admin-customers-list>
+  </div>
+</ion-content>

@@ -225,7 +225,7 @@ const FAKE_HOME_FEED: CustomerHomeFeedDTO = {
       business_id: 'biz-3',
       title: '35% Cashback on Royal Aromatherapy & Spa Day Pass',
       description: 'Recharge your senses with a 90-minute full body relaxation massage and herbal steam bath. Instant cashback into your BizzDeal wallet!',
-      offer_type: 'CASHBACK',
+      offer_type: 'DISCOUNT',
       discount_value: 35,
       discount_type: 'PERCENTAGE',
       start_date: '2026-07-02T00:00:00Z',

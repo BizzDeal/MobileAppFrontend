@@ -2,6 +2,7 @@ import { DatePipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Preferences } from '@capacitor/preferences';
 import {
   IonIcon,
   IonInput,
@@ -160,8 +161,10 @@ export class ProfileViewComponent {
     });
   }
 
-  onLogout(): void {
+  async onLogout(): Promise<void> {
     this.showToast('👋 Logging out...');
+    await Preferences.remove({ key: 'mockRole' });
+    this.profileService.clearProfile();
     setTimeout(() => {
       this.router.navigate(['/auth/login']);
     }, 800);

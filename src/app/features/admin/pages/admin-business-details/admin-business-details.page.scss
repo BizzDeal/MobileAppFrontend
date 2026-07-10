@@ -1,0 +1,255 @@
+.premium-card {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  background: white;
+}
+
+.border-radius-xl {
+  border-radius: 16px;
+}
+
+.header-banner {
+  height: 80px;
+  width: 100%;
+}
+
+.bg-primary {
+  background: var(--ion-color-primary, #3880ff);
+}
+
+.profile-header {
+  margin-top: -60px;
+  position: relative;
+  padding-bottom: 24px;
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border: 4px solid white;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: white;
+
+  img {
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.category-badge, .status-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.category-badge {
+  background: var(--ion-color-primary, #3880ff);
+}
+
+.status-badge {
+  &.status-active { background: var(--ion-color-success, #2dd36f); }
+  &.status-pending { background: var(--ion-color-warning, #ffc409); }
+  &.status-suspended, &.status-rejected { background: var(--ion-color-danger, #eb445a); }
+}
+
+.font-bold { font-weight: 600; }
+.font-semibold { font-weight: 500; }
+.font-medium { font-weight: 500; }
+.text-dark { color: #222; }
+.text-medium { color: #666; }
+.text-primary { color: var(--ion-color-primary); }
+.text-success { color: var(--ion-color-success); }
+.text-md { font-size: 16px; }
+.text-sm { font-size: 14px; }
+.text-xs { font-size: 12px; }
+.text-4xl { font-size: 48px; }
+
+.mt-1 { margin-top: 4px; }
+.mt-2 { margin-top: 8px; }
+.mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 16px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }
+.p-0 { padding: 0; }
+.pb-0 { padding-bottom: 0; }
+.pb-4 { padding-bottom: 16px; }
+.pt-4 { padding-top: 16px; }
+.px-0 { padding-left: 0; padding-right: 0; }
+.px-2 { padding-left: 8px; padding-right: 8px; }
+.px-4 { padding-left: 16px; padding-right: 16px; }
+.p-4 { padding: 16px; }
+.m-0 { margin: 0; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: 8px; }
+.inline-block { display: inline-block; }
+.text-right { text-align: right; }
+.uppercase { text-transform: uppercase; }
+
+.bg-transparent { background: transparent; }
+.bg-light { background: var(--ion-color-light, #f4f5f8); }
+
+.premium-segment {
+  --background: var(--ion-color-light);
+  border-radius: 12px;
+  padding: 4px;
+
+  ion-segment-button {
+    --indicator-color: white;
+    --color: var(--ion-color-medium);
+    --color-checked: var(--ion-color-dark);
+    --border-radius: 8px;
+    font-weight: 600;
+    min-height: 40px;
+  }
+}
+
+.premium-item {
+  --background: transparent;
+  --min-height: 64px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 0;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ion-color-light);
+  margin-right: 16px;
+  font-size: 20px;
+  
+  &.warning-box {
+    background: rgba(var(--ion-color-warning-rgb), 0.1);
+  }
+}
+
+.badge-pill {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+/* Premium Offer / Voucher Cards */
+.premium-offer-card, .premium-voucher-card {
+  border-radius: 16px;
+  background: white;
+  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  transition: all 0.2s ease;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.offer-icon-box, .voucher-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 24px;
+  
+  /* Default styling */
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  color: var(--ion-color-primary);
+
+  &.active, &.approved, &.redeemed {
+    background: rgba(var(--ion-color-success-rgb), 0.1);
+    color: var(--ion-color-success);
+  }
+  &.rejected, &.expired {
+    background: rgba(var(--ion-color-danger-rgb), 0.1);
+    color: var(--ion-color-danger);
+  }
+  &.pending, &.issued {
+    background: rgba(var(--ion-color-warning-rgb), 0.1);
+    color: var(--ion-color-warning);
+  }
+}
+
+.flex-1 { flex: 1; }
+.mr-1 { margin-right: 4px; }
+.items-start { align-items: flex-start; }
+.text-xl { font-size: 24px; }
+.text-lg { font-size: 20px; }
+.font-mono { font-family: monospace; }
+.tracking-wide { letter-spacing: 0.5px; }
+
+/* Custom Badges */
+.custom-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &.badge-success { background: rgba(var(--ion-color-success-rgb), 0.15); color: #1b8a47; }
+  &.badge-danger { background: rgba(var(--ion-color-danger-rgb), 0.15); color: #b3283e; }
+  &.badge-warning { background: rgba(var(--ion-color-warning-rgb), 0.15); color: #c99a00; }
+  &.badge-primary { background: rgba(var(--ion-color-primary-rgb), 0.15); color: #2458b3; }
+  &.badge-medium { background: rgba(var(--ion-color-medium-rgb), 0.15); color: #444; }
+}
+
+.type-badge, .value-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.type-badge {
+  background: linear-gradient(135deg, #f0f4ff, #e0e8ff);
+  color: #2458b3;
+  ion-icon { margin-right: 4px; font-size: 14px; }
+}
+
+.value-badge {
+  background: #f4f5f8;
+  color: #444;
+  border: 1px solid #e0e0e0;
+}
+
+.discount-applied {
+  color: #1b8a47;
+  background: rgba(var(--ion-color-success-rgb), 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+}

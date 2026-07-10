@@ -1,0 +1,87 @@
+<ion-header class="ion-no-border" collapse="fade" [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="font-bold">Push Notifications</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadNotifications()" [disabled]="loading">
+        <ion-icon name="sync-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar class="px-2 pt-3 pb-2">
+    <ion-item lines="none" class="premium-select-item">
+      <ion-icon name="filter-outline" slot="start" class="text-medium"></ion-icon>
+      <ion-select [value]="selectedAudience" (ionChange)="filterByAudience($event)" interface="action-sheet" placeholder="Filter by audience" justify="space-between" class="w-full">
+        <ion-select-option value="ALL">All Audiences</ion-select-option>
+        <ion-select-option value="SINGLE_USER">Single User</ion-select-option>
+        <ion-select-option value="BULK_USERS">Bulk Users</ion-select-option>
+        <ion-select-option value="ALL_MEMBERS">All Members</ion-select-option>
+        <ion-select-option value="ALL_CUSTOMERS">All Customers</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light">
+  <div *ngIf="loading" class="ion-padding ion-text-center mt-4">
+    <ion-spinner></ion-spinner>
+    <p class="mt-2 text-medium">Loading notifications history...</p>
+  </div>
+
+  <div *ngIf="!loading && filteredNotifications.length === 0" class="ion-padding ion-text-center mt-4">
+    <ion-icon name="notifications-outline" class="text-4xl text-medium"></ion-icon>
+    <p class="text-medium mt-2">No notifications found.</p>
+  </div>
+
+  <ion-list *ngIf="!loading && filteredNotifications.length > 0" class="bg-transparent p-4 m-0" lines="none">
+    <ion-card *ngFor="let notification of filteredNotifications" class="premium-offer-card">
+      <ion-card-content>
+        <div class="card-body">
+          <div class="offer-details">
+            <div class="offer-header">
+              <h3 class="offer-title">{{ notification.title }}</h3>
+              <span class="custom-badge shrink-0" [ngClass]="'badge-' + getTypeBadgeColor(notification.type)">
+                {{ notification.type }}
+              </span>
+            </div>
+            
+            <div class="notification-message">
+              {{ notification.message }}
+            </div>
+
+            <div class="offer-badges">
+              <span class="type-badge">
+                <ion-icon [name]="getAudienceIcon(notification.audience)"></ion-icon>
+                {{ getAudienceLabel(notification.audience) }}
+              </span>
+              <span *ngIf="notification.target_ids?.length" class="value-badge">
+                {{ notification.target_ids!.length }} selected
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-footer">
+           <div class="footer-time">
+             <ion-icon name="time-outline"></ion-icon>
+             <span>Sent: {{ notification.created_at | date:'medium' }}</span>
+           </div>
+           
+           <ion-button fill="clear" color="danger" size="small" class="delete-btn" (click)="deleteNotification(notification.id)">
+             <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+           </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
+  <!-- Compose FAB -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="openComposeModal()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

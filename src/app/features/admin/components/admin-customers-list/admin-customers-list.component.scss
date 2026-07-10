@@ -1,0 +1,80 @@
+.premium-card {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  background: white;
+}
+
+.border-radius-xl {
+  border-radius: 16px;
+}
+
+.mx-4 {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.mt-4 {
+  margin-top: 16px;
+}
+
+.bg-transparent {
+  background: transparent;
+}
+
+.premium-item {
+  --background: transparent;
+  --min-height: 56px;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+  transition: background-color 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &::part(native):hover {
+    background-color: rgba(var(--ion-color-primary-rgb), 0.04);
+  }
+}
+
+.premium-avatar {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #f4f5f8;
+  margin-right: 16px;
+}
+
+.font-bold {
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.2px;
+}
+
+.text-dark {
+  color: #222;
+}
+
+.text-medium {
+  color: #666;
+  font-size: 14px;
+}
+
+.mt-1 {
+  margin-top: 4px;
+}
+
+.role-badge {
+  background: #f4f5f8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #888;
+}
+
+.status-badge {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}

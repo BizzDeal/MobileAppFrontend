@@ -1,0 +1,203 @@
+<ion-header class="ion-no-border" collapse="fade" [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/users"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="font-bold">User Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light" class="ion-padding">
+  <div *ngIf="loading" class="ion-padding ion-text-center">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading && !user" class="ion-padding ion-text-center mt-4">
+    <ion-text color="danger">User not found.</ion-text>
+  </div>
+
+  <div *ngIf="!loading && user">
+    <ion-card class="premium-card m-0 shadow-md border-radius-xl" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+      <div class="header-banner bg-primary"></div>
+      <ion-card-header class="ion-text-center profile-header">
+        <ion-avatar class="profile-avatar shadow-lg">
+          <img [src]="user.profile_pic_url || getFallbackAvatar(user.full_name)" alt="Profile Picture" (error)="user.profile_pic_url = getFallbackAvatar(user.full_name)">
+        </ion-avatar>
+        <ion-card-title class="mt-2 font-bold text-dark">{{ user.full_name }}</ion-card-title>
+        <ion-card-subtitle class="mt-1">
+          <ion-badge [color]="getStatusColor(user.status)" class="status-badge">{{ user.status }}</ion-badge>
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content class="px-0 pb-0">
+        <ion-list lines="none" class="p-0 m-0 bg-transparent">
+          <ion-item class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="call-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label>
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">Phone</h3>
+              <p class="text-dark font-medium mt-1">{{ user.phone }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="user.whatsapp" class="premium-item">
+            <div slot="start" class="icon-box whatsapp-box">
+              <ion-icon name="logo-whatsapp" color="success"></ion-icon>
+            </div>
+            <ion-label>
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">WhatsApp</h3>
+              <p class="text-dark font-medium mt-1">{{ user.whatsapp }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="user.email" class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="mail-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label>
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">Email</h3>
+              <p class="text-dark font-medium mt-1">{{ user.email }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="user.address" class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="location-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label class="ion-text-wrap">
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">Address</h3>
+              <p class="text-dark font-medium mt-1">{{ user.address }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="person-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label>
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">Role</h3>
+              <p class="text-dark font-medium mt-1"><span class="role-badge">{{ user.role }}</span></p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="calendar-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label>
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">Registered On</h3>
+              <p class="text-dark font-medium mt-1">{{ user.created_at | date:'mediumDate' }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Business Information Card (Only for Members) -->
+    <ion-card *ngIf="isMember(user)" class="premium-card m-0 mt-4 shadow-md border-radius-xl">
+      <ion-card-header class="border-b">
+        <ion-card-title class="font-bold text-dark text-md">Business Information</ion-card-title>
+      </ion-card-header>
+      <ion-card-content class="px-0 pb-0">
+        <!-- Business Logo -->
+        <div class="ion-padding ion-text-center">
+          <ion-avatar style="width: 80px; height: 80px; margin: 0 auto; border-radius: 8px;">
+            <img [src]="$any(user).business_logo_url || getFallbackAvatar($any(user).business_name)" alt="Business Logo" (error)="$any(user).business_logo_url = getFallbackAvatar($any(user).business_name)">
+          </ion-avatar>
+        </div>
+        
+        <ion-list lines="none" class="p-0 m-0 bg-transparent">
+          <ion-item class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="business-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label class="ion-text-wrap">
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">Business Name</h3>
+              <p class="text-dark font-medium mt-1">{{ $any(user).business_name || 'N/A' }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="document-text-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label class="ion-text-wrap">
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">Description</h3>
+              <p class="text-dark font-medium mt-1">{{ $any(user).business_description || 'N/A' }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="globe-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label class="ion-text-wrap">
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">Website</h3>
+              <p class="text-dark font-medium mt-1">
+                <a *ngIf="$any(user).website" [href]="$any(user).website" target="_blank">{{ $any(user).website }}</a>
+                <span *ngIf="!$any(user).website">N/A</span>
+              </p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="document-text-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label class="ion-text-wrap">
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">GST Number</h3>
+              <p class="text-dark font-medium mt-1">{{ $any(user).gst_number || 'N/A' }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Payment Receipt Card -->
+    <ion-card *ngIf="isMember(user)" class="premium-card m-0 mt-4 shadow-md border-radius-xl">
+      <ion-card-header class="border-b">
+        <ion-card-title class="font-bold text-dark text-md">Payment Receipt</ion-card-title>
+      </ion-card-header>
+      <ion-card-content class="ion-text-center p-4">
+        <div class="receipt-container" *ngIf="$any(user).payment_receipt_url; else noReceipt">
+          <img #receiptImage [src]="$any(user).payment_receipt_url" alt="Payment Receipt" class="receipt-image">
+        </div>
+        <ng-template #noReceipt>
+          <div class="ion-padding ion-text-center">
+            <ion-icon name="image-outline" style="font-size: 48px; color: var(--ion-color-medium);"></ion-icon>
+            <p class="text-medium mt-2">No payment receipt uploaded.</p>
+          </div>
+        </ng-template>
+      </ion-card-content>
+    </ion-card>
+
+    <div *ngIf="isMember(user)" class="mt-4 mb-4">
+      <h3 class="text-dark font-bold px-2 mb-2 text-md">Admin Actions</h3>
+      <ion-row>
+        <ion-col size="6">
+          <ion-button expand="block" color="success" class="action-btn" (click)="confirmAction('approve')" [disabled]="user.status === 'ACTIVE'">
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon> Approve
+          </ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button expand="block" color="warning" class="action-btn" (click)="confirmAction('suspend')" [disabled]="user.status === 'SUSPENDED'">
+            <ion-icon name="warning-outline" slot="start"></ion-icon> Suspend
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6">
+          <ion-button expand="block" color="danger" fill="outline" class="action-btn" (click)="confirmAction('reject')" [disabled]="user.status === 'REJECTED'">
+            <ion-icon name="close-circle-outline" slot="start"></ion-icon> Reject
+          </ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button expand="block" color="danger" class="action-btn" (click)="confirmAction('delete')">
+            <ion-icon name="trash-outline" slot="start"></ion-icon> Delete
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
+  </div>
+</ion-content>

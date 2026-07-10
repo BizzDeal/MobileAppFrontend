@@ -1,43 +1,52 @@
 // App Routing Configuration
 import { Routes } from '@angular/router';
 
+// Static imports
+import { AUTH_ROUTES } from './features/auth/auth.routes';
+import { HomePage } from './home/home.page';
+import { BusinessDirectoryPage } from './features/business/pages/business-directory/business-directory.page';
+import { OfferFormPage } from './features/business/pages/offer-form/offer-form.page';
+import { IssueVoucherPage } from './features/business/pages/issue-voucher/issue-voucher.page';
+import { RedeemVoucherPage } from './features/business/pages/redeem-voucher/redeem-voucher.page';
+import { AnalyticsDashboardPage } from './features/analytics/pages/analytics-dashboard/analytics-dashboard.page';
+import { ADMIN_ROUTES } from './features/admin/admin.routes';
+
 export const routes: Routes = [
   {
     path: 'auth',
-    loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
+    children: AUTH_ROUTES,
   },
   {
     path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+    component: HomePage,
   },
   {
     path: 'business-directory',
-    loadComponent: () => import('./features/business/pages/business-directory/business-directory.page').then(m => m.BusinessDirectoryPage),
+    component: BusinessDirectoryPage,
   },
   {
     path: 'offers/new',
-    loadComponent: () => import('./features/business/pages/offer-form/offer-form.page').then(m => m.OfferFormPage),
+    component: OfferFormPage,
   },
   {
     path: 'offers/:id/edit',
-    loadComponent: () => import('./features/business/pages/offer-form/offer-form.page').then(m => m.OfferFormPage),
+    component: OfferFormPage,
   },
   {
     path: 'vouchers/issue',
-    loadComponent: () => import('./features/business/pages/issue-voucher/issue-voucher.page').then(m => m.IssueVoucherPage),
+    component: IssueVoucherPage,
   },
   {
     path: 'vouchers/redeem',
-    loadComponent: () => import('./features/business/pages/redeem-voucher/redeem-voucher.page').then(m => m.RedeemVoucherPage),
+    component: RedeemVoucherPage,
   },
   {
-    // Lazy-loaded member analytics dashboard
     path: 'analytics',
-    loadComponent: () => import('./features/analytics/pages/analytics-dashboard/analytics-dashboard.page').then(m => m.AnalyticsDashboardPage),
+    component: AnalyticsDashboardPage,
   },
   {
     path: 'admin',
-    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
+    children: ADMIN_ROUTES,
   },
   {
     path: '',

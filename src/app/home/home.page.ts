@@ -162,6 +162,8 @@ export class HomePage {
       const tab = params['tab'];
       if (tab) {
         this.activeNavTab.set(tab as any);
+      } else {
+        this.activeNavTab.set('home');
       }
     });
 

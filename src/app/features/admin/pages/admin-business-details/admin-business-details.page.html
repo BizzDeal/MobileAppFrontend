@@ -1,0 +1,224 @@
+<ion-header class="ion-no-border" collapse="fade" [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/businesses"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="font-bold">Business Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light">
+  <div *ngIf="loading" class="ion-padding ion-text-center mt-4">
+    <ion-spinner></ion-spinner>
+    <p class="mt-2 text-medium">Loading details...</p>
+  </div>
+
+  <div *ngIf="!loading && !business" class="ion-padding ion-text-center mt-4">
+    <ion-text color="danger">Business not found.</ion-text>
+  </div>
+
+  <div *ngIf="!loading && business">
+    <!-- Header Card -->
+    <ion-card class="premium-card m-0 shadow-md border-radius-xl" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+      <div class="header-banner bg-primary"></div>
+      <ion-card-header class="ion-text-center profile-header">
+        <ion-avatar class="profile-avatar shadow-lg">
+          <img [src]="business.logo_url || getFallbackAvatar(business.name)" alt="Logo" (error)="business.logo_url = getFallbackAvatar(business.name)">
+        </ion-avatar>
+        <ion-card-title class="mt-2 font-bold text-dark">{{ business.name }}</ion-card-title>
+        <ion-card-subtitle class="mt-1 flex items-center justify-center gap-2">
+          <span class="category-badge">{{ business.category_name }}</span>
+          <ion-badge [color]="getStatusColor(business.status)" class="status-badge m-0">{{ business.status }}</ion-badge>
+        </ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+
+      <!-- Segments -->
+    <div class="px-4 mt-4">
+      <ion-segment [value]="selectedSegment" (ionChange)="segmentChanged($event)">
+        <ion-segment-button value="details">
+          <ion-label>Details</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="offers">
+          <ion-label>Offers</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="vouchers">
+          <ion-label>Vouchers</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Segment Contents -->
+    <div [ngSwitch]="selectedSegment" class="mt-4 px-2">
+      
+      <!-- DETAILS TAB -->
+      <div *ngSwitchCase="'details'">
+        <ion-card class="premium-card m-0 mb-4 shadow-sm border-radius-xl">
+          <ion-card-header class="border-b">
+            <ion-card-title class="font-bold text-dark text-md">General Information</ion-card-title>
+          </ion-card-header>
+          <ion-card-content class="px-0 pb-0">
+            <ion-list lines="none" class="p-0 m-0 bg-transparent">
+              
+              <!-- Featured Toggle -->
+              <ion-item class="premium-item">
+                <div slot="start" class="icon-box warning-box">
+                  <ion-icon [name]="business.is_featured ? 'star' : 'star-outline'" color="warning"></ion-icon>
+                </div>
+                <ion-label>
+                  <h2>Featured Business</h2>
+                  <p>Display in featured sections</p>
+                </ion-label>
+                <ion-toggle slot="end" [checked]="business.is_featured" (ionChange)="toggleFeatured()"></ion-toggle>
+              </ion-item>
+
+              <ion-item class="premium-item">
+                <div slot="start" class="icon-box">
+                  <ion-icon name="person-outline" color="medium"></ion-icon>
+                </div>
+                <ion-label class="ion-text-wrap">
+                  <h3 class="text-medium text-xs font-semibold uppercase">Owner</h3>
+                  <p class="text-dark font-medium mt-1">{{ business.owner_name }}</p>
+                </ion-label>
+              </ion-item>
+
+              <ion-item class="premium-item" *ngIf="business.owner_phone">
+                <div slot="start" class="icon-box">
+                  <ion-icon name="call-outline" color="medium"></ion-icon>
+                </div>
+                <ion-label class="ion-text-wrap">
+                  <h3 class="text-medium text-xs font-semibold uppercase">Phone</h3>
+                  <p class="text-dark font-medium mt-1">{{ business.owner_phone }}</p>
+                </ion-label>
+              </ion-item>
+
+              <ion-item class="premium-item" *ngIf="business.website">
+                <div slot="start" class="icon-box">
+                  <ion-icon name="globe-outline" color="medium"></ion-icon>
+                </div>
+                <ion-label class="ion-text-wrap">
+                  <h3 class="text-medium text-xs font-semibold uppercase">Website</h3>
+                  <a [href]="business.website" target="_blank" class="text-primary font-medium mt-1 inline-block">{{ business.website }}</a>
+                </ion-label>
+              </ion-item>
+
+              <ion-item class="premium-item" *ngIf="business.gst_number">
+                <div slot="start" class="icon-box">
+                  <ion-icon name="document-text-outline" color="medium"></ion-icon>
+                </div>
+                <ion-label class="ion-text-wrap">
+                  <h3 class="text-medium text-xs font-semibold uppercase">GST Number</h3>
+                  <p class="text-dark font-medium mt-1">{{ business.gst_number }}</p>
+                </ion-label>
+              </ion-item>
+
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="premium-card m-0 mb-4 shadow-sm border-radius-xl" *ngIf="business.description">
+          <ion-card-header class="border-b">
+            <ion-card-title class="font-bold text-dark text-md">About Business</ion-card-title>
+          </ion-card-header>
+          <ion-card-content class="pb-4 text-dark" style="white-space: pre-line;">
+            {{ business.description }}
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- OFFERS TAB -->
+      <div *ngSwitchCase="'offers'">
+        <div *ngIf="offers.length === 0" class="ion-padding ion-text-center">
+          <ion-icon name="pricetag-outline" class="text-4xl text-medium"></ion-icon>
+          <p class="text-medium mt-2">No offers found for this business.</p>
+        </div>
+
+        <ion-list *ngIf="offers.length > 0" class="bg-transparent p-0 m-0" lines="none">
+          <ion-card *ngFor="let offer of offers" class="premium-offer-card m-0 mb-3 shadow-sm" button (click)="openOfferModal(offer)">
+            <ion-card-content class="p-4 flex items-center gap-3">
+              
+              <!-- Content -->
+              <div class="flex-1">
+                <div class="flex justify-between items-start">
+                  <h3 class="font-bold text-dark text-md m-0">{{ offer.title }}</h3>
+                  <span class="custom-badge" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
+                    {{ offer.status }}
+                  </span>
+                </div>
+                
+                <div class="mt-2 flex items-center gap-2">
+                  <span class="type-badge" *ngIf="offer.offer_type">
+                    <ion-icon name="flash-outline"></ion-icon>
+                    {{ offer.offer_type }}
+                  </span>
+                  <span *ngIf="offer.discount_value" class="value-badge">
+                    {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }}
+                  </span>
+                </div>
+
+                <div class="mt-2 flex items-center text-medium text-xs">
+                  <ion-icon name="time-outline" class="mr-1"></ion-icon>
+                  Ends: {{ offer.end_date | date:'mediumDate' }}
+                </div>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+        </ion-list>
+      </div>
+
+      <!-- VOUCHERS TAB -->
+      <div *ngSwitchCase="'vouchers'">
+        <div *ngIf="vouchers.length === 0" class="ion-padding ion-text-center">
+          <ion-icon name="ticket-outline" class="text-4xl text-medium"></ion-icon>
+          <p class="text-medium mt-2">No vouchers issued yet.</p>
+        </div>
+
+        <ion-list *ngIf="vouchers.length > 0" class="bg-transparent p-0 m-0" lines="none">
+          <ion-card *ngFor="let voucher of vouchers" class="premium-voucher-card m-0 mb-3 shadow-sm">
+            <ion-card-content class="p-4 flex items-center gap-3">
+              
+              <!-- Content -->
+              <div class="flex-1">
+                <div class="flex justify-between items-start">
+                  <h3 class="font-bold text-dark text-md m-0 font-mono tracking-wide">{{ voucher.voucher_code }}</h3>
+                  <span class="custom-badge" [ngClass]="'badge-' + getVoucherStatusColor(voucher.status)">
+                    {{ voucher.status }}
+                  </span>
+                </div>
+                
+                <div class="mt-2 flex items-center" style="gap: 12px;">
+                  <ion-avatar class="m-0 shrink-0 shadow-sm" style="width: 32px; height: 32px;">
+                    <img [src]="voucher.customer_avatar || getFallbackAvatar(voucher.customer_name)" alt="Avatar" (error)="voucher.customer_avatar = getFallbackAvatar(voucher.customer_name)">
+                  </ion-avatar>
+                  <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div class="text-sm text-dark font-medium leading-tight">{{ voucher.customer_name }}</div>
+                    <div class="text-xs text-medium leading-none" *ngIf="voucher.customer_phone">{{ voucher.customer_phone }}</div>
+                  </div>
+                </div>
+
+                <div class="mt-2 flex items-center justify-between">
+                  <span class="text-medium text-xs flex items-center">
+                    <ion-icon name="calendar-outline" class="mr-1"></ion-icon>
+                    <ng-container *ngIf="voucher.redeemed_at; else issuedDate">
+                      Redeemed: {{ voucher.redeemed_at | date:'mediumDate' }}
+                    </ng-container>
+                    <ng-template #issuedDate>
+                      Issued: {{ voucher.issued_at | date:'mediumDate' }}
+                    </ng-template>
+                  </span>
+                  
+                  <span *ngIf="voucher.discount_applied" class="discount-applied font-bold">
+                    -{{ voucher.discount_applied | currency:'INR' }}
+                  </span>
+                </div>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+        </ion-list>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

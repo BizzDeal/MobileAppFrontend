@@ -1,11 +1,14 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Preferences } from '@capacitor/preferences';
+import { ProfileService } from '../../../profile/services/profile.service';
 
 @Injectable()
 export class PhoneLoginService {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly profileService = inject(ProfileService);
 
   private readonly _authStep = signal<'phone' | 'pin'>('phone');
   private readonly _isSubmitting = signal(false);
@@ -68,7 +71,7 @@ export class PhoneLoginService {
     }
 
     this._isSubmitting.set(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       this._isSubmitting.set(false);
       const values = this.loginForm.getRawValue();
       console.info('Logged in successfully with:', values);
@@ -76,13 +79,22 @@ export class PhoneLoginService {
       // Mock role-based routing for now
       if (values.phoneNumber === '9999999999') {
         console.info('Mocking ADMIN role');
-        this.router.navigate(['/admin/dashboard']);
+        await Preferences.set({ key: 'mockRole', value: 'ADMIN' });
+        this.profileService.loadProfile().subscribe(() => {
+          this.router.navigate(['/admin/dashboard']);
+        });
       } else if (values.phoneNumber === '8888888888') {
         console.info('Mocking MEMBER role');
-        this.router.navigate(['/home']); 
+        await Preferences.set({ key: 'mockRole', value: 'MEMBER' });
+        this.profileService.loadProfile().subscribe(() => {
+          this.router.navigate(['/home']); 
+        });
       } else {
         console.info('Mocking CUSTOMER role (Default)');
-        this.router.navigate(['/home']);
+        await Preferences.set({ key: 'mockRole', value: 'CUSTOMER' });
+        this.profileService.loadProfile().subscribe(() => {
+          this.router.navigate(['/home']);
+        });
       }
     }, 1000);
   }

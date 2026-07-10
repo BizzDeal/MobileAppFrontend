@@ -24,10 +24,8 @@ export enum OfferStatus {
 }
 
 export enum OfferType {
-  FLAT_DISCOUNT = 'FLAT_DISCOUNT',
-  PERCENTAGE_DISCOUNT = 'PERCENTAGE_DISCOUNT',
-  BOGO = 'BOGO',
-  FREE_GIFT = 'FREE_GIFT',
+  DISCOUNT = 'DISCOUNT',
+  FIXED_AMOUNT = 'FIXED_AMOUNT',
 }
 
 export enum DiscountType {
@@ -108,7 +106,7 @@ export class AdminDashboardService {
       {
         id: '101',
         title: '50% off on all pizzas',
-        offer_type: OfferType.PERCENTAGE_DISCOUNT,
+        offer_type: OfferType.DISCOUNT,
         discount_value: 50,
         discount_type: DiscountType.PERCENTAGE,
         status: OfferStatus.PENDING,
@@ -122,7 +120,7 @@ export class AdminDashboardService {
       {
         id: '102',
         title: 'Flat $10 off on orders above $50',
-        offer_type: OfferType.FLAT_DISCOUNT,
+        offer_type: OfferType.FIXED_AMOUNT,
         discount_value: 10,
         discount_type: DiscountType.FIXED_AMOUNT,
         status: OfferStatus.PENDING,

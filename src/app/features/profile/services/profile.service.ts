@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, delay, tap } from 'rxjs/operators';
+import { Observable, of, throwError, from } from 'rxjs';
+import { catchError, delay, tap, switchMap } from 'rxjs/operators';
+import { Preferences } from '@capacitor/preferences';
 import { ProfileDTO } from '../models/profile.model';
 
 const MOCK_PROFILE: ProfileDTO = {
@@ -11,7 +12,7 @@ const MOCK_PROFILE: ProfileDTO = {
   whatsapp: '+91 98765 43210',
   email: 'raviteja@bizzdeal.com',
   address: 'Banjara Hills, Hyderabad',
-  role: 'ADMIN',
+  role: 'CUSTOMER',
   status: 'ACTIVE',
   profile_pic_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
   business_name: 'BizzDeal HQ',
@@ -47,8 +48,15 @@ export class ProfileService {
     this._loading.set(true);
     this._error.set(null);
 
-    return of(MOCK_PROFILE).pipe(
-      delay(400),
+    return from(Preferences.get({ key: 'mockRole' })).pipe(
+      switchMap(({ value: storedRole }) => {
+        const profileToLoad = { ...MOCK_PROFILE };
+        if (storedRole) {
+          profileToLoad.role = storedRole as 'ADMIN' | 'MEMBER' | 'CUSTOMER';
+        }
+
+        return of(profileToLoad).pipe(delay(400));
+      }),
       tap({
         next: (data) => {
           this._profile.set({ ...data });
@@ -64,6 +72,10 @@ export class ProfileService {
         return throwError(() => err);
       })
     );
+  }
+
+  clearProfile(): void {
+    this._profile.set(null);
   }
 
   updateProfile(dto: Partial<ProfileDTO>): Observable<ProfileDTO> {

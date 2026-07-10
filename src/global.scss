@@ -137,3 +137,88 @@ ion-select.custom-select {
   }
 }
 
+/* Premium info card for grouping details globally */
+.premium-info-card {
+  background: var(--ion-card-background, #ffffff);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Shared page top header for individual pages (Meetings, Referrals, Wallet, Vouchers, Profile) */
+.page-top-header {
+  background: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-lg);
+  padding: var(--bizzdeal-spacing-md);
+  margin-bottom: var(--bizzdeal-spacing-lg);
+  box-shadow: var(--bizzdeal-shadow-sm);
+  border: 1px solid var(--bizzdeal-border-color);
+  animation: fadeIn 0.4s ease-out;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--bizzdeal-spacing-md);
+  }
+
+  .header-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--bizzdeal-radius-md);
+    background: var(--bizzdeal-gradient-primary-diagonal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bizzdeal-text-on-primary);
+    box-shadow: var(--bizzdeal-shadow-primary);
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  }
+
+  .header-text {
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--bizzdeal-text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 2px 0 0 0;
+      font-size: 0.85rem;
+      color: var(--bizzdeal-text-secondary);
+    }
+  }
+}
+
+/* Admin side-menu styling (menu is at app root for Capacitor compatibility) */
+ion-menu[menuId="admin-menu"] {
+  --background: var(--ion-color-light);
+
+  ion-item {
+    --background: transparent;
+    --background-hover: rgba(var(--ion-color-primary-rgb), 0.1);
+    --color: var(--ion-color-dark);
+    font-weight: 500;
+    margin: 4px 12px;
+    border-radius: 8px;
+    transition: 0.2s ease-in-out;
+
+    ion-icon {
+      color: var(--ion-color-medium);
+    }
+
+    &.selected {
+      --background: rgba(var(--ion-color-primary-rgb), 0.15);
+      --color: var(--ion-color-primary);
+
+      ion-icon {
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+}

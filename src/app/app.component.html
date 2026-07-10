@@ -1,3 +1,61 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu
+    contentId="main-content"
+    type="overlay"
+    menuId="admin-menu"
+    [disabled]="!isAdminRoute"
+    [swipeGesture]="isAdminRoute"
+  >
+    <ion-header class="ion-no-border">
+      <ion-toolbar color="primary">
+        <ion-title>Admin Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-list lines="none">
+        <ion-menu-toggle
+          auto-hide="false"
+          *ngFor="let p of adminPages"
+        >
+          <ion-item
+            [routerLink]="[p.url]"
+            routerDirection="root"
+            routerLinkActive="selected"
+          >
+            <ion-icon
+              slot="start"
+              [name]="p.icon + '-outline'"
+            ></ion-icon>
+
+            <ion-label>
+              {{ p.title }}
+            </ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+
+    <ion-footer class="ion-no-border">
+      <div class="ion-padding">
+        <ion-menu-toggle auto-hide="false">
+          <ion-button
+            expand="block"
+            color="danger"
+            fill="clear"
+            (click)="logout()"
+          >
+            <ion-icon
+              slot="start"
+              name="log-out-outline"
+            ></ion-icon>
+
+            Logout
+          </ion-button>
+        </ion-menu-toggle>
+      </div>
+    </ion-footer>
+  </ion-menu>
+
+  <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

@@ -1,5 +1,5 @@
 export type BusinessStatus = 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED';
-export type OfferType = 'DISCOUNT' | 'CASHBACK';
+export type OfferType = 'DISCOUNT' | 'FIXED_AMOUNT';
 export type DiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
 export type OfferStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED' | 'INACTIVE';
 export type VoucherStatus = 'ISSUED' | 'REDEEMED' | 'EXPIRED' | 'CANCELLED';

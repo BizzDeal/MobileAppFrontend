@@ -1,4 +1,15 @@
-<div class="wallet-container">
+<div class="wallet-container" style="padding: var(--bizzdeal-spacing-md);">
+  <div class="page-top-header">
+    <div class="header-content">
+      <div class="header-icon-box">
+        <ion-icon name="wallet-outline"></ion-icon>
+      </div>
+      <div class="header-text">
+        <h2>My Wallet</h2>
+        <p>Manage your balance and transactions.</p>
+      </div>
+    </div>
+  </div>
   @if (loading() && !wallet()) {
     <div class="loading-state">
       <ion-spinner name="crescent" color="primary"></ion-spinner>

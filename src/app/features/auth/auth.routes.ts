@@ -1,25 +1,27 @@
 import { Routes } from '@angular/router';
 
+// Static imports
+import { PhoneLoginPage } from './pages/phone-login/phone-login.page';
+import { ForgotPinPage } from './pages/forgot-pin/forgot-pin.page';
+import { MemberRegistrationPage } from './pages/member-registration/member-registration.page';
+import { MemberPaymentPage } from './pages/member-payment/member-payment.page';
+
 export const AUTH_ROUTES: Routes = [
   {
     path: 'login',
-    loadComponent: () =>
-      import('./pages/phone-login/phone-login.page').then((m) => m.PhoneLoginPage),
+    component: PhoneLoginPage,
   },
   {
     path: 'forgot-pin',
-    loadComponent: () =>
-      import('./pages/forgot-pin/forgot-pin.page').then((m) => m.ForgotPinPage),
+    component: ForgotPinPage,
   },
   {
     path: 'member-registration',
-    loadComponent: () =>
-      import('./pages/member-registration/member-registration.page').then((m) => m.MemberRegistrationPage),
+    component: MemberRegistrationPage,
   },
   {
     path: 'member-payment',
-    loadComponent: () =>
-      import('./pages/member-payment/member-payment.page').then((m) => m.MemberPaymentPage),
+    component: MemberPaymentPage,
   },
   {
     path: '',

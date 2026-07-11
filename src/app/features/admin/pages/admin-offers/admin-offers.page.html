@@ -1,8 +1,8 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
-  <ion-toolbar class="px-2 pt-3">
+  <ion-toolbar class="toolbar-no-padding pt-3">
     <ion-searchbar [value]="searchQuery" (ionInput)="onSearch($event)" placeholder="Search offers or business..." mode="ios" animated="true" class="premium-searchbar"></ion-searchbar>
   </ion-toolbar>
-  <ion-toolbar class="px-2 pb-2">
+  <ion-toolbar class="toolbar-no-padding pb-2">
     <ion-item lines="none" class="premium-select-item">
       <ion-icon name="filter-outline" slot="start" class="text-medium"></ion-icon>
       <ion-select [value]="selectedStatus" (ionChange)="segmentChanged($event)" interface="action-sheet" placeholder="Filter by status" justify="space-between" class="w-full">
@@ -26,45 +26,43 @@
     <p class="text-medium mt-2">No offers found for the selected status.</p>
   </div>
 
-  <div *ngIf="!loading && filteredOffers.length > 0" class="bg-transparent p-4 m-0">
-    <ion-card *ngFor="let offer of filteredOffers" class="premium-offer-card" button (click)="openOfferModal(offer)">
-      <ion-card-content>
-        <div class="card-body">
-          <!-- Content -->
-          <div class="offer-details">
-            <div class="offer-header">
-              <h3 class="offer-title">{{ offer.title }}</h3>
-              <span class="custom-badge shrink-0" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
-                {{ offer.status }}
-              </span>
-            </div>
-            
-            <div class="offer-business">
-              <ion-icon name="business-outline" class="icon-primary"></ion-icon>
-              <span>{{ offer.business_name || 'Unknown Business' }}</span>
-            </div>
+  <ion-list *ngIf="!loading && filteredOffers.length > 0" class="bg-transparent p-0 pt-4 m-0" lines="none">
+    <div *ngFor="let offer of filteredOffers" class="premium-offer-card" (click)="openOfferModal(offer)" style="cursor: pointer;">
+      <div class="card-body">
+        <!-- Content -->
+        <div class="offer-details">
+          <div class="offer-header">
+            <h3 class="offer-title">{{ offer.title }}</h3>
+            <span class="custom-badge shrink-0" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
+              {{ offer.status }}
+            </span>
+          </div>
+          
+          <div class="offer-business">
+            <ion-icon name="business-outline" class="icon-primary"></ion-icon>
+            <span>{{ offer.business_name || 'Unknown Business' }}</span>
+          </div>
 
-            <div class="offer-badges">
-              <span class="type-badge" *ngIf="offer.offer_type">
-                <ion-icon name="pricetag-outline"></ion-icon>
-                {{ offer.offer_type }}
-              </span>
-              <span *ngIf="offer.discount_value" class="value-badge">
-                {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }} OFF
-              </span>
-            </div>
+          <div class="offer-badges">
+            <span class="type-badge" *ngIf="offer.offer_type">
+              <ion-icon name="pricetag-outline"></ion-icon>
+              {{ offer.offer_type }}
+            </span>
+            <span *ngIf="offer.discount_value" class="value-badge">
+              {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }} OFF
+            </span>
           </div>
         </div>
-        
-        <!-- Footer / Extra info -->
-        <div class="card-footer">
-           <div class="footer-time">
-             <ion-icon name="time-outline"></ion-icon>
-             <span>Ends: {{ offer.end_date | date:'mediumDate' }}</span>
-           </div>
-           <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
-        </div>
-      </ion-card-content>
-    </ion-card>
-  </div>
+      </div>
+      
+      <!-- Footer / Extra info -->
+      <div class="card-footer">
+         <div class="footer-time">
+           <ion-icon name="time-outline"></ion-icon>
+           <span>Ends: {{ offer.end_date | date:'mediumDate' }}</span>
+         </div>
+         <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
+      </div>
+    </div>
+  </ion-list>
 </ion-content>

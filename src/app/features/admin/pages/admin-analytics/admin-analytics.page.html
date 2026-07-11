@@ -6,8 +6,8 @@
     <ion-grid>
       <ion-row>
         <ion-col size="6" size-md="3">
-          <ion-card class="kpi-card">
-            <ion-card-content>
+          <div class="kpi-card">
+            <div class="kpi-card-content">
               <div class="kpi-header">
                 <div class="kpi-icon-wrapper primary">
                   <ion-icon name="people-outline"></ion-icon>
@@ -15,12 +15,12 @@
                 <div class="kpi-title">Total Users</div>
               </div>
               <div class="kpi-value">{{ analytics.kpis.totalUsers | number }}</div>
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-col>
         <ion-col size="6" size-md="3">
-          <ion-card class="kpi-card">
-            <ion-card-content>
+          <div class="kpi-card">
+            <div class="kpi-card-content">
               <div class="kpi-header">
                 <div class="kpi-icon-wrapper secondary">
                   <ion-icon name="business-outline"></ion-icon>
@@ -28,12 +28,12 @@
                 <div class="kpi-title">Active Businesses</div>
               </div>
               <div class="kpi-value">{{ analytics.kpis.totalBusinesses | number }}</div>
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-col>
         <ion-col size="6" size-md="3">
-          <ion-card class="kpi-card">
-            <ion-card-content>
+          <div class="kpi-card">
+            <div class="kpi-card-content">
               <div class="kpi-header">
                 <div class="kpi-icon-wrapper warning">
                   <ion-icon name="pricetag-outline"></ion-icon>
@@ -41,12 +41,12 @@
                 <div class="kpi-title">Vouchers Redeemed</div>
               </div>
               <div class="kpi-value">{{ analytics.kpis.totalVouchersRedeemed | number }}</div>
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-col>
         <ion-col size="6" size-md="3">
-          <ion-card class="kpi-card">
-            <ion-card-content>
+          <div class="kpi-card">
+            <div class="kpi-card-content">
               <div class="kpi-header">
                 <div class="kpi-icon-wrapper success">
                   <ion-icon name="wallet-outline"></ion-icon>
@@ -54,8 +54,8 @@
                 <div class="kpi-title">Wallet Volume</div>
               </div>
               <div class="kpi-value">{{ analytics.kpis.totalWalletVolume | currency:'USD':'symbol':'1.0-0' }}</div>
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -65,14 +65,17 @@
       <ion-row>
         <!-- User Growth -->
         <ion-col size="12" size-lg="6">
-          <ion-card class="chart-card">
-            <ion-card-header>
-              <ion-card-title>
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-card-title">
                 <ion-icon name="trending-up-outline"></ion-icon>
                 User Growth Trend
-              </ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
+              </div>
+              <ion-button fill="clear" size="small" class="reset-chart-btn" (click)="resetChart('user-growth-chart')" aria-label="Reset User Growth Chart">
+                <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="chart-card-content">
               <apx-chart *ngIf="userGrowthChartOptions"
                 [series]="userGrowthChartOptions.series"
                 [chart]="userGrowthChartOptions.chart"
@@ -83,20 +86,23 @@
                 [legend]="userGrowthChartOptions.legend"
                 [fill]="userGrowthChartOptions.fill"
               ></apx-chart>
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-col>
         
         <!-- Wallet Volume -->
         <ion-col size="12" size-lg="6">
-          <ion-card class="chart-card">
-            <ion-card-header>
-              <ion-card-title>
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-card-title">
                 <ion-icon name="wallet-outline"></ion-icon>
                 Wallet Volume (Credits vs Debits)
-              </ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
+              </div>
+              <ion-button fill="clear" size="small" class="reset-chart-btn" (click)="resetChart('wallet-volume-chart')" aria-label="Reset Wallet Volume Chart">
+                <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="chart-card-content">
               <apx-chart *ngIf="walletVolumeChartOptions"
                 [series]="walletVolumeChartOptions.series"
                 [chart]="walletVolumeChartOptions.chart"
@@ -107,22 +113,25 @@
                 [legend]="walletVolumeChartOptions.legend"
                 [fill]="walletVolumeChartOptions.fill"
               ></apx-chart>
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-col>
       </ion-row>
 
       <ion-row>
         <!-- Voucher Performance -->
         <ion-col size="12" size-lg="8">
-          <ion-card class="chart-card">
-            <ion-card-header>
-              <ion-card-title>
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-card-title">
                 <ion-icon name="bar-chart-outline"></ion-icon>
                 Voucher Performance (Issued vs Redeemed)
-              </ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
+              </div>
+              <ion-button fill="clear" size="small" class="reset-chart-btn" (click)="resetChart('voucher-performance-chart')" aria-label="Reset Voucher Performance Chart">
+                <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="chart-card-content">
               <apx-chart *ngIf="voucherPerformanceChartOptions"
                 [series]="voucherPerformanceChartOptions.series"
                 [chart]="voucherPerformanceChartOptions.chart"
@@ -134,20 +143,23 @@
                 [legend]="voucherPerformanceChartOptions.legend"
                 [fill]="voucherPerformanceChartOptions.fill"
               ></apx-chart>
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-col>
 
         <!-- Business Distribution -->
         <ion-col size="12" size-lg="4">
-          <ion-card class="chart-card">
-            <ion-card-header>
-              <ion-card-title>
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-card-title">
                 <ion-icon name="pie-chart-outline"></ion-icon>
                 Business Distribution
-              </ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
+              </div>
+              <ion-button fill="clear" size="small" class="reset-chart-btn" (click)="resetChart('business-distribution-chart')" aria-label="Reset Business Distribution Chart">
+                <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="chart-card-content">
               <apx-chart *ngIf="businessDistributionChartOptions"
                 [series]="businessDistributionChartOptions.series"
                 [chart]="businessDistributionChartOptions.chart"
@@ -156,8 +168,8 @@
                 [plotOptions]="businessDistributionChartOptions.plotOptions"
                 [legend]="businessDistributionChartOptions.legend"
               ></apx-chart>
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>

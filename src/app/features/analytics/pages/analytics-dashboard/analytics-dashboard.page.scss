@@ -25,7 +25,7 @@
 .analytics-content {
   --background: var(--bizzdeal-bg-main);
   --padding-top: var(--bizzdeal-spacing-md);
-  --padding-bottom: var(--bizzdeal-spacing-xl);
+  --padding-bottom: 100px;
   --padding-start: var(--bizzdeal-spacing-md);
   --padding-end: var(--bizzdeal-spacing-md);
 
@@ -141,6 +141,12 @@
         margin: 0;
       }
 
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--bizzdeal-spacing-sm, 12px);
+      }
+
       .referral-segment {
         width: 140px;
         margin: 0;
@@ -153,6 +159,33 @@
           font-size: 12px;
           min-height: 28px;
         }
+      }
+    }
+
+    .reset-chart-btn {
+      --color: var(--bizzdeal-text-secondary);
+      --color-hover: var(--bizzdeal-text-primary);
+      --background-hover: var(--bizzdeal-bg-surface-secondary);
+      margin: 0;
+      --padding-start: 4px;
+      --padding-end: 4px;
+      --padding-top: 4px;
+      --padding-bottom: 4px;
+      --border-radius: 50%;
+      height: 32px;
+      width: 32px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        transform: rotate(30deg);
+      }
+
+      &:active {
+        transform: rotate(180deg) scale(0.9);
+      }
+
+      ion-icon {
+        font-size: 18px;
       }
     }
 

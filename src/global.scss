@@ -387,3 +387,10 @@ app-admin-layout .page-container.has-parent-header ion-header ion-toolbar {
   --ion-safe-area-top: 0px !important;
   padding-top: 0 !important;
 }
+
+/* Offset ApexCharts tooltips vertically to prevent touch overlap (thumb block) on mobile devices */
+.apexcharts-tooltip {
+  margin-top: -45px !important;
+  pointer-events: none !important;
+  transition: transform 0.1s ease-out !important;
+}

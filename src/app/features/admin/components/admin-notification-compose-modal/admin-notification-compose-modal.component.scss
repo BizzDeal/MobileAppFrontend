@@ -70,7 +70,7 @@
   --background: var(--ion-color-light);
   --border-width: 1px 0 0 0;
   --border-color: rgba(0, 0, 0, 0.05);
-  padding: 12px 24px;
+  padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0px));
   
   .action-buttons {
     display: flex;

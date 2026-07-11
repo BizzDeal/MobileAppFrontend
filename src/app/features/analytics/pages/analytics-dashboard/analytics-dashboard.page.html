@@ -59,7 +59,12 @@
 
   <!-- 2. Growth Trends Chart -->
   <div class="chart-section-wrapper">
-    <h3 class="section-title">Growth Trends</h3>
+    <div class="section-header-row">
+      <h3 class="section-title">Growth Trends</h3>
+      <ion-button fill="clear" size="small" class="reset-chart-btn" (click)="resetChart('growth-trends-chart')" aria-label="Reset Growth Trends Chart">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
+    </div>
     <div class="chart-card bd-card">
       <apx-chart
         [series]="growthChartOptions.series"
@@ -79,14 +84,19 @@
   <div class="chart-section-wrapper">
     <div class="section-header-row">
       <h3 class="section-title">Referral Statistics</h3>
-      <ion-segment [value]="referralView()" (ionChange)="onSegmentChange($event)" mode="ios" class="referral-segment">
-        <ion-segment-button value="trend">
-          <ion-label>Trend</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="status">
-          <ion-label>Status</ion-label>
-        </ion-segment-button>
-      </ion-segment>
+      <div class="header-actions">
+        <ion-button fill="clear" size="small" class="reset-chart-btn" (click)="resetChart(referralView() === 'trend' ? 'referral-trends-chart' : 'referral-status-chart')" aria-label="Reset Referral Chart">
+          <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+        </ion-button>
+        <ion-segment [value]="referralView()" (ionChange)="onSegmentChange($event)" mode="ios" class="referral-segment">
+          <ion-segment-button value="trend">
+            <ion-label>Trend</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="status">
+            <ion-label>Status</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
     </div>
 
     <div class="chart-card bd-card">

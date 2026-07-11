@@ -32,7 +32,7 @@ import {
     .sidebar-header {
       background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
       color: #ffffff;
-      padding: 24px 20px;
+      padding: calc(24px + var(--ion-safe-area-top, env(safe-area-inset-top, 0px))) 20px 24px;
       flex-shrink: 0;
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
     }

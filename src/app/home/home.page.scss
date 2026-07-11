@@ -3,6 +3,7 @@
 }
 
 .home-layout {
+  padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
   padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); // Space for fixed bottom navigation bar
 }
 

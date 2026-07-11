@@ -52,6 +52,21 @@ export class AdminNotificationsPage implements OnInit {
     });
   }
 
+  handleRefresh(event: any) {
+    this.adminNotificationsService.getAllNotifications().subscribe({
+      next: (data) => {
+        this.notifications = data;
+        this.applyFilters();
+        event.target.complete();
+      },
+      error: (err) => {
+        console.error('Failed to load notifications', err);
+        this.showToast('Failed to load notifications', 'danger');
+        event.target.complete();
+      }
+    });
+  }
+
   filterByAudience(event: any) {
     this.selectedAudience = event.detail.value;
     this.applyFilters();

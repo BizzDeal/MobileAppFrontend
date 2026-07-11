@@ -11,7 +11,7 @@ ion-content {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: 16px var(--bizzdeal-spacing-md);
+  padding: calc(16px + var(--ion-safe-area-top, env(safe-area-inset-top, 0px))) var(--bizzdeal-spacing-md) 16px;
   max-width: 440px;
   margin: 0 auto;
 }

@@ -13,8 +13,10 @@ import {
   walletOutline,
   trendingUpOutline,
   pieChartOutline,
-  barChartOutline
+  barChartOutline,
+  refreshOutline
 } from 'ionicons/icons';
+import ApexCharts from 'apexcharts';
 
 @Component({
   selector: 'app-admin-analytics',
@@ -40,8 +42,17 @@ export class AdminAnalyticsPage implements OnInit {
       walletOutline,
       trendingUpOutline,
       pieChartOutline,
-      barChartOutline
+      barChartOutline,
+      refreshOutline
     });
+  }
+
+  resetChart(chartId: string) {
+    try {
+      ApexCharts.exec(chartId, 'resetSeries');
+    } catch (e) {
+      console.warn(`Could not reset chart ${chartId}`, e);
+    }
   }
 
   ngOnInit() {
@@ -63,7 +74,7 @@ export class AdminAnalyticsPage implements OnInit {
         { name: 'Customers', data: data.userGrowth.customers },
         { name: 'Members', data: data.userGrowth.members }
       ],
-      chart: { type: 'area', height: 350, ...commonChartOptions },
+      chart: { id: 'user-growth-chart', type: 'area', height: 350, ...commonChartOptions },
       dataLabels: { enabled: false },
       stroke: { curve: 'smooth', width: 2 },
       xaxis: { categories: data.userGrowth.months },
@@ -80,7 +91,7 @@ export class AdminAnalyticsPage implements OnInit {
         { name: 'Issued', data: data.voucherPerformance.issued },
         { name: 'Redeemed', data: data.voucherPerformance.redeemed }
       ],
-      chart: { type: 'bar', height: 350, ...commonChartOptions },
+      chart: { id: 'voucher-performance-chart', type: 'bar', height: 350, ...commonChartOptions },
       plotOptions: {
         bar: { horizontal: false, columnWidth: '55%', borderRadius: 5 }
       },
@@ -94,7 +105,7 @@ export class AdminAnalyticsPage implements OnInit {
 
     this.businessDistributionChartOptions = {
       series: data.businessDistribution.counts,
-      chart: { type: 'donut', height: 350, ...commonChartOptions },
+      chart: { id: 'business-distribution-chart', type: 'donut', height: 350, ...commonChartOptions },
       labels: data.businessDistribution.categories,
       colors: ['#3880ff', '#5260ff', '#2dd36f', '#ffc409', '#eb445a'],
       plotOptions: {
@@ -110,7 +121,7 @@ export class AdminAnalyticsPage implements OnInit {
         { name: 'Credits', data: data.walletVolume.credits },
         { name: 'Debits', data: data.walletVolume.debits }
       ],
-      chart: { type: 'area', height: 350, ...commonChartOptions },
+      chart: { id: 'wallet-volume-chart', type: 'area', height: 350, ...commonChartOptions },
       dataLabels: { enabled: false },
       stroke: { curve: 'smooth', width: 2 },
       xaxis: { categories: data.walletVolume.months },
@@ -124,7 +135,7 @@ export class AdminAnalyticsPage implements OnInit {
 
     this.referralConversionChartOptions = {
       series: [data.referralStats.conversionRate],
-      chart: { type: 'radialBar', height: 350, ...commonChartOptions },
+      chart: { id: 'referral-conversion-chart', type: 'radialBar', height: 350, ...commonChartOptions },
       plotOptions: {
         radialBar: {
           hollow: { size: '70%' },

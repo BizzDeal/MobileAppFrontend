@@ -19,8 +19,10 @@ import {
   trendingUpOutline,
   peopleOutline,
   ticketOutline,
-  pricetagOutline
+  pricetagOutline,
+  refreshOutline
 } from 'ionicons/icons';
+import ApexCharts from 'apexcharts';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
 @Component({
@@ -60,6 +62,7 @@ export class AnalyticsDashboardPage {
       }
     ],
     chart: {
+      id: 'growth-trends-chart',
       type: 'bar' as const,
       height: 220,
       toolbar: { show: false },
@@ -143,6 +146,7 @@ export class AnalyticsDashboardPage {
       }
     ],
     chart: {
+      id: 'referral-trends-chart',
       type: 'bar' as const,
       height: 220,
       toolbar: { show: false }
@@ -218,6 +222,7 @@ export class AnalyticsDashboardPage {
     series: [83, 32, 13], // 83 Successful, 32 Pending, 13 Expired
     labels: ['Successful', 'Pending', 'Expired'],
     chart: {
+      id: 'referral-status-chart',
       type: 'donut' as const,
       height: 220
     },
@@ -285,8 +290,17 @@ export class AnalyticsDashboardPage {
       trendingUpOutline,
       peopleOutline,
       ticketOutline,
-      pricetagOutline
+      pricetagOutline,
+      refreshOutline
     });
+  }
+
+  resetChart(chartId: string): void {
+    try {
+      ApexCharts.exec(chartId, 'resetSeries');
+    } catch (e) {
+      console.warn(`Could not reset chart ${chartId}`, e);
+    }
   }
 
   goBack(): void {

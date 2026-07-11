@@ -4,7 +4,7 @@
   --background: #ffffff !important;
   border: 1px solid rgba(0,0,0,0.08) !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
-  margin: 0 0 16px 0 !important;
+  margin: 0 16px 16px 16px !important;
   transition: all 0.2s ease;
 
   &:active {
@@ -180,6 +180,14 @@
       right: 12px;
     }
   }
+
+  .sync-btn-in-select {
+    margin: 0;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    height: 36px;
+    font-size: 20px;
+  }
 }
 
 ion-toolbar {
@@ -193,11 +201,15 @@ ion-toolbar {
   &.pt-3 {
     --padding-top: 12px;
   }
+  &.toolbar-no-padding {
+    --padding-start: 0px !important;
+    --padding-end: 0px !important;
+  }
 }
 
 ion-fab {
-  margin-bottom: 24px;
-  margin-right: 16px;
+  margin-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  margin-right: 24px;
 }
 
 ion-fab-button {

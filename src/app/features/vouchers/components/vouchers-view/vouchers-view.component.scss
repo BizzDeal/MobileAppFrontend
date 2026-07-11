@@ -1,6 +1,10 @@
 .vouchers-content {
   --background: #f8fafc;
   font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
+
+  .page-top-header {
+    margin-bottom: 0 !important;
+  }
 }
 
 /* Search bar styling */

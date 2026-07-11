@@ -1,10 +1,5 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
-  <ion-toolbar class="px-2 pt-3 pb-2">
-    <ion-buttons slot="end" class="pl-2">
-      <ion-button (click)="loadNotifications()" [disabled]="loading" fill="clear" color="primary">
-        <ion-icon name="sync-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+  <ion-toolbar class="toolbar-no-padding pt-3 pb-2">
     <ion-item lines="none" class="premium-select-item">
       <ion-icon name="filter-outline" slot="start" class="text-medium"></ion-icon>
       <ion-select [value]="selectedAudience" (ionChange)="filterByAudience($event)" interface="action-sheet" placeholder="Filter by audience" justify="space-between" class="w-full">
@@ -19,6 +14,9 @@
 </ion-header>
 
 <ion-content color="light">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div *ngIf="loading" class="ion-padding ion-text-center mt-4">
     <ion-spinner></ion-spinner>
     <p class="mt-2 text-medium">Loading notifications history...</p>
@@ -29,47 +27,45 @@
     <p class="text-medium mt-2">No notifications found.</p>
   </div>
 
-  <div *ngIf="!loading && filteredNotifications.length > 0" class="bg-transparent p-4 m-0">
-    <ion-card *ngFor="let notification of filteredNotifications" class="premium-offer-card">
-      <ion-card-content>
-        <div class="card-body">
-          <div class="offer-details">
-            <div class="offer-header">
-              <h3 class="offer-title">{{ notification.title }}</h3>
-              <span class="custom-badge shrink-0" [ngClass]="'badge-' + getTypeBadgeColor(notification.type)">
-                {{ notification.type }}
-              </span>
-            </div>
-            
-            <div class="notification-message">
-              {{ notification.message }}
-            </div>
+  <ion-list *ngIf="!loading && filteredNotifications.length > 0" class="bg-transparent p-0 pt-4 m-0" lines="none">
+    <div *ngFor="let notification of filteredNotifications" class="premium-offer-card">
+      <div class="card-body">
+        <div class="offer-details">
+          <div class="offer-header">
+            <h3 class="offer-title">{{ notification.title }}</h3>
+            <span class="custom-badge shrink-0" [ngClass]="'badge-' + getTypeBadgeColor(notification.type)">
+              {{ notification.type }}
+            </span>
+          </div>
+          
+          <div class="notification-message">
+            {{ notification.message }}
+          </div>
 
-            <div class="offer-badges">
-              <span class="type-badge">
-                <ion-icon [name]="getAudienceIcon(notification.audience)"></ion-icon>
-                {{ getAudienceLabel(notification.audience) }}
-              </span>
-              <span *ngIf="notification.target_ids?.length" class="value-badge">
-                {{ notification.target_ids!.length }} selected
-              </span>
-            </div>
+          <div class="offer-badges">
+            <span class="type-badge">
+              <ion-icon [name]="getAudienceIcon(notification.audience)"></ion-icon>
+              {{ getAudienceLabel(notification.audience) }}
+            </span>
+            <span *ngIf="notification.target_ids?.length" class="value-badge">
+              {{ notification.target_ids!.length }} selected
+            </span>
           </div>
         </div>
-        
-        <div class="card-footer">
-           <div class="footer-time">
-             <ion-icon name="time-outline"></ion-icon>
-             <span>Sent: {{ notification.created_at | date:'medium' }}</span>
-           </div>
-           
-           <ion-button fill="clear" color="danger" size="small" class="delete-btn" (click)="deleteNotification(notification.id)">
-             <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-           </ion-button>
-        </div>
-      </ion-card-content>
-    </ion-card>
-  </div>
+      </div>
+      
+      <div class="card-footer">
+         <div class="footer-time">
+           <ion-icon name="time-outline"></ion-icon>
+           <span>Sent: {{ notification.created_at | date:'medium' }}</span>
+         </div>
+         
+         <ion-button fill="clear" color="danger" size="small" class="delete-btn" (click)="deleteNotification(notification.id)">
+           <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+      </div>
+    </div>
+  </ion-list>
 
   <!-- Compose FAB -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

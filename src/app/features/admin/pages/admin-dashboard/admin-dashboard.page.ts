@@ -21,8 +21,10 @@ import {
   documentTextOutline, 
   shieldCheckmarkOutline,
   barChartOutline,
-  pulseOutline
+  pulseOutline,
+  refreshOutline
 } from 'ionicons/icons';
+import ApexCharts from 'apexcharts';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -51,7 +53,8 @@ export class AdminDashboardPage implements OnInit {
       documentTextOutline,
       shieldCheckmarkOutline,
       barChartOutline,
-      pulseOutline
+      pulseOutline,
+      refreshOutline
     });
   }
 
@@ -79,6 +82,7 @@ export class AdminDashboardPage implements OnInit {
         }
       ],
       chart: {
+        id: 'revenue-analytics-chart',
         height: 300,
         type: this.chartType,
         toolbar: { show: false },
@@ -112,9 +116,18 @@ export class AdminDashboardPage implements OnInit {
         ...this.chartOptions,
         chart: {
           ...this.chartOptions.chart,
-          type: this.chartType
+          type: this.chartType,
+          id: 'revenue-analytics-chart'
         }
       };
+    }
+  }
+
+  resetChart(chartId: string) {
+    try {
+      ApexCharts.exec(chartId, 'resetSeries');
+    } catch (e) {
+      console.warn(`Could not reset chart ${chartId}`, e);
     }
   }
 

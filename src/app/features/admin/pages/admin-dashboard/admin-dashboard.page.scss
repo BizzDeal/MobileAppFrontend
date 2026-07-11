@@ -1,5 +1,6 @@
 .admin-dashboard-content {
   --background: var(--ion-color-step-50, #f4f5f8);
+  --padding-bottom: 100px;
 }
 
 .dashboard-header {
@@ -97,6 +98,52 @@
     ion-card-title {
       font-size: 18px;
       font-weight: 600;
+    }
+  }
+
+  .chart-header-with-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--ion-color-step-100, #e0e0e0);
+    padding: 16px 20px;
+
+    ion-card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+  }
+
+  .reset-chart-btn {
+    --color: var(--ion-color-medium);
+    --color-hover: var(--ion-color-dark);
+    --background-hover: rgba(0, 0, 0, 0.05);
+    margin: 0;
+    --padding-start: 4px;
+    --padding-end: 4px;
+    --padding-top: 4px;
+    --padding-bottom: 4px;
+    --border-radius: 50%;
+    height: 32px;
+    width: 32px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      transform: rotate(30deg);
+    }
+
+    &:active {
+      transform: rotate(180deg) scale(0.9);
+    }
+
+    ion-icon {
+      font-size: 18px;
     }
   }
 }

@@ -111,9 +111,7 @@ export class AdminBusinessDetailsPage implements OnInit {
       component: AdminOfferActionModalComponent,
       componentProps: {
         offer
-      },
-      breakpoints: [0, 0.75, 1],
-      initialBreakpoint: 0.75
+      }
     });
 
     await modal.present();

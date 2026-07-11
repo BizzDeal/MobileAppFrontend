@@ -69,7 +69,10 @@
                   <h2>Featured Business</h2>
                   <p>Display in featured sections</p>
                 </ion-label>
-                <ion-toggle slot="end" [checked]="business.is_featured" (ionChange)="toggleFeatured()"></ion-toggle>
+                <label slot="end" class="custom-toggle">
+                  <input type="checkbox" [checked]="business.is_featured" (change)="toggleFeatured()">
+                  <span class="slider"></span>
+                </label>
               </ion-item>
 
               <ion-item class="premium-item">
@@ -133,9 +136,9 @@
           <p class="text-medium mt-2">No offers found for this business.</p>
         </div>
 
-        <ion-list *ngIf="offers.length > 0" class="bg-transparent p-0 m-0" lines="none">
-          <ion-card *ngFor="let offer of offers" class="premium-offer-card m-0 mb-3 shadow-sm" button (click)="openOfferModal(offer)">
-            <ion-card-content class="p-4 flex items-center gap-3">
+        <ion-list *ngIf="offers.length > 0" class="bg-transparent p-0 m-0 pb-4" lines="none">
+          <div *ngFor="let offer of offers" class="premium-offer-card m-0 mb-3 shadow-sm" (click)="openOfferModal(offer)" style="cursor: pointer;">
+            <div class="p-4 flex items-center gap-3">
               
               <!-- Content -->
               <div class="flex-1">
@@ -162,8 +165,8 @@
                 </div>
               </div>
 
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-list>
       </div>
 
@@ -174,9 +177,9 @@
           <p class="text-medium mt-2">No vouchers issued yet.</p>
         </div>
 
-        <ion-list *ngIf="vouchers.length > 0" class="bg-transparent p-0 m-0" lines="none">
-          <ion-card *ngFor="let voucher of vouchers" class="premium-voucher-card m-0 mb-3 shadow-sm">
-            <ion-card-content class="p-4 flex items-center gap-3">
+        <ion-list *ngIf="vouchers.length > 0" class="bg-transparent p-0 m-0 pb-4" lines="none">
+          <div *ngFor="let voucher of vouchers" class="premium-voucher-card m-0 mb-3 shadow-sm">
+            <div class="p-4 flex items-center gap-3">
               
               <!-- Content -->
               <div class="flex-1">
@@ -214,8 +217,8 @@
                 </div>
               </div>
 
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </div>
         </ion-list>
       </div>
 

@@ -1,4 +1,4 @@
-<ion-header class="ion-no-border" collapse="fade" [translucent]="true">
+<ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
   <ion-toolbar class="px-2 pt-3">
     <ion-searchbar [value]="searchQuery" (ionInput)="onSearch($event)" placeholder="Search offers or business..." mode="ios" animated="true" class="premium-searchbar"></ion-searchbar>
   </ion-toolbar>
@@ -26,7 +26,7 @@
     <p class="text-medium mt-2">No offers found for the selected status.</p>
   </div>
 
-  <ion-list *ngIf="!loading && filteredOffers.length > 0" class="bg-transparent p-4 m-0" lines="none">
+  <div *ngIf="!loading && filteredOffers.length > 0" class="bg-transparent p-4 m-0">
     <ion-card *ngFor="let offer of filteredOffers" class="premium-offer-card" button (click)="openOfferModal(offer)">
       <ion-card-content>
         <div class="card-body">
@@ -66,5 +66,5 @@
         </div>
       </ion-card-content>
     </ion-card>
-  </ion-list>
+  </div>
 </ion-content>

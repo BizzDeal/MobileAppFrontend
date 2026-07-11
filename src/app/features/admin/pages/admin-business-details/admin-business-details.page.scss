@@ -25,7 +25,7 @@
   top: 0;
   left: 0;
   z-index: 1;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: var(--ion-color-primary);
 }
 
 .profile-header-content {
@@ -206,9 +206,10 @@
 /* Premium Offer / Voucher Cards */
 .premium-offer-card, .premium-voucher-card {
   border-radius: 16px;
-  background: white;
-  border: 1px solid rgba(0,0,0,0.03);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  background: #ffffff !important;
+  --background: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
   transition: all 0.2s ease;
   
   &:active {
@@ -295,4 +296,51 @@
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 13px;
+}
+
+/* Custom Toggle Switch */
+.custom-toggle {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+}
+
+.custom-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.custom-toggle .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .3s;
+  border-radius: 28px;
+}
+
+.custom-toggle .slider:before {
+  position: absolute;
+  content: "";
+  height: 24px;
+  width: 24px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.custom-toggle input:checked + .slider {
+  background-color: var(--ion-color-primary, #3880ff);
+}
+
+.custom-toggle input:checked + .slider:before {
+  transform: translateX(20px);
 }

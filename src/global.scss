@@ -381,4 +381,9 @@ ion-col[size="6"] {
   }
 }
 
-
+/* Fix for double safe-area padding on child headers when nested inside an admin layout with a header */
+app-admin-layout .page-container.has-parent-header ion-header,
+app-admin-layout .page-container.has-parent-header ion-header ion-toolbar {
+  --ion-safe-area-top: 0px !important;
+  padding-top: 0 !important;
+}

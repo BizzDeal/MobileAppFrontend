@@ -30,7 +30,7 @@
   top: 0;
   left: 0;
   z-index: 1;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: var(--ion-color-primary);
 }
 
 .profile-header-content {

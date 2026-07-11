@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { AdminAnalyticsService, DetailedAnalyticsDto } from '../../services/admin-analytics.service';
 import { Observable } from 'rxjs';
+
 import { addIcons } from 'ionicons';
 import { 
   peopleOutline, 

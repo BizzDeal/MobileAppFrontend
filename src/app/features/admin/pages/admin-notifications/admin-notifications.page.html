@@ -1,17 +1,10 @@
 <ion-header class="ion-no-border" collapse="fade" [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title class="font-bold">Push Notifications</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="loadNotifications()" [disabled]="loading">
+  <ion-toolbar class="px-2 pt-3 pb-2">
+    <ion-buttons slot="end" class="pl-2">
+      <ion-button (click)="loadNotifications()" [disabled]="loading" fill="clear" color="primary">
         <ion-icon name="sync-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-  </ion-toolbar>
-
-  <ion-toolbar class="px-2 pt-3 pb-2">
     <ion-item lines="none" class="premium-select-item">
       <ion-icon name="filter-outline" slot="start" class="text-medium"></ion-icon>
       <ion-select [value]="selectedAudience" (ionChange)="filterByAudience($event)" interface="action-sheet" placeholder="Filter by audience" justify="space-between" class="w-full">

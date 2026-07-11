@@ -199,6 +199,44 @@ ion-select.custom-select {
 ion-menu[menuId="admin-menu"] {
   --background: var(--ion-color-light);
 
+  /* Ensure closed menu and all shadow parts never block touch events on admin toolbars */
+  &:not(.show-menu) {
+    pointer-events: none !important;
+    z-index: -1 !important;
+    visibility: hidden !important;
+
+    &::part(backdrop),
+    &::part(container),
+    .menu-inner,
+    .menu-backdrop {
+      pointer-events: none !important;
+      visibility: hidden !important;
+    }
+  }
+
+  &.show-menu {
+    pointer-events: auto !important;
+    z-index: 100000 !important;
+    display: block !important;
+    visibility: visible !important;
+
+    &::part(backdrop),
+    .menu-backdrop {
+      pointer-events: auto !important;
+      visibility: visible !important;
+      opacity: 0.4 !important;
+    }
+
+    &::part(container),
+    .menu-inner {
+      transform: translate3d(0px, 0px, 0px) !important;
+      display: block !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+      z-index: 100001 !important;
+    }
+  }
+
   ion-item {
     --background: transparent;
     --background-hover: rgba(var(--ion-color-primary-rgb), 0.1);
@@ -220,5 +258,52 @@ ion-menu[menuId="admin-menu"] {
         color: var(--ion-color-primary);
       }
     }
+  }
+}
+
+ion-buttons[slot="start"] {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+}
+
+/* Ensure admin menu toggle buttons are always visible on admin toolbars with crisp white icons and top z-index */
+ion-button.admin-menu-toggle-btn,
+ion-menu-button,
+ion-menu-button.hidden,
+ion-menu-button.button-disabled {
+  --color: #ffffff !important;
+  color: #ffffff !important;
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  z-index: 99999 !important;
+  width: 44px !important;
+  height: 44px !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  position: relative !important;
+
+  ion-icon,
+  &::part(icon) {
+    font-size: 28px !important;
+    color: #ffffff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  &::part(native) {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    height: 100% !important;
+    cursor: pointer !important;
+    z-index: 99999 !important;
   }
 }

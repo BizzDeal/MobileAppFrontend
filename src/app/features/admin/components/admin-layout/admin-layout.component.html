@@ -1,0 +1,35 @@
+<div class="admin-layout-wrapper">
+  <!-- Desktop Docked Sidebar (Hidden on mobile < 992px) -->
+  <aside class="desktop-sidebar">
+    <app-admin-sidebar></app-admin-sidebar>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Mobile Header Bar (Only visible on mobile < 992px, handles safe-area top cleanly) -->
+    <ion-header class="ion-no-border lg:hidden" *ngIf="!isDetailPage">
+      <ion-toolbar color="primary" class="mobile-top-toolbar">
+        <ion-buttons slot="start">
+          <ion-button fill="clear" (click)="toggleMobileDrawer()" aria-label="Open Admin Navigation Menu" class="mobile-menu-toggle-btn">
+            <ion-icon name="menu-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title class="font-bold">{{ currentTitle }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Child Routes Render Here -->
+    <div class="page-container">
+      <ion-router-outlet></ion-router-outlet>
+    </div>
+  </main>
+
+  <!-- Mobile Slide-out Drawer Overlay (< 992px) -->
+  <div class="mobile-drawer-backdrop" *ngIf="isMobileDrawerOpen" (click)="closeMobileDrawer()"></div>
+  <div class="mobile-drawer-panel" [class.open]="isMobileDrawerOpen">
+    <button class="drawer-close-btn" (click)="closeMobileDrawer()" aria-label="Close Navigation Menu">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <app-admin-sidebar (closeSidebar)="closeMobileDrawer()"></app-admin-sidebar>
+  </div>
+</div>

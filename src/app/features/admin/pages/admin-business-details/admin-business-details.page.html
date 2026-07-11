@@ -19,19 +19,19 @@
 
   <div *ngIf="!loading && business">
     <!-- Header Card -->
-    <ion-card class="premium-card m-0 shadow-md border-radius-xl" style="border-top-left-radius: 0; border-top-right-radius: 0;">
-      <div class="header-banner bg-primary"></div>
-      <ion-card-header class="ion-text-center profile-header">
-        <ion-avatar class="profile-avatar shadow-lg">
+    <div class="profile-top-card">
+      <div class="header-banner"></div>
+      <div class="profile-header-content">
+        <div class="profile-avatar-wrap">
           <img [src]="business.logo_url || getFallbackAvatar(business.name)" alt="Logo" (error)="business.logo_url = getFallbackAvatar(business.name)">
-        </ion-avatar>
-        <ion-card-title class="mt-2 font-bold text-dark">{{ business.name }}</ion-card-title>
-        <ion-card-subtitle class="mt-1 flex items-center justify-center gap-2">
+        </div>
+        <h2 class="profile-name">{{ business.name }}</h2>
+        <div class="flex items-center justify-center gap-2 mt-1">
           <span class="category-badge">{{ business.category_name }}</span>
           <ion-badge [color]="getStatusColor(business.status)" class="status-badge m-0">{{ business.status }}</ion-badge>
-        </ion-card-subtitle>
-      </ion-card-header>
-    </ion-card>
+        </div>
+      </div>
+    </div>
 
       <!-- Segments -->
     <div class="px-4 mt-4">
@@ -54,9 +54,9 @@
       <!-- DETAILS TAB -->
       <div *ngSwitchCase="'details'">
         <ion-card class="premium-card m-0 mb-4 shadow-sm border-radius-xl">
-          <ion-card-header class="border-b">
-            <ion-card-title class="font-bold text-dark text-md">General Information</ion-card-title>
-          </ion-card-header>
+          <div class="card-section-header">
+            <h3 class="card-section-title">General Information</h3>
+          </div>
           <ion-card-content class="px-0 pb-0">
             <ion-list lines="none" class="p-0 m-0 bg-transparent">
               

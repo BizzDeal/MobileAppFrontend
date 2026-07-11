@@ -13,6 +13,7 @@ import {
 } from 'ionicons/icons';
 import mediumZoom, { Zoom } from 'medium-zoom';
 
+
 @Component({
   selector: 'app-admin-user-details',
   standalone: true,

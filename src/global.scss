@@ -307,3 +307,78 @@ ion-menu-button.button-disabled {
     z-index: 99999 !important;
   }
 }
+
+/* Ensure all Ionic avatars and their images are circular app-wide */
+ion-avatar {
+  --border-radius: 50%;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+}
+
+ion-avatar img {
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Global Spacing Utility Classes */
+.mx-4 {
+  margin-left: 16px !important;
+  margin-right: 16px !important;
+}
+.mt-4 {
+  margin-top: 16px !important;
+}
+.mb-4 {
+  margin-bottom: 16px !important;
+}
+
+/* Custom Grid System for ion-row and ion-col compatibility */
+ion-row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  width: 100% !important;
+}
+
+ion-col {
+  box-sizing: border-box !important;
+  position: relative !important;
+  flex: 1 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+ion-col[size="12"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+ion-col[size="6"] {
+  flex: 0 0 50% !important;
+  max-width: 50% !important;
+}
+
+@media (min-width: 768px) {
+  ion-col[size-md="3"] {
+    flex: 0 0 25% !important;
+    max-width: 25% !important;
+  }
+}
+
+@media (min-width: 992px) {
+  ion-col[size-lg="6"] {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+  }
+  ion-col[size-lg="8"] {
+    flex: 0 0 66.666667% !important;
+    max-width: 66.666667% !important;
+  }
+  ion-col[size-lg="4"] {
+    flex: 0 0 33.333333% !important;
+    max-width: 33.333333% !important;
+  }
+}
+
+

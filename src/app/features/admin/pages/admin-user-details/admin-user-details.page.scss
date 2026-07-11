@@ -3,10 +3,13 @@
   background: white;
   position: relative;
   overflow: hidden;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  border-radius: 0 !important;
 }
 
 .border-radius-xl {
-  border-radius: 16px;
+  border-radius: 0px;
 }
 
 .profile-top-card {
@@ -175,25 +178,56 @@
   font-size: 16px;
 }
 
-.receipt-container {
+.receipt-banner-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 10;
   background: #f8f9fa;
-  border-radius: 12px;
-  padding: 8px;
-  display: inline-block;
-  border: 1px solid rgba(0,0,0,0.05);
-  
-  .receipt-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-radius: 0;
+
+  img {
     max-width: 100%;
-    border-radius: 8px;
+    max-height: 100%;
+    object-fit: contain;
     display: block;
+  }
+}
+
+.business-banner-wrap {
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  position: relative;
+  border-radius: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
 .action-btn {
   --border-radius: 12px;
   --box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin: 0;
   font-weight: 600;
   letter-spacing: 0.2px;
+}
+
+.admin-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: white;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+ion-content {
+  --padding-bottom: 0px;
 }

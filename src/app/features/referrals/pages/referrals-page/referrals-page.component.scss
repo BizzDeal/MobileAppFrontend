@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100%;
   padding: var(--bizzdeal-spacing-md);
-  padding-bottom: 110px; /* Space for bottom nav + FAB padding */
+  padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); /* Space for bottom nav + FAB padding */
   background: var(--bizzdeal-bg-main);
   overflow-y: auto;
 }
@@ -289,7 +289,7 @@
 // 5. Floating Action Button
 ion-fab {
   position: fixed !important;
-  bottom: calc(var(--bizzdeal-spacing-md) + 90px) !important; /* Float right above the 90px bottom menu bar */
+  bottom: calc(var(--bizzdeal-spacing-md) + 90px + env(safe-area-inset-bottom, 0px)) !important; /* Float right above the 90px bottom menu bar */
   right: var(--bizzdeal-spacing-md) !important;
   z-index: 99999;
 }

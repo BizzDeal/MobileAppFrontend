@@ -305,7 +305,7 @@ ion-content {
 .footer-section {
   text-align: center;
   padding-top: 12px;
-  padding-bottom: 8px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
 
   .footer-text {
     font-size: 13px;

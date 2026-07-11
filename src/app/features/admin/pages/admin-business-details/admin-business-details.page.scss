@@ -43,7 +43,7 @@
   margin: 0 auto 12px auto;
   border: 4px solid white;
   background: white;
-  border-radius: 50%;
+  border-radius: var(--bizzdeal-radius-md, 14px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   display: flex;
@@ -55,7 +55,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: calc(var(--bizzdeal-radius-md, 14px) - 4px);
 }
 
 .profile-name {

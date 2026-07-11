@@ -3,7 +3,7 @@
   margin-bottom: var(--bizzdeal-spacing-lg);
 
   &.mb-extra {
-    margin-bottom: 80px; /* Space for bottom nav */
+    margin-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* Space for bottom nav */
   }
 
   .section-header {

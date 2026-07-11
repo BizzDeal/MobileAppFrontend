@@ -1,7 +1,7 @@
 .chat-input-container {
   background: var(--bizzdeal-bg-surface);
   border-top: 1px solid var(--bizzdeal-border-color);
-  padding: var(--bizzdeal-spacing-sm) var(--bizzdeal-spacing-md);
+  padding: var(--bizzdeal-spacing-sm) var(--bizzdeal-spacing-md) calc(var(--bizzdeal-spacing-sm) + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

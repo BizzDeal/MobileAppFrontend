@@ -1,7 +1,7 @@
 .member-dashboard {
   display: flex;
   flex-direction: column;
-  padding-bottom: 80px; /* Space for bottom nav */
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* Space for bottom nav */
 }
 
 .dashboard-header {

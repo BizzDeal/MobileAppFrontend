@@ -19,7 +19,7 @@
     </ion-header>
 
     <!-- Child Routes Render Here -->
-    <div class="page-container">
+    <div class="page-container" [class.has-parent-header]="!isDetailPage">
       <ion-router-outlet></ion-router-outlet>
     </div>
   </main>

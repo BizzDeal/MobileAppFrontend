@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100%;
   padding: var(--bizzdeal-spacing-md);
-  padding-bottom: 90px; /* space for bottom nav */
+  padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); /* space for bottom nav */
   background: var(--bizzdeal-bg-main);
   overflow-y: auto;
 

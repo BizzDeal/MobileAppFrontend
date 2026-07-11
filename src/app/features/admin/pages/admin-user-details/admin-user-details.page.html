@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="light" class="ion-padding">
+<ion-content color="light">
   <div *ngIf="loading" class="ion-padding ion-text-center">
     <ion-spinner></ion-spinner>
   </div>
@@ -20,9 +20,9 @@
     <div class="profile-top-card">
       <div class="header-banner"></div>
       <div class="profile-header-content">
-        <div class="profile-avatar-wrap">
+        <ion-avatar class="profile-avatar-wrap">
           <img [src]="user.profile_pic_url || getFallbackAvatar(user.full_name)" alt="Profile Picture" (error)="user.profile_pic_url = getFallbackAvatar(user.full_name)">
-        </div>
+        </ion-avatar>
         <h2 class="profile-name">{{ user.full_name }}</h2>
         <div class="mt-1">
           <ion-badge [color]="getStatusColor(user.status)" class="status-badge">{{ user.status }}</ion-badge>
@@ -95,18 +95,15 @@
     </div>
 
     <!-- Business Information Card (Only for Members) -->
-    <ion-card *ngIf="isMember(user)" class="premium-card m-0 mt-4 shadow-md border-radius-xl">
+    <ion-card *ngIf="isMember(user)" class="premium-card shadow-md border-radius-xl">
+      <!-- Business Logo/Banner -->
+      <div class="business-banner-wrap">
+        <img [src]="$any(user).business_logo_url || getFallbackAvatar($any(user).business_name)" alt="Business Logo" (error)="$any(user).business_logo_url = getFallbackAvatar($any(user).business_name)">
+      </div>
       <div class="card-section-header">
         <h3 class="card-section-title">Business Information</h3>
       </div>
       <ion-card-content class="px-0 pb-0">
-        <!-- Business Logo -->
-        <div class="ion-padding ion-text-center">
-          <ion-avatar style="width: 80px; height: 80px; margin: 0 auto; border-radius: 8px;">
-            <img [src]="$any(user).business_logo_url || getFallbackAvatar($any(user).business_name)" alt="Business Logo" (error)="$any(user).business_logo_url = getFallbackAvatar($any(user).business_name)">
-          </ion-avatar>
-        </div>
-        
         <ion-list lines="none" class="p-0 m-0 bg-transparent">
           <ion-item class="premium-item">
             <div slot="start" class="icon-box">
@@ -155,49 +152,37 @@
     </ion-card>
 
     <!-- Payment Receipt Card -->
-    <ion-card *ngIf="isMember(user)" class="premium-card m-0 mt-4 shadow-md border-radius-xl">
+    <ion-card *ngIf="isMember(user)" class="premium-card shadow-md border-radius-xl">
       <div class="card-section-header">
         <h3 class="card-section-title">Payment Receipt</h3>
       </div>
-      <ion-card-content class="ion-text-center p-4">
-        <div class="receipt-container" *ngIf="$any(user).payment_receipt_url; else noReceipt">
-          <img #receiptImage [src]="$any(user).payment_receipt_url" alt="Payment Receipt" class="receipt-image">
-        </div>
-        <ng-template #noReceipt>
-          <div class="ion-padding ion-text-center">
-            <ion-icon name="image-outline" style="font-size: 48px; color: var(--ion-color-medium);"></ion-icon>
-            <p class="text-medium mt-2">No payment receipt uploaded.</p>
-          </div>
-        </ng-template>
-      </ion-card-content>
+      <div class="receipt-banner-wrap" *ngIf="$any(user).payment_receipt_url; else noReceipt">
+        <img #receiptImage [src]="$any(user).payment_receipt_url" alt="Payment Receipt" (error)="$any(user).payment_receipt_url = null">
+      </div>
+      <ng-template #noReceipt>
+        <ion-card-content class="ion-text-center p-4">
+          <ion-icon name="image-outline" style="font-size: 48px; color: var(--ion-color-medium);"></ion-icon>
+          <p class="text-medium mt-2">No payment receipt uploaded.</p>
+        </ion-card-content>
+      </ng-template>
     </ion-card>
 
-    <div *ngIf="isMember(user)" class="mt-4 mb-4">
-      <h3 class="text-dark font-bold px-2 mb-2 text-md">Admin Actions</h3>
-      <ion-row>
-        <ion-col size="6">
-          <ion-button expand="block" color="success" class="action-btn" (click)="confirmAction('approve')" [disabled]="user.status === 'ACTIVE'">
-            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon> Approve
-          </ion-button>
-        </ion-col>
-        <ion-col size="6">
-          <ion-button expand="block" color="warning" class="action-btn" (click)="confirmAction('suspend')" [disabled]="user.status === 'SUSPENDED'">
-            <ion-icon name="warning-outline" slot="start"></ion-icon> Suspend
-          </ion-button>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size="6">
-          <ion-button expand="block" color="danger" fill="outline" class="action-btn" (click)="confirmAction('reject')" [disabled]="user.status === 'REJECTED'">
-            <ion-icon name="close-circle-outline" slot="start"></ion-icon> Reject
-          </ion-button>
-        </ion-col>
-        <ion-col size="6">
-          <ion-button expand="block" color="danger" class="action-btn" (click)="confirmAction('delete')">
-            <ion-icon name="trash-outline" slot="start"></ion-icon> Delete
-          </ion-button>
-        </ion-col>
-      </ion-row>
-    </div>
   </div>
 </ion-content>
+
+<ion-footer *ngIf="user && isMember(user)" class="ion-no-border">
+  <div class="admin-actions-grid">
+    <ion-button expand="block" color="success" class="action-btn" (click)="confirmAction('approve')" [disabled]="user.status === 'ACTIVE'">
+      <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon> Approve
+    </ion-button>
+    <ion-button expand="block" color="warning" class="action-btn" (click)="confirmAction('suspend')" [disabled]="user.status === 'SUSPENDED'">
+      <ion-icon name="warning-outline" slot="start"></ion-icon> Suspend
+    </ion-button>
+    <ion-button expand="block" color="danger" fill="outline" class="action-btn" (click)="confirmAction('reject')" [disabled]="user.status === 'REJECTED'">
+      <ion-icon name="close-circle-outline" slot="start"></ion-icon> Reject
+    </ion-button>
+    <ion-button expand="block" color="danger" class="action-btn" (click)="confirmAction('delete')">
+      <ion-icon name="trash-outline" slot="start"></ion-icon> Delete
+    </ion-button>
+  </div>
+</ion-footer>

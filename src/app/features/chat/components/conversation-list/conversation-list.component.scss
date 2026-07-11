@@ -248,7 +248,7 @@
 /* FAB Styling */
 .custom-fab {
   position: fixed;
-  bottom: 84px; // Anchored above the bottom tabs
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px)); // Anchored above the bottom tabs
   right: var(--bizzdeal-spacing-md);
   z-index: 1000;
   margin: 0;

@@ -19,6 +19,8 @@ export class MemberRegistrationService {
     loginPin: ['', [Validators.required, Validators.pattern(/^[0-9]{4,6}$/)]],
     whatsappNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
     email: ['', [Validators.required, Validators.email]],
+    stateId: ['', [Validators.required]],
+    districtId: ['', [Validators.required]],
     address: ['', [Validators.required, Validators.minLength(5)]],
     businessName: ['', [Validators.required, Validators.minLength(2)]],
     businessCategory: ['', [Validators.required]],
@@ -29,6 +31,16 @@ export class MemberRegistrationService {
 
   constructor() {
     this.onboardingService.fetchCategories();
+    this.onboardingService.fetchStates();
+
+    this.regForm.controls.stateId.valueChanges.subscribe((stateId) => {
+      this.regForm.controls.districtId.setValue('');
+      if (stateId) {
+        this.onboardingService.fetchDistrictsByState(stateId);
+      } else {
+        this.onboardingService.districts.set([]);
+      }
+    });
   }
 
   onFileSelected(event: Event): void {
@@ -59,6 +71,8 @@ export class MemberRegistrationService {
         whatsapp: val.whatsappNumber,
         email: val.email,
         address: val.address,
+        state_id: val.stateId,
+        district_id: val.districtId,
         business_name: val.businessName,
         category_id: val.businessCategory,
         business_description: val.businessDescription,

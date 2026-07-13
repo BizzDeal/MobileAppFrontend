@@ -11,6 +11,19 @@ export interface BusinessCategory {
   is_active?: boolean;
 }
 
+export interface LocationState {
+  id: string;
+  name: string;
+  lgdCode?: string;
+}
+
+export interface LocationDistrict {
+  id: string;
+  name: string;
+  stateId?: string;
+  lgdCode?: string;
+}
+
 export interface MemberRegistrationPayload {
   full_name: string;
   phone: string;
@@ -18,6 +31,8 @@ export interface MemberRegistrationPayload {
   whatsapp: string;
   email: string;
   address: string;
+  state_id: string;
+  district_id: string;
   business_name: string;
   category_id: string;
   business_description: string;
@@ -36,6 +51,14 @@ export class MemberOnboardingService {
   readonly categories = signal<BusinessCategory[]>([]);
   readonly isLoadingCategories = signal<boolean>(false);
   readonly categoriesError = signal<string | null>(null);
+
+  readonly states = signal<LocationState[]>([]);
+  readonly isLoadingStates = signal<boolean>(false);
+  readonly statesError = signal<string | null>(null);
+
+  readonly districts = signal<LocationDistrict[]>([]);
+  readonly isLoadingDistricts = signal<boolean>(false);
+  readonly districtsError = signal<string | null>(null);
 
   readonly registrationData = signal<MemberRegistrationPayload | null>(null);
   readonly profilePicFile = signal<File | null>(null);
@@ -59,6 +82,47 @@ export class MemberOnboardingService {
       throw err;
     } finally {
       this.isLoadingCategories.set(false);
+    }
+  }
+
+  async fetchStates(): Promise<void> {
+    if (this.states().length > 0) return;
+    this.isLoadingStates.set(true);
+    this.statesError.set(null);
+    try {
+      const res = await firstValueFrom(
+        this.http.get<any>(`${this.apiUrl}/locations/states`)
+      );
+      const list: LocationState[] = Array.isArray(res) ? res : res?.data || res?.items || [];
+      this.states.set(list);
+    } catch (err: any) {
+      console.error('Failed to fetch states from BE:', err);
+      this.statesError.set(err.message || 'Failed to fetch states from server.');
+      throw err;
+    } finally {
+      this.isLoadingStates.set(false);
+    }
+  }
+
+  async fetchDistrictsByState(stateId: string): Promise<void> {
+    if (!stateId) {
+      this.districts.set([]);
+      return;
+    }
+    this.isLoadingDistricts.set(true);
+    this.districtsError.set(null);
+    try {
+      const res = await firstValueFrom(
+        this.http.get<any>(`${this.apiUrl}/locations/states/${stateId}/districts`)
+      );
+      const list: LocationDistrict[] = Array.isArray(res) ? res : res?.data || res?.items || [];
+      this.districts.set(list);
+    } catch (err: any) {
+      console.error('Failed to fetch districts from BE:', err);
+      this.districtsError.set(err.message || 'Failed to fetch districts from server.');
+      throw err;
+    } finally {
+      this.isLoadingDistricts.set(false);
     }
   }
 
@@ -93,6 +157,8 @@ export class MemberOnboardingService {
       formData.append('whatsapp', data.whatsapp);
       formData.append('email', data.email);
       formData.append('address', data.address);
+      formData.append('state_id', data.state_id);
+      formData.append('district_id', data.district_id);
       formData.append('business_name', data.business_name);
       formData.append('category_id', data.category_id);
       formData.append('business_description', data.business_description);

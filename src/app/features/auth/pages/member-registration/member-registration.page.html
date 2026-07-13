@@ -101,6 +101,40 @@
         </div>
       </div>
 
+      <!-- State (Dynamic from BE API!) -->
+      <div class="form-group">
+        <label class="input-label">State <span class="required-star">*</span></label>
+        <div class="select-box" [class.input-error]="regService.regForm.controls.stateId.invalid && regService.regForm.controls.stateId.touched">
+          <ion-select formControlName="stateId" placeholder="Select state" interface="action-sheet" class="custom-select">
+            @for (state of regService.onboardingService.states(); track state.id) {
+              <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.stateId.invalid && regService.regForm.controls.stateId.touched) {
+            <span class="error-text">State is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- District (Dynamic from BE API!) -->
+      <div class="form-group">
+        <label class="input-label">District <span class="required-star">*</span></label>
+        <div class="select-box" [class.input-error]="regService.regForm.controls.districtId.invalid && regService.regForm.controls.districtId.touched">
+          <ion-select formControlName="districtId" placeholder="Select district" [disabled]="!regService.regForm.controls.stateId.value" interface="action-sheet" class="custom-select">
+            @for (district of regService.onboardingService.districts(); track district.id) {
+              <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.districtId.invalid && regService.regForm.controls.districtId.touched) {
+            <span class="error-text">District is required</span>
+          }
+        </div>
+      </div>
+
       <!-- Address -->
       <div class="form-group">
         <label class="input-label">Address <span class="required-star">*</span></label>

@@ -4,6 +4,7 @@ import { Router, RouterModule, NavigationEnd, NavigationStart } from '@angular/r
 import { IonicModule } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { StatusBarService } from './core/platform/statusbar.service';
 
 @Component({
   selector: 'app-root',
@@ -19,9 +20,13 @@ export class AppComponent implements OnInit, OnDestroy {
   isAdminRoute = false;
   private routerSub!: Subscription;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private statusBarService: StatusBarService
+  ) {}
 
   ngOnInit(): void {
+    this.statusBarService.initialize();
     this.updateRouteState(this.router.url);
 
     this.routerSub = this.router.events

@@ -1,5 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
 // Enums from BE
 export enum UserRole {
@@ -33,7 +36,6 @@ export enum DiscountType {
   FIXED_AMOUNT = 'FIXED_AMOUNT',
 }
 
-// Interfaces matching BE Models
 export interface User {
   id: string;
   full_name: string;
@@ -41,6 +43,14 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   created_at: Date;
+  email?: string;
+  whatsapp?: string;
+  address?: string;
+  profile_pic_url?: string;
+  payment_receipt_url?: string;
+  business_id?: string;
+  business_name?: string;
+  business_description?: string;
 }
 
 export interface Business {
@@ -52,11 +62,17 @@ export interface Business {
 export interface Offer {
   id: string;
   title: string;
+  description?: string;
   business: Business;
+  business_id?: string;
+  business_name?: string;
   offer_type: OfferType;
   discount_value: number;
   discount_type: DiscountType;
   status: OfferStatus;
+  start_date?: Date | string;
+  end_date?: Date | string;
+  rejection_reason?: string;
   created_at: Date;
 }
 
@@ -76,93 +92,42 @@ export interface AdminAnalyticsDto {
   providedIn: 'root'
 })
 export class AdminDashboardService {
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = environment.apiUrl;
+
   constructor() {}
 
   getPendingMembers(): Observable<User[]> {
-    // Fake data mimicking API
-    const mockMembers: User[] = [
-      {
-        id: '1',
-        full_name: 'John Doe',
-        phone: '+919876543210',
-        role: UserRole.MEMBER,
-        status: UserStatus.PENDING,
-        created_at: new Date(Date.now() - 86400000 * 2),
-      },
-      {
-        id: '2',
-        full_name: 'Jane Smith',
-        phone: '+919876543211',
-        role: UserRole.MEMBER,
-        status: UserStatus.PENDING,
-        created_at: new Date(Date.now() - 86400000),
-      }
-    ];
-    return of(mockMembers).pipe(delay(800)); // Simulate network latency
+    return this.http
+      .get<{ success: boolean; data: User[] }>(`${this.apiUrl}/users/members?status=PENDING`)
+      .pipe(map((res) => res?.data || []));
   }
 
   getPendingOffers(): Observable<Offer[]> {
-    const mockOffers: Offer[] = [
-      {
-        id: '101',
-        title: '50% off on all pizzas',
-        offer_type: OfferType.DISCOUNT,
-        discount_value: 50,
-        discount_type: DiscountType.PERCENTAGE,
-        status: OfferStatus.PENDING,
-        created_at: new Date(),
-        business: {
-          id: 'b1',
-          name: 'Domino\'s Pizza',
-          owner_id: 'u1'
-        }
-      },
-      {
-        id: '102',
-        title: 'Flat $10 off on orders above $50',
-        offer_type: OfferType.FIXED_AMOUNT,
-        discount_value: 10,
-        discount_type: DiscountType.FIXED_AMOUNT,
-        status: OfferStatus.PENDING,
-        created_at: new Date(Date.now() - 3600000 * 5),
-        business: {
-          id: 'b2',
-          name: 'Subway',
-          owner_id: 'u2'
-        }
-      }
-    ];
-    return of(mockOffers).pipe(delay(1000));
+    return this.http
+      .get<Offer[] | { success: boolean; data: Offer[] }>(`${this.apiUrl}/offers?status=PENDING`)
+      .pipe(map((res: any) => (Array.isArray(res) ? res : res?.data || [])));
   }
 
   getPlatformAnalytics(): Observable<AdminAnalyticsDto> {
-    const mockAnalytics: AdminAnalyticsDto = {
-      totalMembers: 1250,
-      activeMembers: 1100,
-      totalCustomers: 50000,
-      totalVouchers: 85420,
-      revenue: 45000.50,
-      revenueHistory: {
-        dates: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        amounts: [12000, 15000, 14000, 22000, 31000, 28000, 45000]
-      }
-    };
-    return of(mockAnalytics).pipe(delay(600));
+    return this.http
+      .get<AdminAnalyticsDto | { success: boolean; data: AdminAnalyticsDto }>(`${this.apiUrl}/analytics/overview`)
+      .pipe(map((res: any) => res?.data || res));
   }
 
   approveMember(id: string): Observable<{ success: boolean }> {
-    return of({ success: true }).pipe(delay(500));
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/users/approve-member`, { memberId: id });
   }
 
   rejectMember(id: string): Observable<{ success: boolean }> {
-    return of({ success: true }).pipe(delay(500));
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/users/reject-member`, { memberId: id });
   }
 
   approveOffer(id: string): Observable<{ success: boolean }> {
-    return of({ success: true }).pipe(delay(500));
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/offers/approve`, { offer_id: id });
   }
 
   rejectOffer(id: string): Observable<{ success: boolean }> {
-    return of({ success: true }).pipe(delay(500));
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/offers/reject`, { offer_id: id });
   }
 }

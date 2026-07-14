@@ -136,7 +136,7 @@ export class BusinessDirectoryPage {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
 
-  readonly userRole = computed(() => this.profileService.profile()?.role || 'CUSTOMER');
+  readonly userRole = this.profileService.userRole;
 
   readonly businesses = signal<DirectoryBusinessDTO[]>(MOCK_DIRECTORY_BUSINESSES);
   readonly searchQuery = signal<string>('');

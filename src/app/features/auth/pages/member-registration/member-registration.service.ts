@@ -1,17 +1,27 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ConfirmationResult } from '@angular/fire/auth';
 import { MemberOnboardingService, MemberRegistrationPayload } from '../../services/member-onboarding.service';
+import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
 
 @Injectable()
 export class MemberRegistrationService {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   readonly onboardingService = inject(MemberOnboardingService);
+  readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
 
   readonly photoPreview = signal<string | null>(null);
   private photoFile: File | null = null;
   readonly isSubmitting = signal<boolean>(false);
+
+  readonly isOtpModalOpen = signal<boolean>(false);
+  readonly errorMessage = signal<string | null>(null);
+  readonly otpControl = new FormControl('', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]);
+
+  private _confirmationResult?: ConfirmationResult;
+  private _verifiedFirebaseToken?: string;
 
   readonly regForm = this.fb.nonNullable.group({
     fullName: ['', [Validators.required, Validators.minLength(2)]],
@@ -61,6 +71,24 @@ export class MemberRegistrationService {
       return;
     }
 
+    if (!this._verifiedFirebaseToken) {
+      this.isSubmitting.set(true);
+      this.errorMessage.set(null);
+      try {
+        const phoneNumber = this.regForm.controls.phoneNumber.value;
+        this.firebasePhoneAuth.initRecaptcha('recaptcha-container-member');
+        const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber}`;
+        this._confirmationResult = await this.firebasePhoneAuth.sendOtp(formattedPhone);
+        this.isOtpModalOpen.set(true);
+      } catch (err: any) {
+        console.error('sendOtp error in member registration:', err);
+        this.errorMessage.set(err?.message || 'Failed to send SMS OTP code. Check phone number.');
+      } finally {
+        this.isSubmitting.set(false);
+      }
+      return;
+    }
+
     this.isSubmitting.set(true);
     try {
       const val = this.regForm.getRawValue();
@@ -78,19 +106,50 @@ export class MemberRegistrationService {
         business_description: val.businessDescription,
         website: val.website,
         gst_number: val.gstNumber,
-        firebaseToken: 'mock_firebase_token_for_dev',
+        firebaseToken: this._verifiedFirebaseToken,
       };
 
       this.onboardingService.setRegistrationData(payload, this.photoFile);
       await this.onboardingService.submitMemberRegistration();
       alert('Welcome to BizzDeal! Your member registration has been submitted successfully.');
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(['/home']);
     } catch (err: any) {
       console.error('Failed to submit member registration:', err);
       alert(err.message || 'Registration submission failed. Please try again.');
     } finally {
       this.isSubmitting.set(false);
     }
+  }
+
+  async verifyOtpAndProceed(): Promise<void> {
+    this.errorMessage.set(null);
+    if (!this.otpControl.value || this.otpControl.invalid) {
+      this.otpControl.markAsTouched();
+      return;
+    }
+    if (!this._confirmationResult) {
+      this.errorMessage.set('OTP session expired. Please submit registration again.');
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    try {
+      const token = await this.firebasePhoneAuth.verifyOtp(
+        this._confirmationResult!,
+        this.otpControl.value
+      );
+      this._verifiedFirebaseToken = token;
+      this.isOtpModalOpen.set(false);
+      await this.submitRegistration();
+    } catch (err: any) {
+      console.error('verifyOtp error in member registration:', err);
+      this.errorMessage.set(err?.message || 'Invalid or expired OTP code.');
+      this.isSubmitting.set(false);
+    }
+  }
+
+  closeOtpModal(): void {
+    this.isOtpModalOpen.set(false);
   }
 
   backStep(event: Event): void {

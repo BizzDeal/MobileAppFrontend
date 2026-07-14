@@ -5,6 +5,8 @@ export interface ProfileDTO {
   whatsapp: string | null;
   email: string | null;
   address: string | null;
+  state_id?: string | null;
+  district_id?: string | null;
   role: 'ADMIN' | 'MEMBER' | 'CUSTOMER';
   status: 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED';
   profile_pic_url: string | null;

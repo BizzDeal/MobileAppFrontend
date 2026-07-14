@@ -5,7 +5,11 @@
     <!-- Header -->
     <header class="dashboard-header">
       <div class="brand-info">
-        <img [src]="profile()?.profile_pic_url" alt="Profile Pic" class="business-logo" />
+        @if (profile()?.profile_pic_url && !picLoadError()) {
+          <img [src]="profile()?.profile_pic_url" (error)="picLoadError.set(true)" alt="Profile Pic" class="business-logo" />
+        } @else {
+          <div class="initials-avatar business-logo">{{ getInitials(profile()?.full_name) }}</div>
+        }
         <h1 class="business-name"><span class="truncate-name">Hi {{ getFirstName(profile()?.full_name) }}</span></h1>
       </div>
       <button class="notification-btn bd-btn-outline" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
@@ -20,7 +24,11 @@
     <section class="business-profile-card bd-card-premium">
       <div class="biz-profile-main">
         <div class="logo-wrapper">
-          <img [src]="profile()?.business_logo_url || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80'" alt="Business Logo" class="biz-profile-logo" />
+          @if (profile()?.business_logo_url && !logoLoadError()) {
+            <img [src]="profile()?.business_logo_url" (error)="logoLoadError.set(true)" alt="Business Logo" class="biz-profile-logo" />
+          } @else {
+            <div class="initials-avatar biz-profile-logo">{{ getInitials(profile()?.business_name || 'My Business') }}</div>
+          }
         </div>
         <div class="biz-info">
           <h2 class="biz-profile-name">

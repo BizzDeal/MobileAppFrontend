@@ -7,13 +7,16 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonInput,
+  IonModal,
   IonSelect,
   IonSelectOption,
+  IonTextarea,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { cameraOutline, checkmarkCircleOutline } from 'ionicons/icons';
+import { cameraOutline, caretDownOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { MemberRegistrationService } from './member-registration.service';
 
 @Component({
@@ -29,8 +32,11 @@ import { MemberRegistrationService } from './member-registration.service';
     IonButtons,
     IonBackButton,
     IonIcon,
+    IonInput,
+    IonModal,
     IonSelect,
     IonSelectOption,
+    IonTextarea,
   ],
   providers: [MemberRegistrationService],
   templateUrl: './member-registration.page.html',
@@ -43,6 +49,7 @@ export class MemberRegistrationPage {
   constructor() {
     addIcons({
       'camera-outline': cameraOutline,
+      'caret-down-outline': caretDownOutline,
       'checkmark-circle-outline': checkmarkCircleOutline,
     });
   }

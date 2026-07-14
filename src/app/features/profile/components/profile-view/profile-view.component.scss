@@ -5,7 +5,11 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: var(--bizzdeal-spacing-md);
+  gap: 12px;
+
+  .page-top-header {
+    margin-bottom: 0 !important;
+  }
 }
 
 // 1. Loading & Error States
@@ -69,6 +73,17 @@
       object-fit: cover;
       border: 3px solid var(--bizzdeal-bg-surface-secondary);
       box-shadow: var(--bizzdeal-shadow-md);
+
+      &.initials-avatar {
+        background: linear-gradient(135deg, var(--bizzdeal-primary), #3a86ff);
+        color: #ffffff;
+        font-size: 2.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+      }
     }
 
     .edit-badge {
@@ -195,7 +210,7 @@
       width: 100%;
       min-height: 48px;
       --padding-start: 40px;
-      --padding-end: 12px;
+      --padding-end: 16px;
       --background: transparent;
       background: transparent;
       border: none;
@@ -204,6 +219,39 @@
       color: var(--bizzdeal-text-primary);
       outline: none;
       box-sizing: border-box;
+    }
+
+    ion-select.form-input {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      &::part(container) {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+      }
+
+      &::part(text),
+      &::part(placeholder) {
+        flex: 1 !important;
+        text-align: left !important;
+        width: 100% !important;
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+      }
+
+      &::part(icon) {
+        position: absolute !important;
+        right: 16px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        margin: 0 !important;
+        color: var(--bizzdeal-text-secondary);
+        opacity: 0.8;
+      }
     }
 
     &.textarea-wrapper {

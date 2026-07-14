@@ -15,6 +15,7 @@
 
     <!-- Upload Profile Photo Placeholder -->
     <div class="reg-card bd-card">
+      <div id="recaptcha-container-member"></div>
       <div class="photo-upload-section">
       <label class="photo-upload-circle" for="profilePhotoInput">
         @if (regService.photoPreview()) {
@@ -32,6 +33,12 @@
       </label>
       <span class="photo-upload-label">Upload Profile Photo</span>
     </div>
+
+    @if (regService.errorMessage()) {
+      <div class="error-container" style="margin-bottom: 12px;">
+        <span class="error-text">{{ regService.errorMessage() }}</span>
+      </div>
+    }
 
     <!-- Registration Form -->
     <form [formGroup]="regService.regForm" (ngSubmit)="regService.submitRegistration()" class="reg-form">
@@ -105,7 +112,7 @@
       <div class="form-group">
         <label class="input-label">State <span class="required-star">*</span></label>
         <div class="select-box" [class.input-error]="regService.regForm.controls.stateId.invalid && regService.regForm.controls.stateId.touched">
-          <ion-select formControlName="stateId" placeholder="Select state" interface="action-sheet" class="custom-select">
+          <ion-select formControlName="stateId" placeholder="Select state" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (state of regService.onboardingService.states(); track state.id) {
               <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
             }
@@ -122,7 +129,7 @@
       <div class="form-group">
         <label class="input-label">District <span class="required-star">*</span></label>
         <div class="select-box" [class.input-error]="regService.regForm.controls.districtId.invalid && regService.regForm.controls.districtId.touched">
-          <ion-select formControlName="districtId" placeholder="Select district" [disabled]="!regService.regForm.controls.stateId.value" interface="action-sheet" class="custom-select">
+          <ion-select formControlName="districtId" placeholder="Select district" [disabled]="!regService.regForm.controls.stateId.value" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (district of regService.onboardingService.districts(); track district.id) {
               <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
             }
@@ -165,7 +172,7 @@
       <div class="form-group">
         <label class="input-label">Business Category <span class="required-star">*</span></label>
         <div class="select-box" [class.input-error]="regService.regForm.controls.businessCategory.invalid && regService.regForm.controls.businessCategory.touched">
-          <ion-select formControlName="businessCategory" placeholder="Select category" interface="action-sheet" class="custom-select">
+          <ion-select formControlName="businessCategory" placeholder="Select category" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (cat of regService.onboardingService.categories(); track cat.id) {
               <ion-select-option [value]="cat.id">{{ cat.name }}</ion-select-option>
             }
@@ -223,9 +230,52 @@
         class="submit-btn bd-btn-primary"
         [disabled]="regService.isSubmitting()"
       >
-        <span>{{ regService.isSubmitting() ? 'Proceeding...' : 'Submit Registration' }}</span>
+        <span>{{ regService.isSubmitting() ? 'Proceeding...' : 'Verify Phone & Register' }}</span>
       </button>
     </form>
     </div>
   </div>
+
+  <!-- OTP Verification Modal for Member Registration -->
+  <ion-modal [isOpen]="regService.isOtpModalOpen()" (didDismiss)="regService.closeOtpModal()">
+    <ng-template>
+      <div style="padding: 24px; background: var(--bizzdeal-bg-surface); border-radius: 16px; margin: auto; max-width: 400px; text-align: center;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Verify Phone Number</h2>
+        <p style="font-size: 0.9rem; color: var(--bizzdeal-text-muted); margin-bottom: 16px;">
+          An OTP code has been sent via SMS to your mobile number.
+        </p>
+        
+        @if (regService.errorMessage()) {
+          <div class="error-container" style="margin-bottom: 12px;">
+            <span class="error-text">{{ regService.errorMessage() }}</span>
+          </div>
+        }
+
+        <div class="form-group" style="margin-bottom: 16px; text-align: left;">
+          <label class="input-label">Enter 6-digit OTP <span class="required-star">*</span></label>
+          <div class="input-box">
+            <ion-input type="tel" [formControl]="regService.otpControl" placeholder="123456" maxlength="6" class="custom-input"></ion-input>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="submit-btn bd-btn-primary"
+          style="width: 100%; margin-bottom: 12px;"
+          [disabled]="regService.isSubmitting()"
+          (click)="regService.verifyOtpAndProceed()"
+        >
+          <span>{{ regService.isSubmitting() ? 'Verifying...' : 'Confirm & Register' }}</span>
+        </button>
+
+        <button
+          type="button"
+          style="background: transparent; border: none; color: var(--bizzdeal-text-muted); font-size: 0.9rem; cursor: pointer;"
+          (click)="regService.closeOtpModal()"
+        >
+          Cancel
+        </button>
+      </div>
+    </ng-template>
+  </ion-modal>
 </ion-content>

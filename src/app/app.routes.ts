@@ -10,6 +10,8 @@ import { IssueVoucherPage } from './features/business/pages/issue-voucher/issue-
 import { RedeemVoucherPage } from './features/business/pages/redeem-voucher/redeem-voucher.page';
 import { AnalyticsDashboardPage } from './features/analytics/pages/analytics-dashboard/analytics-dashboard.page';
 import { ADMIN_ROUTES } from './features/admin/admin.routes';
+import { authGuard } from './core/guards/auth.guard';
+import { UserRole } from './features/auth/models/auth.model';
 
 export const routes: Routes = [
   {
@@ -19,34 +21,48 @@ export const routes: Routes = [
   {
     path: 'home',
     component: HomePage,
+    canActivate: [authGuard],
   },
   {
     path: 'business-directory',
     component: BusinessDirectoryPage,
+    canActivate: [authGuard],
   },
   {
     path: 'offers/new',
     component: OfferFormPage,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'offers/:id/edit',
     component: OfferFormPage,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'vouchers/issue',
     component: IssueVoucherPage,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'vouchers/redeem',
     component: RedeemVoucherPage,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'analytics',
     component: AnalyticsDashboardPage,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'admin',
     children: ADMIN_ROUTES,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.ADMIN] },
   },
   {
     path: '',

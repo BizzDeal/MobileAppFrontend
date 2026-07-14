@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
@@ -14,6 +14,7 @@ import {
   logOutOutline,
   chevronForwardOutline
 } from 'ionicons/icons';
+import { AuthSessionService } from '../../../../core/services/auth-session.service';
 
 @Component({
   selector: 'app-admin-sidebar',
@@ -154,6 +155,8 @@ export class AdminSidebarComponent {
     { title: 'Analytics', url: '/admin/analytics', icon: 'bar-chart' },
   ];
 
+  private readonly authSession = inject(AuthSessionService);
+
   constructor(private router: Router) {
     addIcons({
       gridOutline,
@@ -172,8 +175,8 @@ export class AdminSidebarComponent {
     this.closeSidebar.emit();
   }
 
-  logout(): void {
+  async logout(): Promise<void> {
     this.closeSidebar.emit();
-    this.router.navigate(['/auth/login']);
+    await this.authSession.logout(true);
   }
 }

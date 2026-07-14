@@ -26,10 +26,15 @@
     <!-- 1. Profile Picture Card -->
     <div class="avatar-card bd-card">
       <div class="avatar-wrapper">
-        <img 
-          [src]="selectedPhotoUrl() || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'" 
-          alt="Avatar Preview" 
-          class="profile-avatar" />
+        @if (selectedPhotoUrl() && !picLoadError()) {
+          <img 
+            [src]="selectedPhotoUrl()" 
+            (error)="picLoadError.set(true)"
+            alt="Avatar Preview" 
+            class="profile-avatar" />
+        } @else {
+          <div class="initials-avatar profile-avatar">{{ getInitials(profileForm.value.full_name || profile()?.full_name) }}</div>
+        }
         
         <label for="profileFile" class="edit-badge">
           <ion-icon name="camera-outline"></ion-icon>
@@ -42,7 +47,7 @@
         </label>
       </div>
       <h2 class="profile-name">{{ profile()?.full_name }}</h2>
-      <span class="profile-role">{{ profile()?.role }}</span>
+      <span class="profile-role">{{ userRole() }}</span>
     </div>
 
     <!-- 2. Profile Form -->
@@ -53,7 +58,7 @@
         <!-- Full Name -->
         <div class="form-group">
           <label class="form-label" for="full_name">
-            Full Name <span class="required-star">*</span>
+            Full Name @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
           </label>
           <div class="input-wrapper">
             <ion-icon name="person-outline" class="input-icon"></ion-icon>
@@ -95,7 +100,7 @@
         <!-- WhatsApp -->
         <div class="form-group">
           <label class="form-label" for="whatsapp">
-            WhatsApp Number <span class="required-star">*</span>
+            WhatsApp Number @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
           </label>
           <div class="input-wrapper">
             <ion-icon name="logo-whatsapp" class="input-icon"></ion-icon>
@@ -116,7 +121,7 @@
         <!-- Email Address -->
         <div class="form-group">
           <label class="form-label" for="email">
-            Email Address <span class="required-star">*</span>
+            Email Address @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
           </label>
           <div class="input-wrapper">
             <ion-icon name="mail-outline" class="input-icon"></ion-icon>
@@ -134,10 +139,63 @@
           </div>
         </div>
 
+        <!-- State -->
+        <div class="form-group">
+          <label class="form-label" for="state_id">
+            State @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
+          </label>
+          <div class="input-wrapper">
+            <ion-icon name="map-outline" class="input-icon"></ion-icon>
+            <ion-select
+              id="state_id"
+              formControlName="state_id"
+              placeholder="Select State"
+              interface="action-sheet"
+              toggleIcon="caret-down-outline"
+              class="form-input">
+              @for (state of profileService.states(); track state.id) {
+                <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+          <div class="error-container">
+            @if (profileForm.get('state_id')?.touched && profileForm.get('state_id')?.invalid) {
+              <span class="error-message">State is required</span>
+            }
+          </div>
+        </div>
+
+        <!-- District -->
+        <div class="form-group">
+          <label class="form-label" for="district_id">
+            District @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
+          </label>
+          <div class="input-wrapper">
+            <ion-icon name="location-outline" class="input-icon"></ion-icon>
+            <ion-select
+              id="district_id"
+              formControlName="district_id"
+              placeholder="Select District"
+              interface="action-sheet"
+              toggleIcon="caret-down-outline"
+              class="form-input"
+              [disabled]="!profileForm.controls['state_id'].value || profileService.districts().length === 0">
+              @for (district of profileService.districts(); track district.id) {
+                <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+          <div class="error-container">
+            @if (profileForm.get('district_id')?.touched && profileForm.get('district_id')?.invalid) {
+              <span class="error-message">District is required</span>
+            }
+          </div>
+        </div>
+
         <!-- Physical Address -->
         <div class="form-group">
           <label class="form-label" for="address">
-            Physical Address <span class="required-star">*</span>
+            Physical Address @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
           </label>
           <div class="input-wrapper textarea-wrapper">
             <ion-icon name="location-outline" class="input-icon textarea-icon"></ion-icon>
@@ -156,16 +214,23 @@
         </div>
       </div>
 
-      @if (profile()?.role === 'MEMBER') {
+      @if (userRole() === 'MEMBER') {
         <div class="form-section bd-card">
           <h3 class="section-title">Business Information</h3>
 
           <!-- Business Logo Picker -->
           <div class="business-logo-picker" style="width: 100%; height: 140px; margin-bottom: 1.5rem; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--bizzdeal-border-color);">
-            <img
-              [src]="selectedBusinessLogoUrl() || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80'"
-              alt="Brand Image Preview"
-              style="width: 100%; height: 100%; object-fit: cover;" />
+            @if (selectedBusinessLogoUrl() && !logoLoadError()) {
+              <img
+                [src]="selectedBusinessLogoUrl()"
+                (error)="logoLoadError.set(true)"
+                alt="Brand Image Preview"
+                style="width: 100%; height: 100%; object-fit: cover;" />
+            } @else {
+              <div class="initials-avatar business-logo-preview" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--bizzdeal-primary), #3a86ff); color: white; font-size: 3rem; font-weight: 700;">
+                {{ getInitials(profileForm.value.business_name || profile()?.business_name || 'My Business') }}
+              </div>
+            }
 
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.5)); pointer-events: none;"></div>
 
@@ -216,32 +281,26 @@
           <!-- Website -->
           <div class="form-group">
             <label class="form-label" for="website">
-              Website URL <span class="required-star">*</span>
+              Website URL
             </label>
             <div class="input-wrapper">
               <ion-icon name="globe-outline" class="input-icon"></ion-icon>
               <ion-input type="url" id="website" formControlName="website" class="form-input" placeholder="e.g. https://bizzdeal.com"></ion-input>
             </div>
             <div class="error-container">
-              @if (profileForm.get('website')?.touched && profileForm.get('website')?.invalid) {
-                <span class="error-message">Website URL is required</span>
-              }
             </div>
           </div>
 
           <!-- GST Number -->
           <div class="form-group">
             <label class="form-label" for="gst_number">
-              GST Number <span class="required-star">*</span>
+              GST Number
             </label>
             <div class="input-wrapper">
               <ion-icon name="document-text-outline" class="input-icon"></ion-icon>
               <ion-input type="text" id="gst_number" formControlName="gst_number" class="form-input" placeholder="e.g. 36AAAAA0000A1Z5"></ion-input>
             </div>
             <div class="error-container">
-              @if (profileForm.get('gst_number')?.touched && profileForm.get('gst_number')?.invalid) {
-                <span class="error-message">GST number is required</span>
-              }
             </div>
           </div>
         </div>
@@ -253,7 +312,7 @@
         
         <div class="meta-row">
           <span class="meta-label">Role</span>
-          <span class="meta-badge role-badge">{{ profile()?.role }}</span>
+          <span class="meta-badge role-badge">{{ userRole() }}</span>
         </div>
         
         <div class="meta-row">
@@ -299,6 +358,16 @@
     </form>
   }
 </div>
+
+<!-- Complete Your Profile Alert Dialog -->
+<ion-alert
+  [isOpen]="isCompleteProfileModalOpen()"
+  header="Complete Your Profile"
+  message="Please complete your personal details below to unlock and save BizzDeal vouchers easily."
+  [buttons]="['OK']"
+  (didDismiss)="closeCompleteProfileModal()"
+  class="complete-profile-alert">
+</ion-alert>
 
 <!-- Toast Alerts -->
 <ion-toast 

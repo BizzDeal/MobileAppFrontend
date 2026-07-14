@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { guestGuard } from '../../core/guards/guest.guard';
 
 // Static imports
 import { PhoneLoginPage } from './pages/phone-login/phone-login.page';
@@ -10,14 +11,17 @@ export const AUTH_ROUTES: Routes = [
   {
     path: 'login',
     component: PhoneLoginPage,
+    canActivate: [guestGuard],
   },
   {
     path: 'forgot-pin',
     component: ForgotPinPage,
+    canActivate: [guestGuard],
   },
   {
     path: 'member-registration',
     component: MemberRegistrationPage,
+    canActivate: [guestGuard],
   },
   {
     path: 'member-payment',

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { 
   AdminDashboardService, 
@@ -9,6 +9,8 @@ import {
   Offer 
 } from '../../services/admin-dashboard.service';
 import { Observable } from 'rxjs';
+import { AdminMemberActionModalComponent } from '../../components/admin-member-action-modal/admin-member-action-modal.component';
+import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
 
 import { addIcons } from 'ionicons';
 import { 
@@ -42,7 +44,10 @@ export class AdminDashboardPage implements OnInit {
   public chartOptions: any;
   public chartType: 'area' | 'bar' = 'area';
 
-  constructor(private dashboardService: AdminDashboardService) {
+  constructor(
+    private dashboardService: AdminDashboardService,
+    private modalCtrl: ModalController
+  ) {
     addIcons({
       peopleOutline,
       pricetagsOutline,
@@ -63,13 +68,33 @@ export class AdminDashboardPage implements OnInit {
   }
 
   loadData() {
+    this.refreshDashboard();
+  }
+
+  handleRefresh(event: any) {
+    this.refreshDashboard(event);
+  }
+
+  refreshDashboard(event?: any) {
     this.analytics$ = this.dashboardService.getPlatformAnalytics();
     this.pendingMembers$ = this.dashboardService.getPendingMembers();
     this.pendingOffers$ = this.dashboardService.getPendingOffers();
 
-    // Subscribe once to set up the chart data
-    this.analytics$.subscribe(data => {
-      this.initChart(data);
+    // Subscribe to update the chart data whenever analytics refreshes
+    this.analytics$.subscribe({
+      next: (data) => {
+        if (data && data.revenueHistory) {
+          this.initChart(data);
+        }
+        if (event) {
+          event.target.complete();
+        }
+      },
+      error: () => {
+        if (event) {
+          event.target.complete();
+        }
+      }
     });
   }
 
@@ -131,27 +156,63 @@ export class AdminDashboardPage implements OnInit {
     }
   }
 
-  approveMember(id: string) {
+  async openMemberModal(member: User) {
+    const modal = await this.modalCtrl.create({
+      component: AdminMemberActionModalComponent,
+      componentProps: { member }
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data && data.action) {
+      if (data.action === 'approve') {
+        this.approveMember(data.memberId, true);
+      } else if (data.action === 'reject') {
+        this.rejectMember(data.memberId, true);
+      }
+    }
+  }
+
+  async openOfferModal(offer: Offer) {
+    const modal = await this.modalCtrl.create({
+      component: AdminOfferActionModalComponent,
+      componentProps: { offer: offer as any }
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data && data.action) {
+      if (data.action === 'approve') {
+        this.approveOffer(data.offerId, true);
+      } else if (data.action === 'reject') {
+        this.rejectOffer(data.offerId, true);
+      }
+    }
+  }
+
+  approveMember(id: string, fromModal: boolean = false, event?: Event) {
+    if (event) event.stopPropagation();
     this.dashboardService.approveMember(id).subscribe(() => {
-      this.pendingMembers$ = this.dashboardService.getPendingMembers(); // Reload
+      this.refreshDashboard();
     });
   }
 
-  rejectMember(id: string) {
+  rejectMember(id: string, fromModal: boolean = false, event?: Event) {
+    if (event) event.stopPropagation();
     this.dashboardService.rejectMember(id).subscribe(() => {
-      this.pendingMembers$ = this.dashboardService.getPendingMembers(); // Reload
+      this.refreshDashboard();
     });
   }
 
-  approveOffer(id: string) {
+  approveOffer(id: string, fromModal: boolean = false, event?: Event) {
+    if (event) event.stopPropagation();
     this.dashboardService.approveOffer(id).subscribe(() => {
-      this.pendingOffers$ = this.dashboardService.getPendingOffers(); // Reload
+      this.refreshDashboard();
     });
   }
 
-  rejectOffer(id: string) {
+  rejectOffer(id: string, fromModal: boolean = false, event?: Event) {
+    if (event) event.stopPropagation();
     this.dashboardService.rejectOffer(id).subscribe(() => {
-      this.pendingOffers$ = this.dashboardService.getPendingOffers(); // Reload
+      this.refreshDashboard();
     });
   }
 }

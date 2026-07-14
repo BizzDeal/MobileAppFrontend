@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { AuthResponse } from '../models/auth.model';
 
 export interface BusinessCategory {
   id: string;
@@ -46,6 +48,7 @@ export interface MemberRegistrationPayload {
 })
 export class MemberOnboardingService {
   private readonly http = inject(HttpClient);
+  private readonly authSession = inject(AuthSessionService);
   private readonly apiUrl = environment.apiUrl;
 
   readonly categories = signal<BusinessCategory[]>([]);
@@ -137,7 +140,7 @@ export class MemberOnboardingService {
     this.paymentReceiptFile.set(receipt);
   }
 
-  async submitMemberRegistration(paymentReceipt?: File): Promise<any> {
+  async submitMemberRegistration(paymentReceipt?: File): Promise<AuthResponse> {
     const data = this.registrationData();
     if (!data) {
       throw new Error('Registration data is missing. Please complete the registration form.');
@@ -164,7 +167,7 @@ export class MemberOnboardingService {
       formData.append('business_description', data.business_description);
       formData.append('website', data.website);
       formData.append('gst_number', data.gst_number);
-      formData.append('firebaseToken', data.firebaseToken || 'mock_firebase_token_for_dev');
+      formData.append('firebaseToken', data.firebaseToken);
 
       const profilePic = this.profilePicFile();
       if (profilePic) {
@@ -172,9 +175,13 @@ export class MemberOnboardingService {
       }
       formData.append('payment_receipt', receipt, receipt.name);
 
-      const res = await firstValueFrom(
-        this.http.post<any>(`${this.apiUrl}/auth/register-member`, formData)
+      const res: any = await firstValueFrom(
+        this.http.post<AuthResponse>(`${this.apiUrl}/auth/register-member`, formData)
       );
+
+      if (res && res.accessToken) {
+        await this.authSession.setSession(res.accessToken, res.refreshToken, res.user);
+      }
       return res;
     } finally {
       this.isSubmitting.set(false);

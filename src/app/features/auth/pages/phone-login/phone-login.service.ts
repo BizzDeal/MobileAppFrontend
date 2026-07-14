@@ -1,31 +1,47 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Preferences } from '@capacitor/preferences';
+import { ConfirmationResult } from '@angular/fire/auth';
+import { AuthApiService } from '../../services/auth-api.service';
+import { AuthSessionService } from '../../../../core/services/auth-session.service';
+import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
 import { ProfileService } from '../../../profile/services/profile.service';
+import { UserRole } from '../../models/auth.model';
 
 @Injectable()
 export class PhoneLoginService {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly authApi = inject(AuthApiService);
+  private readonly authSession = inject(AuthSessionService);
+  private readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
   private readonly profileService = inject(ProfileService);
 
-  private readonly _authStep = signal<'phone' | 'pin'>('phone');
+  private readonly _authStep = signal<'phone' | 'pin' | 'otp_register'>('phone');
   private readonly _isSubmitting = signal(false);
   private readonly _isPhoneFocused = signal(false);
   private readonly _isPinFocused = signal(false);
-
+  private readonly _isConfirmPinFocused = signal(false);
+  private readonly _isOtpFocused = signal(false);
+  private readonly _errorMessage = signal<string | null>(null);
   private readonly _isJoinModalOpen = signal(false);
+
+  private _confirmationResult?: ConfirmationResult;
 
   readonly authStep = this._authStep.asReadonly();
   readonly isSubmitting = this._isSubmitting.asReadonly();
   readonly isPhoneFocused = this._isPhoneFocused.asReadonly();
   readonly isPinFocused = this._isPinFocused.asReadonly();
+  readonly isConfirmPinFocused = this._isConfirmPinFocused.asReadonly();
+  readonly isOtpFocused = this._isOtpFocused.asReadonly();
+  readonly errorMessage = this._errorMessage.asReadonly();
   readonly isJoinModalOpen = this._isJoinModalOpen.asReadonly();
 
   readonly loginForm = this.fb.nonNullable.group({
     phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
     pin: ['', [Validators.required, Validators.pattern(/^[0-9]{4,6}$/)]],
+    confirmPin: ['', [Validators.pattern(/^[0-9]{4,6}$/)]],
+    otp: ['', [Validators.pattern(/^[0-9]{6}$/)]],
   });
 
   readonly features = [
@@ -54,54 +70,173 @@ export class PhoneLoginService {
     this._isPinFocused.set(focused);
   }
 
+  setConfirmPinFocused(focused: boolean): void {
+    this._isConfirmPinFocused.set(focused);
+  }
+
+  setOtpFocused(focused: boolean): void {
+    this._isOtpFocused.set(focused);
+  }
+
+  clearError(): void {
+    this._errorMessage.set(null);
+  }
+
   submitForm(): void {
-    if (this._authStep() === 'phone') {
+    this._errorMessage.set(null);
+    const step = this._authStep();
+
+    if (step === 'phone') {
       const phoneControl = this.loginForm.controls.phoneNumber;
       if (phoneControl.invalid) {
         phoneControl.markAsTouched();
         return;
       }
-      this._authStep.set('pin');
+
+      this._isSubmitting.set(true);
+      const phoneNumber = phoneControl.value;
+
+      this.authApi.checkUserExist(phoneNumber).subscribe({
+        next: async (res: any) => {
+          if (res.exists) {
+            this._authStep.set('pin');
+            this._isSubmitting.set(false);
+          } else {
+            try {
+              this.firebasePhoneAuth.initRecaptcha('recaptcha-container');
+              const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber}`;
+              this._confirmationResult = await this.firebasePhoneAuth.sendOtp(formattedPhone);
+              this._authStep.set('otp_register');
+            } catch (err: any) {
+              console.error('sendOtp error:', err);
+              this._errorMessage.set(
+                err?.message || 'Failed to send OTP. Please ensure the phone number is valid.'
+              );
+            } finally {
+              this._isSubmitting.set(false);
+            }
+          }
+        },
+        error: (err: any) => {
+          console.error('checkUserExist error:', err);
+          this._errorMessage.set(
+            err?.error?.message || 'Failed to check user account status. Try again.'
+          );
+          this._isSubmitting.set(false);
+        },
+      });
       return;
     }
 
-    if (this.loginForm.invalid || this._isSubmitting()) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
-    this._isSubmitting.set(true);
-    setTimeout(async () => {
-      this._isSubmitting.set(false);
-      const values = this.loginForm.getRawValue();
-      console.info('Logged in successfully with:', values);
-      
-      // Mock role-based routing for now
-      if (values.phoneNumber === '9999999999') {
-        console.info('Mocking ADMIN role');
-        await Preferences.set({ key: 'mockRole', value: 'ADMIN' });
-        this.profileService.loadProfile().subscribe(() => {
-          this.router.navigate(['/admin/dashboard']);
-        });
-      } else if (values.phoneNumber === '8888888888') {
-        console.info('Mocking MEMBER role');
-        await Preferences.set({ key: 'mockRole', value: 'MEMBER' });
-        this.profileService.loadProfile().subscribe(() => {
-          this.router.navigate(['/home']); 
-        });
-      } else {
-        console.info('Mocking CUSTOMER role (Default)');
-        await Preferences.set({ key: 'mockRole', value: 'CUSTOMER' });
-        this.profileService.loadProfile().subscribe(() => {
-          this.router.navigate(['/home']);
-        });
+    if (step === 'pin') {
+      const pinControl = this.loginForm.controls.pin;
+      if (pinControl.invalid) {
+        pinControl.markAsTouched();
+        return;
       }
-    }, 1000);
+
+      this._isSubmitting.set(true);
+      const { phoneNumber, pin } = this.loginForm.getRawValue();
+
+      this.authApi.login({ phone: phoneNumber, pin }).subscribe({
+        next: async (res: any) => {
+          try {
+            await this.authSession.setSession(res.accessToken, res.refreshToken, res.user);
+            this.profileService.loadProfile().subscribe();
+            this._isSubmitting.set(false);
+            if (res.user.role === UserRole.ADMIN) {
+              this.router.navigate(['/admin']);
+            } else {
+              const u = res.user;
+              const isIncomplete = !u.full_name || u.full_name === 'Customer' || !u.email || u.email.includes('@bizzdeal.com') || !u.address || u.address === 'Not Provided';
+              if (isIncomplete && u.role === UserRole.CUSTOMER) {
+                this.router.navigate(['/home'], { queryParams: { tab: 'profile' } });
+              } else {
+                this.router.navigate(['/home']);
+              }
+            }
+          } catch (err: any) {
+            this._errorMessage.set('Failed to save session locally.');
+            this._isSubmitting.set(false);
+          }
+        },
+        error: (err: any) => {
+          console.error('login error:', err);
+          this._errorMessage.set(
+            err?.error?.message || 'Invalid phone number or PIN. Please check and try again.'
+          );
+          this._isSubmitting.set(false);
+        },
+      });
+      return;
+    }
+
+    if (step === 'otp_register') {
+      const pinControl = this.loginForm.controls.pin;
+      const confirmPinControl = this.loginForm.controls.confirmPin;
+      const otpControl = this.loginForm.controls.otp;
+      if (pinControl.invalid || confirmPinControl.invalid || !otpControl.value || otpControl.invalid) {
+        pinControl.markAsTouched();
+        confirmPinControl.markAsTouched();
+        otpControl.markAsTouched();
+        return;
+      }
+
+      if (pinControl.value !== confirmPinControl.value) {
+        this._errorMessage.set('Security PINs do not match. Please make sure both PIN fields match exactly.');
+        return;
+      }
+
+      if (!this._confirmationResult) {
+        this._errorMessage.set('OTP session expired. Please switch number and try again.');
+        return;
+      }
+
+      this._isSubmitting.set(true);
+      const { phoneNumber, pin, otp } = this.loginForm.getRawValue();
+
+      (async () => {
+        try {
+          const firebaseToken = await this.firebasePhoneAuth.verifyOtp(
+            this._confirmationResult!,
+            otp
+          );
+
+          const formData = new FormData();
+          formData.append('phone', phoneNumber);
+          formData.append('pin', pin);
+          formData.append('firebaseToken', firebaseToken);
+
+          this.authApi.registerCustomer(formData).subscribe({
+            next: async (res: any) => {
+              await this.authSession.setSession(res.accessToken, res.refreshToken, res.user);
+              this.profileService.loadProfile().subscribe();
+              this._isSubmitting.set(false);
+              this.router.navigate(['/home'], { queryParams: { tab: 'profile' } });
+            },
+            error: (err: any) => {
+              console.error('registerCustomer error:', err);
+              this._errorMessage.set(
+                err?.error?.message || 'Failed to complete registration. Try again.'
+              );
+              this._isSubmitting.set(false);
+            },
+          });
+        } catch (err: any) {
+          console.error('verifyOtp error:', err);
+          this._errorMessage.set(err?.message || 'Invalid or expired OTP code.');
+          this._isSubmitting.set(false);
+        }
+      })();
+    }
   }
 
   switchNumber(): void {
     this._authStep.set('phone');
     this.loginForm.controls.pin.reset('');
+    this.loginForm.controls.confirmPin.reset('');
+    this.loginForm.controls.otp.reset('');
+    this._errorMessage.set(null);
   }
 
   forgotPin(): void {
@@ -119,7 +254,6 @@ export class PhoneLoginService {
 
   proceedToRegistration(): void {
     this._isJoinModalOpen.set(false);
-    // Allow the modal dismiss transition animation to complete cleanly before navigating
     setTimeout(() => {
       this.router.navigate(['/auth/member-payment']);
     }, 250);

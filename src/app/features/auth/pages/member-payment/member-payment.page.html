@@ -79,11 +79,11 @@
         />
       </label>
 
-      @if (payService.errorMessage()) {
-        <div class="error-banner">
-          <span>{{ payService.errorMessage() }}</span>
-        </div>
-      }
+      <div class="error-container" style="min-height: 24px; display: flex; align-items: center; margin-top: 8px;">
+        @if (payService.errorMessage()) {
+          <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.85rem;">{{ payService.errorMessage() }}</span>
+        }
+      </div>
     </section>
 
     <!-- Payment Done Button -->

@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -52,6 +52,7 @@ import { MenuViewComponent } from '../features/menu/components/menu-view/menu-vi
 import { MeetingsPageComponent } from '../features/meetings/pages/meetings-page/meetings-page.component';
 import { VouchersViewComponent } from '../features/vouchers/components/vouchers-view/vouchers-view.component';
 import { CustomerVouchersService } from '../features/vouchers/services/customer-vouchers.service';
+import { AuthSessionService } from '../core/services/auth-session.service';
 
 @Component({
   selector: 'app-home',
@@ -94,10 +95,12 @@ export class HomePage {
   private readonly chatService = inject(ChatService);
   private readonly notificationService = inject(NotificationService);
   private readonly profileService = inject(ProfileService);
+  private readonly authSession = inject(AuthSessionService);
   private readonly customerVouchersService = inject(CustomerVouchersService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
-  readonly userRole = computed(() => this.profileService.profile()?.role || 'CUSTOMER');
+  readonly userRole = computed(() => this.authSession.userRole() || this.profileService.profile()?.role || 'CUSTOMER');
 
   readonly homeFeed = this.homeService.homeFeed;
   readonly loading = this.homeService.loading;
@@ -177,9 +180,13 @@ export class HomePage {
         });
       }
     });
+
+    // Ensure profile is loaded immediately when arriving on home screen
+    this.profileService.loadProfile().subscribe();
   }
 
   onRefresh(event: any): void {
+    this.profileService.loadProfile().subscribe();
     this.homeService.loadHomeFeed().subscribe({
       next: () => event.target.complete(),
       error: () => event.target.complete(),
@@ -235,6 +242,11 @@ export class HomePage {
       return;
     }
     this.activeNavTab.set(tab);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
   onSearchChange(query: string): void {

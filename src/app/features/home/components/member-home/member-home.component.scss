@@ -23,6 +23,17 @@
       border-radius: var(--bizzdeal-radius-full);
       object-fit: cover;
       border: 2px solid var(--bizzdeal-border-color);
+
+      &.initials-avatar {
+        background: linear-gradient(135deg, var(--bizzdeal-primary), var(--bizzdeal-secondary, #3a86ff));
+        color: #ffffff;
+        font-size: 1.25rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+      }
     }
 
     .business-name {
@@ -108,6 +119,17 @@
     border-radius: calc(var(--bizzdeal-radius-lg) - 2px);
     object-fit: cover;
     border: 2px solid #ffffff;
+
+    &.initials-avatar {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
   }
 
   .biz-info {

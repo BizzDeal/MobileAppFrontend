@@ -6,7 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { VouchersService } from '../../services/vouchers.service';
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, checkmarkCircleOutline } from 'ionicons/icons';
+import { arrowBackOutline, caretDownOutline, checkmarkCircleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-issue-voucher',
@@ -30,7 +30,7 @@ export class IssueVoucherPage implements OnInit {
   readonly dashboardData = this.dashboardService.dashboardData;
 
   constructor() {
-    addIcons({ arrowBackOutline, checkmarkCircleOutline });
+    addIcons({ arrowBackOutline, caretDownOutline, checkmarkCircleOutline });
   }
 
   ngOnInit() {

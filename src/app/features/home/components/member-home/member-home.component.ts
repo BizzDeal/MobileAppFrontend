@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -48,12 +48,20 @@ export class MemberHomeComponent {
     return all.filter(m => new Date(m.meeting_date) >= now && m.status !== 'CANCELLED');
   });
 
+  readonly picLoadError = signal(false);
+  readonly logoLoadError = signal(false);
+
   constructor() {
     addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline });
   }
 
   getFirstName(name?: string): string {
     return name ? name.split(' ')[0] : 'Member';
+  }
+
+  getInitials(name?: string | null): string {
+    if (!name || !name.trim()) return 'U';
+    return name.trim().charAt(0).toUpperCase();
   }
 
   onCreateOffer() {

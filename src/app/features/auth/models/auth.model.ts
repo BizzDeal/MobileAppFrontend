@@ -1,0 +1,88 @@
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  MEMBER = 'MEMBER',
+  CUSTOMER = 'CUSTOMER',
+}
+
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  PENDING = 'PENDING',
+  SUSPENDED = 'SUSPENDED',
+  REJECTED = 'REJECTED',
+}
+
+export interface AuthUser {
+  id: string;
+  full_name: string;
+  phone: string;
+  whatsapp?: string | null;
+  email?: string | null;
+  address?: string | null;
+  state_id?: string | null;
+  district_id?: string | null;
+  role: UserRole;
+  status: UserStatus;
+  approved_by_id?: string | null;
+  approved_at?: string | null;
+  last_login_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  profile_pic_url?: string | null;
+  payment_receipt_url?: string | null;
+  business_id?: string | null;
+}
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface AuthResponse extends AuthTokens {
+  user: AuthUser;
+}
+
+export interface UserExistDto {
+  phone: string;
+}
+
+export interface LoginDto {
+  phone: string;
+  pin: string;
+}
+
+export interface ForgotPinDto {
+  phone: string;
+}
+
+export interface ResetPinDto {
+  phone: string;
+  firebaseToken: string;
+  newPin: string;
+}
+
+export interface RegisterCustomerDto {
+  full_name: string;
+  phone: string;
+  pin: string;
+  whatsapp: string;
+  email: string;
+  address: string;
+  firebaseToken: string;
+}
+
+export interface RegisterMemberDto {
+  full_name: string;
+  phone: string;
+  pin: string;
+  whatsapp: string;
+  email?: string;
+  address: string;
+  state_id: string;
+  district_id: string;
+  business_name: string;
+  category_id: string;
+  business_description?: string;
+  website?: string;
+  gst_number?: string;
+  firebaseToken: string;
+}

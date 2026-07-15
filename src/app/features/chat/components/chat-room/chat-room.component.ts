@@ -21,6 +21,7 @@ import {
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, personOutline, timeOutline } from 'ionicons/icons';
 import { ChatMessage, MessageType } from '../../models/chat.model';
+import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { ChatService } from '../../services/chat.service';
 import { ChatBubbleComponent } from '../chat-bubble/chat-bubble.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
@@ -43,11 +44,13 @@ import { ChatInputComponent } from '../chat-input/chat-input.component';
 })
 export class ChatRoomComponent {
   private readonly chatService = inject(ChatService);
+  private readonly authSession = inject(AuthSessionService);
 
   readonly closeChat = output<void>();
 
   @ViewChild('scrollContainer', { static: false }) private scrollContainer!: ElementRef;
 
+  readonly currentUserId = computed(() => this.authSession.currentUser()?.id);
   readonly activeConversation = this.chatService.activeConversation;
   readonly activeMessages = this.chatService.activeMessages;
   readonly typingStates = this.chatService.typingStates;
@@ -96,6 +99,7 @@ export class ChatRoomComponent {
   onSendMessage(event: {
     text: string | null;
     type: MessageType;
+    mediaFileId?: string;
     mediaUrl?: string;
     mediaName?: string;
     mediaSize?: string;
@@ -113,6 +117,7 @@ export class ChatRoomComponent {
       this.chatService.sendMessage(
         event.text,
         event.type,
+        event.mediaFileId,
         event.mediaUrl,
         event.mediaName,
         event.mediaSize

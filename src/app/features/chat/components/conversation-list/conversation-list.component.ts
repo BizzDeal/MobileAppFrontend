@@ -99,8 +99,7 @@ export class ConversationListComponent {
   }
 
   onSelectContact(partnerId: string): void {
-    const convId = this.chatService.createOrGetConversation(partnerId);
-    this.selectConversation.emit(convId);
+    this.chatService.createOrGetConversation(partnerId);
     this.closeNewChat();
   }
 

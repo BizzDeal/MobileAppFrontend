@@ -263,6 +263,15 @@
 .edited-tag {
   font-family: var(--bizzdeal-font-family);
   font-size: 10px;
+  font-style: italic;
+  opacity: 0.9;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+
+  .edit-tiny-icon {
+    font-size: 11px;
+  }
 }
 
 .status-tick {
@@ -274,70 +283,6 @@
   
   &.ticks-blue {
     color: #4FC3F7; // bright sky blue for read status inside dark bubble
-  }
-}
-
-/* Actions Menu Overlay */
-.bubble-actions-menu {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bizzdeal-bg-surface);
-  border: 1px solid var(--bizzdeal-border-color);
-  box-shadow: var(--bizzdeal-shadow-lg);
-  border-radius: var(--bizzdeal-radius-md);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  padding: 4px;
-  min-width: 110px;
-  margin-bottom: 6px;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: var(--bizzdeal-bg-surface);
-  }
-
-  .action-btn {
-    background: transparent;
-    border: none;
-    padding: var(--bizzdeal-spacing-sm) var(--bizzdeal-spacing-md);
-    text-align: left;
-    font-family: var(--bizzdeal-font-family);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--bizzdeal-text-primary);
-    display: flex;
-    align-items: center;
-    gap: var(--bizzdeal-spacing-sm);
-    width: 100%;
-    border-radius: var(--bizzdeal-radius-sm);
-    cursor: pointer;
-
-    &:active {
-      background: var(--bizzdeal-bg-surface-secondary);
-    }
-
-    ion-icon {
-      font-size: 15px;
-    }
-
-    &.delete-action {
-      color: var(--ion-color-danger);
-    }
-
-    &.cancel-action {
-      color: var(--bizzdeal-text-secondary);
-      border-top: 1px solid var(--bizzdeal-border-color);
-      margin-top: 2px;
-      border-radius: 0;
-    }
   }
 }
 

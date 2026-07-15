@@ -4,28 +4,54 @@
   height: 100%;
 }
 
+.premium-header {
+  ion-toolbar {
+    --background: transparent;
+    --padding-top: 4px;
+    --padding-bottom: 0px;
+    --min-height: 44px;
+    
+    ion-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+  }
+}
+
 .start-chat-content {
   --background: var(--bizzdeal-bg-main);
   --padding-start: var(--bizzdeal-spacing-md);
   --padding-end: var(--bizzdeal-spacing-md);
-  --padding-top: var(--bizzdeal-spacing-md);
+  --padding-top: 0px;
   --padding-bottom: var(--bizzdeal-spacing-md);
 }
 
 .search-wrapper {
-  margin: var(--bizzdeal-spacing-sm) 0 var(--bizzdeal-spacing-md);
+  margin: 0 0 6px 0;
+  padding: 0;
 }
 
 .custom-searchbar {
   --background: var(--bizzdeal-bg-surface);
   --border-radius: var(--bizzdeal-radius-md);
   --box-shadow: var(--bizzdeal-shadow-sm);
-  padding-inline: 0;
+  --padding-top: 0px;
+  --padding-bottom: 0px;
+  padding: 0 !important;
+  min-height: 40px;
+  margin: 0 !important;
   
+  ::ng-deep .searchbar-input-container {
+    min-height: 40px;
+    height: 40px;
+  }
+
   ::ng-deep .searchbar-input {
     font-family: var(--bizzdeal-font-family);
     font-size: 15px;
     color: var(--bizzdeal-text-primary);
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 }
 
@@ -34,7 +60,7 @@
   border-radius: var(--bizzdeal-radius-xl);
   box-shadow: var(--bizzdeal-shadow-md);
   padding: 4px 0;
-  margin: 0 0 var(--bizzdeal-spacing-xl) 0;
+  margin: 0 0 var(--bizzdeal-spacing-md) 0;
   border: 1px solid var(--bizzdeal-border-color);
   overflow: hidden;
 }
@@ -101,7 +127,37 @@
   font-weight: 600;
   font-size: 16px;
   color: var(--bizzdeal-text-primary);
-  margin: 0 0 3px 0;
+  margin: 0;
+}
+
+.contact-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--bizzdeal-font-family);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &--admin {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  }
+
+  &--member {
+    background: var(--bizzdeal-bg-surface-tertiary);
+    color: var(--bizzdeal-text-secondary);
+  }
 }
 
 .contact-role {

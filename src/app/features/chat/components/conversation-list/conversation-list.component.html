@@ -1,19 +1,4 @@
 <div class="conv-list-container">
-  <!-- Header -->
-  <div style="padding: var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md) 0;">
-    <div class="page-top-header" style="margin-bottom: 0;">
-      <div class="header-content">
-        <div class="header-icon-box">
-          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-        </div>
-        <div class="header-text">
-          <h2>Chats</h2>
-          <p>Connect with members and businesses.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Search bar -->
   <div class="search-section">
     <ion-searchbar 
@@ -47,7 +32,12 @@
           <!-- Labels -->
           <ion-label class="item-label">
             <div class="label-header">
-              <h2 class="partner-name">{{ c.partner.full_name }}</h2>
+              <div class="partner-name-row">
+                <h2 class="partner-name">{{ c.partner.full_name }}</h2>
+                @if (c.partner.role === 'ADMIN') {
+                  <span class="role-badge role-badge--admin">Admin</span>
+                }
+              </div>
               <span class="last-time">
                 @if (getLastMessage(c.id); as lastMsg) {
                   {{ lastMsg.created_at | date:'shortTime' }}
@@ -77,7 +67,7 @@
                     }
                   }
                 } @else {
-                  <span class="snippet-text placeholder">No messages yet</span>
+                  <span class="snippet-text placeholder">Tap to view conversation</span>
                 }
               </div>
 

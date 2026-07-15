@@ -35,8 +35,9 @@
   <!-- Businesses List -->
   <div class="directory-list-container">
     @if (isLoading()) {
-      <div style="display: flex; justify-content: center; align-items: center; padding: 40px;">
+      <div class="loading-state">
         <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p class="loading-text">Discovering local businesses...</p>
       </div>
     } @else {
       <div class="directory-list">

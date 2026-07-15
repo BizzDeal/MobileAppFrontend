@@ -8,9 +8,9 @@
 </ion-header>
 
 <ion-content color="light">
-  <div *ngIf="loading" class="ion-padding ion-text-center mt-4">
-    <ion-spinner></ion-spinner>
-    <p class="mt-2 text-medium">Loading details...</p>
+  <div *ngIf="loading" class="loading-state">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p class="loading-text">Loading details...</p>
   </div>
 
   <div *ngIf="!loading && !business" class="ion-padding ion-text-center mt-4">

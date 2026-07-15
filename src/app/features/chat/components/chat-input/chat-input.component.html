@@ -14,12 +14,22 @@
     </div>
   }
 
+  <!-- Uploading Banner -->
+  @if (isUploading()) {
+    <div class="edit-banner uploading-banner">
+      <div class="edit-info">
+        <ion-icon name="cloud-upload-outline" class="edit-icon" style="animation: typing-bounce 1.4s infinite ease-in-out both;" />
+        <span class="edit-label">Uploading media...</span>
+      </div>
+    </div>
+  }
+
   <!-- Recording Banner -->
   @if (isRecording()) {
     <div class="recording-banner">
       <div class="rec-status">
         <ion-icon name="ellipse" class="rec-dot-icon" />
-        <span class="rec-text">Recording simulated audio...</span>
+        <span class="rec-text">Recording audio...</span>
         <span class="rec-time">0:{{ recordingSeconds() | number:'2.0-0' }}</span>
       </div>
       <div class="rec-actions">
@@ -65,7 +75,12 @@
 <!-- Attachment Options Sheet -->
 <ion-action-sheet
   [isOpen]="isActionSheetOpen()"
-  header="Attach Simulated Media"
+  header="Attach Media"
   [buttons]="actionSheetButtons"
   (didDismiss)="closeActionSheet()">
 </ion-action-sheet>
+
+<!-- Hidden File Inputs -->
+<input type="file" #cameraInput accept="image/*" capture="environment" style="display: none;" (change)="onFileSelected($event, 'IMAGE')" />
+<input type="file" #imageInput accept="image/*" style="display: none;" (change)="onFileSelected($event, 'IMAGE')" />
+<input type="file" #fileInput accept="application/pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" style="display: none;" (change)="onFileSelected($event, 'FILE')" />

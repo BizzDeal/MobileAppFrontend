@@ -212,6 +212,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-height: 65vh;
+  width: 100%;
   text-align: center;
   padding: var(--bizzdeal-spacing-xl) var(--bizzdeal-spacing-md);
   margin-top: 20px;

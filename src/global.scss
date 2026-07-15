@@ -146,6 +146,47 @@ ion-select.custom-select {
   border: 1px solid rgba(0,0,0,0.05);
 }
 
+/* App-Wide Centered Loading & Empty State Layouts (for screen transitions across all pages) */
+.loading-state,
+.loading-container,
+.state-container.loading-state {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 65vh !important;
+  width: 100% !important;
+  padding: var(--bizzdeal-spacing-xl, 32px) var(--bizzdeal-spacing-md, 16px) !important;
+  text-align: center !important;
+  gap: var(--bizzdeal-spacing-md, 16px) !important;
+  box-sizing: border-box !important;
+
+  ion-spinner {
+    width: 44px !important;
+    height: 44px !important;
+    --color: var(--bizzdeal-primary, #1565C0);
+    transform: scale(1.1);
+  }
+
+  p, .loading-text, .state-text {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    color: var(--bizzdeal-text-secondary, #64748B) !important;
+    margin: 0 !important;
+    letter-spacing: -0.01em !important;
+  }
+}
+
+/* Adjust min-height automatically inside modals, cards, or when page has a parent header so loading state fits perfectly */
+ion-modal .loading-state,
+ion-modal .loading-container,
+.bd-card .loading-state,
+.bd-card .loading-container,
+ion-card .loading-state,
+ion-card .loading-container {
+  min-height: 260px !important;
+}
+
 /* Shared page top header for individual pages (Meetings, Referrals, Wallet, Vouchers, Profile) */
 .page-top-header {
   background: var(--bizzdeal-bg-surface);

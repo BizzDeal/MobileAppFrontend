@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonIcon } from '@ionic/angular/standalone';
+import { IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../services/member-dashboard.service';
@@ -15,7 +15,7 @@ import { MeetingCardComponent } from '../../../meetings/components/meeting-card/
 @Component({
   selector: 'app-member-home',
   standalone: true,
-  imports: [CommonModule, IonIcon, OfferCardComponent, MeetingCardComponent],
+  imports: [CommonModule, IonIcon, IonSpinner, OfferCardComponent, MeetingCardComponent],
   templateUrl: './member-home.component.html',
   styleUrls: ['./member-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

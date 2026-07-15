@@ -18,8 +18,9 @@
   </div>
 
   @if (isLoading()) {
-    <div style="display: flex; justify-content: center; align-items: center; padding: 60px;">
+    <div class="loading-state">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p class="loading-text">Loading analytics data...</p>
     </div>
   } @else {
     <!-- 1. Stats Grid (2x2) -->

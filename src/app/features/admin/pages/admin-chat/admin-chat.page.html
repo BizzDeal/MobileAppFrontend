@@ -1,0 +1,15 @@
+@if (!selectedConversationId()) {
+  <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true">
+    <ion-toolbar class="px-2 pt-3">
+      <ion-title>Chat Messages</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content color="light">
+    <div class="admin-chat-container">
+      <app-conversation-list (selectConversation)="onConversationSelect($event)"></app-conversation-list>
+    </div>
+  </ion-content>
+} @else {
+  <app-chat-room (closeChat)="onCloseChatRoom()"></app-chat-room>
+}

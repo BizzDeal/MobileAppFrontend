@@ -34,6 +34,7 @@ export interface ChatMessage {
   is_read: boolean;
   read_at: Date | string | null;
   is_edited: boolean;
+  edited_at?: Date | string | null;
   is_deleted: boolean;
   created_at: Date | string;
   updated_at: Date | string;

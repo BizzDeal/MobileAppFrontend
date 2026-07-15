@@ -52,7 +52,7 @@
             <!-- Message Bubble -->
             <app-chat-bubble 
               [message]="msg"
-              [isMe]="msg.sender_id === 'cust-101'"
+              [isMe]="msg.sender_id === currentUserId()"
               (edit)="onEditMessage($event)"
               (delete)="onDeleteMessage($event)" />
           }

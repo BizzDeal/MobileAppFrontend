@@ -36,7 +36,7 @@
                 <span class="file-name">{{ message().media_name || 'Document.pdf' }}</span>
                 <span class="file-size">{{ message().media_size || 'Unknown size' }}</span>
               </div>
-              <ion-button fill="clear" size="small" class="file-dl-btn">
+              <ion-button fill="clear" size="small" class="file-dl-btn" (click)="downloadFile($event)">
                 <ion-icon name="download-outline" slot="icon-only" />
               </ion-button>
             </div>
@@ -68,7 +68,7 @@
     <div class="bubble-footer">
       <span class="time-text">{{ message().created_at | date:'shortTime' }}</span>
       @if (message().is_edited && !message().is_deleted) {
-        <span class="edited-tag">Edited</span>
+        <span class="edited-tag"><ion-icon name="create-outline" class="edit-tiny-icon" /> Edited</span>
       }
       @if (isMe() && !message().is_deleted) {
         <ion-icon 
@@ -78,29 +78,13 @@
       }
     </div>
 
-    <!-- Quick Action menu overlay -->
-    @if (showMenu() && !message().is_deleted) {
-      <div class="bubble-actions-menu" (click)="$event.stopPropagation()">
-        @if (message().message_type === 'TEXT') {
-          <button type="button" class="action-btn" (click)="copyText($event)">
-            <ion-icon name="copy-outline" /> Copy
-          </button>
-        }
-        @if (isMe() && message().message_type === 'TEXT') {
-          <button type="button" class="action-btn" (click)="onEdit($event)">
-            <ion-icon name="create-outline" /> Edit
-          </button>
-        }
-        @if (isMe()) {
-          <button type="button" class="action-btn delete-action" (click)="onDelete($event)">
-            <ion-icon name="trash-outline" /> Delete
-          </button>
-        }
-        <button type="button" class="action-btn cancel-action" (click)="closeMenu($event)">
-          <ion-icon name="close-outline" /> Close
-        </button>
-      </div>
-    }
+    <!-- Inline Action Sheet for Message Actions -->
+    <ion-action-sheet
+      [isOpen]="showMenu()"
+      header="Message Actions"
+      [buttons]="actionSheetButtons()"
+      (didDismiss)="closeMenu($event)">
+    </ion-action-sheet>
 
   </div>
 </div>

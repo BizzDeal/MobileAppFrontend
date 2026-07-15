@@ -51,7 +51,7 @@ export class StartChatModalComponent {
   readonly searchQuery = signal<string>('');
 
   readonly filteredContacts = computed(() => {
-    const contacts = this.chatService.contactsDirectory;
+    const contacts = this.chatService.contactsDirectory();
     const query = this.searchQuery().toLowerCase().trim();
     if (!query) return contacts;
     return contacts.filter(

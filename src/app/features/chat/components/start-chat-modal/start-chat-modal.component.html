@@ -40,8 +40,15 @@
           </div>
           
           <ion-label>
-            <h3 class="contact-name">{{ c.full_name }}</h3>
-            <p class="contact-role">{{ c.role === 'MEMBER' ? 'Business Partner' : c.role }}</p>
+            <div class="contact-name-row">
+              <h3 class="contact-name">{{ c.full_name }}</h3>
+              @if (c.role === 'ADMIN') {
+                <span class="role-badge role-badge--admin">Admin Support</span>
+              } @else {
+                <span class="role-badge role-badge--member">Member</span>
+              }
+            </div>
+            <p class="contact-role">{{ c.role === 'ADMIN' ? 'BizzDeal Support Team' : 'Business Partner' }}</p>
           </ion-label>
 
           <ion-button fill="clear" slot="end" class="message-btn">

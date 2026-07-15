@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.statusBarService.initialize();
+    this.requestMediaPermissions();
     this.updateRouteState(this.router.url);
 
     this.routerSub = this.router.events
@@ -35,6 +36,19 @@ export class AppComponent implements OnInit, OnDestroy {
         const url = event instanceof NavigationStart ? event.url : event.urlAfterRedirects;
         this.updateRouteState(url);
       });
+  }
+
+  private async requestMediaPermissions(): Promise<void> {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Request both audio and video permissions
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        // Immediately stop the tracks so the camera/mic indicator turns off
+        stream.getTracks().forEach(track => track.stop());
+      }
+    } catch (err) {
+      console.log('Media permissions not granted or not supported initially.', err);
+    }
   }
 
   private updateRouteState(url: string = ''): void {

@@ -140,6 +140,7 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
         if (res.success) {
           business.is_featured = newFeaturedStatus;
           this.showToast(res.message, 'success');
+          this.loadBusinesses();
         }
       },
       error: (err) => {

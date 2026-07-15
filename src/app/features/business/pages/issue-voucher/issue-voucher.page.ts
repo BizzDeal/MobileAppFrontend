@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -29,6 +29,12 @@ export class IssueVoucherPage implements OnInit {
   // We read the member's existing loaded offers
   readonly dashboardData = this.dashboardService.dashboardData;
 
+  readonly approvedOffers = computed(() => {
+    const data = this.dashboardData();
+    if (!data?.myOffers) return [];
+    return data.myOffers.filter(o => o.status === 'APPROVED');
+  });
+
   constructor() {
     addIcons({ arrowBackOutline, caretDownOutline, checkmarkCircleOutline });
   }
@@ -38,6 +44,9 @@ export class IssueVoucherPage implements OnInit {
       offer_id: ['', [Validators.required]],
       customer_phone: ['', [Validators.required, Validators.minLength(10)]]
     });
+    if (!this.dashboardData()?.myOffers?.length) {
+      this.dashboardService.loadDashboardData().subscribe();
+    }
   }
 
   get f() {

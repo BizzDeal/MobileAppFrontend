@@ -2,10 +2,13 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, IonDatetime, IonDatetimeButton, IonModal } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline } from 'ionicons/icons';
+import { imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
+import { ProfileService } from '../../../profile/services/profile.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-offer-form',
@@ -23,25 +26,34 @@ export class OfferFormPage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
   private readonly dashboardService = inject(MemberDashboardService);
+  private readonly profileService = inject(ProfileService);
 
   readonly isEditMode = signal(false);
   readonly offerId = signal<string | null>(null);
   readonly selectedImageName = signal<string | null>(null);
+  readonly selectedImagePreview = signal<string | null>(null);
+  readonly selectedImageFile = signal<File | null>(null);
+  readonly submitting = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
   offerForm: FormGroup;
 
   constructor() {
-    addIcons({ imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline });
+    addIcons({ imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline });
     
+    const now = new Date();
+    const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
     this.offerForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', Validators.required],
       offer_type: ['', Validators.required],
       discount_value: [null, [Validators.required, Validators.min(0)]],
       discount_type: [null, Validators.required],
-      start_date: ['', Validators.required],
-      end_date: ['', Validators.required],
+      start_date: [now.toISOString(), Validators.required],
+      end_date: [nextMonth.toISOString(), Validators.required],
     }, { validators: this.dateValidator });
   }
 
@@ -51,24 +63,64 @@ export class OfferFormPage implements OnInit {
       this.isEditMode.set(true);
       this.offerId.set(id);
       this.loadOfferDetails(id);
+    } else {
+      if (!this.profileService.profile()?.business_id) {
+        this.profileService.loadProfile().subscribe();
+      }
     }
   }
 
   loadOfferDetails(id: string) {
     const data = this.dashboardService.dashboardData();
-    if (data?.myOffers) {
-      const offer = data.myOffers.find(o => o.id === id);
-      if (offer) {
-        this.offerForm.patchValue({
-          title: offer.title,
-          description: offer.description,
-          offer_type: offer.offer_type,
-          discount_value: offer.discount_value,
-          discount_type: offer.discount_type,
-          start_date: offer.start_date,
-          end_date: offer.end_date,
-        });
+    const cachedOffer = data?.myOffers?.find(o => o.id === id);
+    if (cachedOffer) {
+      this.patchOfferValues(cachedOffer);
+    }
+    
+    this.http.get<any>(`${environment.apiUrl}/offers/${id}`).subscribe({
+      next: (res) => {
+        const o = res?.data || res;
+        if (o) {
+          this.patchOfferValues(o);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load offer details from API, trying dashboard data:', err);
+        if (!cachedOffer) {
+          this.dashboardService.loadDashboardData().subscribe({
+            next: (dashboardData) => {
+              const offer = dashboardData?.myOffers?.find(o => o.id === id);
+              if (offer) this.patchOfferValues(offer);
+            }
+          });
+        }
       }
+    });
+  }
+
+  private patchOfferValues(offer: any) {
+    this.offerForm.patchValue({
+      title: offer.title || '',
+      description: offer.description || '',
+      offer_type: offer.offer_type || '',
+      discount_value: offer.discount_value ?? null,
+      discount_type: offer.discount_type || null,
+      start_date: offer.start_date || new Date().toISOString(),
+      end_date: offer.end_date || new Date().toISOString(),
+    });
+    const previewUrl = offer.imageUrl || offer.image_url || offer.image?.file_url;
+    if (previewUrl) {
+      this.selectedImagePreview.set(previewUrl);
+    } else if (offer.image_id) {
+      this.http.get<any>(`${environment.apiUrl}/media/${offer.image_id}`).subscribe({
+        next: (res) => {
+          const m = res?.data || res;
+          if (m?.file_url) {
+            this.selectedImagePreview.set(m.file_url);
+          }
+        },
+        error: (err) => console.error('Failed to load media preview for image_id:', err)
+      });
     }
   }
 
@@ -85,7 +137,21 @@ export class OfferFormPage implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
       this.selectedImageName.set(file.name);
+      this.selectedImageFile.set(file);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.selectedImagePreview.set(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
+  }
+
+  clearSelectedImage(event: Event) {
+    event.stopPropagation();
+    this.selectedImageName.set(null);
+    this.selectedImageFile.set(null);
+    this.selectedImagePreview.set(null);
   }
 
   onStartDateChange(event: CustomEvent): void {
@@ -115,7 +181,79 @@ export class OfferFormPage implements OnInit {
       return;
     }
     
-    console.log('Form Submitted', this.offerForm.value);
-    this.router.navigate(['/home']);
+    this.submitting.set(true);
+    this.errorMessage.set(null);
+
+    const formValues = this.offerForm.value;
+    const formData = new FormData();
+    formData.append('title', formValues.title);
+    formData.append('description', formValues.description);
+    formData.append('offer_type', formValues.offer_type);
+
+    if (formValues.discount_value !== null && formValues.discount_value !== undefined && formValues.discount_value !== '') {
+      formData.append('discount_value', String(formValues.discount_value));
+    }
+    if (formValues.discount_type) {
+      formData.append('discount_type', formValues.discount_type);
+    }
+    formData.append('start_date', new Date(formValues.start_date).toISOString());
+    formData.append('end_date', new Date(formValues.end_date).toISOString());
+
+    if (this.selectedImageFile()) {
+      formData.append('offer_image', this.selectedImageFile()!);
+    }
+
+    if (this.isEditMode() && this.offerId()) {
+      this.http.put<any>(`${environment.apiUrl}/offers/${this.offerId()}`, formData).subscribe({
+        next: (res) => {
+          this.submitting.set(false);
+          this.dashboardService.loadDashboardData().subscribe();
+          this.router.navigate(['/home']);
+        },
+        error: (err) => {
+          this.submitting.set(false);
+          console.error('Update offer failed:', err);
+          this.errorMessage.set(err?.error?.message || 'Failed to update offer. Please try again.');
+        }
+      });
+    } else {
+      const profile = this.profileService.profile();
+      if (!profile?.business_id) {
+        this.profileService.loadProfile().subscribe({
+          next: (loadedProfile) => {
+            if (!loadedProfile?.business_id) {
+              this.submitting.set(false);
+              this.errorMessage.set('Could not find your business listing. Please complete your business profile before creating an offer.');
+              return;
+            }
+            formData.append('business_id', loadedProfile.business_id);
+            this.sendCreateRequest(formData);
+          },
+          error: (err) => {
+            this.submitting.set(false);
+            this.errorMessage.set('Failed to verify business ID. Please try again.');
+          }
+        });
+        return;
+      }
+
+      formData.append('business_id', profile.business_id);
+      this.sendCreateRequest(formData);
+    }
+  }
+
+  private sendCreateRequest(formData: FormData) {
+    this.http.post<any>(`${environment.apiUrl}/offers`, formData).subscribe({
+      next: (res) => {
+        this.submitting.set(false);
+        this.dashboardService.loadDashboardData().subscribe();
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.submitting.set(false);
+        console.error('Create offer failed:', err);
+        this.errorMessage.set(err?.error?.message || 'Failed to create offer. Please check your inputs and try again.');
+      }
+    });
   }
 }

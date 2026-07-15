@@ -1,0 +1,65 @@
+<ion-header class="ion-no-border premium-header">
+  <ion-toolbar>
+    <ion-title>Attendees - {{ meetingTitle }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (loading()) {
+    <div class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading attendees...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <p>{{ error() }}</p>
+      <ion-button fill="outline" (click)="loadAttendees()">Retry</ion-button>
+    </div>
+  } @else {
+    <div class="chart-container" *ngIf="attendees().length > 0">
+      <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [labels]="chartOptions.labels"
+        [plotOptions]="chartOptions.plotOptions"
+        [colors]="chartOptions.colors"
+        [legend]="chartOptions.legend"
+        [dataLabels]="chartOptions.dataLabels"
+      ></apx-chart>
+    </div>
+
+    <ion-segment [value]="selectedFilter()" (ionChange)="onFilterChange($event)" mode="ios" class="status-segment">
+      <ion-segment-button value="ALL">All</ion-segment-button>
+      <ion-segment-button value="ACCEPTED">Accepted</ion-segment-button>
+      <ion-segment-button value="REJECTED">Rejected</ion-segment-button>
+      <ion-segment-button value="PENDING">Pending</ion-segment-button>
+    </ion-segment>
+
+    <div class="attendees-list">
+      @for (attendee of filteredAttendees(); track attendee.id) {
+        <ion-item class="attendee-item" lines="none">
+          <ion-avatar slot="start">
+            <img src="assets/imgs/default-avatar.png" alt="avatar">
+          </ion-avatar>
+          <ion-label>
+            <h3>{{ attendee.full_name || 'No Name' }}</h3>
+            <p>{{ attendee.phone }}</p>
+          </ion-label>
+          <ion-badge slot="end" [class]="attendee.status | lowercase">
+            {{ attendee.status }}
+          </ion-badge>
+        </ion-item>
+      } @empty {
+        <div class="empty-state">
+          <p>No attendees found for this status.</p>
+        </div>
+      }
+    </div>
+  }
+</ion-content>

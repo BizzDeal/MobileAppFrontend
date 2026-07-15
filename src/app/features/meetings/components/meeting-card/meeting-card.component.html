@@ -1,6 +1,6 @@
 <div class="meeting-card" [class.cancelled]="meeting().status === 'CANCELLED'" [class.past]="!isUpcoming()">
   <!-- Side accent bar indicating status -->
-  <div class="status-accent" [class]="meeting().myAttendeeRecord?.status | lowercase"></div>
+  <div class="status-accent" [class]="meeting().status | lowercase"></div>
 
   <div class="card-content">
     <div class="card-header">
@@ -14,9 +14,15 @@
       </div>
       
       <!-- RSVP status badge at the top right -->
-      <span class="user-status-badge" [class]="meeting().myAttendeeRecord?.status | lowercase">
-        {{ meeting().myAttendeeRecord?.status }}
-      </span>
+      @if (!isAdmin()) {
+        <span class="user-status-badge" [class]="(meeting().myAttendeeRecord?.status || 'PENDING') | lowercase">
+          {{ meeting().myAttendeeRecord?.status || 'PENDING' }}
+        </span>
+      } @else {
+        <span class="user-status-badge" [class]="meeting().status | lowercase">
+          {{ meeting().status }}
+        </span>
+      }
     </div>
 
     @if (meeting().description) {
@@ -59,7 +65,18 @@
       }
     </div>
 
-    @if (isUpcoming() && meeting().status !== 'CANCELLED') {
+    @if (isAdmin()) {
+      <div class="action-section admin-actions">
+        <button type="button" class="view-attendees-btn" (click)="onViewAttendees()">
+          <ion-icon name="people-outline"></ion-icon>
+          Attendees
+        </button>
+        <button type="button" class="edit-action-btn" (click)="onEdit()">
+          <ion-icon name="create-outline"></ion-icon>
+          Edit
+        </button>
+      </div>
+    } @else if (isUpcoming() && meeting().status !== 'CANCELLED') {
       <div class="action-section">
         <span class="action-prompt">Are you attending?</span>
         <div class="action-buttons">

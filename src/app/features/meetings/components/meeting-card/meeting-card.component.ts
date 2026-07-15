@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { DatePipe, LowerCasePipe } from '@angular/common';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, locationOutline, linkOutline, checkmarkCircleOutline, closeCircleOutline } from 'ionicons/icons';
+import { calendarOutline, locationOutline, linkOutline, checkmarkCircleOutline, closeCircleOutline, createOutline, peopleOutline } from 'ionicons/icons';
 import { MeetingWithAttendee, AttendeeStatus } from '../../services/meetings.service';
 
 @Component({
@@ -15,9 +15,12 @@ import { MeetingWithAttendee, AttendeeStatus } from '../../services/meetings.ser
 })
 export class MeetingCardComponent {
   readonly meeting = input.required<MeetingWithAttendee>();
+  readonly isAdmin = input<boolean>(false);
   
   // Emits the meeting id and the new status
   readonly rsvpChange = output<{ meetingId: string, status: AttendeeStatus }>();
+  readonly editClick = output<MeetingWithAttendee>();
+  readonly viewAttendeesClick = output<MeetingWithAttendee>();
 
   constructor() {
     addIcons({
@@ -25,12 +28,22 @@ export class MeetingCardComponent {
       locationOutline,
       linkOutline,
       checkmarkCircleOutline,
-      closeCircleOutline
+      closeCircleOutline,
+      createOutline,
+      peopleOutline
     });
   }
 
   onRsvp(status: AttendeeStatus) {
     this.rsvpChange.emit({ meetingId: this.meeting().id, status });
+  }
+
+  onEdit() {
+    this.editClick.emit(this.meeting());
+  }
+
+  onViewAttendees() {
+    this.viewAttendeesClick.emit(this.meeting());
   }
 
   isUpcoming(): boolean {

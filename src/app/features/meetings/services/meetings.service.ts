@@ -1,4 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, forkJoin, of, throwError } from 'rxjs';
+import { catchError, map, tap, switchMap } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
+import { AuthSessionService } from '../../../core/services/auth-session.service';
 
 export type MeetingStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
 export type AttendeeStatus = 'INVITED' | 'ACCEPTED' | 'REJECTED' | 'ATTENDED' | 'MISSED';
@@ -27,87 +32,6 @@ export interface MeetingAttendee {
   updated_at: string;
 }
 
-// Helper to get dates relative to today for dummy data
-const today = new Date();
-const tomorrow = new Date(today);
-tomorrow.setDate(tomorrow.getDate() + 1);
-const yesterday = new Date(today);
-yesterday.setDate(yesterday.getDate() - 1);
-const nextWeek = new Date(today);
-nextWeek.setDate(nextWeek.getDate() + 7);
-
-const DUMMY_MEETINGS: Meeting[] = [
-  {
-    id: 'm1',
-    created_by_id: 'admin1',
-    business_id: 'b1',
-    title: 'Monthly Sync: Marketing Strategy',
-    description: 'Discussing the new marketing rollout and Q3 goals.',
-    meeting_date: tomorrow.toISOString(),
-    location: 'Conference Room A',
-    meeting_link: null,
-    status: 'SCHEDULED',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'm2',
-    created_by_id: 'admin1',
-    business_id: null,
-    title: 'Vendor Partnership Review',
-    description: 'Reviewing contracts and negotiating rates for next year.',
-    meeting_date: nextWeek.toISOString(),
-    location: null,
-    meeting_link: 'https://zoom.us/j/123456789',
-    status: 'SCHEDULED',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'm3',
-    created_by_id: 'admin1',
-    business_id: 'b2',
-    title: 'Q2 Performance Wrap-up',
-    description: 'Analyzing the quarterly results and metrics.',
-    meeting_date: yesterday.toISOString(),
-    location: 'Main Hall',
-    meeting_link: null,
-    status: 'COMPLETED',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
-];
-
-const DUMMY_ATTENDEES: MeetingAttendee[] = [
-  {
-    id: 'a1',
-    meeting_id: 'm1',
-    user_id: 'current-user-id', // Assuming member is invited to m1
-    status: 'INVITED',
-    attended_at: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'a2',
-    meeting_id: 'm2',
-    user_id: 'current-user-id',
-    status: 'ACCEPTED',
-    attended_at: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'a3',
-    meeting_id: 'm3',
-    user_id: 'current-user-id',
-    status: 'ATTENDED',
-    attended_at: yesterday.toISOString(),
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
-];
-
 export interface MeetingWithAttendee extends Meeting {
   myAttendeeRecord?: MeetingAttendee;
 }
@@ -116,34 +40,100 @@ export interface MeetingWithAttendee extends Meeting {
   providedIn: 'root'
 })
 export class MeetingsService {
-  private meetings = signal<Meeting[]>(DUMMY_MEETINGS);
-  private attendees = signal<MeetingAttendee[]>(DUMMY_ATTENDEES);
+  private readonly http = inject(HttpClient);
+  private readonly authSession = inject(AuthSessionService);
+  private readonly apiUrl = environment.apiUrl;
 
-  // We expose a computed view or a getter for the merged data
-  // Assuming 'current-user-id' is the current member viewing the page.
-  getMyMeetings(): MeetingWithAttendee[] {
-    const allMeetings = this.meetings();
-    const allAttendees = this.attendees();
+  private readonly _meetingsWithAttendees = signal<MeetingWithAttendee[]>([]);
+  private readonly _loading = signal<boolean>(false);
+  private readonly _error = signal<string | null>(null);
 
-    return allMeetings.map(meeting => {
-      const myRecord = allAttendees.find(a => a.meeting_id === meeting.id && a.user_id === 'current-user-id');
-      return {
-        ...meeting,
-        myAttendeeRecord: myRecord
-      };
-    }).filter(m => m.myAttendeeRecord); // Only show meetings they are part of
+  readonly loading = this._loading.asReadonly();
+  readonly error = this._error.asReadonly();
+
+  constructor() {
+    this.loadMeetings().subscribe({
+      error: (err) => console.error('Initial meetings load failed:', err)
+    });
   }
 
-  updateRSVP(meetingId: string, newStatus: AttendeeStatus) {
-    this.attendees.update(curr => curr.map(a => {
-      if (a.meeting_id === meetingId && a.user_id === 'current-user-id') {
-        return {
-          ...a,
-          status: newStatus,
-          updated_at: new Date().toISOString()
-        };
+  loadMeetings(): Observable<MeetingWithAttendee[]> {
+    this._loading.set(true);
+    this._error.set(null);
+
+    return this.http.get<any>(`${this.apiUrl}/meetings`).pipe(
+      switchMap((res) => {
+        const meetingsList: Meeting[] = Array.isArray(res) ? res : res?.data || res?.items || [];
+        if (meetingsList.length === 0) {
+          return of([]);
+        }
+
+        const attendeeRequests = meetingsList.map((m) =>
+          this.http.get<any>(`${this.apiUrl}/meetings/${m.id}/attendees`).pipe(
+            catchError(() => of([]))
+          )
+        );
+
+        return forkJoin(attendeeRequests).pipe(
+          map((attendeeResponses) => {
+            const currentUserId = this.authSession.currentUser()?.id;
+
+            return meetingsList.map((meeting, idx) => {
+              const resAtt = attendeeResponses[idx];
+              const attendees: MeetingAttendee[] = Array.isArray(resAtt) ? resAtt : resAtt?.data || resAtt?.items || [];
+              const myRecord = attendees.find((a) => a.user_id === currentUserId) || undefined;
+
+              return {
+                ...meeting,
+                myAttendeeRecord: myRecord
+              };
+            });
+          })
+        );
+      }),
+      tap({
+        next: (data) => {
+          this._meetingsWithAttendees.set(data);
+          this._loading.set(false);
+        },
+        error: (err) => {
+          const errMsg = err?.error?.message || err?.message || 'Failed to load meetings from server';
+          this._error.set(errMsg);
+          this._loading.set(false);
+        }
+      }),
+      catchError((err) => {
+        return throwError(() => err);
+      })
+    );
+  }
+
+  getMyMeetings(): MeetingWithAttendee[] {
+    return this._meetingsWithAttendees();
+  }
+
+  updateRSVP(meetingId: string, newStatus: AttendeeStatus): void {
+    this._error.set(null);
+    this.http.put<any>(`${this.apiUrl}/meetings/${meetingId}/rsvp`, { status: newStatus }).subscribe({
+      next: (res) => {
+        const updatedAtt: MeetingAttendee = res?.data || res;
+        this._meetingsWithAttendees.update((curr) =>
+          curr.map((m) => {
+            if (m.id === meetingId) {
+              return {
+                ...m,
+                myAttendeeRecord: updatedAtt
+              };
+            }
+            return m;
+          })
+        );
+      },
+      error: (err) => {
+        const errMsg = err?.error?.message || err?.message || 'Failed to update RSVP status';
+        this._error.set(errMsg);
       }
-      return a;
-    }));
+    });
   }
 }
+

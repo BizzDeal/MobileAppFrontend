@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { AdminAnalyticsService, DetailedAnalyticsDto } from '../../services/admin-analytics.service';
 import { Observable } from 'rxjs';
@@ -14,7 +14,8 @@ import {
   trendingUpOutline,
   pieChartOutline,
   barChartOutline,
-  refreshOutline
+  refreshOutline,
+  syncOutline
 } from 'ionicons/icons';
 import ApexCharts from 'apexcharts';
 
@@ -27,6 +28,7 @@ import ApexCharts from 'apexcharts';
 })
 export class AdminAnalyticsPage implements OnInit {
   analytics$!: Observable<DetailedAnalyticsDto>;
+  isSyncing = false;
 
   public userGrowthChartOptions: any;
   public voucherPerformanceChartOptions: any;
@@ -34,7 +36,10 @@ export class AdminAnalyticsPage implements OnInit {
   public walletVolumeChartOptions: any;
   public referralConversionChartOptions: any;
 
-  constructor(private analyticsService: AdminAnalyticsService) {
+  constructor(
+    private analyticsService: AdminAnalyticsService,
+    private toastCtrl: ToastController
+  ) {
     addIcons({
       peopleOutline,
       businessOutline,
@@ -43,7 +48,8 @@ export class AdminAnalyticsPage implements OnInit {
       trendingUpOutline,
       pieChartOutline,
       barChartOutline,
-      refreshOutline
+      refreshOutline,
+      syncOutline
     });
   }
 
@@ -56,9 +62,41 @@ export class AdminAnalyticsPage implements OnInit {
   }
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
     this.analytics$ = this.analyticsService.getDetailedAnalytics();
     this.analytics$.subscribe(data => {
       this.initCharts(data);
+    });
+  }
+
+  async syncAnalytics() {
+    this.isSyncing = true;
+    this.analyticsService.syncAnalytics().subscribe({
+      next: async (res) => {
+        this.isSyncing = false;
+        const toast = await this.toastCtrl.create({
+          message: res.message || 'Analytics synced successfully.',
+          duration: 3000,
+          color: 'success',
+          position: 'top'
+        });
+        await toast.present();
+        this.loadData();
+      },
+      error: async (err) => {
+        this.isSyncing = false;
+        const toast = await this.toastCtrl.create({
+          message: 'Failed to sync analytics.',
+          duration: 3000,
+          color: 'danger',
+          position: 'top'
+        });
+        await toast.present();
+        console.error('Error syncing analytics:', err);
+      }
     });
   }
 

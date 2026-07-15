@@ -1,92 +1,20 @@
-import { Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
-import { MemberDashboardData } from '../models/member-dashboard.model';
-
-const MOCK_MEMBER_DASHBOARD: MemberDashboardData = {
-  businessName: 'BizzDeal HQ',
-  businessLogoUrl: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&auto=format&fit=crop&q=80',
-  analytics: {
-    activeOffersCount: 3,
-    vouchersRedeemedToday: 12,
-    vouchersRedeemedWeek: 45,
-    businessGrowth: 15,
-    successfulReferrals: 4,
-  },
-  alerts: [],
-  recentActivity: [
-    { id: 'ra1', text: 'Voucher claimed by Alex D.', time: '10 mins ago' },
-    { id: 'ra2', text: 'New chat message from Sarah', time: '1 hour ago' },
-    { id: 'ra3', text: 'Offer 20% Off Coffee expired', time: 'Yesterday' }
-  ],
-  myOffers: [
-    {
-      id: 'offer-m1',
-      business_id: 'biz-1',
-      title: '50% Off on Electronics',
-      description: 'Get half price on all accessories.',
-      offer_type: 'DISCOUNT',
-      discount_value: 50,
-      discount_type: 'PERCENTAGE',
-      start_date: new Date().toISOString(),
-      end_date: new Date(Date.now() + 86400000 * 5).toISOString(),
-      image_id: null,
-      imageUrl: 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=400&auto=format&fit=crop&q=80',
-      status: 'APPROVED',
-      approved_by_id: null,
-      approved_at: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      businessName: 'BizzDeal HQ',
-      businessLogoUrl: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'offer-m2',
-      business_id: 'biz-1',
-      title: '₹200 Cashback on ₹1000 spend',
-      description: 'Spend 1000 and get 200 back.',
-      offer_type: 'FIXED_AMOUNT',
-      discount_value: 200,
-      discount_type: 'FIXED_AMOUNT',
-      start_date: new Date().toISOString(),
-      end_date: new Date(Date.now() + 86400000 * 2).toISOString(),
-      image_id: null,
-      imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&auto=format&fit=crop&q=80',
-      status: 'APPROVED',
-      approved_by_id: null,
-      approved_at: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      businessName: 'BizzDeal HQ',
-      businessLogoUrl: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'offer-m3',
-      business_id: 'biz-1',
-      title: '50% Off Electronics',
-      description: 'Get half price on electronics accessories, pending admin approval.',
-      offer_type: 'DISCOUNT',
-      discount_value: 50,
-      discount_type: 'PERCENTAGE',
-      start_date: new Date().toISOString(),
-      end_date: new Date(Date.now() + 86400000 * 5).toISOString(),
-      image_id: null,
-      imageUrl: 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=400&auto=format&fit=crop&q=80',
-      status: 'PENDING',
-      approved_by_id: null,
-      approved_at: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      businessName: 'BizzDeal HQ',
-      businessLogoUrl: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&auto=format&fit=crop&q=80',
-    }
-  ]
-};
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, forkJoin, throwError, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
+import { MemberDashboardData, MemberDashboardAnalytics } from '../models/member-dashboard.model';
+import { OfferDTO, VoucherDTO } from '../models/home.model';
+import { ProfileService } from '../../profile/services/profile.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MemberDashboardService {
+  private readonly http = inject(HttpClient);
+  private readonly profileService = inject(ProfileService);
+  private readonly apiUrl = environment.apiUrl;
+
   private readonly _dashboardData = signal<MemberDashboardData | null>(null);
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
@@ -96,24 +24,107 @@ export class MemberDashboardService {
   readonly error = this._error.asReadonly();
 
   constructor() {
-    this.loadDashboardData().subscribe();
+    this.loadDashboardData().subscribe({
+      error: (err) => console.error('Initial dashboard load failed:', err)
+    });
   }
 
   loadDashboardData(): Observable<MemberDashboardData> {
     this._loading.set(true);
     this._error.set(null);
-    return of(MOCK_MEMBER_DASHBOARD).pipe(
-      delay(500),
+
+    return forkJoin({
+      offersRes: this.http.get<any>(`${this.apiUrl}/offers?my_offers=true`).pipe(
+        catchError(() => of([]))
+      ),
+      vouchersRes: this.http.get<any>(`${this.apiUrl}/vouchers/history`).pipe(
+        catchError(() => of([]))
+      ),
+      referralsRes: this.http.get<any>(`${this.apiUrl}/referrals`).pipe(
+        catchError(() => of([]))
+      )
+    }).pipe(
+      map((response: any) => {
+        const { offersRes, vouchersRes, referralsRes } = response;
+        const rawOffers: OfferDTO[] = Array.isArray(offersRes) ? offersRes : offersRes?.data || offersRes?.items || [];
+        const rawVouchers: VoucherDTO[] = Array.isArray(vouchersRes) ? vouchersRes : vouchersRes?.data || vouchersRes?.items || [];
+        const rawReferrals: any[] = Array.isArray(referralsRes) ? referralsRes : referralsRes?.data || referralsRes?.items || [];
+
+        const profile = this.profileService.profile();
+        const bizIdFromVouchers = rawVouchers.length > 0 ? rawVouchers[0].business_id : null;
+
+        // With ?my_offers=true, the server returns only offers created by this member's business owner
+        const myOffers = rawOffers.map(offer => ({
+          ...offer,
+          businessName: offer.businessName || profile?.business_name || undefined,
+          businessLogoUrl: offer.businessLogoUrl || profile?.business_logo_url || undefined
+        }));
+
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const weekAgo = new Date(Date.now() - 7 * 86400000);
+        const twoWeeksAgo = new Date(Date.now() - 14 * 86400000);
+
+        const activeOffersCount = myOffers.filter(o => 
+          o.status === 'APPROVED' && new Date(o.start_date) <= now && new Date(o.end_date) >= now
+        ).length;
+
+        const vouchersRedeemedToday = rawVouchers.filter(v => 
+          v.status === 'REDEEMED' && v.redeemed_at && v.redeemed_at.startsWith(todayStr)
+        ).length;
+
+        const vouchersRedeemedWeek = rawVouchers.filter(v => 
+          v.status === 'REDEEMED' && v.redeemed_at && new Date(v.redeemed_at) >= weekAgo
+        ).length;
+
+        const lastWeekCount = rawVouchers.filter(v => 
+          v.status === 'REDEEMED' && v.redeemed_at && new Date(v.redeemed_at) >= twoWeeksAgo && new Date(v.redeemed_at) < weekAgo
+        ).length;
+
+        const businessGrowth = lastWeekCount > 0 
+          ? Math.round(((vouchersRedeemedWeek - lastWeekCount) / lastWeekCount) * 100) 
+          : (vouchersRedeemedWeek > 0 ? 100 : 0);
+
+        const successfulReferrals = rawReferrals.length;
+
+        const analytics: MemberDashboardAnalytics = {
+          activeOffersCount,
+          vouchersRedeemedToday,
+          vouchersRedeemedWeek,
+          businessGrowth,
+          successfulReferrals
+        };
+
+        const dashboardData: MemberDashboardData = {
+          businessName: profile?.business_name || 'My Business',
+          businessLogoUrl: profile?.business_logo_url || '',
+          analytics,
+          alerts: [],
+          recentActivity: rawVouchers.slice(0, 5).map(v => ({
+            id: v.id,
+            text: `Voucher ${v.voucher_code} ${v.status.toLowerCase()}`,
+            time: v.updated_at || v.created_at
+          })),
+          myOffers
+        };
+
+        return dashboardData;
+      }),
       tap({
         next: (data) => {
           this._dashboardData.set(data);
           this._loading.set(false);
         },
         error: (err) => {
-          this._error.set(err.message || 'Failed to load dashboard data');
+          const errMsg = err?.error?.message || err?.message || 'Failed to load member dashboard from server';
+          this._error.set(errMsg);
           this._loading.set(false);
         }
+      }),
+      catchError((err) => {
+        return throwError(() => err);
       })
     );
   }
 }
+

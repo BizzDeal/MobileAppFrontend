@@ -63,9 +63,10 @@ export interface Offer {
   id: string;
   title: string;
   description?: string;
-  business: Business;
+  business?: Business | null;
   business_id?: string;
   business_name?: string;
+  businessName?: string;
   offer_type: OfferType;
   discount_value: number;
   discount_type: DiscountType;

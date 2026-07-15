@@ -1,6 +1,7 @@
 // Business Directory Page Standalone Component
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import {
   IonHeader,
@@ -10,7 +11,8 @@ import {
   IonButtons,
   IonIcon,
   IonInput,
-  IonButton
+  IonButton,
+  IonSpinner
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -23,6 +25,7 @@ import {
 } from 'ionicons/icons';
 import { ChatService } from '../../../chat/services/chat.service';
 import { ProfileService } from '../../../profile/services/profile.service';
+import { environment } from '../../../../../environments/environment';
 
 export interface DirectoryBusinessDTO {
   id: string;
@@ -37,81 +40,6 @@ export interface DirectoryBusinessDTO {
   logoUrl?: string;
 }
 
-const MOCK_DIRECTORY_BUSINESSES: DirectoryBusinessDTO[] = [
-  {
-    id: 'dir-biz-1',
-    name: 'Ravi Technologies',
-    categoryName: 'IT Services',
-    description: 'Enterprise software, cloud solutions & digital transformation.',
-    phone: '+91 98765 00004',
-    whatsapp: '+91 98765 00004',
-    website: 'https://ravitech.com',
-    initials: 'RT',
-    owner_id: 'owner-4', // TechZone owner in contactsDirectory
-    logoUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80'
-  },
-  {
-    id: 'dir-biz-2',
-    name: 'Spice Garden Restaurant',
-    categoryName: 'Restaurant',
-    description: 'Premium dining with authentic regional cuisine & catering.',
-    phone: '+91 98765 00006',
-    whatsapp: '+91 98765 00006',
-    website: 'https://spicegarden.com',
-    initials: 'SG',
-    owner_id: 'owner-6', // Bistro owner in contactsDirectory
-    logoUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150&auto=format&fit=crop&q=80'
-  },
-  {
-    id: 'dir-biz-3',
-    name: 'Grand Horizon Hotel',
-    categoryName: 'Hotels',
-    description: 'Luxury stays, conference halls & banquet services.',
-    phone: '+91 98765 00003',
-    whatsapp: '+91 98765 00003',
-    website: 'https://grandhorizon.com',
-    initials: 'GH',
-    owner_id: 'owner-3', // Zenith owner in contactsDirectory
-    logoUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=150&auto=format&fit=crop&q=80'
-  },
-  {
-    id: 'dir-biz-4',
-    name: 'City Care Hospital',
-    categoryName: 'Healthcare',
-    description: 'Multi-specialty hospital with 24/7 emergency care.',
-    phone: '+91 98765 00001',
-    whatsapp: '+91 98765 00001',
-    website: 'https://citycare.com',
-    initials: 'CC',
-    owner_id: 'owner-1', // Artisan Roast owner in contactsDirectory
-    logoUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=150&auto=format&fit=crop&q=80'
-  },
-  {
-    id: 'dir-biz-5',
-    name: 'Prime Realty',
-    categoryName: 'Real Estate',
-    description: 'Commercial & residential property consulting.',
-    phone: '+91 98765 00002',
-    whatsapp: '+91 98765 00002',
-    website: 'https://primerealty.com',
-    initials: 'PR',
-    owner_id: 'owner-2', // Vogue Avenue owner in contactsDirectory
-    logoUrl: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=150&auto=format&fit=crop&q=80'
-  },
-  {
-    id: 'dir-biz-6',
-    name: 'Bright Minds Academy',
-    categoryName: 'Education',
-    description: 'Professional courses, coaching & skill development.',
-    phone: '+91 98765 00005',
-    whatsapp: '+91 98765 00005',
-    website: 'https://brightminds.com',
-    initials: 'BM',
-    owner_id: 'owner-5', // Glamour Lounge owner in contactsDirectory
-    logoUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=150&auto=format&fit=crop&q=80'
-  }
-];
-
 @Component({
   selector: 'app-business-directory',
   standalone: true,
@@ -124,22 +52,26 @@ const MOCK_DIRECTORY_BUSINESSES: DirectoryBusinessDTO[] = [
     IonButtons,
     IonIcon,
     IonInput,
-    IonButton
+    IonButton,
+    IonSpinner
   ],
   templateUrl: './business-directory.page.html',
   styleUrl: './business-directory.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BusinessDirectoryPage {
+export class BusinessDirectoryPage implements OnInit {
   private readonly chatService = inject(ChatService);
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
+  private readonly http = inject(HttpClient);
 
   readonly userRole = this.profileService.userRole;
 
-  readonly businesses = signal<DirectoryBusinessDTO[]>(MOCK_DIRECTORY_BUSINESSES);
+  readonly businesses = signal<DirectoryBusinessDTO[]>([]);
   readonly searchQuery = signal<string>('');
+  readonly isLoading = signal<boolean>(false);
+  readonly errorMessage = signal<string | null>(null);
 
   readonly filteredBusinesses = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -150,6 +82,63 @@ export class BusinessDirectoryPage {
       b.categoryName.toLowerCase().includes(query)
     );
   });
+
+  ngOnInit(): void {
+    this.loadBusinesses();
+  }
+
+  loadBusinesses(search?: string): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    const queryParams: string[] = [];
+    if (search && search.trim()) {
+      queryParams.push(`q=${encodeURIComponent(search.trim())}`);
+    }
+    const profile = this.profileService.profile();
+    if (profile?.id) {
+      queryParams.push(`exclude_owner_id=${encodeURIComponent(profile.id)}`);
+    }
+    const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+    const endpoint = search && search.trim() ? `${environment.apiUrl}/businesses/search${queryString}` : `${environment.apiUrl}/businesses${queryString}`;
+
+    this.http.get<any>(endpoint).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        const items = Array.isArray(res) ? res : res?.data || res?.items || [];
+        const myBusinessId = profile?.business_id;
+        const myOwnerId = profile?.id;
+        const myBusinessName = profile?.business_name;
+
+        const filteredList = items.filter((b: any) => {
+          if (myBusinessId && b.id === myBusinessId) return false;
+          if (myOwnerId && (b.owner_id === myOwnerId || b.owner?.id === myOwnerId)) return false;
+          if (myBusinessName && b.name?.toLowerCase() === myBusinessName?.toLowerCase()) return false;
+          return true;
+        });
+
+        const mapped: DirectoryBusinessDTO[] = filteredList.map((b: any) => ({
+          id: b.id,
+          name: b.name || 'Unnamed Business',
+          categoryName: b.categoryName || b.category_name || b.category?.name || 'General',
+          description: b.description || 'No description provided.',
+          phone: b.phone || b.owner?.phone || '',
+          whatsapp: b.whatsapp || b.owner?.whatsapp || b.phone || b.owner?.phone || '',
+          website: b.website || '',
+          initials: b.initials || (b.name ? b.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase() : 'BI'),
+          owner_id: b.owner_id || b.owner?.id || '',
+          logoUrl: b.logoUrl || b.logo_url || b.logo?.file_url || null
+        }));
+
+        this.businesses.set(mapped);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        console.error('Failed to load business directory:', err);
+        this.errorMessage.set(err?.error?.message || 'Failed to load business directory.');
+      }
+    });
+  }
 
   getCategoryTheme(category: string) {
     switch (category) {
@@ -186,8 +175,9 @@ export class BusinessDirectoryPage {
   }
 
   onSearchChange(event: any): void {
-    const value = event.target.value;
-    this.searchQuery.set(value || '');
+    const value = event.target.value || '';
+    this.searchQuery.set(value);
+    this.loadBusinesses(value);
   }
 
   callBusiness(phone: string): void {

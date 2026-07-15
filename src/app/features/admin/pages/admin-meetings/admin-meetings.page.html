@@ -1,0 +1,51 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="admin-toolbar">
+    <ion-title>Manage Meetings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="admin-content ion-padding">
+  
+
+  <ion-segment [value]="selectedTab()" (ionChange)="onTabChange($event)" class="premium-segment" mode="ios">
+    <ion-segment-button value="upcoming">
+      <ion-label>Upcoming</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="past">
+      <ion-label>Past / Cancelled</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading meetings...</p>
+    </div>
+  } @else {
+    <div class="meetings-list">
+      @for (meeting of meetings(); track meeting.id) {
+        <app-meeting-card 
+          [meeting]="meeting" 
+          [isAdmin]="true"
+          (editClick)="openMeetingModal($event)"
+          (viewAttendeesClick)="openAttendeeModal($event)" />
+      } @empty {
+        <div class="empty-state">
+          <div class="empty-icon-wrapper">
+            <ion-icon name="calendar-outline"></ion-icon>
+          </div>
+          <h3>No {{ selectedTab() }} meetings</h3>
+          <p>There are no {{ selectedTab() }} meetings scheduled right now.</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Floating Action Button for creating new meeting -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button class="create-fab" (click)="openMeetingModal()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

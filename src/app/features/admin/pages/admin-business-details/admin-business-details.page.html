@@ -85,13 +85,13 @@
                 </ion-label>
               </ion-item>
 
-              <ion-item class="premium-item" *ngIf="business.owner_phone">
+              <ion-item class="premium-item" *ngIf="business.phone || business.owner_phone">
                 <div slot="start" class="icon-box">
                   <ion-icon name="call-outline" color="medium"></ion-icon>
                 </div>
                 <ion-label class="ion-text-wrap">
                   <h3 class="text-medium text-xs font-semibold uppercase">Phone</h3>
-                  <p class="text-dark font-medium mt-1">{{ business.owner_phone }}</p>
+                  <p class="text-dark font-medium mt-1">{{ business.phone || business.owner_phone }}</p>
                 </ion-label>
               </ion-item>
 

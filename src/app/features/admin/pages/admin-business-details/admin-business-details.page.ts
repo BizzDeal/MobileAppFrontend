@@ -74,13 +74,21 @@ export class AdminBusinessDetailsPage implements OnInit {
 
   loadOffersAndVouchers(id: string) {
     // Load Offers
-    this.adminBusinessesService.getBusinessOffers(id).subscribe(res => {
-      if (res.success) this.offers = res.data;
+    this.adminBusinessesService.getBusinessOffers(id).subscribe((res: any) => {
+      if (Array.isArray(res)) {
+        this.offers = res;
+      } else if (res && res.success) {
+        this.offers = res.data || [];
+      }
     });
 
     // Load Vouchers
-    this.adminBusinessesService.getBusinessVouchers(id).subscribe(res => {
-      if (res.success) this.vouchers = res.data;
+    this.adminBusinessesService.getBusinessVouchers(id).subscribe((res: any) => {
+      if (Array.isArray(res)) {
+        this.vouchers = res;
+      } else if (res && res.success) {
+        this.vouchers = res.data || [];
+      }
       this.loading = false; // Finished loading everything
     });
   }

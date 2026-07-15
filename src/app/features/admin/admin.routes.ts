@@ -9,6 +9,7 @@ import { AdminBusinessDetailsPage } from './pages/admin-business-details/admin-b
 import { AdminOffersPage } from './pages/admin-offers/admin-offers.page';
 import { AdminNotificationsPage } from './pages/admin-notifications/admin-notifications.page';
 import { AdminAnalyticsPage } from './pages/admin-analytics/admin-analytics.page';
+import { AdminMeetingsPage } from './pages/admin-meetings/admin-meetings.page';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -43,6 +44,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'offers',
         component: AdminOffersPage,
+      },
+      {
+        path: 'meetings',
+        component: AdminMeetingsPage,
       },
       {
         path: 'notifications',

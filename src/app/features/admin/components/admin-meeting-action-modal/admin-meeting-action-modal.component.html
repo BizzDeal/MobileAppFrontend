@@ -1,0 +1,104 @@
+<ion-header class="modal-header ion-no-border">
+  <ion-toolbar>
+    <ion-title>{{ isEdit ? 'Edit Meeting' : 'Create Meeting' }}</ion-title>
+    <ion-buttons slot="end">
+      @if (isEdit) {
+        <ion-button (click)="delete()" color="danger" class="delete-btn">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      }
+      <ion-button (click)="cancel()" class="close-btn">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="modal-content ion-padding">
+  <form [formGroup]="form" (ngSubmit)="save()" class="meeting-form">
+    
+    <!-- Title -->
+    <div class="form-group">
+      <ion-label position="stacked">Meeting Title <span class="required-star">*</span></ion-label>
+      <div class="input-container">
+        <ion-icon name="text-outline" class="input-icon"></ion-icon>
+        <ion-input type="text" formControlName="title" placeholder="e.g. Quarterly Review" class="form-input"></ion-input>
+      </div>
+      <div class="error-container">
+        @if (f['title'].touched && f['title'].errors?.['required']) {
+          <span class="error-text">Title is required.</span>
+        }
+      </div>
+    </div>
+
+    <!-- Date -->
+    <div class="form-group">
+      <ion-label position="stacked">Date & Time <span class="required-star">*</span></ion-label>
+      <div class="datetime-field">
+        <ion-icon name="calendar-outline" class="datetime-icon"></ion-icon>
+        <ion-datetime-button datetime="meeting-datetime"></ion-datetime-button>
+      </div>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="meeting-datetime"
+            presentation="date-time"
+            [value]="form.get('meeting_date')?.value"
+            (ionChange)="onDateChange($event)"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <div class="error-container">
+        @if (f['meeting_date'].touched && f['meeting_date'].errors?.['required']) {
+          <span class="error-text">Date & Time is required.</span>
+        }
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="form-group">
+      <ion-label position="stacked">Location</ion-label>
+      <div class="input-container">
+        <ion-icon name="location-outline" class="input-icon"></ion-icon>
+        <ion-input type="text" formControlName="location" placeholder="e.g. Room 4B or Remote" class="form-input"></ion-input>
+      </div>
+      <div class="error-container"></div>
+    </div>
+
+    <!-- Meeting Link -->
+    <div class="form-group">
+      <ion-label position="stacked">Online Meeting Link</ion-label>
+      <div class="input-container">
+        <ion-icon name="link-outline" class="input-icon"></ion-icon>
+        <ion-input type="url" formControlName="meeting_link" placeholder="https://meet.google.com/..." class="form-input"></ion-input>
+      </div>
+      <div class="error-container">
+        @if (f['meeting_link'].touched && f['meeting_link'].errors?.['pattern']) {
+          <span class="error-text">Please enter a valid URL.</span>
+        }
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <ion-label position="stacked">Description</ion-label>
+      <div class="input-container textarea-container">
+        <ion-icon name="document-text-outline" class="input-icon"></ion-icon>
+        <ion-textarea formControlName="description" rows="4" placeholder="Agenda or notes..." class="form-input form-textarea"></ion-textarea>
+      </div>
+      <div class="error-container"></div>
+    </div>
+
+  </form>
+</ion-content>
+
+<ion-footer class="modal-footer ion-no-border">
+  <div class="footer-actions">
+    <ion-button fill="clear" color="medium" (click)="cancel()" class="cancel-btn">
+      Cancel
+    </ion-button>
+    <ion-button (click)="save()" [disabled]="!form.valid && form.touched" class="save-btn">
+      {{ isEdit ? 'Save Changes' : 'Create Meeting' }}
+    </ion-button>
+  </div>
+</ion-footer>

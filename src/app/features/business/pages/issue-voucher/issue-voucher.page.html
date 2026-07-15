@@ -29,9 +29,11 @@
           Select Offer <span class="required-star">*</span>
         </label>
         <ion-item class="premium-input-item" lines="none">
-          <ion-select formControlName="offer_id" placeholder="Choose an offer" interface="action-sheet" toggleIcon="caret-down-outline" class="premium-select custom-select">
-            @for (offer of dashboardData()?.myOffers; track offer.id) {
+          <ion-select formControlName="offer_id" placeholder="Choose an approved offer" interface="action-sheet" toggleIcon="caret-down-outline" class="premium-select custom-select">
+            @for (offer of approvedOffers(); track offer.id) {
               <ion-select-option [value]="offer.id">{{ offer.title }}</ion-select-option>
+            } @empty {
+              <ion-select-option [disabled]="true" value="">No approved offers available</ion-select-option>
             }
           </ion-select>
         </ion-item>

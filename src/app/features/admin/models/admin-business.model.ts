@@ -18,9 +18,14 @@ export interface AdminBusiness {
   owner_id: string;
   owner_name?: string;
   owner_phone?: string;
+  phone?: string;
+  whatsapp?: string;
+  owner_email?: string;
   created_at: Date;
   updated_at: Date;
   logo_url: string | null;
+  logoUrl?: string | null;
+  initials?: string;
 }
 
 export interface ApiResponse<T> {

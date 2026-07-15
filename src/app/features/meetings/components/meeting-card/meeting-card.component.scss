@@ -33,6 +33,11 @@
     &.rejected { background: var(--ion-color-danger); }
     &.attended { background: var(--ion-color-primary); }
     &.missed { background: var(--bizzdeal-text-tertiary); }
+    
+    /* Admin Meeting Statuses */
+    &.scheduled { background: var(--ion-color-primary); }
+    &.completed { background: var(--ion-color-success); }
+    &.cancelled { background: var(--ion-color-danger); }
   }
 
   .card-content {
@@ -119,6 +124,28 @@
         color: var(--bizzdeal-text-secondary);
         background: rgba(100, 116, 139, 0.08);
         border-color: rgba(100, 116, 139, 0.2);
+      }
+      &.pending {
+        color: var(--bizzdeal-text-secondary);
+        background: rgba(100, 116, 139, 0.08);
+        border-color: rgba(100, 116, 139, 0.2);
+      }
+
+      /* Admin Meeting Statuses */
+      &.scheduled {
+        color: var(--ion-color-primary);
+        background: rgba(30, 136, 229, 0.1);
+        border-color: rgba(30, 136, 229, 0.3);
+      }
+      &.completed {
+        color: var(--ion-color-success);
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+      &.cancelled {
+        color: var(--ion-color-danger);
+        background: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
       }
     }
   }
@@ -212,6 +239,50 @@
       font-size: 0.88rem;
       font-weight: 600;
       color: var(--bizzdeal-text-primary);
+    }
+
+    &.admin-actions {
+      justify-content: flex-end;
+      flex-wrap: nowrap;
+      
+      .edit-action-btn, .view-attendees-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 38px;
+        padding: 0 16px;
+        border-radius: var(--bizzdeal-radius-lg);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--bizzdeal-bg-surface-secondary);
+        border: 1px solid var(--bizzdeal-border-color);
+        color: var(--bizzdeal-text-primary);
+
+        ion-icon {
+          font-size: 1.2rem;
+          color: var(--ion-color-primary);
+        }
+
+        &:hover {
+          background: rgba(30, 136, 229, 0.08);
+          border-color: rgba(30, 136, 229, 0.2);
+          color: var(--ion-color-primary);
+        }
+
+        &:active {
+          transform: scale(0.96);
+        }
+      }
+
+      .view-attendees-btn {
+        color: var(--bizzdeal-text-secondary);
+        ion-icon {
+          color: var(--bizzdeal-text-secondary);
+        }
+      }
     }
 
     .action-buttons {

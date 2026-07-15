@@ -1,6 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import {
   IonButton,
   IonButtons,
@@ -39,6 +41,8 @@ import { BottomNavComponent, NavTab } from '../features/home/components/bottom-n
 import { SearchViewComponent } from '../features/home/components/search-view/search-view.component';
 import { BusinessDTO, OfferDTO } from '../features/home/models/home.model';
 import { HomeService } from '../features/home/services/home.service';
+import { MemberDashboardService } from '../features/home/services/member-dashboard.service';
+import { MeetingsService } from '../features/meetings/services/meetings.service';
 import { NotificationsPageComponent } from '../features/notifications/components/notifications-page/notifications-page.component';
 import { NotificationService } from '../features/notifications/services/notification.service';
 import { ProfileViewComponent } from '../features/profile/components/profile-view/profile-view.component';
@@ -92,6 +96,8 @@ import { AuthSessionService } from '../core/services/auth-session.service';
 })
 export class HomePage {
   private readonly homeService = inject(HomeService);
+  private readonly memberDashboardService = inject(MemberDashboardService);
+  private readonly meetingsService = inject(MeetingsService);
   private readonly chatService = inject(ChatService);
   private readonly notificationService = inject(NotificationService);
   private readonly profileService = inject(ProfileService);
@@ -186,11 +192,27 @@ export class HomePage {
   }
 
   onRefresh(event: any): void {
-    this.profileService.loadProfile().subscribe();
-    this.homeService.loadHomeFeed().subscribe({
-      next: () => event.target.complete(),
-      error: () => event.target.complete(),
-    });
+    const role = this.userRole();
+    if (role === 'MEMBER') {
+      forkJoin({
+        profile: this.profileService.loadProfile().pipe(catchError(() => of(null))),
+        dashboard: this.memberDashboardService.loadDashboardData().pipe(catchError(() => of(null))),
+        meetings: this.meetingsService.loadMeetings().pipe(catchError(() => of(null)))
+      }).subscribe(() => {
+        if (event?.target?.complete) {
+          event.target.complete();
+        }
+      });
+    } else {
+      forkJoin({
+        profile: this.profileService.loadProfile().pipe(catchError(() => of(null))),
+        feed: this.homeService.loadHomeFeed().pipe(catchError(() => of(null)))
+      }).subscribe(() => {
+        if (event?.target?.complete) {
+          event.target.complete();
+        }
+      });
+    }
   }
 
   retryRefresh(): void {

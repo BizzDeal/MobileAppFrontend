@@ -25,10 +25,22 @@
     </div>
   </div>
 
+  <!-- Error container -->
+  <div class="error-container" style="min-height: 20px; display: flex; align-items: center; justify-content: center; margin: 8px 16px;">
+    @if (errorMessage()) {
+      <span style="color: var(--ion-color-danger, #eb445a); font-size: 0.85rem;">{{ errorMessage() }}</span>
+    }
+  </div>
+
   <!-- Businesses List -->
   <div class="directory-list-container">
-    <div class="directory-list">
-      @for (biz of filteredBusinesses(); track biz.id) {
+    @if (isLoading()) {
+      <div style="display: flex; justify-content: center; align-items: center; padding: 40px;">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+      </div>
+    } @else {
+      <div class="directory-list">
+        @for (biz of filteredBusinesses(); track biz.id) {
         <div class="business-card bd-card animate-card">
           <!-- Business header profile row -->
           <div class="biz-header-row">
@@ -81,6 +93,7 @@
           <p>We couldn't find any business matching "{{ searchQuery() }}". Try adjusting your search term.</p>
         </div>
       }
-    </div>
+      </div>
+    }
   </div>
 </ion-content>

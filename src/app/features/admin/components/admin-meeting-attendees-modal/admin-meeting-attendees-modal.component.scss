@@ -1,0 +1,114 @@
+.premium-header {
+  padding-top: var(--ion-safe-area-top);
+  background: var(--bizzdeal-bg-surface);
+  
+  ion-toolbar {
+    --background: transparent;
+    --border-color: transparent;
+    
+    ion-title {
+      font-weight: 700;
+      color: var(--bizzdeal-text-primary);
+    }
+    
+    ion-icon {
+      font-size: 1.5rem;
+      color: var(--bizzdeal-text-secondary);
+    }
+  }
+}
+
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--bizzdeal-spacing-lg);
+  padding: var(--bizzdeal-spacing-md);
+  background: var(--bizzdeal-bg-surface);
+  border-radius: var(--bizzdeal-radius-lg);
+  box-shadow: var(--bizzdeal-shadow-sm);
+  border: 1px solid var(--bizzdeal-border-color);
+}
+
+.status-segment {
+  margin-bottom: var(--bizzdeal-spacing-lg);
+  --background: rgba(30, 136, 229, 0.08);
+  border-radius: var(--bizzdeal-radius-md);
+  padding: 4px;
+
+  ion-segment-button {
+    --color: var(--bizzdeal-text-secondary);
+    --color-checked: var(--ion-color-primary);
+    --indicator-color: var(--bizzdeal-bg-surface);
+    font-weight: 600;
+    font-size: 0.8rem;
+    min-height: 36px;
+  }
+}
+
+.attendees-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bizzdeal-spacing-sm);
+
+  .attendee-item {
+    --background: var(--bizzdeal-bg-surface);
+    --border-radius: var(--bizzdeal-radius-md);
+    --padding-start: var(--bizzdeal-spacing-md);
+    --padding-end: var(--bizzdeal-spacing-md);
+    border: 1px solid var(--bizzdeal-border-color);
+    box-shadow: var(--bizzdeal-shadow-sm);
+
+    h3 {
+      font-weight: 600;
+      color: var(--bizzdeal-text-primary);
+      margin-bottom: 4px;
+    }
+
+    p {
+      color: var(--bizzdeal-text-secondary);
+      font-size: 0.85rem;
+    }
+
+    ion-badge {
+      font-size: 0.7rem;
+      padding: 6px 10px;
+      border-radius: var(--bizzdeal-radius-lg);
+      
+      &.accepted {
+        --background: rgba(16, 185, 129, 0.1);
+        --color: var(--ion-color-success);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      &.rejected {
+        --background: rgba(239, 68, 68, 0.1);
+        --color: var(--ion-color-danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      &.pending {
+        --background: rgba(100, 116, 139, 0.1);
+        --color: var(--bizzdeal-text-secondary);
+        border: 1px solid rgba(100, 116, 139, 0.3);
+      }
+    }
+  }
+}
+
+.loading-state, .error-state, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  
+  p {
+    color: var(--bizzdeal-text-secondary);
+    margin-top: 16px;
+  }
+  
+  ion-icon {
+    font-size: 3rem;
+    color: var(--bizzdeal-text-secondary);
+  }
+}

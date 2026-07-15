@@ -11,6 +11,7 @@ export interface ProfileDTO {
   status: 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED';
   profile_pic_url: string | null;
   // Business fields
+  business_id?: string | null;
   category_id?: string;
   business_name?: string | null;
   business_description?: string | null;

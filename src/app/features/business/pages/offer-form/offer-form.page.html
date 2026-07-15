@@ -92,6 +92,7 @@
     </div>
 
     <!-- Dates -->
+    <!-- Dates -->
     <div class="form-group">
       <label class="form-label">Start Date <span class="required-star">*</span></label>
       <div class="datetime-field">
@@ -103,6 +104,7 @@
           <ion-datetime
             id="start-datetime"
             presentation="date-time"
+            [value]="offerForm.get('start_date')?.value"
             (ionChange)="onStartDateChange($event)"
           ></ion-datetime>
         </ng-template>
@@ -125,6 +127,7 @@
           <ion-datetime
             id="end-datetime"
             presentation="date-time"
+            [value]="offerForm.get('end_date')?.value"
             (ionChange)="onEndDateChange($event)"
           ></ion-datetime>
         </ng-template>
@@ -139,22 +142,40 @@
       </div>
     </div>
 
-    <!-- Image Upload -->
+    <!-- Image Upload & Preview -->
     <div class="form-group">
       <label class="form-label">Offer Image</label>
-      <div class="upload-container" (click)="fileInput.click()">
-        <ion-icon name="image-outline"></ion-icon>
-        <span class="upload-text">{{ selectedImageName() || 'Tap to upload an image (optional)' }}</span>
-        <input type="file" #fileInput (change)="onImageSelected($event)" accept="image/*" hidden />
-      </div>
+      @if (selectedImagePreview()) {
+        <div class="image-preview-card">
+          <img [src]="selectedImagePreview()" class="preview-image" alt="Offer image preview" />
+          <div class="preview-actions">
+            <button type="button" class="bd-btn-secondary change-btn" (click)="fileInput.click()">
+              <ion-icon name="image-outline"></ion-icon> Change Image
+            </button>
+            <button type="button" class="bd-btn-danger remove-btn" (click)="clearSelectedImage($event)">
+              <ion-icon name="close-circle-outline"></ion-icon> Remove
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="upload-container" (click)="fileInput.click()">
+          <ion-icon name="image-outline"></ion-icon>
+          <span class="upload-text">{{ selectedImageName() || 'Tap to upload an image (optional)' }}</span>
+        </div>
+      }
+      <input type="file" #fileInput (change)="onImageSelected($event)" accept="image/*" hidden />
     </div>
 
       </div> <!-- End form-section -->
 
+      @if (errorMessage()) {
+        <div class="alert-error">{{ errorMessage() }}</div>
+      }
+
       <div class="action-buttons">
-        <button type="submit" class="bd-btn-primary save-btn" [disabled]="offerForm.invalid">
+        <button type="submit" class="bd-btn-primary save-btn" [disabled]="submitting()">
           <ion-icon name="save-outline" class="btn-icon"></ion-icon>
-          {{ isEditMode() ? 'Update Offer' : 'Create Offer' }}
+          {{ isEditMode() ? (submitting() ? 'Updating Offer...' : 'Update Offer') : (submitting() ? 'Creating Offer...' : 'Create Offer') }}
         </button>
       </div>
     </form>

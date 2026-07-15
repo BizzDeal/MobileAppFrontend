@@ -51,4 +51,8 @@ export class AdminAnalyticsService {
       .get<DetailedAnalyticsDto | { success: boolean; data: DetailedAnalyticsDto }>(`${this.apiUrl}/analytics/detailed`)
       .pipe(map((res: any) => res?.data || res));
   }
+
+  syncAnalytics(): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/analytics/sync`, {});
+  }
 }

@@ -12,15 +12,23 @@
         }
         <h1 class="business-name"><span class="truncate-name">Hi {{ getFirstName(profile()?.full_name) }}</span></h1>
       </div>
-      <button class="notification-btn bd-btn-outline" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
-        <ion-icon name="notifications-outline" class="notif-icon" />
-        @if (data.alerts.length > 0) {
-          <span class="badge"></span>
-        }
-      </button>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="notification-btn bd-btn-outline" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
+          <ion-icon name="notifications-outline" class="notif-icon" />
+          @if (data.alerts.length > 0) {
+            <span class="badge"></span>
+          }
+        </button>
+      </div>
     </header>
 
   <div class="dashboard-content">
+    @if (error() || meetingsError()) {
+      <div class="error-container">
+        <span class="error-text">{{ error() || meetingsError() }}</span>
+      </div>
+    }
+
     <section class="business-profile-card bd-card-premium">
       <div class="biz-profile-main">
         <div class="logo-wrapper">
@@ -120,14 +128,14 @@
     </section>
 
     <!-- Pending Approvals -->
-    @if (pendingOffers().length > 0) {
-      <section class="feed-section pending-approvals-section">
-        <div class="section-header">
-          <div class="header-left">
-            <ion-icon name="hourglass-outline" class="section-icon spark" />
-            <h2 class="section-title">Pending Approvals</h2>
-          </div>
+    <section class="feed-section pending-approvals-section">
+      <div class="section-header">
+        <div class="header-left">
+          <ion-icon name="hourglass-outline" class="section-icon spark" />
+          <h2 class="section-title">Pending Approvals</h2>
         </div>
+      </div>
+      @if (pendingOffers().length > 0) {
         <div class="pending-list">
           @for (offer of pendingOffers(); track offer.id) {
             <div class="pending-item" (click)="onDealClick(offer)">
@@ -144,8 +152,12 @@
             </div>
           }
         </div>
-      </section>
-    }
+      } @else {
+        <div class="empty-feed">
+          <p>You have no pending approvals at the moment.</p>
+        </div>
+      }
+    </section>
 
     <!-- Upcoming Meetings -->
     @if (upcomingMeetings().length > 0) {

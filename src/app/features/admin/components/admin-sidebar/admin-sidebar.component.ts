@@ -8,6 +8,7 @@ import {
   peopleOutline,
   businessOutline,
   pricetagsOutline,
+  calendarOutline,
   barChartOutline,
   settingsOutline,
   notificationsOutline,
@@ -151,6 +152,7 @@ export class AdminSidebarComponent {
     { title: 'Users', url: '/admin/users', icon: 'people' },
     { title: 'Businesses', url: '/admin/businesses', icon: 'business' },
     { title: 'Offers/Deals', url: '/admin/offers', icon: 'pricetags' },
+    { title: 'Meetings', url: '/admin/meetings', icon: 'calendar' },
     { title: 'Notifications', url: '/admin/notifications', icon: 'notifications' },
     { title: 'Analytics', url: '/admin/analytics', icon: 'bar-chart' },
   ];
@@ -163,6 +165,7 @@ export class AdminSidebarComponent {
       peopleOutline,
       businessOutline,
       pricetagsOutline,
+      calendarOutline,
       barChartOutline,
       settingsOutline,
       notificationsOutline,

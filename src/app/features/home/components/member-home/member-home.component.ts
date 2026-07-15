@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -20,7 +20,7 @@ import { MeetingCardComponent } from '../../../meetings/components/meeting-card/
   styleUrls: ['./member-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MemberHomeComponent {
+export class MemberHomeComponent implements OnInit {
   @Output() notificationClick = new EventEmitter<void>();
   @Output() showToast = new EventEmitter<string>();
 
@@ -33,6 +33,14 @@ export class MemberHomeComponent {
   readonly profile = this.profileService.profile;
   readonly loading = this.dashboardService.loading;
   readonly error = this.dashboardService.error;
+  readonly meetingsError = this.meetingsService.error;
+
+  ngOnInit() {
+    this.dashboardService.loadDashboardData().subscribe();
+    this.meetingsService.loadMeetings().subscribe();
+  }
+
+
 
   readonly approvedOffers = computed(() => 
     this.dashboardData()?.myOffers.filter(o => o.status === 'APPROVED') || []

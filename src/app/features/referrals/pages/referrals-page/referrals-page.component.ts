@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   IonContent,
   IonHeader,
@@ -13,7 +12,11 @@ import {
   IonModal,
   IonButtons,
   IonButton,
-  IonInput
+  IonSearchbar,
+  IonCheckbox,
+  IonList,
+  IonItem,
+  IonLabel
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -27,9 +30,12 @@ import {
   alertCircleOutline,
   closeCircleOutline
 } from 'ionicons/icons';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { ReferralsService } from '../../services/referrals.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { ReferralDTO, ReferralStatus } from '../../models/referral.model';
+
+const Contacts = registerPlugin<any>('Contacts');
 
 @Component({
   selector: 'app-referrals-page',
@@ -37,7 +43,6 @@ import { ReferralDTO, ReferralStatus } from '../../models/referral.model';
   imports: [
     CommonModule,
     DatePipe,
-    ReactiveFormsModule,
     IonContent,
     IonHeader,
     IonTitle,
@@ -49,7 +54,11 @@ import { ReferralDTO, ReferralStatus } from '../../models/referral.model';
     IonModal,
     IonButtons,
     IonButton,
-    IonInput
+    IonSearchbar,
+    IonCheckbox,
+    IonList,
+    IonItem,
+    IonLabel
   ],
   templateUrl: './referrals-page.component.html',
   styleUrl: './referrals-page.component.scss',
@@ -58,7 +67,6 @@ import { ReferralDTO, ReferralStatus } from '../../models/referral.model';
 export class ReferralsPageComponent implements OnInit {
   private readonly referralsService = inject(ReferralsService);
   private readonly profileService = inject(ProfileService);
-  private readonly fb = inject(FormBuilder);
 
   readonly referrals = signal<ReferralDTO[]>([]);
   readonly loading = signal<boolean>(true);
@@ -66,9 +74,11 @@ export class ReferralsPageComponent implements OnInit {
   readonly submitting = signal<boolean>(false);
   readonly isModalOpen = signal<boolean>(false);
 
-  readonly phoneForm: FormGroup = this.fb.group({
-    phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]]
-  });
+  // Contacts list variables
+  readonly contactsList = signal<{ name: string; phone: string; selected: boolean }[]>([]);
+  readonly searchInput = signal<string>('');
+  readonly isContactsLoading = signal<boolean>(false);
+  readonly permissionDenied = signal<boolean>(false);
 
   // Derived Analytics using computed signals
   readonly totalReferrals = computed(() => this.referrals().length);
@@ -78,6 +88,26 @@ export class ReferralsPageComponent implements OnInit {
   readonly pendingReferrals = computed(() => 
     this.referrals().filter(r => r.status === 'PENDING').length
   );
+
+  // Computed state for contacts
+  readonly filteredContacts = computed(() => {
+    const query = this.searchInput().toLowerCase().trim();
+    const list = this.contactsList();
+    if (!query) return list;
+    return list.filter(c => 
+      c.name.toLowerCase().includes(query) || 
+      c.phone.includes(query)
+    );
+  });
+
+  readonly selectedCount = computed(() => 
+    this.contactsList().filter(c => c.selected).length
+  );
+
+  readonly allSelected = computed(() => {
+    const list = this.filteredContacts();
+    return list.length > 0 && list.every(c => c.selected);
+  });
 
   constructor() {
     addIcons({
@@ -112,30 +142,101 @@ export class ReferralsPageComponent implements OnInit {
     });
   }
 
-  get phoneControl() {
-    return this.phoneForm.get('phone');
-  }
-
   openModal(): void {
-    this.phoneForm.reset();
+    this.searchInput.set('');
+    this.contactsList.set([]);
     this.isModalOpen.set(true);
+    this.loadContacts();
   }
 
   closeModal(): void {
     this.isModalOpen.set(false);
   }
 
+  async loadContacts(): Promise<void> {
+    if (!Capacitor.isNativePlatform()) {
+      console.log('Contacts plugin is only available on native platforms.');
+      this.permissionDenied.set(true);
+      return;
+    }
+
+    this.isContactsLoading.set(true);
+    this.error.set(null);
+    this.permissionDenied.set(false);
+
+    try {
+      const result = await Contacts.getContacts();
+      const rawContacts: { name: string; phone: string }[] = result.contacts || [];
+
+      if (rawContacts.length === 0) {
+        this.contactsList.set([]);
+        this.isContactsLoading.set(false);
+        return;
+      }
+
+      // Filter and query backend for unregistered/unreferred contacts
+      const uniquePhones = Array.from(new Set(rawContacts.map(c => c.phone)));
+      this.referralsService.checkContacts(uniquePhones).subscribe({
+        next: (eligiblePhones) => {
+          const eligibleSet = new Set(eligiblePhones);
+          
+          // Map to unique contact by phone number to remove duplicates
+          const uniqueContactsMap = new Map<string, { name: string; phone: string }>();
+          for (const c of rawContacts) {
+            if (eligibleSet.has(c.phone) && !uniqueContactsMap.has(c.phone)) {
+              uniqueContactsMap.set(c.phone, c);
+            }
+          }
+          
+          const filtered = Array.from(uniqueContactsMap.values()).map(c => ({
+            name: c.name,
+            phone: c.phone,
+            selected: false
+          }));
+
+          filtered.sort((a, b) => a.name.localeCompare(b.name));
+          this.contactsList.set(filtered);
+          this.isContactsLoading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err?.message || 'Failed to check contacts eligibility with backend.');
+          this.isContactsLoading.set(false);
+        }
+      });
+    } catch (err: any) {
+      console.error('Error fetching contacts:', err);
+      this.permissionDenied.set(true);
+      this.isContactsLoading.set(false);
+    }
+  }
+
+  toggleContact(phone: string): void {
+    this.contactsList.update(list => 
+      list.map(c => c.phone === phone ? { ...c, selected: !c.selected } : c)
+    );
+  }
+
+  toggleSelectAll(event: any): void {
+    const checked = event.detail.checked;
+    const filteredPhones = new Set(this.filteredContacts().map(c => c.phone));
+    this.contactsList.update(list => 
+      list.map(c => filteredPhones.has(c.phone) ? { ...c, selected: checked } : c)
+    );
+  }
+
+  onSearchChange(event: any): void {
+    this.searchInput.set(event.detail.value || '');
+  }
+
   submitReferral(): void {
-    if (this.phoneForm.invalid || this.submitting()) {
-      this.phoneForm.markAllAsTouched();
+    const selected = this.contactsList().filter(c => c.selected);
+    if (selected.length === 0 || this.submitting()) {
       return;
     }
 
     this.submitting.set(true);
     this.error.set(null);
 
-    const phoneVal = this.phoneForm.value.phone;
-    
     // Generate referral code based on referrer's profile name and phone last 4 digits
     const profile = this.profileService.profile();
     const cleanName = profile?.full_name
@@ -146,17 +247,34 @@ export class ReferralsPageComponent implements OnInit {
       : '9999';
     const generatedCode = `BD-${cleanName}-${lastDigits}`;
 
-    this.referralsService.create(phoneVal, generatedCode).subscribe({
-      next: (newReferral) => {
+    const selectedPhones = selected.map(c => c.phone);
+
+    this.referralsService.bulkCreate(selectedPhones, generatedCode).subscribe({
+      next: () => {
+        this.sendNativeSMS(selectedPhones, generatedCode);
         this.fetchReferrals();
         this.submitting.set(false);
         this.closeModal();
       },
       error: (err) => {
-        this.error.set(err?.message || 'Failed to create referral. Phone number might already be referred.');
+        this.error.set(err?.message || 'Failed to create referrals on the server.');
         this.submitting.set(false);
       }
     });
+  }
+
+  sendNativeSMS(phones: string[], code: string): void {
+    const smsBody = `Hi! I invite you to join BizzDeal. Use my referral code ${code} to sign up!`;
+    const separator = Capacitor.getPlatform() === 'ios' ? ';' : ',';
+    const phonesStr = phones.join(separator);
+    const smsUrl = `sms:${phonesStr}?body=${encodeURIComponent(smsBody)}`;
+    
+    try {
+      window.open(smsUrl, '_system');
+    } catch (e) {
+      console.error('Failed to open SMS app:', e);
+      window.location.href = smsUrl;
+    }
   }
 
   getStatusBadgeClass(status: ReferralStatus): string {

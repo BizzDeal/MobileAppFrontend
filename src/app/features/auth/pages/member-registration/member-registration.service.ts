@@ -37,6 +37,7 @@ export class MemberRegistrationService {
     businessDescription: ['', [Validators.required, Validators.minLength(5)]],
     website: ['', [Validators.required, Validators.minLength(3)]],
     gstNumber: ['', [Validators.required, Validators.minLength(5)]],
+    referenceCode: [''],
   });
 
   constructor() {
@@ -107,6 +108,7 @@ export class MemberRegistrationService {
         website: val.website,
         gst_number: val.gstNumber,
         firebaseToken: this._verifiedFirebaseToken,
+        reference_code: val.referenceCode || undefined,
       };
 
       this.onboardingService.setRegistrationData(payload, this.photoFile);

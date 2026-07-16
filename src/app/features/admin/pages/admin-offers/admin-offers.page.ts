@@ -44,9 +44,15 @@ export class AdminOffersPage implements OnInit {
   loadOffers() {
     this.loading = true;
     this.adminBusinessesService.getAllOffers().subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.offers = res.data;
+      next: (res: any) => {
+        if (res) {
+          if (Array.isArray(res)) {
+            this.offers = res;
+          } else if (res.success && Array.isArray(res.data)) {
+            this.offers = res.data;
+          } else if (res.data && Array.isArray(res.data)) {
+            this.offers = res.data;
+          }
           this.filterOffers();
         }
         this.loading = false;
@@ -73,7 +79,14 @@ export class AdminOffersPage implements OnInit {
     let tempOffers = [...this.offers];
 
     if (this.selectedStatus !== 'ALL') {
-      tempOffers = tempOffers.filter(offer => offer.status === this.selectedStatus);
+      tempOffers = tempOffers.filter(offer => {
+        const offerStatus = (offer.status || '').toUpperCase();
+        const selected = this.selectedStatus.toUpperCase();
+        if (selected === 'APPROVED') {
+          return offerStatus === 'APPROVED' || offerStatus === 'ACTIVE';
+        }
+        return offerStatus === selected;
+      });
     }
 
     if (this.searchQuery.trim() !== '') {
@@ -106,18 +119,21 @@ export class AdminOffersPage implements OnInit {
   handleOfferAction(offerId: string, action: 'approve' | 'reject', reason?: string) {
     const newStatus = action === 'approve' ? OfferStatus.APPROVED : OfferStatus.REJECTED;
     
-    this.adminBusinessesService.updateOfferStatus(offerId, newStatus, reason).subscribe(async res => {
-      if (res.success) {
-        // Update local array
-        const index = this.offers.findIndex(o => o.id === offerId);
-        if (index > -1) {
-          this.offers[index] = res.data;
-          // Re-filter to reflect the updated status if the segment is active
-          this.filterOffers();
+    this.adminBusinessesService.updateOfferStatus(offerId, newStatus, reason).subscribe(async (res: any) => {
+      if (res) {
+        const updatedOffer = res.success ? res.data : res;
+        if (updatedOffer && typeof updatedOffer === 'object') {
+          // Update local array
+          const index = this.offers.findIndex(o => o.id === offerId);
+          if (index > -1) {
+            this.offers[index] = { ...this.offers[index], ...updatedOffer };
+            // Re-filter to reflect the updated status if the segment is active
+            this.filterOffers();
+          }
         }
         
         const toast = await this.toastCtrl.create({
-          message: res.message,
+          message: res.message || `Offer status successfully updated`,
           duration: 2000,
           color: 'success'
         });

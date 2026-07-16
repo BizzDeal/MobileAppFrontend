@@ -1,74 +1,46 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 import { ReferralDTO } from '../models/referral.model';
-
-const DUMMY_REFERRALS: ReferralDTO[] = [
-  {
-    id: 'ref-1',
-    referrer_id: 'cust-101',
-    referred_phone: '9876543211',
-    referred_user_id: 'user-201',
-    referral_code: 'BD-TEJA-3210',
-    status: 'JOINED',
-    reward_amount: 0,
-    rewarded_at: null,
-    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-    updated_at: new Date(Date.now() - 86400000 * 2).toISOString()
-  },
-  {
-    id: 'ref-2',
-    referrer_id: 'cust-101',
-    referred_phone: '9876543212',
-    referred_user_id: null,
-    referral_code: 'BD-TEJA-3210',
-    status: 'PENDING',
-    reward_amount: 0,
-    rewarded_at: null,
-    created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-    updated_at: new Date(Date.now() - 86400000 * 5).toISOString()
-  },
-  {
-    id: 'ref-3',
-    referrer_id: 'cust-101',
-    referred_phone: '9876543213',
-    referred_user_id: null,
-    referral_code: 'BD-TEJA-3210',
-    status: 'CANCELLED',
-    reward_amount: 0,
-    rewarded_at: null,
-    created_at: new Date(Date.now() - 86400000 * 10).toISOString(),
-    updated_at: new Date(Date.now() - 86400000 * 10).toISOString()
-  }
-];
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReferralsService {
-  private readonly referralList = signal<ReferralDTO[]>(DUMMY_REFERRALS);
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = environment.apiUrl;
 
   findAll(): Observable<ReferralDTO[]> {
-    return of(this.referralList()).pipe(delay(400));
+    return this.http.get<any>(`${this.apiUrl}/referrals`).pipe(
+      map((res) => res.data || res)
+    );
   }
 
   create(referredPhone: string, referralCode: string): Observable<ReferralDTO> {
-    const newReferral: ReferralDTO = {
-      id: `ref-${Math.random().toString(36).substr(2, 9)}`,
-      referrer_id: 'cust-101',
+    return this.http.post<any>(`${this.apiUrl}/referrals`, {
       referred_phone: referredPhone,
-      referred_user_id: null,
       referral_code: referralCode,
-      status: 'PENDING',
-      reward_amount: 0,
-      rewarded_at: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
+    }).pipe(
+      map((res) => res.data || res)
+    );
+  }
 
-    // Update local signal state
-    this.referralList.update((curr) => [newReferral, ...curr]);
+  checkContacts(phones: string[]): Observable<string[]> {
+    return this.http.post<any>(`${this.apiUrl}/referrals/check-contacts`, {
+      phones,
+    }).pipe(
+      map((res) => res.data || res)
+    );
+  }
 
-    return of(newReferral).pipe(delay(500));
+  bulkCreate(referredPhones: string[], referralCode: string): Observable<ReferralDTO[]> {
+    return this.http.post<any>(`${this.apiUrl}/referrals/bulk`, {
+      referred_phones: referredPhones,
+      referral_code: referralCode,
+    }).pipe(
+      map((res) => res.data || res)
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { AdminBusiness, BusinessStatus, ApiResponse, AdminOffer, AdminVoucher, OfferStatus } from '../models/admin-business.model';
@@ -63,7 +63,12 @@ export class AdminBusinessesService {
         }
       });
     }
-    return this.http.get<ApiResponse<AdminOffer[]>>(`${this.apiUrl}/offers`, { params }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/offers`, { params }).pipe(
+      map(res => ({
+        success: res && res.success !== undefined ? res.success : true,
+        message: res && res.message ? res.message : 'Offers fetched successfully',
+        data: res && res.success !== undefined ? res.data : res
+      })),
       catchError(err => {
         throw new Error(err.error?.message || 'Failed to fetch offers');
       })
@@ -71,7 +76,12 @@ export class AdminBusinessesService {
   }
 
   getBusinessOffers(businessId: string): Observable<ApiResponse<AdminOffer[]>> {
-    return this.http.get<ApiResponse<AdminOffer[]>>(`${this.apiUrl}/offers/business/${businessId}`).pipe(
+    return this.http.get<any>(`${this.apiUrl}/offers/business/${businessId}`).pipe(
+      map(res => ({
+        success: res && res.success !== undefined ? res.success : true,
+        message: res && res.message ? res.message : 'Business offers fetched successfully',
+        data: res && res.success !== undefined ? res.data : res
+      })),
       catchError(err => {
         throw new Error(err.error?.message || 'Failed to fetch business offers');
       })
@@ -80,7 +90,12 @@ export class AdminBusinessesService {
 
   getBusinessVouchers(businessId: string): Observable<ApiResponse<AdminVoucher[]>> {
     const params = new HttpParams().set('business_id', businessId);
-    return this.http.get<ApiResponse<AdminVoucher[]>>(`${this.apiUrl}/vouchers/history`, { params }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/vouchers/history`, { params }).pipe(
+      map(res => ({
+        success: res && res.success !== undefined ? res.success : true,
+        message: res && res.message ? res.message : 'Business vouchers fetched successfully',
+        data: res && res.success !== undefined ? res.data : res
+      })),
       catchError(err => {
         throw new Error(err.error?.message || 'Failed to fetch business vouchers');
       })
@@ -89,13 +104,23 @@ export class AdminBusinessesService {
 
   updateOfferStatus(offerId: string, status: OfferStatus, reason?: string): Observable<ApiResponse<AdminOffer>> {
     if (status === OfferStatus.APPROVED) {
-      return this.http.put<ApiResponse<AdminOffer>>(`${this.apiUrl}/offers/approve`, { offer_id: offerId }).pipe(
+      return this.http.put<any>(`${this.apiUrl}/offers/approve`, { offer_id: offerId }).pipe(
+        map(res => ({
+          success: res && res.success !== undefined ? res.success : true,
+          message: res && res.message ? res.message : 'Offer approved successfully',
+          data: res && res.success !== undefined ? res.data : res
+        })),
         catchError(err => {
           throw new Error(err.error?.message || 'Failed to approve offer');
         })
       );
     } else if (status === OfferStatus.REJECTED) {
-      return this.http.put<ApiResponse<AdminOffer>>(`${this.apiUrl}/offers/reject`, { offer_id: offerId, reason }).pipe(
+      return this.http.put<any>(`${this.apiUrl}/offers/reject`, { offer_id: offerId, reason }).pipe(
+        map(res => ({
+          success: res && res.success !== undefined ? res.success : true,
+          message: res && res.message ? res.message : 'Offer rejected successfully',
+          data: res && res.success !== undefined ? res.data : res
+        })),
         catchError(err => {
           throw new Error(err.error?.message || 'Failed to reject offer');
         })

@@ -41,6 +41,7 @@ export interface MemberRegistrationPayload {
   website: string;
   gst_number: string;
   firebaseToken: string;
+  reference_code?: string;
 }
 
 @Injectable({
@@ -168,6 +169,9 @@ export class MemberOnboardingService {
       formData.append('website', data.website);
       formData.append('gst_number', data.gst_number);
       formData.append('firebaseToken', data.firebaseToken);
+      if (data.reference_code) {
+        formData.append('reference_code', data.reference_code);
+      }
 
       const profilePic = this.profilePicFile();
       if (profilePic) {

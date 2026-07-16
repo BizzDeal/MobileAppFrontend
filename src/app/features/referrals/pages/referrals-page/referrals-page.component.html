@@ -102,7 +102,7 @@
     <ng-template>
       <ion-header class="ion-no-border premium-header">
         <ion-toolbar>
-          <ion-title>New Referral</ion-title>
+          <ion-title>Select Contacts</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="closeModal()" class="close-btn">
               <ion-icon name="close-outline" slot="icon-only"></ion-icon>
@@ -111,49 +111,82 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-content class="modal-content-pad">
-        <div class="modal-form-container">
-          <div class="modal-hero-icon">
-            <ion-icon name="people-outline"></ion-icon>
-          </div>
-          <h3 class="modal-title">Invite a New Member</h3>
-          <p class="modal-subtitle">Enter their mobile number to send an invitation and track their sign-up progress.</p>
+      <ion-content class="modal-content-pad" scroll-y="false">
+        <div class="modal-contacts-container">
+          <!-- Search Bar -->
+          <ion-searchbar
+            placeholder="Search contacts by name or phone..."
+            [value]="searchInput()"
+            (ionInput)="onSearchChange($event)"
+            class="contacts-searchbar">
+          </ion-searchbar>
 
-          <form [formGroup]="phoneForm" (ngSubmit)="submitReferral()">
-            <div class="form-group">
-              <label class="form-label" for="phoneInput">Referred Phone Number <span class="required-star">*</span></label>
-              <div class="input-wrapper">
-                <ion-input
-                  id="phoneInput"
-                  type="tel"
-                  placeholder="Enter 10-digit mobile number"
-                  formControlName="phone"
-                  class="custom-input"
-                  maxlength="10">
-                </ion-input>
-              </div>
-              
-              <!-- Reserved vertical space to prevent layout shifts -->
-              <div class="error-container">
-                @if (phoneControl?.touched && phoneControl?.invalid) {
-                  @if (phoneControl?.errors?.['required']) {
-                    <span class="error-text">Phone number is required.</span>
-                  } @else if (phoneControl?.errors?.['pattern']) {
-                    <span class="error-text">Please enter a valid 10-digit mobile number.</span>
-                  }
-                }
-              </div>
+          <!-- Select All Panel -->
+          @if (!isContactsLoading() && !permissionDenied() && filteredContacts().length > 0) {
+            <div class="select-all-header">
+              <ion-checkbox
+                [checked]="allSelected()"
+                (ionChange)="toggleSelectAll($event)"
+                class="select-all-checkbox">
+                Select All
+              </ion-checkbox>
+              <span class="selected-badge">{{ selectedCount() }} Selected</span>
             </div>
+          }
 
-            <button type="submit" class="bd-btn-primary full-btn" [disabled]="phoneForm.invalid || submitting()">
+          <!-- Scrollable Contact List Container -->
+          <div class="contacts-list-scrollable">
+            @if (isContactsLoading()) {
+              <div class="modal-state-box">
+                <ion-spinner name="crescent" color="primary"></ion-spinner>
+                <p>Loading eligible contacts...</p>
+              </div>
+            } @else if (permissionDenied()) {
+              <div class="modal-state-box error-state">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+                <p>Contacts permission denied or not supported on this device.</p>
+              </div>
+            } @else if (filteredContacts().length === 0) {
+              <div class="modal-state-box empty-state">
+                <ion-icon name="people-outline"></ion-icon>
+                <p>No eligible contacts found.</p>
+                <span class="sub-text">Only showing contacts without BizzDeal accounts.</span>
+              </div>
+            } @else {
+              <ion-list class="contacts-ion-list">
+                @for (contact of filteredContacts(); track contact.phone) {
+                  <ion-item class="contact-item" (click)="toggleContact(contact.phone)" lines="none">
+                    <ion-checkbox
+                      slot="start"
+                      [checked]="contact.selected"
+                      (click)="$event.stopPropagation(); toggleContact(contact.phone)"
+                      aria-label="Select contact">
+                    </ion-checkbox>
+                    <ion-label class="contact-text">
+                      <h2>{{ contact.name }}</h2>
+                      <p>{{ contact.phone }}</p>
+                    </ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+            }
+          </div>
+
+          <!-- Bottom Action Button Panel -->
+          <div class="modal-actions-panel">
+            <button
+              type="button"
+              class="bd-btn-primary full-btn"
+              [disabled]="selectedCount() === 0 || submitting()"
+              (click)="submitReferral()">
               @if (submitting()) {
                 <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
                 Sending...
               } @else {
-                Send Invitation
+                Send Invitation @if (selectedCount() > 0) { ({{ selectedCount() }}) }
               }
             </button>
-          </form>
+          </div>
         </div>
       </ion-content>
     </ng-template>

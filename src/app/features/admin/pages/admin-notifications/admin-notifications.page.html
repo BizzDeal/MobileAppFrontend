@@ -4,7 +4,6 @@
       <ion-icon name="filter-outline" slot="start" class="text-medium"></ion-icon>
       <ion-select [value]="selectedAudience" (ionChange)="filterByAudience($event)" interface="action-sheet" placeholder="Filter by audience" justify="space-between" class="w-full">
         <ion-select-option value="ALL">All Audiences</ion-select-option>
-        <ion-select-option value="SINGLE_USER">Single User</ion-select-option>
         <ion-select-option value="BULK_USERS">Bulk Users</ion-select-option>
         <ion-select-option value="ALL_MEMBERS">All Members</ion-select-option>
         <ion-select-option value="ALL_CUSTOMERS">All Customers</ion-select-option>
@@ -47,8 +46,8 @@
               <ion-icon [name]="getAudienceIcon(notification.audience)"></ion-icon>
               {{ getAudienceLabel(notification.audience) }}
             </span>
-            <span *ngIf="notification.target_ids?.length" class="value-badge">
-              {{ notification.target_ids!.length }} selected
+            <span *ngIf="notification.target_phones?.length || notification.target_ids?.length" class="value-badge">
+              {{ (notification.target_phones?.length || notification.target_ids?.length) }} selected
             </span>
           </div>
         </div>

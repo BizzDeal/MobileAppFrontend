@@ -5,6 +5,7 @@ import { StorageService } from '../storage/storage.service';
 import { STORAGE_KEYS } from '../storage/storage.keys';
 import { AuthUser, UserRole } from '../../features/auth/models/auth.model';
 import { AuthApiService } from '../../features/auth/services/auth-api.service';
+import { NotificationService } from '../../features/notifications/services/notification.service';
 
 @Injectable({
   providedIn: 'root',
@@ -51,6 +52,13 @@ export class AuthSessionService {
       await this.storage.set(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
       await this.storage.setObject(STORAGE_KEYS.CURRENT_USER, user);
       this._currentUser.set(user);
+
+      try {
+        const notificationService = this.injector.get(NotificationService);
+        notificationService.registerDeviceOnLogin();
+      } catch (err) {
+        console.error('Failed to trigger registerDeviceOnLogin:', err);
+      }
     } catch (error) {
       console.error('AuthSessionService.setSession error:', error);
       throw error;
@@ -72,6 +80,7 @@ export class AuthSessionService {
       await this.storage.remove(STORAGE_KEYS.ACCESS_TOKEN);
       await this.storage.remove(STORAGE_KEYS.REFRESH_TOKEN);
       await this.storage.remove(STORAGE_KEYS.CURRENT_USER);
+      await this.storage.remove('bizzdeal_device_registered_v1');
     } catch (error) {
       console.error('AuthSessionService.clearSession error:', error);
     } finally {

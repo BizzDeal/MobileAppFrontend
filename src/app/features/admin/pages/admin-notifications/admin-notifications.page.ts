@@ -47,7 +47,8 @@ export class AdminNotificationsPage implements OnInit {
       error: (err) => {
         console.error('Failed to load notifications', err);
         this.loading = false;
-        this.showToast('Failed to load notifications', 'danger');
+        const errorMsg = err?.error?.message || err?.message || 'Failed to load notifications';
+        this.showToast(errorMsg, 'danger');
       }
     });
   }
@@ -61,7 +62,8 @@ export class AdminNotificationsPage implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load notifications', err);
-        this.showToast('Failed to load notifications', 'danger');
+        const errorMsg = err?.error?.message || err?.message || 'Failed to load notifications';
+        this.showToast(errorMsg, 'danger');
         event.target.complete();
       }
     });
@@ -134,7 +136,8 @@ export class AdminNotificationsPage implements OnInit {
       },
       error: (err) => {
         console.error('Failed to delete notification', err);
-        this.showToast('Failed to delete notification', 'danger');
+        const errorMsg = err?.error?.message || err?.message || 'Failed to delete notification';
+        this.showToast(errorMsg, 'danger');
       }
     });
   }

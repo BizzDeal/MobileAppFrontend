@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { MeetingsService, AttendeeStatus } from '../../../meetings/services/meetings.service';
 import { MeetingCardComponent } from '../../../meetings/components/meeting-card/meeting-card.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { NotificationService } from '../../../notifications/services/notification.service';
 
 @Component({
   selector: 'app-member-home',
@@ -28,6 +29,7 @@ export class MemberHomeComponent implements OnInit {
   private readonly dashboardService = inject(MemberDashboardService);
   private readonly profileService = inject(ProfileService);
   private readonly meetingsService = inject(MeetingsService);
+  private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
 
   readonly dashboardData = this.dashboardService.dashboardData;
@@ -35,6 +37,7 @@ export class MemberHomeComponent implements OnInit {
   readonly loading = this.dashboardService.loading;
   readonly error = this.dashboardService.error;
   readonly meetingsError = this.meetingsService.error;
+  readonly unreadCount = this.notificationService.unreadCount;
 
   ngOnInit() {
     this.dashboardService.loadDashboardData().subscribe();

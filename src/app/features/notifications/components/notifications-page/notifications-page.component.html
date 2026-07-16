@@ -95,25 +95,51 @@
     @if (selectedNotification(); as detail) {
       <ion-header class="ion-no-border premium-header">
         <ion-toolbar>
-          <ion-title>Details</ion-title>
+          <ion-title>Notification Details</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="selectedNotification.set(null)">
+            <ion-button (click)="selectedNotification.set(null)" class="close-btn">
               <ion-icon name="close-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-content class="ion-padding">
-        <div class="detail-icon-wrapper">
-          <ion-icon [name]="getIconForType(detail.type)" [color]="getColorForType(detail.type)"></ion-icon>
+      <ion-content class="detail-content ion-padding">
+        <div class="detail-hero" [ngClass]="'type-' + (detail.type || 'GENERAL')">
+          <div class="detail-badge-pill">
+            <span>{{ detail.type || 'GENERAL' }}</span>
+          </div>
+          <div class="detail-icon-circle">
+            <ion-icon [name]="getIconForType(detail.type)" [color]="getColorForType(detail.type)"></ion-icon>
+          </div>
+          <h2 class="detail-title">{{ detail.title }}</h2>
+          <span class="detail-timestamp">{{ detail.created_at | date:'MMM d, y, h:mm a' }}</span>
         </div>
-        <h2 class="detail-title">{{ detail.title }}</h2>
-        <p class="detail-time">{{ detail.created_at | date:'medium' }}</p>
         
-        <div class="detail-message-card">
-          <p>{{ detail.message }}</p>
+        <div class="detail-body-container">
+          <div class="detail-message-box">
+            <p>{{ detail.message }}</p>
+          </div>
+
+          @if (detail.data) {
+            <div class="detail-extra-data">
+              <h4>Additional Details</h4>
+              <div class="data-grid">
+                @for (item of (detail.data | keyvalue); track item.key) {
+                  <div class="data-item">
+                    <span class="data-key">{{ item.key }}:</span>
+                    <span class="data-val">{{ item.value }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
         </div>
 
+        <div class="detail-actions">
+          <button type="button" class="bd-btn-primary dismiss-btn" (click)="selectedNotification.set(null)">
+            Dismiss
+          </button>
+        </div>
       </ion-content>
     }
   </ng-template>

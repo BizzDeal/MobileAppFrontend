@@ -29,15 +29,15 @@
       </div>
     </div>
 
-    <!-- Target IDs (Conditional) -->
+    <!-- Target Phone Numbers (Conditional) -->
     <div class="form-group" *ngIf="composeForm.get('audience')?.value === 'SINGLE_USER' || composeForm.get('audience')?.value === 'BULK_USERS'">
-      <ion-label class="field-label">User ID(s) <span class="required-star">*</span></ion-label>
+      <ion-label class="field-label">Phone Number(s) <span class="required-star">*</span></ion-label>
       <ion-item class="custom-input-item" lines="none">
-        <ion-input formControlName="target_ids" placeholder="Enter User ID(s), comma separated"></ion-input>
+        <ion-input formControlName="target_phones" placeholder="Enter phone number(s), comma separated"></ion-input>
       </ion-item>
       <div class="error-container">
-        <span class="error-text" *ngIf="composeForm.get('target_ids')?.touched && composeForm.get('target_ids')?.hasError('required')">
-          User ID is required for this audience type.
+        <span class="error-text" *ngIf="composeForm.get('target_phones')?.touched && composeForm.get('target_phones')?.hasError('required')">
+          Phone number is required for this audience type.
         </span>
       </div>
     </div>

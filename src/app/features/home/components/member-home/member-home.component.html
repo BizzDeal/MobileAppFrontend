@@ -18,7 +18,9 @@
       <div style="display: flex; align-items: center; gap: 8px;">
         <button class="notification-btn bd-btn-outline" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
           <ion-icon name="notifications-outline" class="notif-icon" />
-          @if (data.alerts.length > 0) {
+          @if ((unreadCount() || 0) > 0) {
+            <span class="badge count-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+          } @else if (data.alerts.length > 0) {
             <span class="badge"></span>
           }
         </button>

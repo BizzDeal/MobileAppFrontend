@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass, KeyValuePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
 import {
   IonButton,
@@ -38,6 +38,7 @@ import { NotificationService } from '../../services/notification.service';
   imports: [
     DatePipe,
     NgClass,
+    KeyValuePipe,
     IonHeader,
     IonToolbar,
     IonTitle,

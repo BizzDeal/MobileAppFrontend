@@ -20,7 +20,8 @@ export interface AdminNotification {
   message: string;
   type: NotificationType;
   audience: NotificationAudience;
-  target_ids?: string[]; // Used for SINGLE_USER or BULK_USERS
+  target_ids?: string[]; // Used for SINGLE_USER or BULK_USERS (legacy UUIDs)
+  target_phones?: string[]; // Used for SINGLE_USER or BULK_USERS (phone numbers)
   data?: Record<string, any>;
   created_at: string;
 }

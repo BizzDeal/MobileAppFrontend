@@ -32,7 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.statusBarService.initialize();
     this.permissionsService.requestStartupPermissions();
-    this.notificationService.registerDeviceOnStartup();
+    this.notificationService.initPushNotificationsOnStartup();
     this.updateRouteState(this.router.url);
 
     this.routerSub = this.router.events

@@ -25,6 +25,7 @@ import {
   trashOutline
 } from 'ionicons/icons';
 import { ChatMessage, MessageStatus } from '../../models/chat.model';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-chat-bubble',
@@ -41,7 +42,8 @@ import { ChatMessage, MessageStatus } from '../../models/chat.model';
     IonTitle,
     IonButtons,
     IonContent,
-    IonActionSheet
+    IonActionSheet,
+    CachedImgDirective
   ],
   templateUrl: './chat-bubble.component.html',
   styleUrl: './chat-bubble.component.scss',

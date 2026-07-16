@@ -185,6 +185,25 @@
   margin: 0 0 12px;
 }
 
+.qr-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #FFFFFF;
+  padding: 16px;
+  border-radius: var(--bizzdeal-radius-lg);
+  border: 1px solid var(--bizzdeal-border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin: 8px 0 16px;
+
+  .voucher-qr {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    display: block;
+  }
+}
+
 .code-box {
   display: flex;
   align-items: center;

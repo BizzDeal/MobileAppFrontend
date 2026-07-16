@@ -25,6 +25,7 @@ import { AuthSessionService } from '../../../../core/services/auth-session.servi
 import { ChatService } from '../../services/chat.service';
 import { ChatBubbleComponent } from '../chat-bubble/chat-bubble.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-chat-room',
@@ -36,7 +37,8 @@ import { ChatInputComponent } from '../chat-input/chat-input.component';
     IonToolbar,
     IonButtons,
     ChatBubbleComponent,
-    ChatInputComponent
+    ChatInputComponent,
+    CachedImgDirective
   ],
   templateUrl: './chat-room.component.html',
   styleUrl: './chat-room.component.scss',

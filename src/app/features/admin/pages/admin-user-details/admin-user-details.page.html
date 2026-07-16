@@ -22,7 +22,7 @@
       <div class="header-banner"></div>
       <div class="profile-header-content">
         <ion-avatar class="profile-avatar-wrap">
-          <img [src]="user.profile_pic_url || getFallbackAvatar(user.full_name)" alt="Profile Picture" (error)="user.profile_pic_url = getFallbackAvatar(user.full_name)">
+          <img [appCachedImg]="user.profile_pic_url || getFallbackAvatar(user.full_name)" alt="Profile Picture" (error)="user.profile_pic_url = getFallbackAvatar(user.full_name)">
         </ion-avatar>
         <h2 class="profile-name">{{ user.full_name }}</h2>
         <div class="mt-1">
@@ -99,7 +99,7 @@
     <ion-card *ngIf="isMember(user)" class="premium-card shadow-md border-radius-xl">
       <!-- Business Logo/Banner -->
       <div class="business-banner-wrap">
-        <img [src]="$any(user).business_logo_url || getFallbackAvatar($any(user).business_name)" alt="Business Logo" (error)="$any(user).business_logo_url = getFallbackAvatar($any(user).business_name)">
+        <img [appCachedImg]="$any(user).business_logo_url || getFallbackAvatar($any(user).business_name)" alt="Business Logo" (error)="$any(user).business_logo_url = getFallbackAvatar($any(user).business_name)">
       </div>
       <div class="card-section-header">
         <h3 class="card-section-title">Business Information</h3>
@@ -158,7 +158,7 @@
         <h3 class="card-section-title">Payment Receipt</h3>
       </div>
       <div class="receipt-banner-wrap" *ngIf="$any(user).payment_receipt_url; else noReceipt">
-        <img #receiptImage [src]="$any(user).payment_receipt_url" alt="Payment Receipt" (error)="$any(user).payment_receipt_url = null">
+        <img #receiptImage [appCachedImg]="$any(user).payment_receipt_url" alt="Payment Receipt" (error)="$any(user).payment_receipt_url = null">
       </div>
       <ng-template #noReceipt>
         <ion-card-content class="ion-text-center p-4">

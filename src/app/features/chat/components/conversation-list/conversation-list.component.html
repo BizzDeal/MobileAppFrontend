@@ -18,7 +18,7 @@
           <!-- Avatar slot -->
           <div class="avatar-container" slot="start">
             @if (c.partner.profile_pic_url) {
-              <img [src]="c.partner.profile_pic_url" alt="{{ c.partner.full_name }}" class="partner-avatar" />
+              <img [appCachedImg]="c.partner.profile_pic_url" alt="{{ c.partner.full_name }}" class="partner-avatar" />
             } @else {
               <div class="avatar-fallback">
                 <ion-icon name="person-outline" />

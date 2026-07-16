@@ -17,6 +17,7 @@ export class StatusBarService {
         await StatusBar.setStyle({ style: Style.Light });
 
         if (Capacitor.getPlatform() === 'android') {
+          await StatusBar.setOverlaysWebView({ overlay: true });
           await StatusBar.setBackgroundColor({ color: '#ffffff' });
         }
       } catch (error) {

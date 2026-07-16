@@ -23,7 +23,7 @@
       <div class="header-banner"></div>
       <div class="profile-header-content">
         <div class="profile-avatar-wrap">
-          <img [src]="business.logo_url || getFallbackAvatar(business.name)" alt="Logo" (error)="business.logo_url = getFallbackAvatar(business.name)">
+          <img [appCachedImg]="business.logo_url || getFallbackAvatar(business.name)" alt="Logo" (error)="business.logo_url = getFallbackAvatar(business.name)">
         </div>
         <h2 class="profile-name">{{ business.name }}</h2>
         <div class="flex items-center justify-center gap-2 mt-1">

@@ -14,11 +14,12 @@ import {
   refreshOutline,
   businessOutline
 } from 'ionicons/icons';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-admin-businesses-list',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, CachedImgDirective],
   templateUrl: './admin-businesses-list.component.html',
   styleUrls: ['./admin-businesses-list.component.scss']
 })

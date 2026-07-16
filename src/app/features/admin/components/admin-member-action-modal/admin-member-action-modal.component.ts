@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { User, UserStatus } from '../../services/admin-dashboard.service';
 import { addIcons } from 'ionicons';
 import { closeOutline, checkmarkCircleOutline, closeCircleOutline, callOutline, mailOutline, locationOutline, logoWhatsapp, businessOutline } from 'ionicons/icons';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-admin-member-action-modal',
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, DatePipe],
+  imports: [CommonModule, IonicModule, FormsModule, DatePipe, CachedImgDirective],
   templateUrl: './admin-member-action-modal.component.html',
   styleUrls: ['./admin-member-action-modal.component.scss']
 })

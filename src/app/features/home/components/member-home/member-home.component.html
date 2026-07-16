@@ -9,7 +9,7 @@
     <header class="dashboard-header">
       <div class="brand-info">
         @if (profile()?.profile_pic_url && !picLoadError()) {
-          <img [src]="profile()?.profile_pic_url" (error)="picLoadError.set(true)" alt="Profile Pic" class="business-logo" />
+          <img [appCachedImg]="profile()?.profile_pic_url" (error)="picLoadError.set(true)" alt="Profile Pic" class="business-logo" />
         } @else {
           <div class="initials-avatar business-logo">{{ getInitials(profile()?.full_name) }}</div>
         }
@@ -36,7 +36,7 @@
       <div class="biz-profile-main">
         <div class="logo-wrapper">
           @if (profile()?.business_logo_url && !logoLoadError()) {
-            <img [src]="profile()?.business_logo_url" (error)="logoLoadError.set(true)" alt="Business Logo" class="biz-profile-logo" />
+            <img [appCachedImg]="profile()?.business_logo_url" (error)="logoLoadError.set(true)" alt="Business Logo" class="biz-profile-logo" />
           } @else {
             <div class="initials-avatar biz-profile-logo">{{ getInitials(profile()?.business_name || 'My Business') }}</div>
           }

@@ -3,11 +3,13 @@ import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { locationOutline, pricetagOutline, sparklesOutline, timeOutline } from 'ionicons/icons';
 import { OfferDTO } from '../../models/home.model';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { CachedBgImgDirective } from '../../../../shared/directives/cached-bg-img.directive';
 
 @Component({
   selector: 'app-offer-card',
   standalone: true,
-  imports: [IonIcon],
+  imports: [IonIcon, CachedImgDirective, CachedBgImgDirective],
   templateUrl: './offer-card.component.html',
   styleUrl: './offer-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

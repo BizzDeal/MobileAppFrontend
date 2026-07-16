@@ -14,7 +14,7 @@
           <!-- Avatar -->
           <div class="partner-avatar-wrapper">
             @if (conv.partner.profile_pic_url) {
-              <img [src]="conv.partner.profile_pic_url" alt="{{ conv.partner.full_name }}" class="partner-avatar" />
+              <img [appCachedImg]="conv.partner.profile_pic_url" alt="{{ conv.partner.full_name }}" class="partner-avatar" />
             } @else {
               <div class="partner-avatar-placeholder">
                 <ion-icon name="person-outline" />

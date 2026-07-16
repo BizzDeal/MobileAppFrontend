@@ -56,6 +56,8 @@
       <!-- Search View Component -->
       <app-search-view 
         [(searchQuery)]="searchQuery"
+        [businesses]="homeFeed()?.recommendedBusinesses || []"
+        [offers]="homeFeed()?.trendingOffers || []"
         (businessClick)="onBusinessClick($event)"
         (offerClick)="onDealClick($event)" />
     } @else if (activeNavTab() === 'chat') {
@@ -114,6 +116,14 @@
                   <span class="v-status">{{ v.status }}</span>
                 </div>
                 <h4 class="v-title">{{ v.offerTitle }}</h4>
+                @if (v.status === 'ISSUED') {
+                  <div class="qr-box">
+                    <img 
+                      [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=1565c0&data=' + encodeUri(v.voucher_code)" 
+                      alt="Voucher QR Code" 
+                      class="voucher-qr" />
+                  </div>
+                }
                 <div class="code-box" (click)="copyVoucherCode(v.voucher_code)">
                   <span class="code-text">{{ v.voucher_code }}</span>
                   <ion-icon name="copy-outline" class="copy-icon" />
@@ -153,7 +163,7 @@
       </ion-header>
       <ion-content>
         <div class="deal-detail-view">
-          <div class="detail-hero" [style.background-image]="'url(' + (deal.imageUrl || 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80') + ')'">
+          <div class="detail-hero" [appCachedBgImg]="deal.imageUrl">
             <span class="detail-discount">{{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' + deal.discount_value + ' OFF' }}</span>
           </div>
           <div class="detail-body">
@@ -190,10 +200,10 @@
       </ion-header>
       <ion-content>
         <div class="biz-detail-view">
-          <div class="detail-hero" [style.background-image]="'url(' + (biz.bannerUrl || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&auto=format&fit=crop&q=80') + ')'"></div>
+          <div class="detail-hero" [appCachedBgImg]="biz.bannerUrl"></div>
           <div class="detail-body">
             <div class="biz-header-row">
-              <img [src]="biz.logoUrl || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80'" alt="logo" class="detail-logo" />
+              <img [appCachedImg]="biz.logoUrl" alt="logo" class="detail-logo" />
               <div>
                 <h2 class="detail-title">{{ biz.name }}</h2>
                 <span class="detail-cat">{{ biz.categoryName }} • {{ biz.status }}</span>

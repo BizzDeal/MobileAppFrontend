@@ -9,6 +9,7 @@ import { imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagO
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { environment } from '../../../../../environments/environment';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-offer-form',
@@ -16,7 +17,8 @@ import { environment } from '../../../../../environments/environment';
   imports: [
     CommonModule, 
     ReactiveFormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, IonDatetime, IonDatetimeButton, IonModal
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, IonDatetime, IonDatetimeButton, IonModal,
+    CachedImgDirective
   ],
   templateUrl: './offer-form.page.html',
   styleUrls: ['./offer-form.page.scss'],

@@ -27,6 +27,7 @@ import {
 import { ChatConversation, ChatMessage } from '../../models/chat.model';
 import { ChatService } from '../../services/chat.service';
 import { StartChatModalComponent } from '../start-chat-modal/start-chat-modal.component';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-conversation-list',
@@ -42,7 +43,8 @@ import { StartChatModalComponent } from '../start-chat-modal/start-chat-modal.co
     IonFabButton,
     IonModal,
     IonBadge,
-    StartChatModalComponent
+    StartChatModalComponent,
+    CachedImgDirective
   ],
   templateUrl: './conversation-list.component.html',
   styleUrl: './conversation-list.component.scss',

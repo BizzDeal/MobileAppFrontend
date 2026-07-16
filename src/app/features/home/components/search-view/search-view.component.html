@@ -43,7 +43,7 @@
         <div class="results-list">
           @for (biz of filteredBusinesses(); track biz.id) {
             <div class="result-card business-item" (click)="businessClick.emit(biz)">
-              <div class="card-thumbnail" [style.background-image]="'url(' + biz.logoUrl + ')'"></div>
+              <div class="card-thumbnail" [appCachedBgImg]="biz.logoUrl"></div>
               
               <div class="card-info">
                 <div class="card-header">
@@ -85,7 +85,7 @@
         <div class="results-list">
           @for (offer of filteredOffers(); track offer.id) {
             <div class="result-card offer-item" (click)="offerClick.emit(offer)">
-              <div class="card-thumbnail" [style.background-image]="'url(' + offer.imageUrl + ')'">
+              <div class="card-thumbnail" [appCachedBgImg]="offer.imageUrl">
                 <span class="discount-banner">
                   {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '% OFF' : '₹' + offer.discount_value + ' OFF' }}
                 </span>

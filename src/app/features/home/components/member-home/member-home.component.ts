@@ -11,11 +11,12 @@ import { OfferDTO } from '../../models/home.model';
 import { CommonModule } from '@angular/common';
 import { MeetingsService, AttendeeStatus } from '../../../meetings/services/meetings.service';
 import { MeetingCardComponent } from '../../../meetings/components/meeting-card/meeting-card.component';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-member-home',
   standalone: true,
-  imports: [CommonModule, IonIcon, IonSpinner, OfferCardComponent, MeetingCardComponent],
+  imports: [CommonModule, IonIcon, IonSpinner, OfferCardComponent, MeetingCardComponent, CachedImgDirective],
   templateUrl: './member-home.component.html',
   styleUrls: ['./member-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

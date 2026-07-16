@@ -18,6 +18,7 @@ import {
 import { addIcons } from 'ionicons';
 import { cameraOutline, caretDownOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { MemberRegistrationService } from './member-registration.service';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-member-registration',
@@ -37,6 +38,7 @@ import { MemberRegistrationService } from './member-registration.service';
     IonSelect,
     IonSelectOption,
     IonTextarea,
+    CachedImgDirective
   ],
   providers: [MemberRegistrationService],
   templateUrl: './member-registration.page.html',

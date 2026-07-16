@@ -3,11 +3,12 @@ import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForwardOutline, flameOutline, starOutline, timeOutline } from 'ionicons/icons';
 import { BusinessDTO, OfferDTO } from '../../models/home.model';
+import { CachedBgImgDirective } from '../../../../shared/directives/cached-bg-img.directive';
 
 @Component({
   selector: 'app-hero-carousel',
   standalone: true,
-  imports: [IonIcon],
+  imports: [IonIcon, CachedBgImgDirective],
   templateUrl: './hero-carousel.component.html',
   styleUrl: './hero-carousel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

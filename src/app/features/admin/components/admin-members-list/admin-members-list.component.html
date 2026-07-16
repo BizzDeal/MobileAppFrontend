@@ -2,7 +2,7 @@
   <ion-list *ngIf="!loading; else skeleton" lines="none" class="p-0 m-0 bg-transparent">
     <ion-item *ngFor="let member of filteredMembers" button (click)="viewUser(member)" detail="true" class="premium-item">
       <ion-avatar slot="start" class="premium-avatar">
-        <img [src]="member.profile_pic_url || getFallbackAvatar(member.full_name)" alt="avatar" (error)="member.profile_pic_url = getFallbackAvatar(member.full_name)">
+        <img [appCachedImg]="member.profile_pic_url || getFallbackAvatar(member.full_name)" alt="avatar" (error)="member.profile_pic_url = getFallbackAvatar(member.full_name)">
       </ion-avatar>
       <ion-label>
         <h2 class="font-bold text-dark">{{ member.full_name }}</h2>

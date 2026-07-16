@@ -57,12 +57,16 @@ import { MeetingsPageComponent } from '../features/meetings/pages/meetings-page/
 import { VouchersViewComponent } from '../features/vouchers/components/vouchers-view/vouchers-view.component';
 import { CustomerVouchersService } from '../features/vouchers/services/customer-vouchers.service';
 import { AuthSessionService } from '../core/services/auth-session.service';
+import { CachedImgDirective } from '../shared/directives/cached-img.directive';
+import { CachedBgImgDirective } from '../shared/directives/cached-bg-img.directive';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     DatePipe,
+    CachedImgDirective,
+    CachedBgImgDirective,
     IonContent,
     IonRefresher,
     IonRefresherContent,
@@ -307,6 +311,10 @@ export class HomePage {
 
   closeNotificationsModal(): void {
     this.isNotificationsModalOpen.set(false);
+  }
+
+  encodeUri(str: string): string {
+    return encodeURIComponent(str || '');
   }
 
   copyVoucherCode(code: string): void {

@@ -54,7 +54,7 @@
       <label class="upload-box" [class.has-file]="payService.receiptPreview()" for="receiptInput">
         @if (payService.receiptPreview()) {
           <div class="preview-container">
-            <img [src]="payService.receiptPreview()" alt="Payment receipt preview" class="receipt-img" />
+            <img [appCachedImg]="payService.receiptPreview()" alt="Payment receipt preview" class="receipt-img" />
             <div class="file-info">
               <ion-icon name="checkmark-circle-outline" class="success-icon"></ion-icon>
               <span class="file-name">{{ payService.receiptFileName() }}</span>

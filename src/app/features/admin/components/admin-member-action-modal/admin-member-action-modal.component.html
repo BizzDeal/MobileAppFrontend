@@ -13,7 +13,7 @@
   <div class="member-details">
     <div class="header-profile">
       <ion-avatar class="member-avatar">
-        <img [src]="member.profile_pic_url || 'assets/default-avatar.png'" (error)="member.profile_pic_url = 'assets/default-avatar.png'" alt="Member Photo">
+        <img [appCachedImg]="member.profile_pic_url || 'assets/default-avatar.png'" (error)="member.profile_pic_url = 'assets/default-avatar.png'" alt="Member Photo">
       </ion-avatar>
       <div class="profile-meta">
         <h2 class="font-bold text-dark text-lg">{{ member.full_name }}</h2>

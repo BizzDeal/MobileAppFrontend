@@ -5,6 +5,8 @@ import { IonicModule } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { StatusBarService } from './core/platform/statusbar.service';
+import { PermissionsService } from './core/platform/permissions.service';
+import { NotificationService } from './features/notifications/services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -22,12 +24,15 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private statusBarService: StatusBarService
+    private statusBarService: StatusBarService,
+    private permissionsService: PermissionsService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.statusBarService.initialize();
-    this.requestMediaPermissions();
+    this.permissionsService.requestStartupPermissions();
+    this.notificationService.registerDeviceOnStartup();
     this.updateRouteState(this.router.url);
 
     this.routerSub = this.router.events
@@ -36,19 +41,6 @@ export class AppComponent implements OnInit, OnDestroy {
         const url = event instanceof NavigationStart ? event.url : event.urlAfterRedirects;
         this.updateRouteState(url);
       });
-  }
-
-  private async requestMediaPermissions(): Promise<void> {
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        // Request both audio and video permissions
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        // Immediately stop the tracks so the camera/mic indicator turns off
-        stream.getTracks().forEach(track => track.stop());
-      }
-    } catch (err) {
-      console.log('Media permissions not granted or not supported initially.', err);
-    }
   }
 
   private updateRouteState(url: string = ''): void {

@@ -17,6 +17,7 @@ import {
   documentTextOutline,
 } from 'ionicons/icons';
 import { MemberPaymentService } from './member-payment.service';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-member-payment',
@@ -30,6 +31,7 @@ import { MemberPaymentService } from './member-payment.service';
     IonButtons,
     IonBackButton,
     IonIcon,
+    CachedImgDirective
   ],
   providers: [MemberPaymentService],
   templateUrl: './member-payment.page.html',

@@ -28,7 +28,7 @@
         <ion-item button (click)="onSelect(c)" class="contact-item">
           <div class="avatar-wrapper" slot="start">
             @if (c.profile_pic_url) {
-              <img [src]="c.profile_pic_url" alt="{{ c.full_name }}" class="contact-avatar" />
+              <img [appCachedImg]="c.profile_pic_url" alt="{{ c.full_name }}" class="contact-avatar" />
             } @else {
               <div class="avatar-placeholder">
                 <ion-icon name="person-outline" />

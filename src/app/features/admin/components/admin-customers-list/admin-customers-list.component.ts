@@ -4,11 +4,12 @@ import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AdminUsersService } from '../../services/admin-users.service';
 import { AdminCustomer, UserStatus } from '../../models/admin-user.model';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-admin-customers-list',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, CachedImgDirective],
   templateUrl: './admin-customers-list.component.html',
   styleUrls: ['./admin-customers-list.component.scss']
 })

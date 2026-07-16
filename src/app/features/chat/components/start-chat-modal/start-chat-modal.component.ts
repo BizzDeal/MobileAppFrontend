@@ -17,6 +17,7 @@ import { addIcons } from 'ionicons';
 import { closeOutline, personOutline, searchOutline } from 'ionicons/icons';
 import { ChatPartner } from '../../models/chat.model';
 import { ChatService } from '../../services/chat.service';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-start-chat-modal',
@@ -33,7 +34,8 @@ import { ChatService } from '../../services/chat.service';
     IonSearchbar,
     IonList,
     IonItem,
-    IonLabel
+    IonLabel,
+    CachedImgDirective
   ],
   templateUrl: './start-chat-modal.component.html',
   styleUrl: './start-chat-modal.component.scss',

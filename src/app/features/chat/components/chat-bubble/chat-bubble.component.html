@@ -18,7 +18,7 @@
         <!-- 2. Image Message -->
         @if (message().message_type === 'IMAGE') {
           <div class="image-content" (click)="$event.stopPropagation(); openImage()">
-            <img [src]="message().media_url" alt="Attached photo" class="bubble-img" />
+            <img [appCachedImg]="message().media_url" alt="Attached photo" class="bubble-img" />
             @if (message().message) {
               <p class="message-text caption">{{ message().message }}</p>
             }

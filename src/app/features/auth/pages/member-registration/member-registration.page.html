@@ -19,7 +19,7 @@
       <div class="photo-upload-section">
       <label class="photo-upload-circle" for="profilePhotoInput">
         @if (regService.photoPreview()) {
-          <img [src]="regService.photoPreview()" alt="Profile preview" class="preview-img" />
+          <img [appCachedImg]="regService.photoPreview()" alt="Profile preview" class="preview-img" />
         } @else {
           <ion-icon name="camera-outline" class="camera-icon"></ion-icon>
         }

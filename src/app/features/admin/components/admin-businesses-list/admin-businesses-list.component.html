@@ -3,7 +3,7 @@
     <ion-item-sliding *ngFor="let business of filteredBusinesses">
       <ion-item button detail="true" class="premium-item" (click)="viewBusiness(business)">
         <div slot="start" class="premium-business-logo">
-          <img [src]="business.logo_url || getFallbackAvatar(business.name)" [alt]="business.name" (error)="business.logo_url = getFallbackAvatar(business.name)" />
+          <img [appCachedImg]="business.logo_url || getFallbackAvatar(business.name)" [alt]="business.name" (error)="business.logo_url = getFallbackAvatar(business.name)" />
         </div>
         <ion-label class="w-full">
           <h2 class="font-bold text-dark flex items-center">

@@ -33,6 +33,7 @@ import {
 } from 'ionicons/icons';
 import { ProfileService } from '../../services/profile.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
   selector: 'app-profile-view',
@@ -48,7 +49,8 @@ import { AuthSessionService } from '../../../../core/services/auth-session.servi
     IonSelect,
     IonSelectOption,
     IonTextarea,
-    IonToast
+    IonToast,
+    CachedImgDirective
   ],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.scss',

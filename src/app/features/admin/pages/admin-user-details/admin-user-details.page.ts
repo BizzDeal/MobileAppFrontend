@@ -12,12 +12,13 @@ import {
   businessOutline, documentTextOutline, globeOutline, imageOutline
 } from 'ionicons/icons';
 import mediumZoom, { Zoom } from 'medium-zoom';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 
 @Component({
   selector: 'app-admin-user-details',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, CachedImgDirective],
   templateUrl: './admin-user-details.page.html',
   styleUrls: ['./admin-user-details.page.scss']
 })

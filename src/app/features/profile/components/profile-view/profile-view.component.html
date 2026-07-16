@@ -28,7 +28,7 @@
       <div class="avatar-wrapper">
         @if (selectedPhotoUrl() && !picLoadError()) {
           <img 
-            [src]="selectedPhotoUrl()" 
+            [appCachedImg]="selectedPhotoUrl()" 
             (error)="picLoadError.set(true)"
             alt="Avatar Preview" 
             class="profile-avatar" />
@@ -222,7 +222,7 @@
           <div class="business-logo-picker" style="width: 100%; height: 140px; margin-bottom: 1.5rem; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--bizzdeal-border-color);">
             @if (selectedBusinessLogoUrl() && !logoLoadError()) {
               <img
-                [src]="selectedBusinessLogoUrl()"
+                [appCachedImg]="selectedBusinessLogoUrl()"
                 (error)="logoLoadError.set(true)"
                 alt="Brand Image Preview"
                 style="width: 100%; height: 100%; object-fit: cover;" />

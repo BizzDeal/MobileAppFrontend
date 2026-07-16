@@ -4,6 +4,7 @@ import { Observable, of, throwError, firstValueFrom } from 'rxjs';
 import { catchError, tap, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { ImageCacheService } from '../../../core/platform/image-cache.service';
 import { ProfileDTO } from '../models/profile.model';
 import { LocationState, LocationDistrict } from '../../auth/services/member-onboarding.service';
 
@@ -13,6 +14,7 @@ import { LocationState, LocationDistrict } from '../../auth/services/member-onbo
 export class ProfileService {
   private readonly http = inject(HttpClient);
   private readonly authSession = inject(AuthSessionService);
+  private readonly imageCache = inject(ImageCacheService);
   private readonly apiUrl = environment.apiUrl;
 
   private readonly _profile = signal<ProfileDTO | null>(null);
@@ -212,6 +214,12 @@ export class ProfileService {
             updated_at: new Date().toISOString(),
           };
           this._profile.set(updated);
+          if (updated.profile_pic_url) {
+            this.imageCache.invalidateImage(updated.profile_pic_url);
+          }
+          if (updated.business_logo_url) {
+            this.imageCache.invalidateImage(updated.business_logo_url);
+          }
           const cu = this.authSession.currentUser();
           if (cu) {
             this.authSession.updateCurrentUser({
@@ -244,6 +252,9 @@ export class ProfileService {
   }
 
   updateProfilePic(fileUrl: string): void {
+    if (fileUrl) {
+      this.imageCache.invalidateImage(fileUrl);
+    }
     const currentProfile = this._profile();
     if (currentProfile) {
       this._profile.set({

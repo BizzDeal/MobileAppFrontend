@@ -1,98 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, delay, tap } from 'rxjs/operators';
+import { forkJoin, Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 import { WalletDTO, WalletTransactionDTO } from '../models/wallet.model';
-
-const MOCK_WALLET: WalletDTO = {
-  id: 'wallet-101',
-  user_id: 'cust-101',
-  balance: 2450.00,
-  total_savings: 8920.50,
-  created_at: '2026-01-15T10:00:00Z',
-  updated_at: '2026-07-08T10:00:00Z',
-};
-
-const MOCK_TRANSACTIONS: WalletTransactionDTO[] = [
-  {
-    id: 'tx-201',
-    wallet_id: 'wallet-101',
-    user_id: 'cust-101',
-    type: 'SAVING',
-    amount: 150.00,
-    description: 'Cashback from The Artisan Roast Café',
-    reference_type: 'VOUCHER',
-    reference_id: 'vouch-1',
-    created_at: '2026-07-08T09:30:00Z',
-    updated_at: '2026-07-08T09:30:00Z',
-  },
-  {
-    id: 'tx-202',
-    wallet_id: 'wallet-101',
-    user_id: 'cust-101',
-    type: 'DEBIT',
-    amount: 500.00,
-    description: 'Redeemed voucher at Vogue Avenue Boutique',
-    reference_type: 'VOUCHER',
-    reference_id: 'vouch-2',
-    created_at: '2026-07-07T18:15:00Z',
-    updated_at: '2026-07-07T18:15:00Z',
-  },
-  {
-    id: 'tx-203',
-    wallet_id: 'wallet-101',
-    user_id: 'cust-101',
-    type: 'SAVING',
-    amount: 350.00,
-    description: 'Cashback from Zenith Spa & Sanctuary',
-    reference_type: 'VOUCHER',
-    reference_id: 'vouch-3',
-    created_at: '2026-07-06T14:20:00Z',
-    updated_at: '2026-07-06T14:20:00Z',
-  },
-  {
-    id: 'tx-204',
-    wallet_id: 'wallet-101',
-    user_id: 'cust-101',
-    type: 'CREDIT',
-    amount: 1000.00,
-    description: 'Refund processed by Admin',
-    reference_type: 'MANUAL',
-    reference_id: null,
-    created_at: '2026-07-05T10:00:00Z',
-    updated_at: '2026-07-05T10:00:00Z',
-  },
-  {
-    id: 'tx-205',
-    wallet_id: 'wallet-101',
-    user_id: 'cust-101',
-    type: 'SAVING',
-    amount: 120.00,
-    description: 'Referral reward for inviting Rohan Sharma',
-    reference_type: 'REFERRAL',
-    reference_id: 'ref-301',
-    created_at: '2026-07-02T11:45:00Z',
-    updated_at: '2026-07-02T11:45:00Z',
-  },
-  {
-    id: 'tx-206',
-    wallet_id: 'wallet-101',
-    user_id: 'cust-101',
-    type: 'DEBIT',
-    amount: 250.00,
-    description: 'Purchase at Bistro 57 Gourmet & Bar',
-    reference_type: 'VOUCHER',
-    reference_id: 'vouch-4',
-    created_at: '2026-06-30T20:30:00Z',
-    updated_at: '2026-06-30T20:30:00Z',
-  }
-];
 
 @Injectable({
   providedIn: 'root',
 })
 export class WalletService {
   private readonly http = inject(HttpClient);
+  private readonly apiUrl = environment.apiUrl;
 
   private readonly _wallet = signal<WalletDTO | null>(null);
   private readonly _transactions = signal<WalletTransactionDTO[]>([]);
@@ -105,16 +23,46 @@ export class WalletService {
   readonly error = this._error.asReadonly();
 
   constructor() {
-    this.loadWalletData().subscribe();
+    this.loadWalletData().subscribe({
+      error: (err) => console.error('Initial wallet data load encountered error:', err),
+    });
   }
 
   loadWalletData(): Observable<{ wallet: WalletDTO; transactions: WalletTransactionDTO[] }> {
     this._loading.set(true);
     this._error.set(null);
 
-    // Mimic API delay and return the mock data structures
-    return of({ wallet: MOCK_WALLET, transactions: MOCK_TRANSACTIONS }).pipe(
-      delay(400),
+    return forkJoin({
+      balanceRes: this.http.get<any>(`${this.apiUrl}/wallet/balance`),
+      historyRes: this.http.get<any>(`${this.apiUrl}/wallet/history`)
+    }).pipe(
+      map(({ balanceRes, historyRes }) => {
+        const w = balanceRes?.data || balanceRes || {};
+        const wallet: WalletDTO = {
+          id: w.id || 'wallet',
+          user_id: w.user_id || 'user',
+          balance: Number(w.balance || 0),
+          total_savings: Number(w.total_savings || 0),
+          created_at: w.created_at || new Date().toISOString(),
+          updated_at: w.updated_at || new Date().toISOString()
+        };
+
+        const rawTx: any[] = Array.isArray(historyRes) ? historyRes : historyRes?.data || historyRes?.items || [];
+        const transactions: WalletTransactionDTO[] = rawTx.map((t) => ({
+          id: t.id,
+          wallet_id: t.wallet_id || wallet.id,
+          user_id: t.user_id || wallet.user_id,
+          type: t.type || 'SAVING',
+          amount: Number(t.amount || 0),
+          description: t.description || null,
+          reference_type: t.reference_type || null,
+          reference_id: t.reference_id || null,
+          created_at: t.created_at || new Date().toISOString(),
+          updated_at: t.updated_at || new Date().toISOString()
+        }));
+
+        return { wallet, transactions };
+      }),
       tap({
         next: (data) => {
           this._wallet.set(data.wallet);
@@ -122,7 +70,7 @@ export class WalletService {
           this._loading.set(false);
         },
         error: (err) => {
-          const errMsg = err?.message || 'Failed to retrieve wallet information';
+          const errMsg = err?.error?.message || err?.message || 'Failed to retrieve wallet information from server';
           this._error.set(errMsg);
           this._loading.set(false);
         },

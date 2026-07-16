@@ -2,21 +2,17 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
 import {
   IonBadge,
-  IonFab,
-  IonFabButton,
   IonHeader,
   IonIcon,
   IonItem,
   IonLabel,
   IonList,
-  IonModal,
   IonSearchbar,
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  addOutline,
   chatbubbleEllipsesOutline,
   documentTextOutline,
   imageOutline,
@@ -24,9 +20,8 @@ import {
   personOutline,
   searchOutline
 } from 'ionicons/icons';
-import { ChatConversation, ChatMessage } from '../../models/chat.model';
+import { ChatMessage } from '../../models/chat.model';
 import { ChatService } from '../../services/chat.service';
-import { StartChatModalComponent } from '../start-chat-modal/start-chat-modal.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 @Component({
@@ -39,11 +34,7 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
     IonItem,
     IonLabel,
     IonSearchbar,
-    IonFab,
-    IonFabButton,
-    IonModal,
     IonBadge,
-    StartChatModalComponent,
     CachedImgDirective
   ],
   templateUrl: './conversation-list.component.html',
@@ -56,25 +47,64 @@ export class ConversationListComponent {
   readonly selectConversation = output<string>();
 
   readonly conversations = this.chatService.conversations;
+  readonly contactsDirectory = this.chatService.contactsDirectory;
   readonly onlineUsers = this.chatService.onlineUsers;
 
   readonly searchFilter = signal<string>('');
-  readonly isNewChatOpen = signal<boolean>(false);
 
-  readonly filteredConversations = computed(() => {
-    const list = this.conversations();
+  readonly unifiedList = computed(() => {
+    const convs = this.conversations();
+    const contacts = this.contactsDirectory();
+
+    const map = new Map<string, any>();
+    contacts.forEach(contact => {
+      map.set(contact.id, {
+        contact,
+        conversationId: null,
+        unread_count: 0,
+        last_message_at: null,
+      });
+    });
+
+    convs.forEach(conv => {
+      if (map.has(conv.partner.id)) {
+        const item = map.get(conv.partner.id)!;
+        item.conversationId = conv.id;
+        item.unread_count = conv.unread_count;
+        item.last_message_at = conv.last_message_at;
+      } else {
+        map.set(conv.partner.id, {
+          contact: conv.partner,
+          conversationId: conv.id,
+          unread_count: conv.unread_count,
+          last_message_at: conv.last_message_at,
+        });
+      }
+    });
+
+    return Array.from(map.values()).sort((a, b) => {
+      if (a.contact.role === 'ADMIN' && b.contact.role !== 'ADMIN') return -1;
+      if (b.contact.role === 'ADMIN' && a.contact.role !== 'ADMIN') return 1;
+      
+      const timeA = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
+      const timeB = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
+      return timeB - timeA;
+    });
+  });
+
+  readonly filteredUnifiedList = computed(() => {
+    const list = this.unifiedList();
     const query = this.searchFilter().toLowerCase().trim();
     if (!query) return list;
-    return list.filter(c =>
-      c.partner.full_name.toLowerCase().includes(query) ||
-      c.partner.phone.toLowerCase().includes(query)
+    return list.filter(item =>
+      item.contact.full_name.toLowerCase().includes(query) ||
+      item.contact.phone.toLowerCase().includes(query)
     );
   });
 
   constructor() {
     addIcons({
       chatbubbleEllipsesOutline,
-      addOutline,
       searchOutline,
       personOutline,
       imageOutline,
@@ -88,24 +118,16 @@ export class ConversationListComponent {
     this.searchFilter.set(val);
   }
 
-  onSelectConversation(conv: ChatConversation): void {
-    this.selectConversation.emit(conv.id);
+  onSelectUnified(item: any): void {
+    if (item.conversationId) {
+      this.selectConversation.emit(item.conversationId);
+    } else {
+      this.chatService.createOrGetConversation(item.contact.id);
+    }
   }
 
-  openNewChat(): void {
-    this.isNewChatOpen.set(true);
-  }
-
-  closeNewChat(): void {
-    this.isNewChatOpen.set(false);
-  }
-
-  onSelectContact(partnerId: string): void {
-    this.chatService.createOrGetConversation(partnerId);
-    this.closeNewChat();
-  }
-
-  getLastMessage(conversationId: string): ChatMessage | null {
+  getLastMessage(conversationId: string | null): ChatMessage | null {
+    if (!conversationId) return null;
     return this.chatService.getLastMessage(conversationId);
   }
 

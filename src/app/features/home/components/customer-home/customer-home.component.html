@@ -8,66 +8,66 @@
   (searchChange)="searchChange.emit($event)"
   (searchSubmit)="searchSubmit.emit($event)" />
 
-<!-- 2. Hero Carousel / Banners -->
-<app-hero-carousel 
-  [featuredBusinesses]="feed.featuredBusinesses"
-  [megaDeals]="feed.megaDeals"
-  (dealClick)="dealClick.emit($event)"
-  (businessClick)="businessClick.emit($event)" />
-
-<!-- 3. Quick Categories (Chips/Grid) -->
+<!-- 2. Quick Categories (Chips/Grid) -->
 <app-category-chips 
   [categories]="feed.categories"
   [selectedCategoryId]="selectedCategory"
   (categorySelect)="categorySelect.emit($event)" />
 
-<!-- 4. Quick Access Actions (Floating / distinct row) -->
-<app-quick-actions 
-  [activeVouchersCount]="feed.myActiveVouchers.length"
-  (vouchersClick)="vouchersClick.emit()" />
 
-<!-- 5. Main Content Feeds (Horizontal Scrolling Sections) -->
+<!-- 4. Mega Deals Carousel -->
+<app-hero-carousel 
+  [title]="'Mega Deals'"
+  [icon]="'flame-outline'"
+  [featuredBusinesses]="[]"
+  [megaDeals]="filteredMegaDeals"
+  (dealClick)="dealClick.emit($event)" />
 
-<!-- Trending Offers Section -->
+<!-- 5. Trending Offers Carousel -->
+<app-hero-carousel 
+  [title]="selectedCategory === 'ALL' ? 'Trending Offers' : 'Filtered Offers'"
+  [icon]="'sparkles-outline'"
+  [featuredBusinesses]="[]"
+  [megaDeals]="filteredTrending"
+  (dealClick)="dealClick.emit($event)" />
+
+<!-- 5. Featured Businesses Section -->
 <section class="feed-section">
   <div class="section-header">
     <div class="header-left">
-      <ion-icon name="sparkles-outline" class="section-icon spark" />
-      <h2 class="section-title">
-        {{ selectedCategory === 'ALL' ? 'Trending Offers' : 'Filtered Offers' }}
-      </h2>
+      <ion-icon name="star-outline" class="section-icon spark" style="color: var(--ion-color-warning);" />
+      <h2 class="section-title">Featured Businesses</h2>
     </div>
-    <span class="count-hint">{{ filteredTrending.length }} deals</span>
+    <span class="count-hint">{{ filteredFeaturedBiz.length }} stores</span>
   </div>
 
-  @if (filteredTrending.length > 0) {
+  @if (filteredFeaturedBiz.length > 0) {
     <div class="horizontal-scroll-feed">
-      @for (offer of filteredTrending; track offer.id) {
-        <app-offer-card 
-          [offer]="offer"
-          (claimClick)="claimOffer.emit($event)"
-          (cardClick)="dealClick.emit($event)" />
+      @for (biz of filteredFeaturedBiz; track biz.id) {
+        <app-business-card 
+          [business]="biz"
+          (businessClick)="businessClick.emit($event)" />
       }
     </div>
   } @else {
     <div class="empty-feed">
-      <p>No trending offers found for this search or category.</p>
+      <p>No featured businesses found.</p>
     </div>
   }
 </section>
 
-<!-- Recommended Businesses Section -->
-<section class="feed-section mb-extra">
+<!-- 6. Top Businesses Section -->
+<section class="feed-section">
   <div class="section-header">
     <div class="header-left">
-      <h2 class="section-title">Recommended Businesses</h2>
+      <h2 class="section-title">Top Businesses</h2>
     </div>
-    <span class="count-hint">{{ filteredBiz.length }} stores</span>
+    <span class="count-hint">{{ filteredTopBiz.length }} stores</span>
   </div>
 
-  @if (filteredBiz.length > 0) {
+  @if (filteredTopBiz.length > 0) {
     <div class="horizontal-scroll-feed">
-      @for (biz of filteredBiz; track biz.id) {
+      @for (biz of filteredTopBiz; track biz.id) {
         <app-business-card 
           [business]="biz"
           (businessClick)="businessClick.emit($event)" />
@@ -79,3 +79,16 @@
     </div>
   }
 </section>
+
+<!-- 6. Quick Access Actions (Floating / distinct row - moved to bottom as Vouchers) -->
+<section class="feed-section mb-extra">
+  <div class="section-header">
+    <div class="header-left">
+      <h2 class="section-title">Quick Actions</h2>
+    </div>
+  </div>
+  <app-quick-actions 
+    [activeVouchersCount]="feed.myActiveVouchers.length"
+    (vouchersClick)="vouchersClick.emit()" />
+</section>
+

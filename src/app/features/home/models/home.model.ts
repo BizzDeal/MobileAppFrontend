@@ -101,6 +101,6 @@ export interface CustomerHomeFeedDTO {
   featuredBusinesses: BusinessDTO[];
   megaDeals: OfferDTO[];
   trendingOffers: OfferDTO[];
-  recommendedBusinesses: BusinessDTO[];
+  topBusinesses: BusinessDTO[];
   myActiveVouchers: VoucherDTO[];
 }

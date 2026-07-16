@@ -34,7 +34,9 @@
             [unreadNotificationsCount]="unreadNotificationsCount()"
             [selectedCategory]="selectedCategory()"
             [filteredTrending]="filteredTrendingBySearch()"
-            [filteredBiz]="filteredBizBySearch()"
+            [filteredTopBiz]="filteredTopBizBySearch()"
+            [filteredFeaturedBiz]="filteredFeaturedBySearch()"
+            [filteredMegaDeals]="filteredMegaDealsBySearch()"
             (walletClick)="onWalletClick()"
             (notificationClick)="onNotificationClick()"
             (searchChange)="onSearchChange($event)"
@@ -56,7 +58,7 @@
       <!-- Search View Component -->
       <app-search-view 
         [(searchQuery)]="searchQuery"
-        [businesses]="homeFeed()?.recommendedBusinesses || []"
+        [businesses]="homeFeed()?.topBusinesses || []"
         [offers]="homeFeed()?.trendingOffers || []"
         (businessClick)="onBusinessClick($event)"
         (offerClick)="onDealClick($event)" />

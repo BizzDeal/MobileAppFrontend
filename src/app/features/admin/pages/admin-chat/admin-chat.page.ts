@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import { ConversationListComponent } from '../../../chat/components/conversation-list/conversation-list.component';
 import { ChatRoomComponent } from '../../../chat/components/chat-room/chat-room.component';
 import { ChatService } from '../../../chat/services/chat.service';
@@ -11,9 +11,6 @@ import { ChatService } from '../../../chat/services/chat.service';
   imports: [
     CommonModule,
     IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
     ConversationListComponent,
     ChatRoomComponent
   ],

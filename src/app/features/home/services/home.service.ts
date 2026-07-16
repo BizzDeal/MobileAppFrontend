@@ -34,43 +34,13 @@ export class HomeService {
   readonly error = this._error.asReadonly();
   readonly selectedCategory = this._selectedCategory.asReadonly();
 
-  readonly filteredTrendingOffers = computed(() => {
-    const feed = this._homeFeed();
-    const cat = this._selectedCategory();
-    if (!feed) return [];
-    if (cat === 'ALL') return feed.trendingOffers;
-    const selectedCatObj = feed.categories.find(c => c.id === cat || c.slug === cat);
-    return feed.trendingOffers.filter(offer => {
-      const biz = feed.featuredBusinesses.find(b => b.id === offer.business_id) ||
-                  feed.recommendedBusinesses.find(b => b.id === offer.business_id);
-      if (biz && biz.category_id === cat) return true;
-      if (selectedCatObj && biz && biz.categoryName && biz.categoryName.toLowerCase() === selectedCatObj.name.toLowerCase()) return true;
-      if (selectedCatObj && biz && biz.categoryName && selectedCatObj.name.toLowerCase().includes(biz.categoryName.toLowerCase())) return true;
-      return false;
-    });
-  });
-
-  readonly filteredRecommendedBusinesses = computed(() => {
-    const feed = this._homeFeed();
-    const cat = this._selectedCategory();
-    if (!feed) return [];
-    if (cat === 'ALL') return feed.recommendedBusinesses;
-    const selectedCatObj = feed.categories.find(c => c.id === cat || c.slug === cat);
-    return feed.recommendedBusinesses.filter(biz => {
-      if (biz.category_id === cat) return true;
-      if (selectedCatObj && biz.categoryName && biz.categoryName.toLowerCase() === selectedCatObj.name.toLowerCase()) return true;
-      if (selectedCatObj && biz.categoryName && selectedCatObj.name.toLowerCase().includes(biz.categoryName.toLowerCase())) return true;
-      return false;
-    });
-  });
-
   constructor() {
     this.loadHomeFeed().subscribe({
       error: (err) => console.error('Initial home feed load encountered error:', err),
     });
   }
 
-  loadHomeFeed(): Observable<CustomerHomeFeedDTO> {
+  loadHomeFeed(categoryId: string = 'ALL'): Observable<CustomerHomeFeedDTO> {
     this._loading.set(true);
     this._error.set(null);
 
@@ -83,11 +53,14 @@ export class HomeService {
       address: currentProf?.address || currentUser?.address || '',
     };
 
+    const queryParam = categoryId !== 'ALL' ? `?category_id=${categoryId}` : '';
+
     return forkJoin({
       categories: this.http.get<any>(`${this.apiUrl}/businesses/categories`),
-      featuredBusinesses: this.http.get<any>(`${this.apiUrl}/businesses/featured`),
-      recommendedBusinesses: this.http.get<any>(`${this.apiUrl}/businesses`),
-      offers: this.http.get<any>(`${this.apiUrl}/offers`),
+      featuredBusinesses: this.http.get<any>(`${this.apiUrl}/businesses/featured${queryParam}`),
+      topBusinesses: this.http.get<any>(`${this.apiUrl}/businesses/top${queryParam}`),
+      megaDeals: this.http.get<any>(`${this.apiUrl}/offers/mega${queryParam}`),
+      trendingOffers: this.http.get<any>(`${this.apiUrl}/offers/trending${queryParam}`),
       vouchers: this.http.get<any>(`${this.apiUrl}/vouchers/customer`),
       wallet: this.http.get<any>(`${this.apiUrl}/wallet/balance`),
       notifications: this.http.get<any>(`${this.apiUrl}/notifications`),
@@ -129,9 +102,9 @@ export class HomeService {
           bannerUrl: b.bannerUrl || b.banner_url || null,
         }));
 
-        // Map Recommended Businesses (Only featured businesses come under recommended businesses)
-        const recRaw: any[] = Array.isArray(res.recommendedBusinesses) ? res.recommendedBusinesses : res.recommendedBusinesses?.data || res.recommendedBusinesses?.items || [];
-        const allMappedBusinesses: BusinessDTO[] = recRaw.map((b) => ({
+        // Map Top Businesses
+        const topRaw: any[] = Array.isArray(res.topBusinesses) ? res.topBusinesses : res.topBusinesses?.data || res.topBusinesses?.items || [];
+        const topBusinesses: BusinessDTO[] = topRaw.map((b) => ({
           id: b.id,
           owner_id: b.owner_id,
           category_id: b.category_id,
@@ -149,12 +122,9 @@ export class HomeService {
           bannerUrl: b.bannerUrl || b.banner_url || null,
         }));
 
-        const filteredRec = allMappedBusinesses.filter(b => b.is_featured === true || featuredBusinesses.some(fb => fb.id === b.id));
-        const recommendedBusinesses: BusinessDTO[] = filteredRec.length > 0 ? filteredRec : (featuredBusinesses.length > 0 ? [...featuredBusinesses] : allMappedBusinesses);
-
-        // Map Offers
-        const offersRaw: any[] = Array.isArray(res.offers) ? res.offers : res.offers?.data || res.offers?.items || [];
-        const allOffers: OfferDTO[] = offersRaw.map((o) => ({
+        // Map Mega Deals
+        const megaRaw: any[] = Array.isArray(res.megaDeals) ? res.megaDeals : res.megaDeals?.data || res.megaDeals?.items || [];
+        const megaDeals: OfferDTO[] = megaRaw.map((o) => ({
           id: o.id,
           business_id: o.business_id,
           title: o.title,
@@ -175,12 +145,28 @@ export class HomeService {
           imageUrl: o.imageUrl || o.image_url || null,
         }));
 
-        const megaDeals = allOffers.filter(o => 
-          (o.discount_type === 'PERCENTAGE' && (o.discount_value || 0) >= 30) ||
-          (o.discount_type === 'FIXED_AMOUNT' && (o.discount_value || 0) >= 500) ||
-          featuredBusinesses.some(fb => fb.id === o.business_id)
-        );
-        const trendingOffers = allOffers;
+        // Map Trending Offers
+        const trendingRaw: any[] = Array.isArray(res.trendingOffers) ? res.trendingOffers : res.trendingOffers?.data || res.trendingOffers?.items || [];
+        const trendingOffers: OfferDTO[] = trendingRaw.map((o) => ({
+          id: o.id,
+          business_id: o.business_id,
+          title: o.title,
+          description: o.description || '',
+          offer_type: o.offer_type || 'DISCOUNT',
+          discount_value: o.discount_value ?? null,
+          discount_type: o.discount_type || null,
+          start_date: o.start_date || new Date().toISOString(),
+          end_date: o.end_date || new Date().toISOString(),
+          image_id: o.image_id || null,
+          status: o.status || 'APPROVED',
+          approved_by_id: o.approved_by_id || null,
+          approved_at: o.approved_at || null,
+          created_at: o.created_at || new Date().toISOString(),
+          updated_at: o.updated_at || new Date().toISOString(),
+          businessName: o.businessName || o.business?.name || 'Partner Business',
+          businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || o.business?.logoUrl || null,
+          imageUrl: o.imageUrl || o.image_url || null,
+        }));
 
         // Map Vouchers
         const vouchersRaw: any[] = Array.isArray(res.vouchers) ? res.vouchers : res.vouchers?.data || res.vouchers?.items || [];
@@ -223,9 +209,9 @@ export class HomeService {
           unreadNotificationsCount,
           categories,
           featuredBusinesses,
+          topBusinesses,
           megaDeals,
           trendingOffers,
-          recommendedBusinesses,
           myActiveVouchers,
         };
 
@@ -250,11 +236,9 @@ export class HomeService {
   }
 
   selectCategory(categoryId: string): void {
-    if (this._selectedCategory() === categoryId) {
-      this._selectedCategory.set('ALL');
-    } else {
-      this._selectedCategory.set(categoryId);
-    }
+    const newCategory = this._selectedCategory() === categoryId ? 'ALL' : categoryId;
+    this._selectedCategory.set(newCategory);
+    this.loadHomeFeed(newCategory).subscribe();
   }
 
   claimOffer(offer: OfferDTO): Observable<VoucherDTO> {

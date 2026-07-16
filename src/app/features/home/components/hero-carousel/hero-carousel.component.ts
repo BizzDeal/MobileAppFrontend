@@ -14,8 +14,10 @@ import { CachedBgImgDirective } from '../../../../shared/directives/cached-bg-im
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeroCarouselComponent {
-  readonly featuredBusinesses = input.required<BusinessDTO[]>();
-  readonly megaDeals = input.required<OfferDTO[]>();
+  readonly title = input<string>('Spotlight & Mega Deals');
+  readonly icon = input<string>('flame-outline');
+  readonly featuredBusinesses = input<BusinessDTO[]>([]);
+  readonly megaDeals = input<OfferDTO[]>([]);
 
   readonly dealClick = output<OfferDTO>();
   readonly businessClick = output<BusinessDTO>();

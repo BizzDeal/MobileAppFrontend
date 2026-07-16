@@ -3,7 +3,6 @@ import { BusinessDTO, CustomerHomeFeedDTO, OfferDTO } from '../../models/home.mo
 import { HomeHeaderComponent } from '../home-header/home-header.component';
 import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
 import { CategoryChipsComponent } from '../category-chips/category-chips.component';
-import { OfferCardComponent } from '../offer-card/offer-card.component';
 import { BusinessCardComponent } from '../business-card/business-card.component';
 import { QuickActionsComponent } from '../quick-actions/quick-actions.component';
 import { IonIcon } from '@ionic/angular/standalone';
@@ -17,7 +16,6 @@ import { sparklesOutline } from 'ionicons/icons';
     HomeHeaderComponent,
     HeroCarouselComponent,
     CategoryChipsComponent,
-    OfferCardComponent,
     BusinessCardComponent,
     QuickActionsComponent,
     IonIcon
@@ -31,7 +29,9 @@ export class CustomerHomeComponent {
   @Input({ required: true }) unreadNotificationsCount!: number;
   @Input({ required: true }) selectedCategory!: string;
   @Input({ required: true }) filteredTrending!: OfferDTO[];
-  @Input({ required: true }) filteredBiz!: BusinessDTO[];
+  @Input({ required: true }) filteredTopBiz!: BusinessDTO[];
+  @Input({ required: true }) filteredFeaturedBiz!: BusinessDTO[];
+  @Input({ required: true }) filteredMegaDeals!: OfferDTO[];
 
   @Output() walletClick = new EventEmitter<void>();
   @Output() notificationClick = new EventEmitter<void>();

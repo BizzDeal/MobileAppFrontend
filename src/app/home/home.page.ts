@@ -116,8 +116,10 @@ export class HomePage {
   readonly loading = this.homeService.loading;
   readonly error = this.homeService.error;
   readonly selectedCategory = this.homeService.selectedCategory;
-  readonly trendingOffers = this.homeService.filteredTrendingOffers;
-  readonly recommendedBusinesses = this.homeService.filteredRecommendedBusinesses;
+  readonly trendingOffers = computed(() => this.homeFeed()?.trendingOffers || []);
+  readonly topBusinesses = computed(() => this.homeFeed()?.topBusinesses || []);
+  readonly featuredBusinesses = computed(() => this.homeFeed()?.featuredBusinesses || []);
+  readonly megaDeals = computed(() => this.homeFeed()?.megaDeals || []);
 
   readonly selectedConversationId = this.chatService.activeConversationId;
   readonly unreadNotificationsCount = this.notificationService.unreadCount;
@@ -141,14 +143,36 @@ export class HomePage {
     );
   });
 
-  readonly filteredBizBySearch = computed(() => {
-    const bizList = this.recommendedBusinesses();
+  readonly filteredTopBizBySearch = computed(() => {
+    const bizList = this.topBusinesses();
     const query = this.searchQuery().toLowerCase().trim();
     if (!query) return bizList;
     return bizList.filter(b => 
       b.name.toLowerCase().includes(query) || 
       (b.description && b.description.toLowerCase().includes(query)) ||
       (b.categoryName && b.categoryName.toLowerCase().includes(query))
+    );
+  });
+
+  readonly filteredFeaturedBySearch = computed(() => {
+    const bizList = this.featuredBusinesses();
+    const query = this.searchQuery().toLowerCase().trim();
+    if (!query) return bizList;
+    return bizList.filter(b => 
+      b.name.toLowerCase().includes(query) || 
+      (b.description && b.description.toLowerCase().includes(query)) ||
+      (b.categoryName && b.categoryName.toLowerCase().includes(query))
+    );
+  });
+
+  readonly filteredMegaDealsBySearch = computed(() => {
+    const deals = this.megaDeals();
+    const query = this.searchQuery().toLowerCase().trim();
+    if (!query) return deals;
+    return deals.filter(o => 
+      o.title.toLowerCase().includes(query) || 
+      o.description.toLowerCase().includes(query) ||
+      (o.businessName && o.businessName.toLowerCase().includes(query))
     );
   });
 

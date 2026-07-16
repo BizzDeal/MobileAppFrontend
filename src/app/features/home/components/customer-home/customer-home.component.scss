@@ -45,7 +45,7 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     gap: var(--bizzdeal-spacing-md);
-    padding: 0 var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-sm);
+    padding: 4px var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-lg);
     -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {

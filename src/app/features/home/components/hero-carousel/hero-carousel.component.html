@@ -1,16 +1,39 @@
-@if (megaDeals().length > 0) {
+@if (megaDeals().length > 0 || featuredBusinesses().length > 0) {
 <section class="hero-section">
   <!-- Section Header -->
   <div class="section-header">
     <div class="header-left">
-      <ion-icon name="flame-outline" class="section-icon flame" />
-      <h2 class="section-title">Spotlight & Mega Deals</h2>
+      <ion-icon [name]="icon()" class="section-icon flame" />
+      <h2 class="section-title">{{ title() }}</h2>
     </div>
     <span class="swipe-hint">Swipe to explore →</span>
   </div>
 
   <!-- Horizontal Scroll Carousel -->
   <div class="carousel-container" (scroll)="onScroll($event)">
+    <!-- Spotlight Businesses Banners -->
+    @for (biz of featuredBusinesses(); track biz.id) {
+      <div class="banner-card biz-banner" (click)="businessClick.emit(biz)">
+        <div class="banner-bg" [appCachedBgImg]="biz.bannerUrl || biz.logoUrl || null"></div>
+        <div class="banner-overlay biz-overlay"></div>
+        <div class="badge-row top-tags">
+          <span class="pill-badge biz-badge">
+            <ion-icon name="star-outline" /> SPOTLIGHT STORE
+          </span>
+        </div>
+        <div class="banner-content">
+          <h3 class="banner-title">{{ biz.name }}</h3>
+          <p class="banner-subtitle">{{ biz.categoryName }}</p>
+          <div class="banner-footer">
+            <span class="location-text">📍 Local Partner</span>
+            <button class="cta-btn biz-cta" type="button">
+              View Store <ion-icon name="arrow-forward-outline" />
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- Mega Deals Banners -->
     @for (deal of megaDeals(); track deal.id) {
       <div class="banner-card deal-banner" (click)="dealClick.emit(deal)">
@@ -40,8 +63,11 @@
 
   <!-- Pagination Dots -->
   <div class="carousel-dots">
-    @for (deal of megaDeals(); track deal.id; let i = $index) {
+    @for (biz of featuredBusinesses(); track biz.id; let i = $index) {
       <span class="dot" [class.active]="activeSlide() === i"></span>
+    }
+    @for (deal of megaDeals(); track deal.id; let i = $index) {
+      <span class="dot" [class.active]="activeSlide() === (i + featuredBusinesses().length)"></span>
     }
   </div>
 </section>

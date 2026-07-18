@@ -94,7 +94,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  min-height: 250px; /* Fixed space to prevent layout shifts */
 }
 
 /* Voucher Card Styling */
@@ -116,7 +115,31 @@
 
   &.issued {
     &::before {
-      background: #10b981; /* Green */
+      background: var(--ion-color-primary, #10b981); /* Default */
+    }
+
+    &.type-cashback {
+      border: 2px solid #10b981;
+      &::before { background: #10b981; width: 8px; }
+      background: rgba(16, 185, 129, 0.05);
+      .offer-title { color: #047857; }
+      .discount-badge { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    }
+
+    &.type-percentage {
+      border: 2px solid #f97316;
+      &::before { background: #f97316; width: 8px; }
+      background: rgba(249, 115, 22, 0.05);
+      .offer-title { color: #c2410c; }
+      .discount-badge { background: rgba(249, 115, 22, 0.15); color: #f97316; }
+    }
+
+    &.type-fixed {
+      border: 2px solid #8b5cf6;
+      &::before { background: #8b5cf6; width: 8px; }
+      background: rgba(139, 92, 246, 0.05);
+      .offer-title { color: #6d28d9; }
+      .discount-badge { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
     }
   }
 
@@ -322,8 +345,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 60px 32px;
-  min-height: 65vh;
+  padding: 40px 32px;
   width: 100%;
 }
 

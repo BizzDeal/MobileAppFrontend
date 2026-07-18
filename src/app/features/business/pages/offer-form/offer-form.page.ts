@@ -51,9 +51,8 @@ export class OfferFormPage implements OnInit {
     this.offerForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', Validators.required],
-      offer_type: ['', Validators.required],
+      offer_category: ['', Validators.required],
       discount_value: [null, [Validators.required, Validators.min(0)]],
-      discount_type: [null, Validators.required],
       start_date: [now.toISOString(), Validators.required],
       end_date: [nextMonth.toISOString(), Validators.required],
     }, { validators: this.dateValidator });
@@ -101,12 +100,18 @@ export class OfferFormPage implements OnInit {
   }
 
   private patchOfferValues(offer: any) {
+    let category = '';
+    if (offer.offer_type === 'DISCOUNT') {
+      category = offer.discount_type === 'PERCENTAGE' ? 'PERCENTAGE_DEAL' : 'FLAT_OFFER';
+    } else if (offer.offer_type === 'CASHBACK') {
+      category = 'CASHBACK';
+    }
+
     this.offerForm.patchValue({
       title: offer.title || '',
       description: offer.description || '',
-      offer_type: offer.offer_type || '',
+      offer_category: category,
       discount_value: offer.discount_value ?? null,
-      discount_type: offer.discount_type || null,
       start_date: offer.start_date || new Date().toISOString(),
       end_date: offer.end_date || new Date().toISOString(),
     });
@@ -190,13 +195,27 @@ export class OfferFormPage implements OnInit {
     const formData = new FormData();
     formData.append('title', formValues.title);
     formData.append('description', formValues.description);
-    formData.append('offer_type', formValues.offer_type);
+
+    let offerType = '';
+    let discountType = '';
+    if (formValues.offer_category === 'PERCENTAGE_DEAL') {
+      offerType = 'DISCOUNT';
+      discountType = 'PERCENTAGE';
+    } else if (formValues.offer_category === 'FLAT_OFFER') {
+      offerType = 'DISCOUNT';
+      discountType = 'FIXED_AMOUNT';
+    } else if (formValues.offer_category === 'CASHBACK') {
+      offerType = 'CASHBACK';
+      discountType = 'FIXED_AMOUNT';
+    }
+
+    formData.append('offer_type', offerType);
+    if (discountType) {
+      formData.append('discount_type', discountType);
+    }
 
     if (formValues.discount_value !== null && formValues.discount_value !== undefined && formValues.discount_value !== '') {
       formData.append('discount_value', String(formValues.discount_value));
-    }
-    if (formValues.discount_type) {
-      formData.append('discount_type', formValues.discount_type);
     }
     formData.append('start_date', new Date(formValues.start_date).toISOString());
     formData.append('end_date', new Date(formValues.end_date).toISOString());

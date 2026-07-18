@@ -100,7 +100,7 @@
         <!-- WhatsApp -->
         <div class="form-group">
           <label class="form-label" for="whatsapp">
-            WhatsApp Number @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
+            WhatsApp Number
           </label>
           <div class="input-wrapper">
             <ion-icon name="logo-whatsapp" class="input-icon"></ion-icon>
@@ -113,7 +113,7 @@
           </div>
           <div class="error-container">
             @if (profileForm.get('whatsapp')?.touched && profileForm.get('whatsapp')?.invalid) {
-              <span class="error-message">Valid 10-digit WhatsApp number is required</span>
+              <span class="error-message">Please enter a valid 10-digit WhatsApp number</span>
             }
           </div>
         </div>
@@ -139,79 +139,81 @@
           </div>
         </div>
 
-        <!-- State -->
-        <div class="form-group">
-          <label class="form-label" for="state_id">
-            State @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
-          </label>
-          <div class="input-wrapper">
-            <ion-icon name="map-outline" class="input-icon"></ion-icon>
-            <ion-select
-              id="state_id"
-              formControlName="state_id"
-              placeholder="Select State"
-              interface="action-sheet"
-              toggleIcon="caret-down-outline"
-              class="form-input">
-              @for (state of profileService.states(); track state.id) {
-                <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
+        @if (userRole() !== 'MEMBER') {
+          <!-- State -->
+          <div class="form-group">
+            <label class="form-label" for="state_id">
+              State @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
+            </label>
+            <div class="input-wrapper">
+              <ion-icon name="map-outline" class="input-icon"></ion-icon>
+              <ion-select
+                id="state_id"
+                formControlName="state_id"
+                placeholder="Select State"
+                interface="action-sheet"
+                toggleIcon="caret-down-outline"
+                class="form-input">
+                @for (state of profileService.states(); track state.id) {
+                  <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
+                }
+              </ion-select>
+            </div>
+            <div class="error-container">
+              @if (profileForm.get('state_id')?.touched && profileForm.get('state_id')?.invalid) {
+                <span class="error-message">State is required</span>
               }
-            </ion-select>
+            </div>
           </div>
-          <div class="error-container">
-            @if (profileForm.get('state_id')?.touched && profileForm.get('state_id')?.invalid) {
-              <span class="error-message">State is required</span>
-            }
-          </div>
-        </div>
 
-        <!-- District -->
-        <div class="form-group">
-          <label class="form-label" for="district_id">
-            District @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
-          </label>
-          <div class="input-wrapper">
-            <ion-icon name="location-outline" class="input-icon"></ion-icon>
-            <ion-select
-              id="district_id"
-              formControlName="district_id"
-              placeholder="Select District"
-              interface="action-sheet"
-              toggleIcon="caret-down-outline"
-              class="form-input"
-              [disabled]="!profileForm.controls['state_id'].value || profileService.districts().length === 0">
-              @for (district of profileService.districts(); track district.id) {
-                <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
+          <!-- District -->
+          <div class="form-group">
+            <label class="form-label" for="district_id">
+              District @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
+            </label>
+            <div class="input-wrapper">
+              <ion-icon name="location-outline" class="input-icon"></ion-icon>
+              <ion-select
+                id="district_id"
+                formControlName="district_id"
+                placeholder="Select District"
+                interface="action-sheet"
+                toggleIcon="caret-down-outline"
+                class="form-input"
+                [disabled]="!profileForm.controls['state_id'].value || profileService.districts().length === 0">
+                @for (district of profileService.districts(); track district.id) {
+                  <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
+                }
+              </ion-select>
+            </div>
+            <div class="error-container">
+              @if (profileForm.get('district_id')?.touched && profileForm.get('district_id')?.invalid) {
+                <span class="error-message">District is required</span>
               }
-            </ion-select>
+            </div>
           </div>
-          <div class="error-container">
-            @if (profileForm.get('district_id')?.touched && profileForm.get('district_id')?.invalid) {
-              <span class="error-message">District is required</span>
-            }
-          </div>
-        </div>
 
-        <!-- Physical Address -->
-        <div class="form-group">
-          <label class="form-label" for="address">
-            Physical Address @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
-          </label>
-          <div class="input-wrapper textarea-wrapper">
-            <ion-icon name="location-outline" class="input-icon textarea-icon"></ion-icon>
-            <ion-textarea
-              id="address"
-              formControlName="address"
-              class="form-input form-textarea"
-              rows="3"
-              placeholder="Enter physical address"></ion-textarea>
+          <!-- Physical Address -->
+          <div class="form-group">
+            <label class="form-label" for="address">
+              Physical Address @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
+            </label>
+            <div class="input-wrapper textarea-wrapper">
+              <ion-icon name="location-outline" class="input-icon textarea-icon"></ion-icon>
+              <ion-textarea
+                id="address"
+                formControlName="address"
+                class="form-input form-textarea"
+                rows="3"
+                placeholder="Enter physical address"></ion-textarea>
+            </div>
+            <div class="error-container">
+              @if (profileForm.get('address')?.touched && profileForm.get('address')?.invalid) {
+                <span class="error-message">Address is required</span>
+              }
+            </div>
           </div>
-          <div class="error-container">
-            @if (profileForm.get('address')?.touched && profileForm.get('address')?.invalid) {
-              <span class="error-message">Address is required</span>
-            }
-          </div>
-        </div>
+        }
       </div>
 
       @if (userRole() === 'MEMBER') {
@@ -262,6 +264,32 @@
             </div>
           </div>
 
+          <!-- Business Category -->
+          <div class="form-group">
+            <label class="form-label" for="category_id">
+              Business Category <span class="required-star">*</span>
+            </label>
+            <div class="input-wrapper">
+              <ion-icon name="business-outline" class="input-icon"></ion-icon>
+              <ion-select
+                id="category_id"
+                formControlName="category_id"
+                placeholder="Select Business Category"
+                interface="action-sheet"
+                toggleIcon="caret-down-outline"
+                class="form-input">
+                @for (cat of onboardingService.categories(); track cat.id) {
+                  <ion-select-option [value]="cat.id">{{ cat.name }}</ion-select-option>
+                }
+              </ion-select>
+            </div>
+            <div class="error-container">
+              @if (profileForm.get('category_id')?.touched && profileForm.get('category_id')?.invalid) {
+                <span class="error-message">Business category is required</span>
+              }
+            </div>
+          </div>
+
           <!-- Business Description -->
           <div class="form-group">
             <label class="form-label" for="business_description">
@@ -274,6 +302,80 @@
             <div class="error-container">
               @if (profileForm.get('business_description')?.touched && profileForm.get('business_description')?.invalid) {
                 <span class="error-message">Business description is required</span>
+              }
+            </div>
+          </div>
+
+          <!-- State -->
+          <div class="form-group">
+            <label class="form-label" for="state_id">
+              State <span class="required-star">*</span>
+            </label>
+            <div class="input-wrapper">
+              <ion-icon name="map-outline" class="input-icon"></ion-icon>
+              <ion-select
+                id="state_id"
+                formControlName="state_id"
+                placeholder="Select State"
+                interface="action-sheet"
+                toggleIcon="caret-down-outline"
+                class="form-input">
+                @for (state of profileService.states(); track state.id) {
+                  <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
+                }
+              </ion-select>
+            </div>
+            <div class="error-container">
+              @if (profileForm.get('state_id')?.touched && profileForm.get('state_id')?.invalid) {
+                <span class="error-message">State is required</span>
+              }
+            </div>
+          </div>
+
+          <!-- District -->
+          <div class="form-group">
+            <label class="form-label" for="district_id">
+              District <span class="required-star">*</span>
+            </label>
+            <div class="input-wrapper">
+              <ion-icon name="location-outline" class="input-icon"></ion-icon>
+              <ion-select
+                id="district_id"
+                formControlName="district_id"
+                placeholder="Select District"
+                interface="action-sheet"
+                toggleIcon="caret-down-outline"
+                class="form-input"
+                [disabled]="!profileForm.controls['state_id'].value || profileService.districts().length === 0">
+                @for (district of profileService.districts(); track district.id) {
+                  <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
+                }
+              </ion-select>
+            </div>
+            <div class="error-container">
+              @if (profileForm.get('district_id')?.touched && profileForm.get('district_id')?.invalid) {
+                <span class="error-message">District is required</span>
+              }
+            </div>
+          </div>
+
+          <!-- Business Address -->
+          <div class="form-group">
+            <label class="form-label" for="address">
+              Business Address <span class="required-star">*</span>
+            </label>
+            <div class="input-wrapper textarea-wrapper">
+              <ion-icon name="location-outline" class="input-icon textarea-icon"></ion-icon>
+              <ion-textarea
+                id="address"
+                formControlName="address"
+                class="form-input form-textarea"
+                rows="3"
+                placeholder="Enter business address"></ion-textarea>
+            </div>
+            <div class="error-container">
+              @if (profileForm.get('address')?.touched && profileForm.get('address')?.invalid) {
+                <span class="error-message">Address is required</span>
               }
             </div>
           </div>

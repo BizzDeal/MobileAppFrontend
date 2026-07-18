@@ -31,22 +31,8 @@
 }
 
 .form-section {
-  padding: var(--bizzdeal-spacing-lg);
-  background-color: var(--bizzdeal-bg-surface);
-  border-radius: var(--bizzdeal-radius-xl);
-  border: 1px solid var(--bizzdeal-border-color);
-  box-shadow: var(--bizzdeal-shadow-sm);
-
-  .section-title {
-    font-size: 14px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--bizzdeal-text-secondary);
-    margin: 0 0 var(--bizzdeal-spacing-lg) 0;
-    border-left: 3px solid var(--ion-color-primary);
-    padding-left: var(--bizzdeal-spacing-sm);
-  }
+  display: flex;
+  flex-direction: column;
 }
 
 .form-group {

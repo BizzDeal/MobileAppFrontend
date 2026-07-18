@@ -13,6 +13,17 @@ export interface BusinessCategory {
   is_active?: boolean;
 }
 
+export interface PaymentSettings {
+  id: number;
+  upi_id: string;
+  account_name: string;
+  registration_fee: number;
+  currency: string;
+  card_title: string;
+  card_subtitle: string;
+  benefits: string;
+}
+
 export interface LocationState {
   id: string;
   name: string;
@@ -64,8 +75,13 @@ export class MemberOnboardingService {
   readonly isLoadingDistricts = signal<boolean>(false);
   readonly districtsError = signal<string | null>(null);
 
+  readonly paymentSettings = signal<PaymentSettings | null>(null);
+  readonly isLoadingPaymentSettings = signal<boolean>(false);
+  readonly paymentSettingsError = signal<string | null>(null);
+
   readonly registrationData = signal<MemberRegistrationPayload | null>(null);
   readonly profilePicFile = signal<File | null>(null);
+  readonly businessLogoFile = signal<File | null>(null);
   readonly paymentReceiptFile = signal<File | null>(null);
   readonly isSubmitting = signal<boolean>(false);
 
@@ -130,10 +146,13 @@ export class MemberOnboardingService {
     }
   }
 
-  setRegistrationData(data: MemberRegistrationPayload, profilePic?: File | null): void {
+  setRegistrationData(data: MemberRegistrationPayload, profilePic?: File | null, businessLogo?: File | null): void {
     this.registrationData.set(data);
     if (profilePic !== undefined) {
       this.profilePicFile.set(profilePic || null);
+    }
+    if (businessLogo !== undefined) {
+      this.businessLogoFile.set(businessLogo || null);
     }
   }
 
@@ -177,6 +196,10 @@ export class MemberOnboardingService {
       if (profilePic) {
         formData.append('profile_pic', profilePic, profilePic.name);
       }
+      const businessLogo = this.businessLogoFile();
+      if (businessLogo) {
+        formData.append('business_logo', businessLogo, businessLogo.name);
+      }
       formData.append('payment_receipt', receipt, receipt.name);
 
       const res: any = await firstValueFrom(
@@ -189,6 +212,26 @@ export class MemberOnboardingService {
       return res;
     } finally {
       this.isSubmitting.set(false);
+    }
+  }
+
+  async fetchPaymentSettings(): Promise<void> {
+    this.isLoadingPaymentSettings.set(true);
+    this.paymentSettingsError.set(null);
+    try {
+      const res = await firstValueFrom(
+        this.http.get<any>(`${this.apiUrl}/payment-settings`)
+      );
+      const data = res?.data !== undefined ? res.data : res;
+      this.paymentSettings.set(data);
+    } catch (err: any) {
+      console.error('Failed to fetch payment settings from BE:', err);
+      this.paymentSettingsError.set(
+        err.error?.message || err.message || 'Failed to fetch payment settings from server.'
+      );
+      throw err;
+    } finally {
+      this.isLoadingPaymentSettings.set(false);
     }
   }
 }

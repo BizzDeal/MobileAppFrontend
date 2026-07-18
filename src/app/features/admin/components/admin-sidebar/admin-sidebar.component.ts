@@ -14,7 +14,8 @@ import {
   notificationsOutline,
   logOutOutline,
   chevronForwardOutline,
-  chatbubblesOutline
+  chatbubblesOutline,
+  cardOutline
 } from 'ionicons/icons';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 
@@ -155,6 +156,7 @@ export class AdminSidebarComponent {
     { title: 'Offers/Deals', url: '/admin/offers', icon: 'pricetags' },
     { title: 'Meetings', url: '/admin/meetings', icon: 'calendar' },
     { title: 'Chat', url: '/admin/chat', icon: 'chatbubbles' },
+    { title: 'Payment Details', url: '/admin/payment-details', icon: 'card' },
     { title: 'Notifications', url: '/admin/notifications', icon: 'notifications' },
     { title: 'Analytics', url: '/admin/analytics', icon: 'bar-chart' },
   ];
@@ -173,7 +175,8 @@ export class AdminSidebarComponent {
       notificationsOutline,
       logOutOutline,
       chevronForwardOutline,
-      chatbubblesOutline
+      chatbubblesOutline,
+      cardOutline
     });
   }
 

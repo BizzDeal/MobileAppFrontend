@@ -147,7 +147,7 @@
           <div class="form-group">
             <label class="form-label">
               Total Bill Amount ($) 
-              @if (voucherDetails.discount_type === 'PERCENTAGE') {
+              @if (voucherDetails.offer?.discount_type === 'PERCENTAGE') {
                 <span class="required-star">*</span>
               }
             </label>
@@ -215,10 +215,18 @@
                 <span>Original Bill</span>
                 <span>${{ redemptionForm.value.bill_amount | number:'1.2-2' }}</span>
               </div>
-              <div class="receipt-row discount">
-                <span>Voucher Discount ({{ voucherDetails.discountText }})</span>
-                <span>-${{ discountAmount | number:'1.2-2' }}</span>
-              </div>
+              @if (discountAmount > 0) {
+                <div class="receipt-row discount">
+                  <span>Voucher Discount ({{ voucherDetails.discountText }})</span>
+                  <span>-${{ discountAmount | number:'1.2-2' }}</span>
+                </div>
+              }
+              @if (cashbackAmount > 0) {
+                <div class="receipt-row cashback" style="color: var(--ion-color-success);">
+                  <span>Cashback Earned ({{ voucherDetails.discountText }})</span>
+                  <span>+${{ cashbackAmount | number:'1.2-2' }}</span>
+                </div>
+              }
               @if (redemptionForm.value.wallet_amount_to_use > 0 && !rf['wallet_amount_to_use'].invalid) {
                 <div class="receipt-row wallet">
                   <span>Wallet Balance Used</span>
@@ -273,10 +281,18 @@
             <span class="label">Voucher Code</span>
             <span class="val">{{ redemptionResult.voucher_code }}</span>
           </div>
-          <div class="success-row">
-            <span class="label">Discount Applied</span>
-            <span class="val highlight">${{ redemptionResult.discount_amount.toFixed(2) }}</span>
-          </div>
+          @if (redemptionResult.discount_amount > 0) {
+            <div class="success-row">
+              <span class="label">Discount Applied</span>
+              <span class="val highlight">${{ redemptionResult.discount_amount.toFixed(2) }}</span>
+            </div>
+          }
+          @if (redemptionResult.cashback_earned > 0) {
+            <div class="success-row">
+              <span class="label">Cashback Earned</span>
+              <span class="val highlight" style="color: var(--ion-color-success);">+${{ redemptionResult.cashback_earned.toFixed(2) }}</span>
+            </div>
+          }
           @if (redemptionResult.wallet_amount_used > 0) {
             <div class="success-row">
               <span class="label">Wallet Balance Used</span>
@@ -300,43 +316,4 @@
   </div>
 </ion-content>
 
-<!-- MOCK QR SCANNER MODAL -->
-<ion-modal [isOpen]="isScannerOpen" (didDismiss)="closeScanner()" class="scanner-modal">
-  <ng-template>
-    <ion-header class="ion-no-border">
-      <ion-toolbar class="scanner-toolbar">
-        <ion-title>Scan QR Code</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeScanner()">
-            <ion-icon name="close-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
 
-    <ion-content class="scanner-content">
-      <div class="scanner-container">
-        <div class="camera-viewport">
-          <div class="scanner-laser"></div>
-          <div class="corner-indicator top-left"></div>
-          <div class="corner-indicator top-right"></div>
-          <div class="corner-indicator bottom-left"></div>
-          <div class="corner-indicator bottom-right"></div>
-          <div class="scanner-guide-text">Align voucher QR code in this window</div>
-        </div>
-
-        <div class="scanner-simulation-panel">
-          <p class="sim-label">Select a simulated customer QR code below:</p>
-          <div class="sim-options-list">
-            @for (qr of mockQRCodes; track qr.code) {
-              <button class="sim-qr-option-btn" (click)="simulateScan(qr.code, qr.phone)">
-                <span class="option-label">{{ qr.label }}</span>
-                <span class="option-code">{{ qr.code }}</span>
-              </button>
-            }
-          </div>
-        </div>
-      </div>
-    </ion-content>
-  </ng-template>
-</ion-modal>

@@ -1,5 +1,5 @@
 export type BusinessStatus = 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED';
-export type OfferType = 'DISCOUNT' | 'FIXED_AMOUNT';
+export type OfferType = 'DISCOUNT' | 'CASHBACK';
 export type DiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
 export type OfferStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED' | 'INACTIVE';
 export type VoucherStatus = 'ISSUED' | 'REDEEMED' | 'EXPIRED' | 'CANCELLED';
@@ -56,6 +56,7 @@ export interface OfferDTO {
   businessName?: string;
   businessLogoUrl?: string;
   imageUrl?: string;
+  isClaimed?: boolean;
 }
 
 export interface VoucherDTO {
@@ -75,6 +76,7 @@ export interface VoucherDTO {
   offerTitle?: string;
   businessName?: string;
   discountText?: string;
+  offer_type?: string;
 }
 
 export interface WalletDTO {

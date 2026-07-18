@@ -7,91 +7,71 @@
 
   <div class="home-layout">
     @if (activeNavTab() === 'home') {
-      @if (userRole() === 'MEMBER') {
-        <app-member-home 
-          (notificationClick)="onNotificationClick()"
-          (showToast)="showToast($event)" />
-      } @else {
-        @if (loading() && !homeFeed()) {
-          <!-- Loading State -->
-          <div class="loading-container">
-            <ion-spinner name="crescent" color="primary" />
-            <p class="loading-text">Discovering mega deals & savings around you...</p>
-          </div>
-        } @else if (error() && !homeFeed()) {
-          <!-- Error State -->
-          <div class="error-container">
-            <ion-icon name="alert-circle-outline" class="error-icon" />
-            <h3 class="error-title">Oops! Couldn't load deals</h3>
-            <p class="error-desc">{{ error() }}</p>
-            <button type="button" class="retry-btn bd-btn-primary" (click)="retryRefresh()">
-              Try Again
-            </button>
-          </div>
-        } @else if (homeFeed(); as feed) {
-          <app-customer-home 
-            [feed]="feed"
-            [unreadNotificationsCount]="unreadNotificationsCount()"
-            [selectedCategory]="selectedCategory()"
-            [filteredTrending]="filteredTrendingBySearch()"
-            [filteredTopBiz]="filteredTopBizBySearch()"
-            [filteredFeaturedBiz]="filteredFeaturedBySearch()"
-            [filteredMegaDeals]="filteredMegaDealsBySearch()"
-            (walletClick)="onWalletClick()"
-            (notificationClick)="onNotificationClick()"
-            (searchChange)="onSearchChange($event)"
-            (searchSubmit)="onSearchSubmit($event)"
-            (dealClick)="onDealClick($event)"
-            (businessClick)="onBusinessClick($event)"
-            (categorySelect)="onCategorySelect($event)"
-            (vouchersClick)="openVouchersModal()"
-            (claimOffer)="onClaimOffer($event)" />
-        }
-      }
-    } @else if (activeNavTab() === 'meetings') {
-      <app-meetings-page />
-    } @else if (activeNavTab() === 'referrals') {
-      <app-referrals-page />
-    } @else if (activeNavTab() === 'menu') {
-      <app-menu-view />
-    } @else if (activeNavTab() === 'search') {
-      <!-- Search View Component -->
-      <app-search-view 
-        [(searchQuery)]="searchQuery"
-        [businesses]="homeFeed()?.topBusinesses || []"
-        [offers]="homeFeed()?.trendingOffers || []"
-        (businessClick)="onBusinessClick($event)"
-        (offerClick)="onDealClick($event)" />
-    } @else if (activeNavTab() === 'chat') {
-      @if (selectedConversationId()) {
-        <app-chat-room (closeChat)="onCloseChatRoom()" />
-      } @else {
-        <app-conversation-list (selectConversation)="onConversationSelect($event)" />
-      }
-    } @else if (activeNavTab() === 'wallet') {
-      <app-wallet-view />
-    } @else if (activeNavTab() === 'vouchers') {
-      <app-vouchers-view />
+    @if (userRole() === 'MEMBER') {
+    <app-member-home (notificationClick)="onNotificationClick()" (showToast)="showToast($event)" />
     } @else {
-      <app-profile-view />
+    @if (loading() && !homeFeed()) {
+    <!-- Loading State -->
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary" />
+      <p class="loading-text">Discovering mega deals & savings around you...</p>
+    </div>
+    } @else if (error() && !homeFeed()) {
+    <!-- Error State -->
+    <div class="error-container">
+      <ion-icon name="alert-circle-outline" class="error-icon" />
+      <h3 class="error-title">Oops! Couldn't load deals</h3>
+      <p class="error-desc">{{ error() }}</p>
+      <button type="button" class="retry-btn bd-btn-primary" (click)="retryRefresh()">
+        Try Again
+      </button>
+    </div>
+    } @else if (homeFeed(); as feed) {
+    <app-customer-home [feed]="feed" [unreadNotificationsCount]="unreadNotificationsCount()"
+      [selectedCategory]="selectedCategory()" [filteredPercentageDeals]="filteredPercentageDealsBySearch()"
+      [filteredTopBiz]="filteredTopBizBySearch()" [filteredFeaturedBiz]="filteredFeaturedBySearch()"
+      [filteredFlatOffers]="filteredFlatOffersBySearch()" [filteredCashbackOffers]="filteredCashbackOffersBySearch()"
+      [activeVouchersCount]="activeVouchers().length" [activeVouchers]="activeVouchers()"
+      (walletClick)="onWalletClick()" (notificationClick)="onNotificationClick()"
+      (searchChange)="onSearchChange($event)" (searchSubmit)="onSearchSubmit($event)" (dealClick)="onDealClick($event)"
+      (businessClick)="onBusinessClick($event)" (categorySelect)="onCategorySelect($event)"
+      (vouchersClick)="openVouchersModal()" (voucherClick)="openSingleVoucherModal($event)"
+      (claimOffer)="onClaimOffer($event)" />
+    }
+    }
+    } @else if (activeNavTab() === 'meetings') {
+    <app-meetings-page />
+    } @else if (activeNavTab() === 'referrals') {
+    <app-referrals-page />
+    } @else if (activeNavTab() === 'menu') {
+    <app-menu-view />
+    } @else if (activeNavTab() === 'search') {
+    <!-- Search View Component -->
+    <app-search-view [(searchQuery)]="searchQuery" [businesses]="homeFeed()?.topBusinesses || []"
+      [offers]="homeFeed()?.trendingOffers || []" (businessClick)="onBusinessClick($event)"
+      (offerClick)="onDealClick($event)" />
+    } @else if (activeNavTab() === 'chat') {
+    @if (selectedConversationId()) {
+    <app-chat-room (closeChat)="onCloseChatRoom()" />
+    } @else {
+    <app-conversation-list (selectConversation)="onConversationSelect($event)" />
+    }
+    } @else if (activeNavTab() === 'wallet') {
+    <app-wallet-view />
+    } @else if (activeNavTab() === 'vouchers') {
+    <app-vouchers-view />
+    } @else {
+    <app-profile-view />
     }
   </div>
 
   <!-- 6. Bottom Navigation Bar -->
-  <app-bottom-nav 
-    [activeTab]="activeNavTab()"
-    [role]="userRole()"
-    (tabSelect)="onTabSelect($event)" />
+  <app-bottom-nav [activeTab]="activeNavTab()" [role]="userRole()" (tabSelect)="onTabSelect($event)" />
 </ion-content>
 
 <!-- Toast Feedback -->
-<ion-toast 
-  [isOpen]="!!toastMessage()" 
-  [message]="toastMessage() || ''" 
-  [duration]="2500" 
-  (didDismiss)="toastMessage.set(null)"
-  position="bottom"
-  class="custom-toast">
+<ion-toast [isOpen]="!!toastMessage()" [message]="toastMessage() || ''" [duration]="2500"
+  (didDismiss)="toastMessage.set(null)" position="bottom" class="custom-toast">
 </ion-toast>
 
 <!-- My Vouchers Modal -->
@@ -108,42 +88,40 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="modal-content-pad">
-      @if (homeFeed()?.myActiveVouchers; as vouchers) {
-        @if (vouchers.length > 0) {
-          <div class="vouchers-list">
-            @for (v of vouchers; track v.id) {
-              <div class="voucher-card bd-card">
-                <div class="v-header">
-                  <span class="v-biz">{{ v.businessName }}</span>
-                  <span class="v-status">{{ v.status }}</span>
-                </div>
-                <h4 class="v-title">{{ v.offerTitle }}</h4>
-                @if (v.status === 'ISSUED') {
-                  <div class="qr-box">
-                    <img 
-                      [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=1565c0&data=' + encodeUri(v.voucher_code)" 
-                      alt="Voucher QR Code" 
-                      class="voucher-qr" />
-                  </div>
-                }
-                <div class="code-box" (click)="copyVoucherCode(v.voucher_code)">
-                  <span class="code-text">{{ v.voucher_code }}</span>
-                  <ion-icon name="copy-outline" class="copy-icon" />
-                </div>
-                <div class="v-footer">
-                  <span class="v-exp"><ion-icon name="time-outline" /> Expires: {{ v.expires_at | date:'mediumDate' }}</span>
-                  <span class="tap-hint">Show at counter to redeem</span>
-                </div>
-              </div>
-            }
+      @if (activeVouchers(); as vouchers) {
+      @if (vouchers.length > 0) {
+      <div class="vouchers-list">
+        @for (v of vouchers; track v.id) {
+        <div class="voucher-card bd-card">
+          <div class="v-header">
+            <span class="v-biz">{{ v.businessName }}</span>
+            <span class="v-status">{{ v.status }}</span>
           </div>
-        } @else {
-          <div class="empty-vouchers">
-            <ion-icon name="ticket-outline" class="empty-icon" />
-            <h3>No Active Vouchers</h3>
-            <p>Claim trending deals on the home screen to see your vouchers here!</p>
+          <h4 class="v-title">{{ v.offerTitle }}</h4>
+          @if (v.status === 'ISSUED') {
+          <div class="qr-box">
+            <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=1565c0&data=' + getQrData(v)"
+              alt="Voucher QR Code" class="voucher-qr" />
           </div>
+          <div class="code-box" (click)="copyVoucherCode(v.voucher_code)">
+            <span class="code-text">{{ v.voucher_code }}</span>
+            <ion-icon name="copy-outline" class="copy-icon" />
+          </div>
+          }
+          <div class="v-footer">
+            <span class="v-exp"><ion-icon name="time-outline" /> Expires: {{ v.expires_at | date:'mediumDate' }}</span>
+            <span class="tap-hint">Show at counter to redeem</span>
+          </div>
+        </div>
         }
+      </div>
+      } @else {
+      <div class="empty-vouchers">
+        <ion-icon name="ticket-outline" class="empty-icon" />
+        <h3>No Active Vouchers</h3>
+        <p>Claim trending deals on the home screen to see your vouchers here!</p>
+      </div>
+      }
       }
     </ion-content>
   </ng-template>
@@ -153,35 +131,79 @@
 <ion-modal [isOpen]="!!selectedDealModal()" (didDismiss)="selectedDealModal.set(null)" class="deal-modal">
   <ng-template>
     @if (selectedDealModal(); as deal) {
-      <ion-header class="ion-no-border premium-header">
-        <ion-toolbar>
-          <ion-title>Deal Details</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="selectedDealModal.set(null)">
-              <ion-icon name="close-outline" slot="icon-only" />
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content>
-        <div class="deal-detail-view">
-          <div class="detail-hero" [appCachedBgImg]="deal.imageUrl">
-            <span class="detail-discount">{{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' + deal.discount_value + ' OFF' }}</span>
-          </div>
-          <div class="detail-body">
-            <span class="detail-biz">{{ deal.businessName }}</span>
-            <h2 class="detail-title">{{ deal.title }}</h2>
-            <p class="detail-desc">{{ deal.description }}</p>
-            <div class="detail-meta">
-              <span><ion-icon name="pricetag-outline" /> {{ deal.offer_type }}</span>
-              <span><ion-icon name="time-outline" /> Valid until: {{ deal.end_date | date:'mediumDate' }}</span>
-            </div>
-            <button type="button" class="bd-btn-primary full-btn" (click)="onClaimOffer(deal); selectedDealModal.set(null)">
-              Claim This Deal Now
-            </button>
-          </div>
+    <ion-header class="ion-no-border premium-header">
+      <ion-toolbar>
+        <ion-title>Deal Details</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="selectedDealModal.set(null)">
+            <ion-icon name="close-outline" slot="icon-only" />
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="deal-detail-view">
+        <div class="detail-hero" [appCachedBgImg]="deal.imageUrl">
+          <span class="detail-discount">{{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' +
+            deal.discount_value + ' OFF' }}</span>
         </div>
-      </ion-content>
+        <div class="detail-body">
+          <span class="detail-biz">{{ deal.businessName }}</span>
+          <h2 class="detail-title">{{ deal.title }}</h2>
+          <p class="detail-desc">{{ deal.description }}</p>
+          <div class="detail-meta">
+            <span><ion-icon name="pricetag-outline" /> {{ deal.offer_type }}</span>
+            <span><ion-icon name="time-outline" /> Valid until: {{ deal.end_date | date:'mediumDate' }}</span>
+          </div>
+          <button type="button" class="bd-btn-primary full-btn" [disabled]="deal.isClaimed"
+            (click)="!deal.isClaimed && onClaimOffer(deal); selectedDealModal.set(null)">
+            {{ deal.isClaimed ? 'Claimed' : 'Claim This Deal Now' }}
+          </button>
+        </div>
+      </div>
+    </ion-content>
+    }
+  </ng-template>
+</ion-modal>
+
+<!-- Single Voucher Modal -->
+<ion-modal [isOpen]="!!selectedVoucherModal()" (didDismiss)="selectedVoucherModal.set(null)"
+  class="vouchers-modal single-voucher-modal">
+  <ng-template>
+    @if (selectedVoucherModal(); as v) {
+    <ion-header class="ion-no-border premium-header">
+      <ion-toolbar>
+        <ion-title>Voucher Details</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="selectedVoucherModal.set(null)">
+            <ion-icon name="close-outline" slot="icon-only" />
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="modal-content-pad">
+      <div class="voucher-card bd-card" style="margin-top: 16px;">
+        <div class="v-header">
+          <span class="v-biz">{{ v.businessName }}</span>
+          <span class="v-status">{{ v.status }}</span>
+        </div>
+        <h4 class="v-title">{{ v.offerTitle }}</h4>
+        @if (v.status === 'ISSUED') {
+        <div class="qr-box">
+          <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=1565c0&data=' + getQrData(v)"
+            alt="Voucher QR Code" class="voucher-qr" />
+        </div>
+        <div class="code-box" (click)="copyVoucherCode(v.voucher_code)">
+          <span class="code-text">{{ v.voucher_code }}</span>
+          <ion-icon name="copy-outline" class="copy-icon" />
+        </div>
+        }
+        <div class="v-footer">
+          <span class="v-exp"><ion-icon name="time-outline" /> Expires: {{ v.expires_at | date:'mediumDate' }}</span>
+          <span class="tap-hint">Show at counter to redeem</span>
+        </div>
+      </div>
+    </ion-content>
     }
   </ng-template>
 </ion-modal>
@@ -190,44 +212,46 @@
 <ion-modal [isOpen]="!!selectedBizModal()" (didDismiss)="selectedBizModal.set(null)" class="biz-modal">
   <ng-template>
     @if (selectedBizModal(); as biz) {
-      <ion-header class="ion-no-border premium-header">
-        <ion-toolbar>
-          <ion-title>{{ biz.name }}</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="selectedBizModal.set(null)">
-              <ion-icon name="close-outline" slot="icon-only" />
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content>
-        <div class="biz-detail-view">
-          <div class="detail-hero" [appCachedBgImg]="biz.bannerUrl"></div>
-          <div class="detail-body">
-            <div class="biz-header-row">
-              <img [appCachedImg]="biz.logoUrl" alt="logo" class="detail-logo" />
-              <div>
-                <h2 class="detail-title">{{ biz.name }}</h2>
-                <span class="detail-cat">{{ biz.categoryName }} • {{ biz.status }}</span>
-              </div>
+    <ion-header class="ion-no-border premium-header">
+      <ion-toolbar>
+        <ion-title>{{ biz.name }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="selectedBizModal.set(null)">
+            <ion-icon name="close-outline" slot="icon-only" />
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="biz-detail-view">
+        <div class="detail-hero" [appCachedBgImg]="biz.bannerUrl"></div>
+        <div class="detail-body">
+          <div class="biz-header-row">
+            <img [appCachedImg]="biz.logoUrl" alt="logo" class="detail-logo" />
+            <div>
+              <h2 class="detail-title">{{ biz.name }}</h2>
+              <span class="detail-cat">{{ biz.categoryName }} • {{ biz.status }}</span>
             </div>
-            <p class="detail-desc">{{ biz.description }}</p>
-            <div class="detail-meta">
-              @if (biz.website) {
-                <span>🌐 {{ biz.website }}</span>
-              }
-              @if (biz.gst_number) {
-                <span>🏢 GST: {{ biz.gst_number }}</span>
-              }
-            </div>
-            @if (userRole() !== 'CUSTOMER') {
-              <button type="button" class="bd-btn-primary full-btn" style="margin-top: var(--bizzdeal-spacing-md); display: flex; align-items: center; justify-content: center;" (click)="onChatWithBusiness(biz.owner_id)">
-                <ion-icon name="chatbubble-outline" style="margin-right: 6px; font-size: 18px;" /> Chat with Us
-              </button>
+          </div>
+          <p class="detail-desc">{{ biz.description }}</p>
+          <div class="detail-meta">
+            @if (biz.website) {
+            <span>🌐 {{ biz.website }}</span>
+            }
+            @if (biz.gst_number) {
+            <span>🏢 GST: {{ biz.gst_number }}</span>
             }
           </div>
+          @if (userRole() !== 'CUSTOMER') {
+          <button type="button" class="bd-btn-primary full-btn"
+            style="margin-top: var(--bizzdeal-spacing-md); display: flex; align-items: center; justify-content: center;"
+            (click)="onChatWithBusiness(biz.owner_id)">
+            <ion-icon name="chatbubble-outline" style="margin-right: 6px; font-size: 18px;" /> Chat with Us
+          </button>
+          }
         </div>
-      </ion-content>
+      </div>
+    </ion-content>
     }
   </ng-template>
 </ion-modal>

@@ -1,35 +1,24 @@
 <!-- 1. Header / Top Bar -->
-<app-home-header 
-  [customer]="feed.customer"
-  [wallet]="feed.wallet"
-  [unreadCount]="unreadNotificationsCount"
-  (walletClick)="walletClick.emit()"
-  (notificationClick)="notificationClick.emit()"
-  (searchChange)="searchChange.emit($event)"
-  (searchSubmit)="searchSubmit.emit($event)" />
+<app-home-header [customer]="feed.customer" [wallet]="feed.wallet" [unreadCount]="unreadNotificationsCount"
+  (walletClick)="walletClick.emit()" (notificationClick)="notificationClick.emit()"
+  (searchChange)="searchChange.emit($event)" (searchSubmit)="searchSubmit.emit($event)" />
 
 <!-- 2. Quick Categories (Chips/Grid) -->
-<app-category-chips 
-  [categories]="feed.categories"
-  [selectedCategoryId]="selectedCategory"
+<app-category-chips [categories]="feed.categories" [selectedCategoryId]="selectedCategory"
   (categorySelect)="categorySelect.emit($event)" />
 
 
-<!-- 4. Mega Deals Carousel -->
-<app-hero-carousel 
-  [title]="'Mega Deals'"
-  [icon]="'flame-outline'"
-  [featuredBusinesses]="[]"
-  [megaDeals]="filteredMegaDeals"
-  (dealClick)="dealClick.emit($event)" />
+<!-- 3. Top Deals (Percentage) Carousel -->
+<app-hero-carousel [title]="'Top Deals'" [icon]="'flame-outline'" [featuredBusinesses]="[]"
+  [megaDeals]="filteredPercentageDeals" (dealClick)="dealClick.emit($event)" />
 
-<!-- 5. Trending Offers Carousel -->
-<app-hero-carousel 
-  [title]="selectedCategory === 'ALL' ? 'Trending Offers' : 'Filtered Offers'"
-  [icon]="'sparkles-outline'"
-  [featuredBusinesses]="[]"
-  [megaDeals]="filteredTrending"
-  (dealClick)="dealClick.emit($event)" />
+<!-- 4. Flat Offers Carousel -->
+<app-hero-carousel [title]="'Flat Offers'" [icon]="'pricetag-outline'" [featuredBusinesses]="[]"
+  [megaDeals]="filteredFlatOffers" (dealClick)="dealClick.emit($event)" />
+
+<!-- 5. Cashback Rewards Carousel -->
+<app-hero-carousel [title]="'Cashback Rewards'" [icon]="'cash-outline'" [featuredBusinesses]="[]"
+  [megaDeals]="filteredCashbackOffers" (dealClick)="dealClick.emit($event)" />
 
 <!-- 5. Featured Businesses Section -->
 <section class="feed-section">
@@ -38,21 +27,19 @@
       <ion-icon name="star-outline" class="section-icon spark" style="color: var(--ion-color-warning);" />
       <h2 class="section-title">Featured Businesses</h2>
     </div>
-    <span class="count-hint">{{ filteredFeaturedBiz.length }} stores</span>
+    <span class="swipe-hint">Swipe to explore &rarr;</span>
   </div>
 
   @if (filteredFeaturedBiz.length > 0) {
-    <div class="horizontal-scroll-feed">
-      @for (biz of filteredFeaturedBiz; track biz.id) {
-        <app-business-card 
-          [business]="biz"
-          (businessClick)="businessClick.emit($event)" />
-      }
-    </div>
+  <div class="horizontal-scroll-feed">
+    @for (biz of filteredFeaturedBiz; track biz.id) {
+    <app-business-card [business]="biz" (businessClick)="businessClick.emit($event)" />
+    }
+  </div>
   } @else {
-    <div class="empty-feed">
-      <p>No featured businesses found.</p>
-    </div>
+  <div class="empty-feed">
+    <p>No featured businesses found.</p>
+  </div>
   }
 </section>
 
@@ -62,33 +49,57 @@
     <div class="header-left">
       <h2 class="section-title">Top Businesses</h2>
     </div>
-    <span class="count-hint">{{ filteredTopBiz.length }} stores</span>
+    <span class="swipe-hint">Swipe to explore &rarr;</span>
   </div>
 
   @if (filteredTopBiz.length > 0) {
-    <div class="horizontal-scroll-feed">
-      @for (biz of filteredTopBiz; track biz.id) {
-        <app-business-card 
-          [business]="biz"
-          (businessClick)="businessClick.emit($event)" />
-      }
-    </div>
+  <div class="horizontal-scroll-feed">
+    @for (biz of filteredTopBiz; track biz.id) {
+    <app-business-card [business]="biz" (businessClick)="businessClick.emit($event)" />
+    }
+  </div>
   } @else {
-    <div class="empty-feed">
-      <p>No businesses found matching your criteria.</p>
-    </div>
+  <div class="empty-feed">
+    <p>No businesses found matching your criteria.</p>
+  </div>
   }
 </section>
 
-<!-- 6. Quick Access Actions (Floating / distinct row - moved to bottom as Vouchers) -->
+<!-- 6. My Vouchers -->
 <section class="feed-section mb-extra">
   <div class="section-header">
     <div class="header-left">
-      <h2 class="section-title">Quick Actions</h2>
+      <ion-icon name="ticket-outline" class="section-icon spark" style="color: var(--ion-color-primary);" />
+      <h2 class="section-title">My Vouchers</h2>
     </div>
   </div>
-  <app-quick-actions 
-    [activeVouchersCount]="feed.myActiveVouchers.length"
-    (vouchersClick)="vouchersClick.emit()" />
-</section>
 
+  @if (activeVouchers.length > 0) {
+  <div class="vertical-feed">
+    @for (v of activeVouchers; track v.id) {
+    <div class="voucher-list-item" 
+         [ngClass]="getVoucherTypeClass(v)"
+         (click)="voucherClick.emit(v)">
+      <div class="v-main-content">
+        <div class="v-icon-box">
+          <ion-icon name="ticket-outline"></ion-icon>
+        </div>
+        <div class="v-details">
+          <span class="v-biz">{{ v.businessName }}</span>
+          <h4 class="v-title">{{ v.offerTitle }}</h4>
+          <span class="v-exp"><ion-icon name="time-outline"></ion-icon> Expires: {{ v.expires_at | date:'mediumDate'
+            }}</span>
+        </div>
+      </div>
+      <div class="v-stub">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+    }
+  </div>
+  } @else {
+  <div class="empty-feed">
+    <p>No active vouchers. Claim offers to get started!</p>
+  </div>
+  }
+</section>

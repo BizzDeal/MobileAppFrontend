@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true" class="vouchers-content">
+<div class="vouchers-content">
   <div style="padding: var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md) 0 var(--bizzdeal-spacing-md);">
     <div class="page-top-header">
       <div class="header-content">
@@ -17,12 +17,8 @@
   <div class="search-section">
     <div class="search-bar-wrapper">
       <ion-icon name="search-outline" class="search-icon"></ion-icon>
-      <ion-input
-        type="text"
-        placeholder="Search by store or offer title..."
-        [value]="searchQuery()"
-        (ionInput)="onSearchChange($event)"
-        class="vouchers-search-input">
+      <ion-input type="text" placeholder="Search by store or offer title..." [value]="searchQuery()"
+        (ionInput)="onSearchChange($event)" class="vouchers-search-input">
       </ion-input>
     </div>
   </div>
@@ -30,31 +26,18 @@
   <!-- Seggregation Filters Chips -->
   <div class="filter-wrapper">
     <div class="filter-chips">
-      <button 
-        type="button" 
-        class="filter-chip" 
-        [class.active]="selectedFilter() === 'ALL'" 
-        (click)="setFilter('ALL')">
+      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'ALL'" (click)="setFilter('ALL')">
         All
       </button>
-      <button 
-        type="button" 
-        class="filter-chip" 
-        [class.active]="selectedFilter() === 'ACTIVE'" 
+      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'ACTIVE'"
         (click)="setFilter('ACTIVE')">
         Active
       </button>
-      <button 
-        type="button" 
-        class="filter-chip" 
-        [class.active]="selectedFilter() === 'REDEEMED'" 
+      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'REDEEMED'"
         (click)="setFilter('REDEEMED')">
         Redeemed
       </button>
-      <button 
-        type="button" 
-        class="filter-chip" 
-        [class.active]="selectedFilter() === 'EXPIRED'" 
+      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'EXPIRED'"
         (click)="setFilter('EXPIRED')">
         Expired
       </button>
@@ -63,175 +46,165 @@
 
   <!-- Main Content Areas -->
   @if (loading() && filteredVouchers().length === 0) {
-    <!-- Loading State -->
-    <div class="loading-container">
-      <ion-spinner name="crescent" color="primary"></ion-spinner>
-      <p class="loading-text">Retrieving your vouchers...</p>
-    </div>
+  <!-- Loading State -->
+  <div class="loading-container">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p class="loading-text">Retrieving your vouchers...</p>
+  </div>
   } @else if (error()) {
-    <!-- Error State -->
-    <div class="error-container">
-      <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
-      <h3 class="error-title">Failed to load vouchers</h3>
-      <p class="error-desc">{{ error() }}</p>
-      <button type="button" class="retry-btn bd-btn-primary" (click)="retryLoad()">
-        Try Again
-      </button>
-    </div>
+  <!-- Error State -->
+  <div class="error-container">
+    <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
+    <h3 class="error-title">Failed to load vouchers</h3>
+    <p class="error-desc">{{ error() }}</p>
+    <button type="button" class="retry-btn bd-btn-primary" (click)="retryLoad()">
+      Try Again
+    </button>
+  </div>
   } @else {
-    <!-- Vouchers List -->
-    <div class="vouchers-list-container">
-      @for (voucher of filteredVouchers(); track voucher.id) {
-        <div class="voucher-card bd-card animate-card" [class]="voucher.status.toLowerCase()">
-          <!-- Card Header Info -->
-          <div class="card-header">
-            <span class="biz-name">{{ voucher.businessName }}</span>
-            <span class="status-badge" [class]="voucher.status.toLowerCase()">
-              <ion-icon [name]="getStatusIcon(voucher.status)"></ion-icon>
-              <span>{{ getStatusLabel(voucher.status) }}</span>
-            </span>
-          </div>
+  <!-- Vouchers List -->
+  <div class="vouchers-list-container">
+    @for (voucher of filteredVouchers(); track voucher.id) {
+    <div class="voucher-card bd-card animate-card" [class]="voucher.status.toLowerCase()">
+      <!-- Card Header Info -->
+      <div class="card-header">
+        <span class="biz-name">{{ voucher.businessName }}</span>
+        <span class="status-badge" [class]="voucher.status.toLowerCase()">
+          <ion-icon [name]="getStatusIcon(voucher.status)"></ion-icon>
+          <span>{{ getStatusLabel(voucher.status) }}</span>
+        </span>
+      </div>
 
-          <!-- Card Body -->
-          <div class="card-body">
-            <h3 class="offer-title">{{ voucher.offerTitle }}</h3>
-            <span class="discount-badge">{{ voucher.discountText }}</span>
-          </div>
+      <!-- Card Body -->
+      <div class="card-body">
+        <h3 class="offer-title">{{ voucher.offerTitle }}</h3>
+        <span class="discount-badge">{{ voucher.discountText }}</span>
+      </div>
 
-          <!-- Voucher Code Block -->
-          @if (voucher.status === 'ISSUED') {
-            <div class="code-box-row">
-              <div class="code-box-wrapper" style="flex: 1; margin-bottom: 0;">
-                <label class="code-label">Voucher Code (Tap to Copy)</label>
-                <div class="code-box" (click)="copyVoucherCode(voucher.voucher_code)">
-                  <span class="code-text">{{ voucher.voucher_code }}</span>
-                  <ion-icon name="copy-outline" class="copy-icon"></ion-icon>
-                </div>
-              </div>
-              <button type="button" class="qr-action-btn" (click)="openQrModal(voucher)" aria-label="Show QR Code">
-                <ion-icon name="qr-code-outline"></ion-icon>
-                <span>Show QR</span>
-              </button>
-            </div>
-          } @else {
-            <div class="code-box-wrapper disabled">
-              <div class="code-box">
-                <span class="code-text">{{ voucher.voucher_code }}</span>
-              </div>
-            </div>
-          }
-
-          <!-- Card Footer Details -->
-          <div class="card-footer">
-            @if (voucher.status === 'ISSUED') {
-              <span class="date-info exp-date">
-                <ion-icon name="time-outline"></ion-icon>
-                Expires: {{ voucher.expires_at | date:'mediumDate' }}
-              </span>
-              <span class="claim-hint">Present at counter to redeem</span>
-            } @else if (voucher.status === 'REDEEMED') {
-              <span class="date-info red-date">
-                <ion-icon name="checkmark-circle-outline"></ion-icon>
-                Redeemed: {{ voucher.redeemed_at | date:'mediumDate' }}
-              </span>
-            } @else if (voucher.status === 'EXPIRED') {
-              <span class="date-info exp-date-expired">
-                <ion-icon name="alert-circle-outline"></ion-icon>
-                Expired: {{ voucher.expires_at | date:'mediumDate' }}
-              </span>
-            } @else {
-              <span class="date-info exp-date-expired">
-                <ion-icon name="ban-outline"></ion-icon>
-                Cancelled
-              </span>
-            }
+      <!-- Voucher Code Block -->
+      @if (voucher.status === 'ISSUED') {
+      <div class="code-box-row">
+        <div class="code-box-wrapper" style="flex: 1; margin-bottom: 0;">
+          <label class="code-label">Voucher Code (Tap to Copy)</label>
+          <div class="code-box" (click)="copyVoucherCode(voucher.voucher_code)">
+            <span class="code-text">{{ voucher.voucher_code }}</span>
+            <ion-icon name="copy-outline" class="copy-icon"></ion-icon>
           </div>
         </div>
-      } @empty {
-        <!-- Empty List State -->
-        <div class="empty-state">
-          <div class="empty-icon-glow">
-            <ion-icon name="ticket-outline" class="empty-icon"></ion-icon>
-          </div>
-          <h3>No vouchers found</h3>
-          <p>
-            @if (searchQuery()) {
-              We couldn't find any vouchers matching "{{ searchQuery() }}".
-            } @else {
-              @if (selectedFilter() === 'ACTIVE') {
-                You have no active vouchers. Claim some deals on the home screen!
-              } @else if (selectedFilter() === 'REDEEMED') {
-                You haven't redeemed any vouchers yet.
-              } @else if (selectedFilter() === 'EXPIRED') {
-                No expired or cancelled vouchers.
-              } @else {
-                You don't have any vouchers yet. Claim trending deals on the home screen to get started!
-              }
-            }
-          </p>
-        </div>
+        <button type="button" class="qr-action-btn" (click)="openQrModal(voucher)" aria-label="Show QR Code">
+          <ion-icon name="qr-code-outline"></ion-icon>
+          <span>Show QR</span>
+        </button>
+      </div>
       }
+
+      <!-- Card Footer Details -->
+      <div class="card-footer">
+        @if (voucher.status === 'ISSUED') {
+        <span class="date-info exp-date">
+          <ion-icon name="time-outline"></ion-icon>
+          Expires: {{ voucher.expires_at | date:'mediumDate' }}
+        </span>
+        <span class="claim-hint">Present at counter to redeem</span>
+        } @else if (voucher.status === 'REDEEMED') {
+        <span class="date-info red-date">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          Redeemed: {{ voucher.redeemed_at | date:'mediumDate' }}
+        </span>
+        } @else if (voucher.status === 'EXPIRED') {
+        <span class="date-info exp-date-expired">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          Expired: {{ voucher.expires_at | date:'mediumDate' }}
+        </span>
+        } @else {
+        <span class="date-info exp-date-expired">
+          <ion-icon name="ban-outline"></ion-icon>
+          Cancelled
+        </span>
+        }
+      </div>
     </div>
+    } @empty {
+    <!-- Empty List State -->
+    <div class="empty-state">
+      <div class="empty-icon-glow">
+        <ion-icon name="ticket-outline" class="empty-icon"></ion-icon>
+      </div>
+      <h3>No vouchers found</h3>
+      <p>
+        @if (searchQuery()) {
+        We couldn't find any vouchers matching "{{ searchQuery() }}".
+        } @else {
+        @if (selectedFilter() === 'ACTIVE') {
+        You have no active vouchers. Claim some deals on the home screen!
+        } @else if (selectedFilter() === 'REDEEMED') {
+        You haven't redeemed any vouchers yet.
+        } @else if (selectedFilter() === 'EXPIRED') {
+        No expired or cancelled vouchers.
+        } @else {
+        You don't have any vouchers yet. Claim trending deals on the home screen to get started!
+        }
+        }
+      </p>
+    </div>
+    }
+  </div>
   }
-</ion-content>
+</div>
 
 <!-- Copy Toast Feedback -->
-<ion-toast 
-  [isOpen]="!!toastMessage()" 
-  [message]="toastMessage() || ''" 
-  [duration]="2500" 
-  (didDismiss)="toastMessage.set(null)"
-  position="bottom"
-  class="custom-toast">
+<ion-toast [isOpen]="!!toastMessage()" [message]="toastMessage() || ''" [duration]="2500"
+  (didDismiss)="toastMessage.set(null)" position="bottom" class="custom-toast">
 </ion-toast>
 
 <!-- QR Code Modal Dialog -->
 <ion-modal [isOpen]="!!selectedQrVoucher()" (didDismiss)="closeQrModal()" class="qr-modal">
   <ng-template>
     @if (selectedQrVoucher(); as voucher) {
-      <ion-header class="ion-no-border premium-header">
-        <ion-toolbar>
-          <ion-title>Voucher Details</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeQrModal()">
-              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="modal-content-pad">
-        <div class="qr-detail-view">
-          <div class="qr-biz-info">
-            <span class="qr-biz-name">{{ voucher.businessName }}</span>
-            <h2 class="qr-offer-title">{{ voucher.offerTitle }}</h2>
-            <span class="qr-discount">{{ voucher.discountText }}</span>
-          </div>
-          
-          <div class="qr-code-container">
-            <img 
-              [src]="'https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=1565c0&data=' + encodeUri(voucher.voucher_code)" 
-              alt="Voucher QR Code" 
-              class="qr-image" />
-          </div>
-          
-          <div class="qr-code-text-box">
-            <span class="qr-code-label">Voucher Code</span>
-            <span class="qr-code-value">{{ voucher.voucher_code }}</span>
-          </div>
-          
-          <div class="qr-instructions">
-            <ion-icon name="scan-outline"></ion-icon>
-            <p>Show this QR code to the merchant counter to scan and claim your discount.</p>
-          </div>
-          
-          <div class="qr-footer">
-            <span class="qr-expiry">
-              <ion-icon name="time-outline"></ion-icon> 
-              Expires: {{ voucher.expires_at | date:'mediumDate' }}
-            </span>
-          </div>
+    <ion-header class="ion-no-border premium-header">
+      <ion-toolbar>
+        <ion-title>Voucher Details</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeQrModal()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="modal-content-pad">
+      <div class="qr-detail-view">
+        <div class="qr-biz-info">
+          <span class="qr-biz-name">{{ voucher.businessName }}</span>
+          <h2 class="qr-offer-title">{{ voucher.offerTitle }}</h2>
+          <span class="qr-discount">{{ voucher.discountText }}</span>
         </div>
-      </ion-content>
+
+        <div class="qr-code-container">
+          <img
+            [src]="'https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=1565c0&data=' + getQrData(voucher)"
+            alt="Voucher QR Code" class="qr-image" />
+        </div>
+
+        <div class="qr-code-text-box">
+          <span class="qr-code-label">Voucher Code</span>
+          <span class="qr-code-value">{{ voucher.voucher_code }}</span>
+          <span class="qr-code-label" style="margin-top: 6px; font-size: 0.7rem; color: #94a3b8;">QR Data: {{
+            voucher.voucher_code }}|{{ voucher.customer_phone || 'NO_PHONE' }}</span>
+        </div>
+
+        <div class="qr-instructions">
+          <ion-icon name="scan-outline"></ion-icon>
+          <p>Show this QR code to the merchant counter to scan and claim your discount.</p>
+        </div>
+
+        <div class="qr-footer">
+          <span class="qr-expiry">
+            <ion-icon name="time-outline"></ion-icon>
+            Expires: {{ voucher.expires_at | date:'mediumDate' }}
+          </span>
+        </div>
+      </div>
+    </ion-content>
     }
   </ng-template>
 </ion-modal>

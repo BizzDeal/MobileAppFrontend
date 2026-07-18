@@ -30,6 +30,12 @@ export interface AuthUser {
   profile_pic_url?: string | null;
   payment_receipt_url?: string | null;
   business_id?: string | null;
+  business_name?: string | null;
+  business_description?: string | null;
+  website?: string | null;
+  gst_number?: string | null;
+  business_logo_url?: string | null;
+  category_id?: string | null;
 }
 
 export interface AuthTokens {

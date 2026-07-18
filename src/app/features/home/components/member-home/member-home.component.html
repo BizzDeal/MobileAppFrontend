@@ -60,49 +60,52 @@
     </section>
 
     <section class="analytics-section feed-section">
-      <div class="horizontal-scroll-feed no-padding">
-        <div class="stat-card scroll-card">
+      <div class="stats-grid">
+        <div class="stat-card">
           <span class="stat-label">Active Offers</span>
           <h2 class="stat-value">{{ data.analytics.activeOffersCount }}</h2>
         </div>
-        <div class="stat-card scroll-card">
-          <span class="stat-label">Vouchers Redeemed</span>
+        <div class="stat-card">
+          <span class="stat-label">Redeemed</span>
           <h2 class="stat-value">{{ data.analytics.vouchersRedeemedToday }}</h2>
         </div>
-        <div class="stat-card scroll-card">
-          <span class="stat-label">Business Growth</span>
+        <div class="stat-card">
+          <span class="stat-label">Growth</span>
           <h3 class="stat-value highlight">+{{ data.analytics.businessGrowth }}%</h3>
         </div>
-        <div class="stat-card scroll-card">
-          <span class="stat-label">Successful Referrals</span>
+        <div class="stat-card">
+          <span class="stat-label">Referrals</span>
           <h2 class="stat-value">{{ data.analytics.successfulReferrals }}</h2>
         </div>
       </div>
     </section>
 
-    <!-- Deals and Offers -->
-    <section class="feed-section member-deals-section">
-      <div class="section-header">
-        <div class="header-left">
-          <ion-icon name="pricetag-outline" class="section-icon spark" />
-          <h2 class="section-title">Deals and Offers</h2>
-        </div>
-      </div>
-      @if (approvedOffers().length > 0) {
-        <div class="horizontal-scroll-feed no-padding-top">
-          @for (offer of approvedOffers(); track offer.id) {
-            <app-offer-card 
-              [offer]="offer"
-              [hideClaimButton]="true"
-              (cardClick)="onDealClick($event)" />
-          }
-        </div>
-      } @else {
-        <div class="empty-feed">
-          <p>You haven't created any deals yet.</p>
-        </div>
-      }
-    </section>
+    <!-- Top Deals (Percentage) Carousel -->
+    <app-hero-carousel 
+      [title]="'Top Deals'"
+      [icon]="'flame-outline'"
+      [featuredBusinesses]="[]"
+      [megaDeals]="percentageDeals()"
+      [isMemberView]="true"
+      (dealClick)="onDealClick($event)" />
+
+    <!-- Flat Offers Carousel -->
+    <app-hero-carousel 
+      [title]="'Flat Offers'"
+      [icon]="'pricetag-outline'"
+      [featuredBusinesses]="[]"
+      [megaDeals]="flatOffers()"
+      [isMemberView]="true"
+      (dealClick)="onDealClick($event)" />
+
+    <!-- Cashback Rewards Carousel -->
+    <app-hero-carousel 
+      [title]="'Cashback Rewards'"
+      [icon]="'cash-outline'"
+      [featuredBusinesses]="[]"
+      [megaDeals]="cashbackOffers()"
+      [isMemberView]="true"
+      (dealClick)="onDealClick($event)" />
 
     <!-- Quick Actions -->
     <section class="quick-actions">

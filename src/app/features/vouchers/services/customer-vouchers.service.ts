@@ -4,6 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { CustomerVoucher } from '../models/voucher.model';
+import { AppSocketService } from '../../../core/services/app-socket.service';
+import { AuthSessionService } from '../../../core/services/auth-session.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +13,8 @@ import { CustomerVoucher } from '../models/voucher.model';
 export class CustomerVouchersService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
+  private readonly appSocket = inject(AppSocketService);
+  private readonly authSession = inject(AuthSessionService);
 
   private readonly _vouchers = signal<CustomerVoucher[]>([]);
   private readonly _loading = signal<boolean>(true);
@@ -23,6 +27,15 @@ export class CustomerVouchersService {
   constructor() {
     this.loadVouchers().subscribe({
       error: (err) => console.error('Initial customer vouchers load encountered error:', err),
+    });
+
+    // Handle WebSocket connection and listen for generic app events
+    if (this.authSession.isAuthenticated()) {
+      this.appSocket.connect();
+    }
+    
+    this.appSocket.onEvent('VOUCHER_REDEEMED').subscribe(event => {
+      this.updateVoucherStatus(event.payload.voucher_id, event.payload.status);
     });
   }
 
@@ -55,7 +68,9 @@ export class CustomerVouchersService {
               : 'Special Deal'),
           discount_type: v.discount_type || v.offer?.discount_type || undefined,
           discount_value: v.discount_value ?? v.offer?.discount_value ?? undefined,
+          offer_type: v.offer_type || v.offer?.offer_type || undefined,
           imageUrl: v.imageUrl || v.offer?.image_url || v.offer?.imageUrl || undefined,
+          customer_phone: v.customer_phone || undefined,
         }));
         return list;
       }),
@@ -81,5 +96,11 @@ export class CustomerVouchersService {
     if (!current.find(v => v.id === voucher.id)) {
       this._vouchers.set([voucher, ...current]);
     }
+  }
+
+  updateVoucherStatus(voucherId: string, status: 'ISSUED' | 'REDEEMED' | 'EXPIRED' | 'CANCELLED'): void {
+    this._vouchers.update(vouchers =>
+      vouchers.map(v => (v.id === voucherId ? { ...v, status, redeemed_at: status === 'REDEEMED' ? new Date().toISOString() : v.redeemed_at } : v))
+    );
   }
 }

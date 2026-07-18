@@ -34,6 +34,7 @@ import {
 import { ProfileService } from '../../services/profile.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { MemberOnboardingService } from '../../../auth/services/member-onboarding.service';
 
 @Component({
   selector: 'app-profile-view',
@@ -61,6 +62,7 @@ export class ProfileViewComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly authSession = inject(AuthSessionService);
   readonly profileService = inject(ProfileService);
+  public readonly onboardingService = inject(MemberOnboardingService);
 
   readonly profile = this.profileService.profile;
   readonly userRole = this.profileService.userRole;
@@ -98,7 +100,8 @@ export class ProfileViewComponent implements OnInit {
     business_name: [''],
     business_description: [''],
     website: [''],
-    gst_number: ['']
+    gst_number: [''],
+    category_id: ['']
   });
 
   constructor() {
@@ -131,6 +134,16 @@ export class ProfileViewComponent implements OnInit {
       }
     });
 
+    this.profileForm.controls['category_id'].valueChanges.subscribe((categoryId) => {
+      if (categoryId) {
+        const categories = this.onboardingService.categories();
+        const selected = categories.find((c) => c.id === categoryId);
+        if (selected && selected.description) {
+          this.profileForm.controls['business_description'].setValue(selected.description);
+        }
+      }
+    });
+
     // Synchronize form controls when profile signal updates
     effect(() => {
       const p = this.profile();
@@ -146,15 +159,17 @@ export class ProfileViewComponent implements OnInit {
           this.profileForm.controls['business_description'].clearValidators();
           this.profileForm.controls['website'].clearValidators();
           this.profileForm.controls['gst_number'].clearValidators();
+          this.profileForm.controls['category_id'].clearValidators();
         } else {
           this.profileForm.controls['full_name'].setValidators([Validators.required, Validators.minLength(2)]);
-          this.profileForm.controls['whatsapp'].setValidators([Validators.required, Validators.minLength(10)]);
+          this.profileForm.controls['whatsapp'].setValidators([Validators.minLength(10)]);
           this.profileForm.controls['email'].setValidators([Validators.required, Validators.email]);
           this.profileForm.controls['state_id'].setValidators([Validators.required]);
           this.profileForm.controls['district_id'].setValidators([Validators.required]);
           this.profileForm.controls['address'].setValidators([Validators.required]);
           this.profileForm.controls['business_name'].setValidators([Validators.required, Validators.minLength(2)]);
           this.profileForm.controls['business_description'].setValidators([Validators.required, Validators.minLength(5)]);
+          this.profileForm.controls['category_id'].setValidators([Validators.required]);
           this.profileForm.controls['website'].clearValidators();
           this.profileForm.controls['gst_number'].clearValidators();
         }
@@ -173,7 +188,8 @@ export class ProfileViewComponent implements OnInit {
           business_name: p.business_name || '',
           business_description: p.business_description || '',
           website: p.website || '',
-          gst_number: p.gst_number || ''
+          gst_number: p.gst_number || '',
+          category_id: p.category_id || ''
         }, { emitEvent: false });
 
         if (p.state_id) {
@@ -200,6 +216,7 @@ export class ProfileViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.profileService.loadProfile().subscribe();
+    this.onboardingService.fetchCategories();
   }
 
   onPhotoSelected(event: Event): void {
@@ -257,7 +274,7 @@ export class ProfileViewComponent implements OnInit {
       const formData = new FormData();
       formData.append('full_name', formVal.full_name);
       formData.append('phone', formVal.phone || this.profile()?.phone || '');
-      if (formVal.whatsapp) formData.append('whatsapp', formVal.whatsapp);
+      formData.append('whatsapp', formVal.whatsapp || '');
       if (formVal.email) formData.append('email', formVal.email);
       if (formVal.state_id) formData.append('state_id', formVal.state_id);
       if (formVal.district_id) formData.append('district_id', formVal.district_id);
@@ -267,6 +284,7 @@ export class ProfileViewComponent implements OnInit {
         if (formVal.business_description) formData.append('business_description', formVal.business_description);
         if (formVal.website) formData.append('website', formVal.website);
         if (formVal.gst_number) formData.append('gst_number', formVal.gst_number);
+        if (formVal.category_id) formData.append('category_id', formVal.category_id);
       }
       if (photoFile) formData.append('profile_pic', photoFile);
       if (logoFile) formData.append('business_logo', logoFile);
@@ -275,7 +293,7 @@ export class ProfileViewComponent implements OnInit {
       payload = {
         full_name: formVal.full_name,
         phone: formVal.phone || this.profile()?.phone || '',
-        whatsapp: formVal.whatsapp,
+        whatsapp: formVal.whatsapp || '',
         email: formVal.email,
         state_id: formVal.state_id || null,
         district_id: formVal.district_id || null,
@@ -286,8 +304,10 @@ export class ProfileViewComponent implements OnInit {
         if (formVal.business_description) payload.business_description = formVal.business_description;
         if (formVal.website) payload.website = formVal.website;
         if (formVal.gst_number) payload.gst_number = formVal.gst_number;
+        if (formVal.category_id) payload.category_id = formVal.category_id;
       }
     }
+
 
     this.profileService.updateProfile(payload).subscribe({
       next: () => {

@@ -149,6 +149,7 @@ export class ProfileService {
               ...((loaded.website ? { website: loaded.website } : {}) as any),
               ...((loaded.gst_number ? { gst_number: loaded.gst_number } : {}) as any),
               ...((loaded.business_logo_url ? { business_logo_url: loaded.business_logo_url } : {}) as any),
+              ...((loaded.category_id ? { category_id: loaded.category_id } : {}) as any),
             }).catch(() => {});
           }
           this._loading.set(false);
@@ -235,6 +236,7 @@ export class ProfileService {
               ...((updated.website ? { website: updated.website } : {}) as any),
               ...((updated.gst_number ? { gst_number: updated.gst_number } : {}) as any),
               ...((updated.business_logo_url ? { business_logo_url: updated.business_logo_url } : {}) as any),
+              ...((updated.category_id ? { category_id: updated.category_id } : {}) as any),
             }).catch(() => {});
           }
           this._updating.set(false);

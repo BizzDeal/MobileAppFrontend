@@ -8,6 +8,7 @@ import {
   IonIcon,
   IonTitle,
   IonToolbar,
+  IonSpinner,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -15,6 +16,7 @@ import {
   cloudUploadOutline,
   copyOutline,
   documentTextOutline,
+  alertCircleOutline,
 } from 'ionicons/icons';
 import { MemberPaymentService } from './member-payment.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
@@ -31,6 +33,7 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
     IonButtons,
     IonBackButton,
     IonIcon,
+    IonSpinner,
     CachedImgDirective
   ],
   providers: [MemberPaymentService],
@@ -47,6 +50,11 @@ export class MemberPaymentPage {
       'cloud-upload-outline': cloudUploadOutline,
       'checkmark-circle-outline': checkmarkCircleOutline,
       'copy-outline': copyOutline,
+      'alert-circle-outline': alertCircleOutline,
     });
+  }
+
+  ionViewWillEnter(): void {
+    this.payService.loadSettings();
   }
 }

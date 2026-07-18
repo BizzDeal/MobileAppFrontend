@@ -11,6 +11,7 @@ import { AdminNotificationsPage } from './pages/admin-notifications/admin-notifi
 import { AdminAnalyticsPage } from './pages/admin-analytics/admin-analytics.page';
 import { AdminMeetingsPage } from './pages/admin-meetings/admin-meetings.page';
 import { AdminChatPage } from './pages/admin-chat/admin-chat.page';
+import { AdminPaymentDetailsPage } from './pages/admin-payment-details/admin-payment-details.page';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -53,6 +54,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'chat',
         component: AdminChatPage,
+      },
+      {
+        path: 'payment-details',
+        component: AdminPaymentDetailsPage,
       },
       {
         path: 'notifications',

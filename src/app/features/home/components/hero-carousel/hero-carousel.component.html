@@ -43,8 +43,12 @@
           <span class="pill-badge mega-badge">
             <ion-icon name="flame-outline" /> MEGA DEAL OF THE DAY
           </span>
-          <span class="discount-pill">
-            {{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' + deal.discount_value + ' OFF' }}
+          <span class="discount-pill" [class.cashback-pill]="deal.offer_type === 'CASHBACK'">
+            @if (deal.offer_type === 'CASHBACK') {
+              <ion-icon name="cash-outline" style="margin-right: 4px; vertical-align: text-bottom;"></ion-icon> ₹{{ deal.discount_value }} Cashback
+            } @else {
+              {{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' + deal.discount_value + ' OFF' }}
+            }
           </span>
         </div>
         <div class="banner-content">
@@ -52,8 +56,12 @@
           <p class="banner-subtitle">{{ deal.businessName }} • {{ deal.offer_type }}</p>
           <div class="banner-footer">
             <span class="claim-count">🔥 Limited Time Offer</span>
-            <button class="cta-btn" type="button">
-              Claim Deal <ion-icon name="arrow-forward-outline" />
+            <button class="cta-btn" type="button" [disabled]="deal.isClaimed && !isMemberView()" (click)="$event.stopPropagation(); (!deal.isClaimed || isMemberView()) && dealClick.emit(deal)">
+              @if (isMemberView()) {
+                Edit Deal <ion-icon name="create-outline" />
+              } @else {
+                {{ deal.isClaimed ? 'Claimed' : 'Claim Deal' }} <ion-icon name="arrow-forward-outline" />
+              }
             </button>
           </div>
         </div>

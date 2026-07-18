@@ -15,7 +15,8 @@ import {
   alertCircleOutline,
   ticketOutline
 } from 'ionicons/icons';
-import { VouchersService, MockVoucher } from '../../services/vouchers.service';
+import { VouchersService } from '../../services/vouchers.service';
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 
 @Component({
   selector: 'app-redeem-voucher',
@@ -41,23 +42,17 @@ export class RedeemVoucherPage implements OnInit {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  voucherDetails: MockVoucher | null = null;
+  voucherDetails: any = null;
   redemptionResult: any = null;
 
   // Real-time calculation variables
   discountAmount = 0;
+  cashbackAmount = 0;
   remainingBill = 0;
   finalPayment = 0;
   newWalletBalance = 0;
 
-  // Mock list of QR codes to let users click to simulate scanning
-  mockQRCodes = [
-    { label: 'Jane Doe (50% Off)', code: 'VOU-ACTIVE-PCT', phone: '9876543210' },
-    { label: 'Jane Doe ($30 Off Flat)', code: 'VOU-ACTIVE-FLAT', phone: '9876543210' },
-    { label: 'Jane Doe (Already Redeemed)', code: 'VOU-REDEEMED', phone: '9876543210' },
-    { label: 'Jane Doe (Expired Voucher)', code: 'VOU-EXPIRED', phone: '9876543210' },
-    { label: 'Alex Mercer (50% Off Gaming)', code: 'VOU-ALEX-50', phone: '9999999999' }
-  ];
+
 
   constructor() {
     addIcons({ 
@@ -112,22 +107,95 @@ export class RedeemVoucherPage implements OnInit {
     this.redemptionForm.reset({ bill_amount: '', wallet_amount_to_use: '0' });
   }
 
-  openScanner() {
+  async openScanner() {
     this.isScannerOpen = true;
     this.errorMessage = null;
+
+    // Delay initialization to ensure the modal and its content are rendered
+    setTimeout(() => {
+      this.startScanner();
+    }, 500);
   }
 
-  closeScanner() {
+  async closeScanner() {
     this.isScannerOpen = false;
+    document.body.classList.remove('barcode-scanner-active');
+    try {
+      await BarcodeScanner.stopScan();
+    } catch (err) {
+      console.error('Error stopping scanner:', err);
+    }
   }
 
-  simulateScan(code: string, phone: string) {
-    this.verificationForm.patchValue({
-      customer_phone: phone,
-      voucher_code: code
-    });
-    this.closeScanner();
-    this.onVerify();
+  private async startScanner() {
+    try {
+      const { camera } = await BarcodeScanner.requestPermissions();
+      if (camera !== 'granted' && camera !== 'limited') {
+        this.errorMessage = 'Camera permission is required to scan QR codes.';
+        this.isScannerOpen = false;
+        return;
+      }
+
+      document.body.classList.add('barcode-scanner-active');
+
+      const result = await BarcodeScanner.scan();
+      
+      if (result && result.barcodes && result.barcodes.length > 0) {
+        let decodedText = result.barcodes[0].displayValue;
+        
+        // Sometimes QR codes contain double-encoded data, try decoding
+        if (decodedText.includes('%7C') || decodedText.includes('%7c')) {
+          try {
+            decodedText = decodeURIComponent(decodedText);
+          } catch (e) {}
+        }
+
+        // TEMPORARY DEBUG: Show exactly what the scanner read
+        alert(`Scanner read: ${decodedText}`);
+        
+        console.log(`Scan result: ${decodedText}`);
+        
+        let voucherCode = decodedText;
+        let customerPhone = '';
+        
+        // Try pipe-delimited format: CODE|PHONE
+        if (decodedText.includes('|')) {
+          const parts = decodedText.split('|');
+          voucherCode = parts[0];
+          customerPhone = parts[1] || '';
+        } else {
+          // Try JSON format as fallback
+          try {
+            const parsed = JSON.parse(decodedText);
+            if (parsed.code) voucherCode = parsed.code;
+            if (parsed.phone) customerPhone = parsed.phone;
+          } catch (e) {
+            // Plain voucher code string — use as-is
+          }
+        }
+
+        console.log(`Parsed voucher code: ${voucherCode}, phone: ${customerPhone}`);
+
+        this.verificationForm.patchValue({
+          voucher_code: voucherCode,
+          ...(customerPhone ? { customer_phone: customerPhone } : {})
+        });
+
+        // Stop scanning and close modal
+        await this.closeScanner();
+        
+        // If both fields are filled, auto-verify
+        if (this.verificationForm.value.customer_phone && this.verificationForm.value.voucher_code) {
+          this.onVerify();
+        }
+      } else {
+        await this.closeScanner();
+      }
+    } catch (error) {
+      console.error('Scanner error:', error);
+      this.errorMessage = 'Failed to start camera.';
+      await this.closeScanner();
+    }
   }
 
   onVerify() {
@@ -148,7 +216,7 @@ export class RedeemVoucherPage implements OnInit {
         
         // Apply conditional validations
         const billControl = this.redemptionForm.get('bill_amount');
-        if (details.discount_type === 'PERCENTAGE') {
+        if (details.offer?.discount_type === 'PERCENTAGE') {
           // Bill amount is mandatory for percentage discount
           billControl?.setValidators([Validators.required, Validators.min(0.01)]);
         } else {
@@ -172,23 +240,37 @@ export class RedeemVoucherPage implements OnInit {
     const walletToUse = Number(this.redemptionForm.value.wallet_amount_to_use || 0);
 
     let calculatedDiscount = 0;
+    let cashbackEarned = 0;
     let remainingWalletCredit = 0;
 
-    if (this.voucherDetails.discount_type === 'PERCENTAGE') {
+    const isCashback = this.voucherDetails.offer?.offer_type === 'CASHBACK';
+
+    if (this.voucherDetails.offer?.discount_type === 'PERCENTAGE') {
       if (billAmount > 0) {
-        calculatedDiscount = (billAmount * this.voucherDetails.discount_value) / 100;
+        const amt = (billAmount * (this.voucherDetails.offer?.discount_value || 0)) / 100;
+        if (isCashback) {
+          cashbackEarned = amt;
+        } else {
+          calculatedDiscount = amt;
+        }
       }
     } else {
       // FIXED discount
-      if (billAmount > 0 && billAmount < this.voucherDetails.discount_value) {
-        calculatedDiscount = billAmount;
-        remainingWalletCredit = this.voucherDetails.discount_value - billAmount;
+      const discountVal = this.voucherDetails.offer?.discount_value || 0;
+      if (isCashback) {
+        cashbackEarned = discountVal;
       } else {
-        calculatedDiscount = this.voucherDetails.discount_value;
+        if (billAmount > 0 && billAmount < discountVal) {
+          calculatedDiscount = billAmount;
+          remainingWalletCredit = discountVal - billAmount;
+        } else {
+          calculatedDiscount = discountVal;
+        }
       }
     }
 
     this.discountAmount = Number(calculatedDiscount.toFixed(2));
+    this.cashbackAmount = Number(cashbackEarned.toFixed(2));
     this.remainingBill = Number(Math.max(0, billAmount - calculatedDiscount).toFixed(2));
 
     // Validation for wallet amount to use
@@ -203,7 +285,7 @@ export class RedeemVoucherPage implements OnInit {
 
     this.finalPayment = Number(Math.max(0, this.remainingBill - walletToUse).toFixed(2));
     this.newWalletBalance = Number(
-      (this.voucherDetails.wallet_balance - walletToUse + remainingWalletCredit).toFixed(2)
+      (this.voucherDetails.wallet_balance - walletToUse + remainingWalletCredit + cashbackEarned).toFixed(2)
     );
   }
 
@@ -225,7 +307,17 @@ export class RedeemVoucherPage implements OnInit {
     this.vouchersService.redeemVoucher(payload).subscribe({
       next: (res) => {
         this.isRedeeming = false;
-        this.redemptionResult = res.data;
+        
+        // Enhance the result from the backend with the values we just calculated
+        this.redemptionResult = {
+          ...res.data,
+          discount_amount: this.discountAmount,
+          cashback_earned: this.cashbackAmount,
+          wallet_amount_used: payload.wallet_amount_to_use,
+          final_bill_amount: this.finalPayment,
+          new_wallet_balance: this.newWalletBalance
+        };
+        
         this.step = 'SUCCESS';
         
         // Redirect back home after 3 seconds

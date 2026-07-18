@@ -158,6 +158,27 @@
 .voucher-card {
   border-left: 6px solid var(--ion-color-primary);
   position: relative;
+
+  &.type-cashback {
+    border: 2px solid #10b981;
+    border-left-width: 8px;
+    background: rgba(16, 185, 129, 0.05);
+    .v-title { color: #047857; }
+  }
+
+  &.type-percentage {
+    border: 2px solid #f97316;
+    border-left-width: 8px;
+    background: rgba(249, 115, 22, 0.05);
+    .v-title { color: #c2410c; }
+  }
+
+  &.type-fixed {
+    border: 2px solid #8b5cf6;
+    border-left-width: 8px;
+    background: rgba(139, 92, 246, 0.05);
+    .v-title { color: #6d28d9; }
+  }
 }
 
 .v-header {

@@ -11,9 +11,7 @@
   <div class="form-container">
     <form [formGroup]="offerForm" (ngSubmit)="onSubmit()" class="bizz-form">
       
-      <div class="form-section bd-card">
-        <h3 class="section-title">Offer Details</h3>
-
+      <div class="form-section">
         <!-- Title -->
         <div class="form-group">
       <label class="form-label" for="title">Title <span class="required-star">*</span></label>
@@ -42,52 +40,35 @@
       </div>
     </div>
 
-    <!-- Offer Type -->
+    <!-- Offer Category -->
     <div class="form-group">
-      <label class="form-label" for="offer_type">Offer Type <span class="required-star">*</span></label>
+      <label class="form-label" for="offer_category">Offer Category <span class="required-star">*</span></label>
       <div class="input-wrapper select-wrapper">
         <ion-icon name="options-outline" class="input-icon"></ion-icon>
-        <ion-select formControlName="offer_type" placeholder="Select type" interface="action-sheet" class="custom-select">
-          <ion-select-option value="DISCOUNT">Discount</ion-select-option>
-          <ion-select-option value="CASHBACK">Cashback</ion-select-option>
+        <ion-select formControlName="offer_category" placeholder="Select offer category" interface="action-sheet" class="custom-select">
+          <ion-select-option value="PERCENTAGE_DEAL">% Percentage Deal</ion-select-option>
+          <ion-select-option value="FLAT_OFFER">₹ Flat Amount Offer</ion-select-option>
+          <ion-select-option value="CASHBACK">Cashback Reward</ion-select-option>
         </ion-select>
       </div>
       <div class="error-container">
-        @if (isFieldInvalid('offer_type')) {
-          <span class="error-message">Offer Type is required.</span>
+        @if (isFieldInvalid('offer_category')) {
+          <span class="error-message">Offer Category is required.</span>
         }
       </div>
     </div>
 
-    <!-- Discount Value & Type Row -->
-    <div class="form-row">
-      <div class="form-group half-width">
-        <label class="form-label" for="discount_value">Value <span class="required-star">*</span></label>
-        <div class="input-wrapper">
-          <ion-icon name="cash-outline" class="input-icon"></ion-icon>
-          <ion-input type="number" id="discount_value" formControlName="discount_value" class="form-input" placeholder="e.g. 20"></ion-input>
-        </div>
-        <div class="error-container">
-          @if (isFieldInvalid('discount_value')) {
-            <span class="error-message">Value is required.</span>
-          }
-        </div>
+    <!-- Discount / Cashback Value -->
+    <div class="form-group">
+      <label class="form-label" for="discount_value">Discount/Cashback Value <span class="required-star">*</span></label>
+      <div class="input-wrapper">
+        <ion-icon name="cash-outline" class="input-icon"></ion-icon>
+        <ion-input type="number" id="discount_value" formControlName="discount_value" class="form-input" placeholder="e.g. 20"></ion-input>
       </div>
-      
-      <div class="form-group half-width">
-        <label class="form-label" for="discount_type">Unit <span class="required-star">*</span></label>
-        <div class="input-wrapper select-wrapper">
-          <ion-icon name="calculator-outline" class="input-icon"></ion-icon>
-          <ion-select formControlName="discount_type" placeholder="Select" interface="action-sheet" class="custom-select">
-            <ion-select-option value="PERCENTAGE">% Percentage</ion-select-option>
-            <ion-select-option value="FIXED_AMOUNT">₹ Fixed Amount</ion-select-option>
-          </ion-select>
-        </div>
-        <div class="error-container">
-          @if (isFieldInvalid('discount_type')) {
-            <span class="error-message">Unit is required.</span>
-          }
-        </div>
+      <div class="error-container">
+        @if (isFieldInvalid('discount_value')) {
+          <span class="error-message">Value is required.</span>
+        }
       </div>
     </div>
 

@@ -18,5 +18,7 @@ export interface CustomerVoucher {
   discountText: string;
   discount_type?: 'PERCENTAGE' | 'FIXED' | 'FIXED_AMOUNT';
   discount_value?: number;
+  offer_type?: string;
   imageUrl?: string;
+  customer_phone?: string;
 }

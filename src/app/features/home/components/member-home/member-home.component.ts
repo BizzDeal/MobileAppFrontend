@@ -14,10 +14,12 @@ import { MeetingCardComponent } from '../../../meetings/components/meeting-card/
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { NotificationService } from '../../../notifications/services/notification.service';
 
+import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
+
 @Component({
   selector: 'app-member-home',
   standalone: true,
-  imports: [CommonModule, IonIcon, IonSpinner, OfferCardComponent, MeetingCardComponent, CachedImgDirective],
+  imports: [CommonModule, IonIcon, IonSpinner, OfferCardComponent, MeetingCardComponent, CachedImgDirective, HeroCarouselComponent],
   templateUrl: './member-home.component.html',
   styleUrls: ['./member-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -46,11 +48,15 @@ export class MemberHomeComponent implements OnInit {
 
 
 
-  readonly approvedOffers = computed(() => 
+  readonly approvedOffers = computed(() =>
     this.dashboardData()?.myOffers.filter(o => o.status === 'APPROVED') || []
   );
 
-  readonly pendingOffers = computed(() => 
+  readonly percentageDeals = computed(() => this.approvedOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'PERCENTAGE'));
+  readonly flatOffers = computed(() => this.approvedOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'FIXED_AMOUNT'));
+  readonly cashbackOffers = computed(() => this.approvedOffers().filter(o => o.offer_type === 'CASHBACK'));
+
+  readonly pendingOffers = computed(() =>
     this.dashboardData()?.myOffers.filter(o => o.status === 'PENDING') || []
   );
 
@@ -68,7 +74,9 @@ export class MemberHomeComponent implements OnInit {
   }
 
   getFirstName(name?: string): string {
-    return name ? name.split(' ')[0] : 'Member';
+    if (!name) return 'Member';
+    const first = name.trim().split(' ')[0];
+    return first.length > 5 ? `${first.substring(0, 5)}...` : first;
   }
 
   getInitials(name?: string | null): string {

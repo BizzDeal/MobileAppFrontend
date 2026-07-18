@@ -5,17 +5,22 @@ import {
   HttpHandlerFn,
   HttpEvent,
 } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { from, Observable, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { inject, Injector } from '@angular/core';
+import { BehaviorSubject, from, Observable, throwError } from 'rxjs';
+import { catchError, filter, switchMap, take } from 'rxjs/operators';
 import { AuthSessionService } from '../services/auth-session.service';
+import { AuthApiService } from '../../features/auth/services/auth-api.service';
 import { environment } from '../../../environments/environment';
+
+let isRefreshing = false;
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const authInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
   const authSession = inject(AuthSessionService);
+  const injector = inject(Injector);
 
   const isApiRequest = req.url.startsWith(environment.apiUrl);
   const isExcludedUrl =
@@ -45,7 +50,56 @@ export const authInterceptor: HttpInterceptorFn = (
       return next(authReq).pipe(
         catchError((error: HttpErrorResponse) => {
           if (error.status === 401 && !req.url.includes('/auth/logout')) {
-            authSession.logout(true);
+            if (!isRefreshing) {
+              isRefreshing = true;
+              refreshTokenSubject.next(null);
+
+              return from(authSession.getRefreshToken()).pipe(
+                switchMap((refreshToken) => {
+                  if (refreshToken) {
+                    const authApi = injector.get(AuthApiService);
+                    return authApi.refreshToken(refreshToken).pipe(
+                      switchMap((tokens) => {
+                        isRefreshing = false;
+                        refreshTokenSubject.next(tokens.accessToken);
+                        return from(authSession.updateTokens(tokens.accessToken, tokens.refreshToken)).pipe(
+                          switchMap(() => {
+                            const newReq = req.clone({
+                              setHeaders: {
+                                Authorization: `Bearer ${tokens.accessToken}`,
+                              },
+                            });
+                            return next(newReq);
+                          })
+                        );
+                      }),
+                      catchError((refreshErr) => {
+                        isRefreshing = false;
+                        authSession.logout(true);
+                        return throwError(() => refreshErr);
+                      })
+                    );
+                  } else {
+                    isRefreshing = false;
+                    authSession.logout(true);
+                    return throwError(() => error);
+                  }
+                })
+              );
+            } else {
+              return refreshTokenSubject.pipe(
+                filter((result) => result !== null),
+                take(1),
+                switchMap((newToken) => {
+                  const newReq = req.clone({
+                    setHeaders: {
+                      Authorization: `Bearer ${newToken}`,
+                    },
+                  });
+                  return next(newReq);
+                })
+              );
+            }
           }
           return throwError(() => error);
         })

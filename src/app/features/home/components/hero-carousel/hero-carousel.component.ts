@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForwardOutline, flameOutline, starOutline, timeOutline } from 'ionicons/icons';
+import { arrowForwardOutline, flameOutline, starOutline, timeOutline, createOutline, cashOutline, pricetagOutline } from 'ionicons/icons';
 import { BusinessDTO, OfferDTO } from '../../models/home.model';
 import { CachedBgImgDirective } from '../../../../shared/directives/cached-bg-img.directive';
 
@@ -18,6 +18,7 @@ export class HeroCarouselComponent {
   readonly icon = input<string>('flame-outline');
   readonly featuredBusinesses = input<BusinessDTO[]>([]);
   readonly megaDeals = input<OfferDTO[]>([]);
+  readonly isMemberView = input<boolean>(false);
 
   readonly dealClick = output<OfferDTO>();
   readonly businessClick = output<BusinessDTO>();
@@ -25,7 +26,7 @@ export class HeroCarouselComponent {
   readonly activeSlide = signal<number>(0);
 
   constructor() {
-    addIcons({ flameOutline, starOutline, arrowForwardOutline, timeOutline });
+    addIcons({ flameOutline, starOutline, arrowForwardOutline, timeOutline, createOutline, cashOutline, pricetagOutline });
   }
 
   onScroll(event: Event): void {

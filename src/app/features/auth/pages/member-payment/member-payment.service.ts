@@ -13,6 +13,18 @@ export class MemberPaymentService {
   readonly isSuccess = signal<boolean>(false);
   private receiptFile: File | null = null;
 
+  constructor() {
+    this.loadSettings();
+  }
+
+  async loadSettings(): Promise<void> {
+    try {
+      await this.onboardingService.fetchPaymentSettings();
+    } catch (err) {
+      // Error is set in onboardingService.paymentSettingsError
+    }
+  }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {

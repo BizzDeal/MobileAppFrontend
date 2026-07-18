@@ -1,0 +1,52 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+ion-content {
+  flex: 1;
+}
+
+.admin-child-header {
+  --background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  ion-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e3a8a;
+  }
+}
+
+.payment-config-container {
+  padding: 16px;
+}
+
+.bizz-form {
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .custom-input-item, .custom-textarea-item {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    margin-top: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    transition: border-color 0.2s ease;
+
+    &.focused {
+      border-color: #2563eb;
+    }
+  }
+
+  .field-label {
+    margin-bottom: 4px;
+  }
+
+.error-container {
+    margin-top: 4px;
+  }
+}

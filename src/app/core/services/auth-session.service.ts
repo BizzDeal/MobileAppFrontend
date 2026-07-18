@@ -75,6 +75,16 @@ export class AuthSessionService {
     }
   }
 
+  async updateTokens(accessToken: string, refreshToken: string): Promise<void> {
+    try {
+      await this.storage.set(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
+      await this.storage.set(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+    } catch (error) {
+      console.error('AuthSessionService.updateTokens error:', error);
+      throw error;
+    }
+  }
+
   async clearSession(): Promise<void> {
     try {
       await this.storage.remove(STORAGE_KEYS.ACCESS_TOKEN);

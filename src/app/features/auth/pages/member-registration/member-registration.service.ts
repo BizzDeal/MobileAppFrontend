@@ -14,6 +14,8 @@ export class MemberRegistrationService {
 
   readonly photoPreview = signal<string | null>(null);
   private photoFile: File | null = null;
+  readonly logoPreview = signal<string | null>(null);
+  private logoFile: File | null = null;
   readonly isSubmitting = signal<boolean>(false);
 
   readonly isOtpModalOpen = signal<boolean>(false);
@@ -27,7 +29,7 @@ export class MemberRegistrationService {
     fullName: ['', [Validators.required, Validators.minLength(2)]],
     phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
     loginPin: ['', [Validators.required, Validators.pattern(/^[0-9]{4,6}$/)]],
-    whatsappNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+    whatsappNumber: ['', [Validators.pattern(/^[0-9]{10}$/)]],
     email: ['', [Validators.required, Validators.email]],
     stateId: ['', [Validators.required]],
     districtId: ['', [Validators.required]],
@@ -35,8 +37,8 @@ export class MemberRegistrationService {
     businessName: ['', [Validators.required, Validators.minLength(2)]],
     businessCategory: ['', [Validators.required]],
     businessDescription: ['', [Validators.required, Validators.minLength(5)]],
-    website: ['', [Validators.required, Validators.minLength(3)]],
-    gstNumber: ['', [Validators.required, Validators.minLength(5)]],
+    website: ['', [Validators.minLength(3)]],
+    gstNumber: ['', [Validators.minLength(5)]],
     referenceCode: [''],
   });
 
@@ -52,6 +54,16 @@ export class MemberRegistrationService {
         this.onboardingService.districts.set([]);
       }
     });
+
+    this.regForm.controls.businessCategory.valueChanges.subscribe((categoryId) => {
+      if (categoryId) {
+        const categories = this.onboardingService.categories();
+        const selected = categories.find((c) => c.id === categoryId);
+        if (selected && selected.description) {
+          this.regForm.controls.businessDescription.setValue(selected.description);
+        }
+      }
+    });
   }
 
   onFileSelected(event: Event): void {
@@ -63,6 +75,18 @@ export class MemberRegistrationService {
         this.photoPreview.set(reader.result as string);
       };
       reader.readAsDataURL(this.photoFile);
+    }
+  }
+
+  onLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.logoFile = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.logoPreview.set(reader.result as string);
+      };
+      reader.readAsDataURL(this.logoFile);
     }
   }
 
@@ -111,7 +135,7 @@ export class MemberRegistrationService {
         reference_code: val.referenceCode || undefined,
       };
 
-      this.onboardingService.setRegistrationData(payload, this.photoFile);
+      this.onboardingService.setRegistrationData(payload, this.photoFile, this.logoFile);
       await this.onboardingService.submitMemberRegistration();
       alert('Welcome to BizzDeal! Your member registration has been submitted successfully.');
       this.router.navigate(['/home']);

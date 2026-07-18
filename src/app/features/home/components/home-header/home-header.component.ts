@@ -39,10 +39,8 @@ export class HomeHeaderComponent {
 
   getFirstName(fullName?: string): string {
     if (!fullName) return 'User';
-    if (fullName.length > 8) {
-      return `${fullName.slice(0, 8).trim()}...`;
-    }
-    return fullName;
+    const first = fullName.trim().split(' ')[0];
+    return first.length > 5 ? `${first.substring(0, 5)}...` : first;
   }
 
   onWalletClick(): void {

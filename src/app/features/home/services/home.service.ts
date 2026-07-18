@@ -99,7 +99,7 @@ export class HomeService {
           updated_at: b.updated_at || new Date().toISOString(),
           categoryName: b.categoryName || b.category?.name || 'Partner Business',
           logoUrl: b.logoUrl || b.business_logo_url || null,
-          bannerUrl: b.bannerUrl || b.banner_url || null,
+          bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
         }));
 
         // Map Top Businesses
@@ -119,8 +119,31 @@ export class HomeService {
           updated_at: b.updated_at || new Date().toISOString(),
           categoryName: b.categoryName || b.category?.name || 'Partner Business',
           logoUrl: b.logoUrl || b.business_logo_url || null,
-          bannerUrl: b.bannerUrl || b.banner_url || null,
+          bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
         }));
+
+        // Map Vouchers
+        const vouchersRaw: any[] = Array.isArray(res.vouchers) ? res.vouchers : res.vouchers?.data || res.vouchers?.items || [];
+        const myActiveVouchers: VoucherDTO[] = vouchersRaw.map((v) => ({
+          id: v.id,
+          voucher_code: v.voucher_code,
+          offer_id: v.offer_id,
+          customer_id: v.customer_id,
+          business_id: v.business_id,
+          status: v.status || 'ISSUED',
+          issued_at: v.issued_at || new Date().toISOString(),
+          redeemed_at: v.redeemed_at || null,
+          expires_at: v.expires_at || new Date().toISOString(),
+          redeemed_by_id: v.redeemed_by_id || null,
+          created_at: v.created_at || new Date().toISOString(),
+          updated_at: v.updated_at || new Date().toISOString(),
+          offerTitle: v.offerTitle || v.offer?.title || 'Promotional Offer',
+          businessName: v.businessName || v.business?.name || 'BizzDeal Partner',
+          discountText: v.discountText || (v.offer?.discount_type === 'PERCENTAGE' ? `${v.offer.discount_value}% OFF` : v.offer?.discount_type === 'FIXED_AMOUNT' ? `₹${v.offer.discount_value} OFF` : 'Special Deal'),
+          customer_phone: v.customer_phone || null,
+        }));
+        
+        const claimedOfferIds = new Set(myActiveVouchers.map(v => v.offer_id));
 
         // Map Mega Deals
         const megaRaw: any[] = Array.isArray(res.megaDeals) ? res.megaDeals : res.megaDeals?.data || res.megaDeals?.items || [];
@@ -143,6 +166,7 @@ export class HomeService {
           businessName: o.businessName || o.business?.name || 'Partner Business',
           businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || o.business?.logoUrl || null,
           imageUrl: o.imageUrl || o.image_url || null,
+          isClaimed: claimedOfferIds.has(o.id),
         }));
 
         // Map Trending Offers
@@ -166,26 +190,7 @@ export class HomeService {
           businessName: o.businessName || o.business?.name || 'Partner Business',
           businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || o.business?.logoUrl || null,
           imageUrl: o.imageUrl || o.image_url || null,
-        }));
-
-        // Map Vouchers
-        const vouchersRaw: any[] = Array.isArray(res.vouchers) ? res.vouchers : res.vouchers?.data || res.vouchers?.items || [];
-        const myActiveVouchers: VoucherDTO[] = vouchersRaw.map((v) => ({
-          id: v.id,
-          voucher_code: v.voucher_code,
-          offer_id: v.offer_id,
-          customer_id: v.customer_id,
-          business_id: v.business_id,
-          status: v.status || 'ISSUED',
-          issued_at: v.issued_at || new Date().toISOString(),
-          redeemed_at: v.redeemed_at || null,
-          expires_at: v.expires_at || new Date().toISOString(),
-          redeemed_by_id: v.redeemed_by_id || null,
-          created_at: v.created_at || new Date().toISOString(),
-          updated_at: v.updated_at || new Date().toISOString(),
-          offerTitle: v.offerTitle || v.offer?.title || 'Promotional Offer',
-          businessName: v.businessName || v.business?.name || 'BizzDeal Partner',
-          discountText: v.discountText || (v.offer?.discount_type === 'PERCENTAGE' ? `${v.offer.discount_value}% OFF` : v.offer?.discount_type === 'FIXED_AMOUNT' ? `₹${v.offer.discount_value} OFF` : 'Special Deal'),
+          isClaimed: claimedOfferIds.has(o.id),
         }));
 
         // Map Wallet
@@ -274,8 +279,13 @@ export class HomeService {
 
         const currentFeed = this._homeFeed();
         if (currentFeed) {
+          const updatedMegaDeals = currentFeed.megaDeals.map(o => o.id === offer.id ? { ...o, isClaimed: true } : o);
+          const updatedTrendingOffers = currentFeed.trendingOffers.map(o => o.id === offer.id ? { ...o, isClaimed: true } : o);
+
           this._homeFeed.set({
             ...currentFeed,
+            megaDeals: updatedMegaDeals,
+            trendingOffers: updatedTrendingOffers,
             myActiveVouchers: [newVoucher, ...currentFeed.myActiveVouchers],
           });
         }

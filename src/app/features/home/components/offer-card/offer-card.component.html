@@ -31,8 +31,9 @@
         <button 
           type="button" 
           class="claim-btn bd-btn-primary" 
-          (click)="$event.stopPropagation(); claimClick.emit(offer())">
-          Claim Deal
+          [disabled]="offer().isClaimed"
+          (click)="$event.stopPropagation(); !offer().isClaimed && claimClick.emit(offer())">
+          {{ offer().isClaimed ? 'Claimed' : 'Claim Deal' }}
         </button>
       }
     </div>

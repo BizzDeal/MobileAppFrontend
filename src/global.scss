@@ -195,7 +195,7 @@ ion-card .loading-container {
   background: var(--bizzdeal-bg-surface);
   border-radius: var(--bizzdeal-radius-lg);
   padding: var(--bizzdeal-spacing-md);
-  margin-bottom: 0;
+  margin-bottom: var(--bizzdeal-spacing-md);
   box-shadow: var(--bizzdeal-shadow-sm);
   border: 1px solid var(--bizzdeal-border-color);
   animation: fadeIn 0.4s ease-out;
@@ -485,4 +485,6 @@ ion-searchbar {
   pointer-events: none;
   transition: background-color 0.3s ease;
 }
+
+
 

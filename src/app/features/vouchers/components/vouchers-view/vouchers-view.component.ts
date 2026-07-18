@@ -61,7 +61,7 @@ export class VouchersViewComponent {
   readonly error = this.vouchersService.error;
 
   readonly searchQuery = signal<string>('');
-  readonly selectedFilter = signal<FilterStatus>('ALL');
+  readonly selectedFilter = signal<FilterStatus>('ACTIVE');
   readonly toastMessage = signal<string | null>(null);
   readonly selectedQrVoucher = signal<CustomerVoucher | null>(null);
 
@@ -107,6 +107,15 @@ export class VouchersViewComponent {
       closeOutline,
       scanOutline
     });
+  }
+
+  getQrData(voucher: CustomerVoucher): string {
+    const phone = voucher.customer_phone || '';
+    // Use pipe delimiter: CODE|PHONE — simple, no JSON encoding issues
+    return encodeURIComponent(`${voucher.voucher_code}|${phone}`);
+  }
+
+  doRefresh(event: any) {
   }
 
   onSearchChange(event: any): void {
@@ -155,5 +164,23 @@ export class VouchersViewComponent {
 
   encodeUri(val: string): string {
     return encodeURIComponent(val);
+  }
+
+  getVoucherTypeClass(v: any): string {
+    const offerType = v.offer_type || v.offer?.offer_type;
+    const discountType = v.discount_type || v.offer?.discount_type;
+    const text = (v.discountText || '').toLowerCase();
+
+    if (offerType === 'CASHBACK' || text.includes('cashback')) {
+      return 'type-cashback';
+    }
+    if (discountType === 'PERCENTAGE' || text.includes('%')) {
+      return 'type-percentage';
+    }
+    if (discountType === 'FIXED_AMOUNT' || discountType === 'FIXED' || text.includes('₹') || text.includes('off')) {
+      return 'type-fixed';
+    }
+
+    return 'type-fixed'; // default fallback for colored items
   }
 }

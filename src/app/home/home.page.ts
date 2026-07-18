@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -65,6 +65,7 @@ import { CachedBgImgDirective } from '../shared/directives/cached-bg-img.directi
   standalone: true,
   imports: [
     DatePipe,
+    NgClass,
     CachedImgDirective,
     CachedBgImgDirective,
     IonContent,
@@ -112,14 +113,26 @@ export class HomePage {
 
   readonly userRole = computed(() => this.authSession.userRole() || this.profileService.profile()?.role || 'CUSTOMER');
 
+  readonly activeVouchers = computed(() => this.customerVouchersService.vouchers().filter(v => v.status === 'ISSUED'));
+
   readonly homeFeed = this.homeService.homeFeed;
   readonly loading = this.homeService.loading;
   readonly error = this.homeService.error;
   readonly selectedCategory = this.homeService.selectedCategory;
-  readonly trendingOffers = computed(() => this.homeFeed()?.trendingOffers || []);
   readonly topBusinesses = computed(() => this.homeFeed()?.topBusinesses || []);
   readonly featuredBusinesses = computed(() => this.homeFeed()?.featuredBusinesses || []);
-  readonly megaDeals = computed(() => this.homeFeed()?.megaDeals || []);
+  readonly allOffers = computed(() => {
+    const deals = this.homeFeed()?.megaDeals || [];
+    const trending = this.homeFeed()?.trendingOffers || [];
+    const map = new Map<string, OfferDTO>();
+    deals.forEach(o => map.set(o.id, o));
+    trending.forEach(o => map.set(o.id, o));
+    return Array.from(map.values());
+  });
+
+  readonly percentageDeals = computed(() => this.allOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'PERCENTAGE'));
+  readonly flatOffers = computed(() => this.allOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'FIXED_AMOUNT'));
+  readonly cashbackOffers = computed(() => this.allOffers().filter(o => o.offer_type === 'CASHBACK'));
 
   readonly selectedConversationId = this.chatService.activeConversationId;
   readonly unreadNotificationsCount = this.notificationService.unreadCount;
@@ -127,13 +140,13 @@ export class HomePage {
   readonly activeNavTab = signal<NavTab>('home');
   readonly toastMessage = signal<string | null>(null);
   readonly isVouchersModalOpen = signal<boolean>(false);
+  readonly selectedVoucherModal = signal<any>(null);
   readonly isNotificationsModalOpen = signal<boolean>(false);
   readonly selectedDealModal = signal<OfferDTO | null>(null);
   readonly selectedBizModal = signal<BusinessDTO | null>(null);
   readonly searchQuery = signal<string>('');
 
-  readonly filteredTrendingBySearch = computed(() => {
-    const offers = this.trendingOffers();
+  private filterOffers = (offers: OfferDTO[]) => {
     const query = this.searchQuery().toLowerCase().trim();
     if (!query) return offers;
     return offers.filter(o => 
@@ -141,7 +154,11 @@ export class HomePage {
       o.description.toLowerCase().includes(query) ||
       (o.businessName && o.businessName.toLowerCase().includes(query))
     );
-  });
+  };
+
+  readonly filteredPercentageDealsBySearch = computed(() => this.filterOffers(this.percentageDeals()));
+  readonly filteredFlatOffersBySearch = computed(() => this.filterOffers(this.flatOffers()));
+  readonly filteredCashbackOffersBySearch = computed(() => this.filterOffers(this.cashbackOffers()));
 
   readonly filteredTopBizBySearch = computed(() => {
     const bizList = this.topBusinesses();
@@ -165,16 +182,7 @@ export class HomePage {
     );
   });
 
-  readonly filteredMegaDealsBySearch = computed(() => {
-    const deals = this.megaDeals();
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return deals;
-    return deals.filter(o => 
-      o.title.toLowerCase().includes(query) || 
-      o.description.toLowerCase().includes(query) ||
-      (o.businessName && o.businessName.toLowerCase().includes(query))
-    );
-  });
+
 
   constructor() {
     addIcons({ 
@@ -269,7 +277,9 @@ export class HomePage {
           updated_at: voucher.updated_at,
           offerTitle: voucher.offerTitle || 'Promotional Offer',
           businessName: voucher.businessName || 'BizzDeal Partner',
-          discountText: voucher.discountText || 'Special Offer'
+          discountText: voucher.discountText || 'Special Offer',
+          offer_type: offer.offer_type,
+          discount_type: (offer.discount_type as any) || undefined
         });
         this.showToast(`🎉 Deal Claimed! Voucher ${voucher.voucher_code} added to your wallet.`);
       },
@@ -337,8 +347,13 @@ export class HomePage {
     this.isNotificationsModalOpen.set(false);
   }
 
-  encodeUri(str: string): string {
-    return encodeURIComponent(str || '');
+  openSingleVoucherModal(voucher: any): void {
+    this.selectedVoucherModal.set(voucher);
+  }
+
+  getQrData(v: any): string {
+    const phone = v.customer_phone || '';
+    return encodeURIComponent(`${v.voucher_code}|${phone}`);
   }
 
   copyVoucherCode(code: string): void {
@@ -365,5 +380,23 @@ export class HomePage {
     this.selectedBizModal.set(null);
     this.chatService.createOrGetConversation(ownerId);
     this.activeNavTab.set('chat');
+  }
+
+  getVoucherTypeClass(v: any): string {
+    const offerType = v.offer_type || v.offer?.offer_type;
+    const discountType = v.discount_type || v.offer?.discount_type;
+    const text = (v.discountText || '').toLowerCase();
+
+    if (offerType === 'CASHBACK' || text.includes('cashback')) {
+      return 'type-cashback';
+    }
+    if (discountType === 'PERCENTAGE' || text.includes('%')) {
+      return 'type-percentage';
+    }
+    if (discountType === 'FIXED_AMOUNT' || discountType === 'FIXED' || text.includes('₹') || text.includes('off')) {
+      return 'type-fixed';
+    }
+
+    return 'type-fixed'; // default fallback for colored items
   }
 }

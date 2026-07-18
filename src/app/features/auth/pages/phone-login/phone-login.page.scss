@@ -49,9 +49,9 @@ ion-content {
   justify-content: center;
 
   .logo-image {
-    width: 130%; // Scale up to cleanly crop out the white border/padding present in the PNG image file
-    height: 130%;
-    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     object-position: center;
     display: block;
   }

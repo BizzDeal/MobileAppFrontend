@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterModule, NavigationEnd, NavigationStart } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -7,6 +7,7 @@ import { filter } from 'rxjs/operators';
 import { StatusBarService } from './core/platform/statusbar.service';
 import { PermissionsService } from './core/platform/permissions.service';
 import { NotificationService } from './features/notifications/services/notification.service';
+import { SplashScreenComponent } from './shared/components/splash-screen/splash-screen.component';
 
 @Component({
   selector: 'app-root',
@@ -16,17 +17,20 @@ import { NotificationService } from './features/notifications/services/notificat
     CommonModule,
     IonicModule,
     RouterModule,
+    SplashScreenComponent
   ],
 })
 export class AppComponent implements OnInit, OnDestroy {
   isAdminRoute = false;
+  showSplash = true;
   private routerSub!: Subscription;
 
   constructor(
     private router: Router,
     private statusBarService: StatusBarService,
     private permissionsService: PermissionsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -35,12 +39,31 @@ export class AppComponent implements OnInit, OnDestroy {
     this.notificationService.initPushNotificationsOnStartup();
     this.updateRouteState(this.router.url);
 
+    setTimeout(() => {
+      this.hideSplash();
+    }, 3000);
+
     this.routerSub = this.router.events
       .pipe(filter((e) => e instanceof NavigationStart || e instanceof NavigationEnd))
       .subscribe((event: any) => {
         const url = event instanceof NavigationStart ? event.url : event.urlAfterRedirects;
         this.updateRouteState(url);
       });
+  }
+
+  private hideSplash() {
+    if ((document as any).startViewTransition) {
+      (document as any).startViewTransition(() => {
+        this.showSplash = false;
+        document.body.classList.add('splash-removed');
+        this.cdr.detectChanges();
+      }).finished.then(() => {
+        document.body.classList.remove('splash-removed');
+      });
+    } else {
+      this.showSplash = false;
+      this.cdr.detectChanges();
+    }
   }
 
   private updateRouteState(url: string = ''): void {

@@ -150,9 +150,6 @@ export class RedeemVoucherPage implements OnInit {
           } catch (e) {}
         }
 
-        // TEMPORARY DEBUG: Show exactly what the scanner read
-        alert(`Scanner read: ${decodedText}`);
-        
         console.log(`Scan result: ${decodedText}`);
         
         let voucherCode = decodedText;

@@ -65,7 +65,6 @@ import { CachedBgImgDirective } from '../shared/directives/cached-bg-img.directi
   standalone: true,
   imports: [
     DatePipe,
-    NgClass,
     CachedImgDirective,
     CachedBgImgDirective,
     IonContent,

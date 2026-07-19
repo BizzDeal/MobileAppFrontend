@@ -6,7 +6,6 @@ import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline,
 import { MemberDashboardService } from '../../services/member-dashboard.service';
 
 import { ProfileService } from '../../../profile/services/profile.service';
-import { OfferCardComponent } from '../offer-card/offer-card.component';
 import { OfferDTO } from '../../models/home.model';
 import { CommonModule } from '@angular/common';
 import { MeetingsService, AttendeeStatus } from '../../../meetings/services/meetings.service';
@@ -19,7 +18,7 @@ import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component'
 @Component({
   selector: 'app-member-home',
   standalone: true,
-  imports: [CommonModule, IonIcon, IonSpinner, OfferCardComponent, MeetingCardComponent, CachedImgDirective, HeroCarouselComponent],
+  imports: [CommonModule, IonIcon, IonSpinner, MeetingCardComponent, CachedImgDirective, HeroCarouselComponent],
   templateUrl: './member-home.component.html',
   styleUrls: ['./member-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,14 +1,4 @@
-<ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true"
-  style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
-  <ion-toolbar class="toolbar-no-padding pt-3 pb-2">
-    <ion-title>Configure Payment Details</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="loadSettings()" [disabled]="isLoading() || isSaving()">
-        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+
 
 <ion-content color="light" class="ion-padding">
   <div *ngIf="isLoading()" class="loading-state"
@@ -35,17 +25,20 @@
       <!-- Card Information Section -->
       <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px;">Onboarding
         Hero Card</h3>
-      <div
-        style="background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border: 1px solid rgba(0,0,0,0.06);">
+      <div class="form-section-content" style="margin-bottom: 24px;">
         <!-- Card Subtitle / Badge -->
         <div class="form-group" style="margin-bottom: 12px;">
-          <ion-label class="field-label"
-            style="font-weight: 600; font-size: 0.9rem; color: #374151; display: block; margin-bottom: 6px;">
-            Card Subtitle / Badge <span class="required-star" style="color: #ef4444;">*</span>
-          </ion-label>
-          <ion-item class="custom-input-item" lines="none" style="--background: #f9fafb; --border-radius: 10px;">
-            <ion-input formControlName="card_subtitle" placeholder="e.g. MEMBER ONBOARDING"></ion-input>
-          </ion-item>
+          <ion-input
+            formControlName="card_subtitle"
+            placeholder="e.g. MEMBER ONBOARDING"
+            fill="outline"
+            labelPlacement="stacked"
+            style="--background: #f9fafb; --border-radius: 10px;"
+          >
+            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+              Card Subtitle / Badge <span class="required-star" style="color: #ef4444;">*</span>
+            </div>
+          </ion-input>
           <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
             <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
               *ngIf="paymentForm.get('card_subtitle')?.touched && paymentForm.get('card_subtitle')?.hasError('required')">
@@ -56,13 +49,17 @@
 
         <!-- Card Title -->
         <div class="form-group" style="margin-bottom: 12px;">
-          <ion-label class="field-label"
-            style="font-weight: 600; font-size: 0.9rem; color: #374151; display: block; margin-bottom: 6px;">
-            Card Title <span class="required-star" style="color: #ef4444;">*</span>
-          </ion-label>
-          <ion-item class="custom-input-item" lines="none" style="--background: #f9fafb; --border-radius: 10px;">
-            <ion-input formControlName="card_title" placeholder="e.g. Join BIZZ DEAL as Member"></ion-input>
-          </ion-item>
+          <ion-input
+            formControlName="card_title"
+            placeholder="e.g. Join BIZZ DEAL as Member"
+            fill="outline"
+            labelPlacement="stacked"
+            style="--background: #f9fafb; --border-radius: 10px;"
+          >
+            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+              Card Title <span class="required-star" style="color: #ef4444;">*</span>
+            </div>
+          </ion-input>
           <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
             <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
               *ngIf="paymentForm.get('card_title')?.touched && paymentForm.get('card_title')?.hasError('required')">
@@ -73,14 +70,19 @@
 
         <!-- Card Benefits Description -->
         <div class="form-group" style="margin-bottom: 0;">
-          <ion-label class="field-label"
-            style="font-weight: 600; font-size: 0.9rem; color: #374151; display: block; margin-bottom: 6px;">
-            Card Benefits / Description <span class="required-star" style="color: #ef4444;">*</span>
-          </ion-label>
-          <ion-item class="custom-textarea-item" lines="none" style="--background: #f9fafb; --border-radius: 10px;">
-            <ion-textarea formControlName="benefits" placeholder="List member benefits..." [autoGrow]="true"
-              rows="4"></ion-textarea>
-          </ion-item>
+          <ion-textarea
+            formControlName="benefits"
+            placeholder="List member benefits..."
+            fill="outline"
+            labelPlacement="stacked"
+            [autoGrow]="true"
+            rows="4"
+            style="--background: #f9fafb; --border-radius: 10px;"
+          >
+            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+              Card Benefits / Description <span class="required-star" style="color: #ef4444;">*</span>
+            </div>
+          </ion-textarea>
           <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
             <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
               *ngIf="paymentForm.get('benefits')?.touched && paymentForm.get('benefits')?.hasError('required')">
@@ -92,17 +94,20 @@
 
       <!-- Payment Configuration Section -->
       <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-bottom: 12px;">Payment Details</h3>
-      <div
-        style="background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border: 1px solid rgba(0,0,0,0.06);">
+      <div class="form-section-content" style="margin-bottom: 24px;">
         <!-- UPI ID -->
         <div class="form-group" style="margin-bottom: 12px;">
-          <ion-label class="field-label"
-            style="font-weight: 600; font-size: 0.9rem; color: #374151; display: block; margin-bottom: 6px;">
-            UPI ID <span class="required-star" style="color: #ef4444;">*</span>
-          </ion-label>
-          <ion-item class="custom-input-item" lines="none" style="--background: #f9fafb; --border-radius: 10px;">
-            <ion-input formControlName="upi_id" placeholder="e.g. bizzdeal@upi"></ion-input>
-          </ion-item>
+          <ion-input
+            formControlName="upi_id"
+            placeholder="e.g. bizzdeal@upi"
+            fill="outline"
+            labelPlacement="stacked"
+            style="--background: #f9fafb; --border-radius: 10px;"
+          >
+            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+              UPI ID <span class="required-star" style="color: #ef4444;">*</span>
+            </div>
+          </ion-input>
           <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
             <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
               *ngIf="paymentForm.get('upi_id')?.touched && paymentForm.get('upi_id')?.hasError('required')">
@@ -113,13 +118,17 @@
 
         <!-- Account Name -->
         <div class="form-group" style="margin-bottom: 12px;">
-          <ion-label class="field-label"
-            style="font-weight: 600; font-size: 0.9rem; color: #374151; display: block; margin-bottom: 6px;">
-            Account Name <span class="required-star" style="color: #ef4444;">*</span>
-          </ion-label>
-          <ion-item class="custom-input-item" lines="none" style="--background: #f9fafb; --border-radius: 10px;">
-            <ion-input formControlName="account_name" placeholder="e.g. BIZZ DEAL Pvt Ltd"></ion-input>
-          </ion-item>
+          <ion-input
+            formControlName="account_name"
+            placeholder="e.g. BIZZ DEAL Pvt Ltd"
+            fill="outline"
+            labelPlacement="stacked"
+            style="--background: #f9fafb; --border-radius: 10px;"
+          >
+            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+              Account Name <span class="required-star" style="color: #ef4444;">*</span>
+            </div>
+          </ion-input>
           <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
             <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
               *ngIf="paymentForm.get('account_name')?.touched && paymentForm.get('account_name')?.hasError('required')">
@@ -130,13 +139,18 @@
 
         <!-- Registration Fee -->
         <div class="form-group" style="margin-bottom: 12px;">
-          <ion-label class="field-label"
-            style="font-weight: 600; font-size: 0.9rem; color: #374151; display: block; margin-bottom: 6px;">
-            Registration Fee Amount <span class="required-star" style="color: #ef4444;">*</span>
-          </ion-label>
-          <ion-item class="custom-input-item" lines="none" style="--background: #f9fafb; --border-radius: 10px;">
-            <ion-input type="number" formControlName="registration_fee" placeholder="e.g. 10000"></ion-input>
-          </ion-item>
+          <ion-input
+            type="number"
+            formControlName="registration_fee"
+            placeholder="e.g. 10000"
+            fill="outline"
+            labelPlacement="stacked"
+            style="--background: #f9fafb; --border-radius: 10px;"
+          >
+            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+              Registration Fee Amount <span class="required-star" style="color: #ef4444;">*</span>
+            </div>
+          </ion-input>
           <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
             <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
               *ngIf="paymentForm.get('registration_fee')?.touched && paymentForm.get('registration_fee')?.hasError('required')">
@@ -151,13 +165,17 @@
 
         <!-- Currency -->
         <div class="form-group" style="margin-bottom: 0;">
-          <ion-label class="field-label"
-            style="font-weight: 600; font-size: 0.9rem; color: #374151; display: block; margin-bottom: 6px;">
-            Currency <span class="required-star" style="color: #ef4444;">*</span>
-          </ion-label>
-          <ion-item class="custom-input-item" lines="none" style="--background: #f9fafb; --border-radius: 10px;">
-            <ion-input formControlName="currency" placeholder="e.g. INR"></ion-input>
-          </ion-item>
+          <ion-input
+            formControlName="currency"
+            placeholder="e.g. INR"
+            fill="outline"
+            labelPlacement="stacked"
+            style="--background: #f9fafb; --border-radius: 10px;"
+          >
+            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+              Currency <span class="required-star" style="color: #ef4444;">*</span>
+            </div>
+          </ion-input>
           <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
             <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
               *ngIf="paymentForm.get('currency')?.touched && paymentForm.get('currency')?.hasError('required')">

@@ -159,6 +159,7 @@ export class AdminSidebarComponent {
     { title: 'Payment Details', url: '/admin/payment-details', icon: 'card' },
     { title: 'Notifications', url: '/admin/notifications', icon: 'notifications' },
     { title: 'Analytics', url: '/admin/analytics', icon: 'bar-chart' },
+    { title: 'Settings', url: '/admin/settings', icon: 'settings' },
   ];
 
   private readonly authSession = inject(AuthSessionService);

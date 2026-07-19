@@ -50,6 +50,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     if (url.includes('/admin/analytics')) return 'Analytics & Insights';
     if (url.includes('/admin/chat')) return 'Chat';
     if (url.includes('/admin/payment-details')) return 'Payment Details';
+    if (url.includes('/admin/meetings')) return 'Meetings';
+    if (url.includes('/admin/settings')) return 'Platform Settings';
     return 'Dashboard';
   }
 

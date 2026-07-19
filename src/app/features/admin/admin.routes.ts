@@ -12,6 +12,7 @@ import { AdminAnalyticsPage } from './pages/admin-analytics/admin-analytics.page
 import { AdminMeetingsPage } from './pages/admin-meetings/admin-meetings.page';
 import { AdminChatPage } from './pages/admin-chat/admin-chat.page';
 import { AdminPaymentDetailsPage } from './pages/admin-payment-details/admin-payment-details.page';
+import { AdminSettingsPage } from './pages/admin-settings/admin-settings.page';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -66,6 +67,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'analytics',
         component: AdminAnalyticsPage,
+      },
+      {
+        path: 'settings',
+        component: AdminSettingsPage,
       },
     ],
   },

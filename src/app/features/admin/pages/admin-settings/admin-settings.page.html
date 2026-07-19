@@ -1,0 +1,68 @@
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner></ion-spinner>
+    <p>Loading settings...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="settings-container" style="max-width: 600px; margin: 0 auto;">
+    <div class="form-section" style="margin-bottom: 24px;">
+      <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px; padding: 0 8px;">Mega Deals Configuration</h3>
+      <div class="form-content">
+        <ion-input
+          type="number"
+          labelPlacement="stacked"
+          fill="outline"
+          [(ngModel)]="settings.mega_deals_percent_threshold"
+          placeholder="e.g., 30"
+          style="margin-bottom: 8px;"
+        >
+          <div slot="label">Percentage Threshold (%) <span class="required-star">*</span></div>
+        </ion-input>
+        <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+          <small>Offers with a percentage discount equal to or greater than this value will be featured as Mega Deals.</small>
+        </div>
+
+        <ion-input
+          type="number"
+          labelPlacement="stacked"
+          fill="outline"
+          [(ngModel)]="settings.mega_deals_fixed_threshold"
+          placeholder="e.g., 500"
+          style="margin-bottom: 8px;"
+        >
+          <div slot="label">Fixed Amount Threshold (₹) <span class="required-star">*</span></div>
+        </ion-input>
+        <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+          <small>Offers with a fixed amount discount equal to or greater than this value will be featured as Mega Deals.</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section" style="margin-bottom: 24px;">
+      <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px; padding: 0 8px;">Home Feed Configuration</h3>
+      <div class="form-content">
+        <ion-input
+          type="number"
+          labelPlacement="stacked"
+          fill="outline"
+          [(ngModel)]="settings.home_feed_limit"
+          placeholder="e.g., 20"
+          style="margin-bottom: 8px;"
+        >
+          <div slot="label">Feed Items Limit <span class="required-star">*</span></div>
+        </ion-input>
+        <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+          <small>Maximum number of items to display in horizontal feeds like Featured Businesses, Top Vouchers, etc.</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="ion-padding">
+      <ion-button expand="block" (click)="saveSettings()" [disabled]="isSaving">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        {{ isSaving ? 'Saving...' : 'Save Settings' }}
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

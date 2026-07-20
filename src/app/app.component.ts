@@ -8,6 +8,7 @@ import { StatusBarService } from './core/platform/statusbar.service';
 import { PermissionsService } from './core/platform/permissions.service';
 import { NotificationService } from './features/notifications/services/notification.service';
 import { SplashScreenComponent } from './shared/components/splash-screen/splash-screen.component';
+import { SmartLoadingScreenComponent } from './shared/components/smart-loading-screen/smart-loading-screen.component';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,8 @@ import { SplashScreenComponent } from './shared/components/splash-screen/splash-
     CommonModule,
     IonicModule,
     RouterModule,
-    SplashScreenComponent
+    SplashScreenComponent,
+    SmartLoadingScreenComponent
   ],
 })
 export class AppComponent implements OnInit, OnDestroy {

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { LocalNotifications } from '@capacitor/local-notifications';
@@ -21,7 +21,7 @@ export class NotificationService {
   private readonly storage = inject(StorageService);
   private readonly authSession = inject(AuthSessionService);
   private readonly router = inject(Router);
-  private readonly toastController = inject(ToastController);
+
   private readonly apiUrl = environment.apiUrl;
 
   private readonly _notifications = signal<NotificationDTO[]>([]);

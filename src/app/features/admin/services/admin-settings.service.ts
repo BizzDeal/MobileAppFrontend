@@ -31,4 +31,12 @@ export class AdminSettingsService {
   updateSettings(data: Partial<PlatformSettings>): Observable<PlatformSettingsResponse> {
     return this.http.put<PlatformSettingsResponse>(this.apiUrl, data);
   }
+
+  getStates(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/locations/states`);
+  }
+
+  getDistricts(stateId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/locations/states/${stateId}/districts`);
+  }
 }

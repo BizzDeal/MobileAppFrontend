@@ -152,11 +152,6 @@
   }
 </div>
 
-<!-- Copy Toast Feedback -->
-<ion-toast [isOpen]="!!toastMessage()" [message]="toastMessage() || ''" [duration]="2500"
-  (didDismiss)="toastMessage.set(null)" position="bottom" class="custom-toast">
-</ion-toast>
-
 <!-- QR Code Modal Dialog -->
 <ion-modal [isOpen]="!!selectedQrVoucher()" (didDismiss)="closeQrModal()" class="qr-modal">
   <ng-template>

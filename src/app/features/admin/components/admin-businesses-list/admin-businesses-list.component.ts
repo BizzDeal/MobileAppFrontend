@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminBusiness, BusinessStatus } from '../../models/admin-business.model';
@@ -36,7 +36,6 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
 
   constructor(
     private adminBusinessesService: AdminBusinessesService,
-    private toastController: ToastController,
     private alertController: AlertController,
     private router: Router
   ) {
@@ -73,7 +72,6 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
       },
       error: (err) => {
         console.error('Error loading businesses', err);
-        this.showToast('Failed to load businesses', 'danger');
         this.isLoading = false;
       }
     });
@@ -119,11 +117,10 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
                 if (res.success) {
                   business.status = status;
                   this.filterBusinesses();
-                  this.showToast(res.message, 'success');
                 }
               },
               error: (err) => {
-                this.showToast('Failed to update business status', 'danger');
+                // Handled by interceptor
               }
             });
           }
@@ -140,12 +137,11 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
       next: (res) => {
         if (res.success) {
           business.is_featured = newFeaturedStatus;
-          this.showToast(res.message, 'success');
           this.loadBusinesses();
         }
       },
       error: (err) => {
-        this.showToast('Failed to update featured status', 'danger');
+        // Handled by interceptor
       }
     });
   }
@@ -163,15 +159,5 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
   getFallbackAvatar(name: string): string {
     const fallbackName = name ? encodeURIComponent(name) : 'Business';
     return `https://ui-avatars.com/api/?name=${fallbackName}&background=random&color=fff`;
-  }
-
-  private async showToast(message: string, color: 'success' | 'danger') {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      color,
-      position: 'bottom'
-    });
-    toast.present();
   }
 }

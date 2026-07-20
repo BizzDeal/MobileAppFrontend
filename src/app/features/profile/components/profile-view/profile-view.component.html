@@ -470,13 +470,3 @@
   (didDismiss)="closeCompleteProfileModal()"
   class="complete-profile-alert">
 </ion-alert>
-
-<!-- Toast Alerts -->
-<ion-toast 
-  [isOpen]="!!toastMessage()" 
-  [message]="toastMessage() || ''" 
-  [duration]="2500" 
-  (didDismiss)="toastMessage.set(null)"
-  position="bottom"
-  class="custom-toast">
-</ion-toast>

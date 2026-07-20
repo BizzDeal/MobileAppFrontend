@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminOffer, OfferStatus } from '../../models/admin-business.model';
 import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
@@ -23,8 +23,7 @@ export class AdminOffersPage implements OnInit {
 
   constructor(
     private adminBusinessesService: AdminBusinessesService,
-    private modalCtrl: ModalController,
-    private toastCtrl: ToastController
+    private modalCtrl: ModalController
   ) {
     addIcons({
       pricetagOutline,
@@ -131,13 +130,6 @@ export class AdminOffersPage implements OnInit {
             this.filterOffers();
           }
         }
-        
-        const toast = await this.toastCtrl.create({
-          message: res.message || `Offer status successfully updated`,
-          duration: 2000,
-          color: 'success'
-        });
-        toast.present();
       }
     });
   }

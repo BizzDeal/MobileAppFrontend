@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, AlertController, NavController } from '@ionic/angular';
+import { IonicModule, AlertController, NavController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AdminUsersService } from '../../services/admin-users.service';
 import { AdminMember, AdminCustomer, UserStatus, UserRole, AdminUser } from '../../models/admin-user.model';
@@ -32,7 +32,6 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
   constructor(
     private route: ActivatedRoute,
     private adminUsersService: AdminUsersService,
-    private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private navCtrl: NavController
   ) {
@@ -122,13 +121,6 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
     if (!obs$) return;
 
     obs$.subscribe(async (res: any) => {
-      const toast = await this.toastCtrl.create({
-        message: res.message,
-        duration: 2000,
-        color: 'success'
-      });
-      await toast.present();
-      
       if (action === 'delete') {
         this.navCtrl.back();
       } else {

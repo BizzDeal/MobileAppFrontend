@@ -10,8 +10,7 @@ import {
   IonSelect,
   IonSelectOption,
   IonSpinner,
-  IonTextarea,
-  IonToast
+  IonTextarea
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -32,6 +31,7 @@ import {
   documentTextOutline
 } from 'ionicons/icons';
 import { ProfileService } from '../../services/profile.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { MemberOnboardingService } from '../../../auth/services/member-onboarding.service';
@@ -50,7 +50,6 @@ import { MemberOnboardingService } from '../../../auth/services/member-onboardin
     IonSelect,
     IonSelectOption,
     IonTextarea,
-    IonToast,
     CachedImgDirective
   ],
   templateUrl: './profile-view.component.html',
@@ -62,6 +61,7 @@ export class ProfileViewComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly authSession = inject(AuthSessionService);
   readonly profileService = inject(ProfileService);
+  private readonly toastService = inject(ToastService);
   public readonly onboardingService = inject(MemberOnboardingService);
 
   readonly profile = this.profileService.profile;
@@ -70,7 +70,6 @@ export class ProfileViewComponent implements OnInit {
   readonly error = this.profileService.error;
   readonly updating = this.profileService.updating;
 
-  readonly toastMessage = signal<string | null>(null);
   readonly selectedPhotoUrl = signal<string | null>(null);
   readonly selectedPhotoFile = signal<File | null>(null);
   readonly selectedBusinessLogoUrl = signal<string | null>(null);
@@ -231,7 +230,7 @@ export class ProfileViewComponent implements OnInit {
         this.picLoadError.set(false);
         // Inform the service to update local signal picture URL
         this.profileService.updateProfilePic(resultUrl);
-        this.showToast('📸 Profile picture updated successfully!');
+        this.toastService.showSuccess('📸 Profile picture selected!');
       };
       reader.readAsDataURL(file);
     }
@@ -247,7 +246,7 @@ export class ProfileViewComponent implements OnInit {
         const resultUrl = reader.result as string;
         this.selectedBusinessLogoUrl.set(resultUrl);
         this.logoLoadError.set(false);
-        this.showToast('📸 Brand image updated successfully!');
+        this.toastService.showSuccess('📸 Brand image selected!');
       };
       reader.readAsDataURL(file);
     }
@@ -261,7 +260,7 @@ export class ProfileViewComponent implements OnInit {
   onSubmit(): void {
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
-      this.showToast('⚠️ Please fix the errors in the form.');
+      this.toastService.showError('⚠️ Please fix the errors in the form.');
       return;
     }
 
@@ -313,23 +312,18 @@ export class ProfileViewComponent implements OnInit {
       next: () => {
         this.selectedPhotoFile.set(null);
         this.selectedBusinessLogoFile.set(null);
-        this.showToast('✅ Profile saved successfully!');
       },
       error: (err) => {
-        this.showToast(`❌ Error: ${err.message || 'Could not save profile'}`);
+        // Interceptor handles the error toast
       }
     });
   }
 
   async onLogout(): Promise<void> {
-    this.showToast('👋 Logging out...');
+    this.toastService.showSuccess('👋 Logging out...');
     await Preferences.remove({ key: 'mockRole' });
     this.profileService.clearProfile();
     await this.authSession.logout(true);
-  }
-
-  showToast(message: string): void {
-    this.toastMessage.set(message);
   }
 
   closeCompleteProfileModal(): void {

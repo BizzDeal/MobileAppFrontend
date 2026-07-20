@@ -8,7 +8,6 @@ import {
   IonInput,
   IonIcon,
   IonButton,
-  IonToast,
   IonSpinner,
   IonModal,
   IonButtons
@@ -28,6 +27,7 @@ import {
   scanOutline
 } from 'ionicons/icons';
 import { CustomerVouchersService } from '../../services/customer-vouchers.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { CustomerVoucher, VoucherStatus } from '../../models/voucher.model';
 
 type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'EXPIRED';
@@ -44,7 +44,6 @@ type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'EXPIRED';
     IonInput,
     IonIcon,
     IonButton,
-    IonToast,
     IonSpinner,
     IonModal,
     IonButtons
@@ -55,6 +54,7 @@ type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'EXPIRED';
 })
 export class VouchersViewComponent {
   private readonly vouchersService = inject(CustomerVouchersService);
+  private readonly toastService = inject(ToastService);
 
   readonly vouchers = this.vouchersService.vouchers;
   readonly loading = this.vouchersService.loading;
@@ -62,7 +62,6 @@ export class VouchersViewComponent {
 
   readonly searchQuery = signal<string>('');
   readonly selectedFilter = signal<FilterStatus>('ACTIVE');
-  readonly toastMessage = signal<string | null>(null);
   readonly selectedQrVoucher = signal<CustomerVoucher | null>(null);
 
   readonly filteredVouchers = computed(() => {
@@ -129,7 +128,7 @@ export class VouchersViewComponent {
 
   copyVoucherCode(code: string): void {
     navigator.clipboard?.writeText(code);
-    this.toastMessage.set(`📋 Code ${code} copied to clipboard!`);
+    this.toastService.showSuccess(`📋 Code ${code} copied to clipboard!`);
   }
 
   retryLoad(): void {

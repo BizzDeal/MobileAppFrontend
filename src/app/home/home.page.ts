@@ -14,7 +14,6 @@ import {
   IonRefresherContent,
   IonSpinner,
   IonTitle,
-  IonToast,
   IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -48,6 +47,7 @@ import { NotificationService } from '../features/notifications/services/notifica
 import { ProfileViewComponent } from '../features/profile/components/profile-view/profile-view.component';
 import { WalletViewComponent } from '../features/wallet/components/wallet-view/wallet-view.component';
 import { ProfileService } from '../features/profile/services/profile.service';
+import { ToastService } from '../core/services/toast.service';
 import { CustomerHomeComponent } from '../features/home/components/customer-home/customer-home.component';
 import { MemberHomeComponent } from '../features/home/components/member-home/member-home.component';
 // Force reload referrals page components
@@ -71,7 +71,6 @@ import { CachedBgImgDirective } from '../shared/directives/cached-bg-img.directi
     IonRefresher,
     IonRefresherContent,
     IonSpinner,
-    IonToast,
     IonModal,
     IonHeader,
     IonToolbar,
@@ -105,6 +104,7 @@ export class HomePage {
   private readonly chatService = inject(ChatService);
   private readonly notificationService = inject(NotificationService);
   private readonly profileService = inject(ProfileService);
+  private readonly toastService = inject(ToastService);
   private readonly authSession = inject(AuthSessionService);
   private readonly customerVouchersService = inject(CustomerVouchersService);
   private readonly route = inject(ActivatedRoute);
@@ -137,7 +137,6 @@ export class HomePage {
   readonly unreadNotificationsCount = this.notificationService.unreadCount;
 
   readonly activeNavTab = signal<NavTab>('home');
-  readonly toastMessage = signal<string | null>(null);
   readonly isVouchersModalOpen = signal<boolean>(false);
   readonly selectedVoucherModal = signal<any>(null);
   readonly isNotificationsModalOpen = signal<boolean>(false);
@@ -280,10 +279,9 @@ export class HomePage {
           offer_type: offer.offer_type,
           discount_type: (offer.discount_type as any) || undefined
         });
-        this.showToast(`🎉 Deal Claimed! Voucher ${voucher.voucher_code} added to your wallet.`);
       },
       error: (err) => {
-        this.showToast(`❌ Could not claim deal: ${err.message}`);
+        // Interceptor handles error
       },
     });
   }
@@ -357,11 +355,7 @@ export class HomePage {
 
   copyVoucherCode(code: string): void {
     navigator.clipboard?.writeText(code);
-    this.showToast(`📋 Code ${code} copied to clipboard!`);
-  }
-
-  showToast(message: string): void {
-    this.toastMessage.set(message);
+    this.toastService.showSuccess(`📋 Code ${code} copied to clipboard!`);
   }
 
   onConversationSelect(id: string): void {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminNotificationsService } from '../../services/admin-notifications.service';
 import { NotificationType, NotificationAudience } from '../../models/admin-notification.model';
 import { addIcons } from 'ionicons';
@@ -30,8 +30,7 @@ export class AdminNotificationComposeModalComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private fb: FormBuilder,
-    private notificationsService: AdminNotificationsService,
-    private toastCtrl: ToastController
+    private notificationsService: AdminNotificationsService
   ) {
     addIcons({
       closeOutline, saveOutline, peopleOutline, personOutline, megaphoneOutline
@@ -105,27 +104,13 @@ export class AdminNotificationComposeModalComponent implements OnInit {
       request$.subscribe({
         next: (res) => {
           this.isSubmitting = false;
-          this.showToast('Notification sent successfully!', 'success');
           this.dismiss(res.notification);
         },
         error: (err) => {
           this.isSubmitting = false;
           console.error('Error sending notification', err);
-          const errorMsg = err?.error?.message || err?.message || 'Failed to send notification';
-          this.showToast(errorMsg, 'danger');
         }
       });
     }
-  }
-
-  private async showToast(message: string, color: 'success' | 'danger') {
-    const toast = await this.toastCtrl.create({
-      message,
-      color,
-      duration: 3000,
-      position: 'bottom',
-      cssClass: 'custom-toast'
-    });
-    toast.present();
   }
 }

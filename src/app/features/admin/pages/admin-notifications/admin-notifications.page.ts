@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminNotificationsService } from '../../services/admin-notifications.service';
 import { AdminNotification, NotificationType, NotificationAudience } from '../../models/admin-notification.model';
 import { AdminNotificationComposeModalComponent } from '../../components/admin-notification-compose-modal/admin-notification-compose-modal.component';
@@ -23,8 +23,7 @@ export class AdminNotificationsPage implements OnInit {
 
   constructor(
     private adminNotificationsService: AdminNotificationsService,
-    private modalCtrl: ModalController,
-    private toastCtrl: ToastController
+    private modalCtrl: ModalController
   ) {
     addIcons({
       notificationsOutline, trashOutline, peopleOutline, personOutline, 
@@ -47,8 +46,6 @@ export class AdminNotificationsPage implements OnInit {
       error: (err) => {
         console.error('Failed to load notifications', err);
         this.loading = false;
-        const errorMsg = err?.error?.message || err?.message || 'Failed to load notifications';
-        this.showToast(errorMsg, 'danger');
       }
     });
   }
@@ -62,8 +59,6 @@ export class AdminNotificationsPage implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load notifications', err);
-        const errorMsg = err?.error?.message || err?.message || 'Failed to load notifications';
-        this.showToast(errorMsg, 'danger');
         event.target.complete();
       }
     });
@@ -131,25 +126,11 @@ export class AdminNotificationsPage implements OnInit {
   async deleteNotification(id: string) {
     this.adminNotificationsService.deleteNotification(id).subscribe({
       next: () => {
-        this.showToast('Notification deleted successfully', 'success');
         this.loadNotifications();
       },
       error: (err) => {
         console.error('Failed to delete notification', err);
-        const errorMsg = err?.error?.message || err?.message || 'Failed to delete notification';
-        this.showToast(errorMsg, 'danger');
       }
     });
-  }
-
-  private async showToast(message: string, color: 'success' | 'danger') {
-    const toast = await this.toastCtrl.create({
-      message,
-      color,
-      duration: 2000,
-      position: 'bottom',
-      cssClass: 'custom-toast'
-    });
-    toast.present();
   }
 }

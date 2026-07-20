@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { Observable, of, throwError, firstValueFrom } from 'rxjs';
 import { catchError, tap, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -34,8 +34,17 @@ export class ProfileService {
   readonly updating = this._updating.asReadonly();
 
   constructor() {
-    this.loadProfile().subscribe({
-      error: (err: any) => console.error('Initial profile load failed:', err),
+    effect(() => {
+      const isAuth = this.authSession.isAuthenticated();
+      if (isAuth) {
+        untracked(() => {
+          this.loadProfile().subscribe({
+            error: (err: any) => console.error('Profile load failed:', err),
+          });
+        });
+      } else {
+        untracked(() => this.clearProfile());
+      }
     });
   }
 
@@ -155,38 +164,11 @@ export class ProfileService {
           this._loading.set(false);
         },
         error: (err: any) => {
-          if (currentUser) {
-            const fallback: ProfileDTO = {
-              id: currentUser.id,
-              full_name: currentUser.full_name,
-              phone: currentUser.phone,
-              whatsapp: currentUser.whatsapp || currentUser.phone,
-              email: currentUser.email || '',
-              address: currentUser.address || '',
-              state_id: (currentUser as any).state_id || null,
-              district_id: (currentUser as any).district_id || null,
-              role: currentUser.role as any,
-              status: currentUser.status as any,
-              profile_pic_url: currentUser.profile_pic_url || null,
-              business_name: (currentUser as any).business_name || null,
-              business_description: (currentUser as any).business_description || null,
-              website: (currentUser as any).website || null,
-              gst_number: (currentUser as any).gst_number || null,
-              business_logo_url: (currentUser as any).business_logo_url || null,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            };
-            this._profile.set(fallback);
-          } else {
-            this._error.set(err?.message || 'Failed to retrieve profile details');
-          }
+          this._error.set(err?.error?.message || err?.message || 'Failed to retrieve profile details');
           this._loading.set(false);
         },
       }),
       catchError((err: any) => {
-        if (currentUser) {
-          return of(this._profile());
-        }
         return throwError(() => err);
       })
     );

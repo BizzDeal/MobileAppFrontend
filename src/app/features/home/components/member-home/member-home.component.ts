@@ -25,7 +25,6 @@ import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component'
 })
 export class MemberHomeComponent implements OnInit {
   @Output() notificationClick = new EventEmitter<void>();
-  @Output() showToast = new EventEmitter<string>();
 
   private readonly dashboardService = inject(MemberDashboardService);
   private readonly profileService = inject(ProfileService);

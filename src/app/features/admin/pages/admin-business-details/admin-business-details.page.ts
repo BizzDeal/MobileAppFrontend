@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminBusiness, AdminOffer, AdminVoucher, BusinessStatus, OfferStatus } from '../../models/admin-business.model';
@@ -34,7 +34,6 @@ export class AdminBusinessDetailsPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private adminBusinessesService: AdminBusinessesService,
-    private toastCtrl: ToastController,
     private modalCtrl: ModalController
   ) {
     addIcons({
@@ -105,12 +104,6 @@ export class AdminBusinessDetailsPage implements OnInit {
     this.adminBusinessesService.featureBusiness(this.business.id, newStatus).subscribe(async res => {
       if (res.success) {
         this.business!.is_featured = newStatus;
-        const toast = await this.toastCtrl.create({
-          message: res.message,
-          duration: 2000,
-          color: 'success'
-        });
-        toast.present();
       }
     });
   }
@@ -141,13 +134,6 @@ export class AdminBusinessDetailsPage implements OnInit {
         if (index > -1) {
           this.offers[index] = res.data;
         }
-        
-        const toast = await this.toastCtrl.create({
-          message: res.message,
-          duration: 2000,
-          color: 'success'
-        });
-        toast.present();
       }
     });
   }

@@ -9,6 +9,9 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
+import { adminRegionFilterInterceptor } from './app/core/interceptors/admin-region-filter.interceptor';
+import { loadingInterceptor } from './app/core/interceptors/loading.interceptor';
+import { apiMessageInterceptor } from './app/core/interceptors/api-message.interceptor';
 import { AuthSessionService } from './app/core/services/auth-session.service';
 import { environment } from './environments/environment';
 
@@ -16,7 +19,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, adminRegionFilterInterceptor, loadingInterceptor, apiMessageInterceptor])),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),

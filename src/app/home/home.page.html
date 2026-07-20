@@ -8,7 +8,7 @@
   <div class="home-layout">
     @if (activeNavTab() === 'home') {
     @if (userRole() === 'MEMBER') {
-    <app-member-home (notificationClick)="onNotificationClick()" (showToast)="showToast($event)" />
+    <app-member-home (notificationClick)="onNotificationClick()" />
     } @else {
     @if (loading() && !homeFeed()) {
     <!-- Loading State -->
@@ -68,11 +68,6 @@
   <!-- 6. Bottom Navigation Bar -->
   <app-bottom-nav [activeTab]="activeNavTab()" [role]="userRole()" (tabSelect)="onTabSelect($event)" />
 </ion-content>
-
-<!-- Toast Feedback -->
-<ion-toast [isOpen]="!!toastMessage()" [message]="toastMessage() || ''" [duration]="2500"
-  (didDismiss)="toastMessage.set(null)" position="bottom" class="custom-toast">
-</ion-toast>
 
 <!-- My Vouchers Modal -->
 <ion-modal [isOpen]="isVouchersModalOpen()" (didDismiss)="closeVouchersModal()" class="vouchers-modal">

@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { StatusBarService } from './core/platform/statusbar.service';
 import { PermissionsService } from './core/platform/permissions.service';
+import { AppBackButtonService } from './core/platform/app-back-button.service';
 import { NotificationService } from './features/notifications/services/notification.service';
 import { SplashScreenComponent } from './shared/components/splash-screen/splash-screen.component';
 import { SmartLoadingScreenComponent } from './shared/components/smart-loading-screen/smart-loading-screen.component';
@@ -31,6 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private statusBarService: StatusBarService,
     private permissionsService: PermissionsService,
+    private appBackButtonService: AppBackButtonService,
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -38,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.statusBarService.initialize();
     this.permissionsService.requestStartupPermissions();
+    this.appBackButtonService.init();
     this.notificationService.initPushNotificationsOnStartup();
     this.updateRouteState(this.router.url);
 

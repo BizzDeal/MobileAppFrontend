@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000/bizzdeal/api',
+  apiUrl: 'https://bizz-deal.onrender.com/bizzdeal/api',
   firebaseConfig: {
     apiKey: 'AIzaSyBp9WgJDnBHZfrV0wLn117cAFqu-SiOyFo',
     authDomain: 'bizzdeal.firebaseapp.com',

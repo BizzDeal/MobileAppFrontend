@@ -10,7 +10,7 @@
         <img src="assets/logo-text.png" alt="BizzDeal" class="app-title-image" />
         <p class="app-subtitle">
           @if (authService.authStep() === 'phone') {
-          Enter your mobile number to login
+          Enter your email address to login
           } @else if (authService.authStep() === 'pin') {
           Enter your PIN to continue
           } @else {
@@ -23,15 +23,15 @@
       <section class="login-card bd-card">
         <div id="recaptcha-container"></div>
         <form [formGroup]="authService.loginForm" (ngSubmit)="authService.submitForm()">
-          <!-- Phone Number Field -->
-          <label class="input-label" for="phoneInput">Phone Number <span class="required-star">*</span></label>
+          <!-- Email Field -->
+          <label class="input-label" for="emailInput">Email Address <span class="required-star">*</span></label>
           <div class="input-container" [class.focused]="authService.isPhoneFocused()"
             [class.readonly]="authService.authStep() !== 'phone'"
-            [class.error]="authService.loginForm.controls.phoneNumber.invalid && authService.loginForm.controls.phoneNumber.touched && authService.authStep() === 'phone'">
-            <ion-icon name="phone-portrait-outline" class="input-icon" />
+            [class.error]="authService.loginForm.controls.email.invalid && authService.loginForm.controls.email.touched && authService.authStep() === 'phone'">
+            <ion-icon name="mail-outline" class="input-icon" />
             <div class="input-divider"></div>
-            <input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number"
-              formControlName="phoneNumber" class="phone-input" [readonly]="authService.authStep() !== 'phone'"
+            <input id="emailInput" type="email" placeholder="name@example.com"
+              formControlName="email" class="phone-input" [readonly]="authService.authStep() !== 'phone'"
               (focus)="authService.setPhoneFocused(true)" (blur)="authService.setPhoneFocused(false)" />
           </div>
 
@@ -39,9 +39,9 @@
           <div class="error-container">
             @if (authService.errorMessage()) {
             <span class="error-text">{{ authService.errorMessage() }}</span>
-            } @else if (authService.loginForm.controls.phoneNumber.invalid &&
-            authService.loginForm.controls.phoneNumber.touched) {
-            <span class="error-text">Please enter a valid 10-digit mobile number</span>
+            } @else if (authService.loginForm.controls.email.invalid &&
+            authService.loginForm.controls.email.touched) {
+            <span class="error-text">Please enter a valid email address</span>
             }
           </div>
 
@@ -81,13 +81,13 @@
 
           <div class="switch-number-box">
             <a href="javascript:void(0)" (click)="authService.switchNumber()" class="switch-link">Use different
-              number</a>
+              email</a>
           </div>
           }
 
           @if (authService.authStep() === 'otp_register') {
           <!-- OTP Field -->
-          <label class="input-label pin-label" for="otpInput">OTP Code (from SMS) <span
+          <label class="input-label pin-label" for="otpInput">OTP Code (from Email) <span
               class="required-star">*</span></label>
           <div class="input-container pin-container" [class.focused]="authService.isOtpFocused()"
             [class.error]="authService.loginForm.controls.otp.invalid && authService.loginForm.controls.otp.touched">

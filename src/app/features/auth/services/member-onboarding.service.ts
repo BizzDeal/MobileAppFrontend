@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { AuthResponse } from '../models/auth.model';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 
 export interface BusinessCategory {
   id: string;
@@ -51,7 +52,7 @@ export interface MemberRegistrationPayload {
   business_description: string;
   website: string;
   gst_number: string;
-  firebaseToken: string;
+  otp: string;
   reference_code?: string;
 }
 
@@ -187,7 +188,7 @@ export class MemberOnboardingService {
       formData.append('business_description', data.business_description);
       formData.append('website', data.website);
       formData.append('gst_number', data.gst_number);
-      formData.append('firebaseToken', data.firebaseToken);
+      formData.append('otp', data.otp);
       if (data.reference_code) {
         formData.append('reference_code', data.reference_code);
       }
@@ -203,7 +204,7 @@ export class MemberOnboardingService {
       formData.append('payment_receipt', receipt, receipt.name);
 
       const res: any = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.apiUrl}/auth/register-member`, formData)
+        this.http.post<AuthResponse>(`${this.apiUrl}/auth/register-member`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) })
       );
 
       if (res && res.accessToken) {
@@ -232,6 +233,18 @@ export class MemberOnboardingService {
       throw err;
     } finally {
       this.isLoadingPaymentSettings.set(false);
+    }
+  }
+
+  async verifyEmail(token: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await firstValueFrom(
+        this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/auth/verify-email`, { token }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) })
+      );
+      return res;
+    } catch (err: any) {
+      console.error('Failed to verify email:', err);
+      throw new Error(err.error?.message || err.message || 'Email verification failed.');
     }
   }
 }

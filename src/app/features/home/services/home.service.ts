@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { computed, inject, Injectable, signal, effect, untracked } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -14,6 +14,7 @@ import {
 } from '../models/home.model';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { ProfileService } from '../../profile/services/profile.service';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 
 @Injectable({
   providedIn: 'root',
@@ -35,8 +36,15 @@ export class HomeService {
   readonly selectedCategory = this._selectedCategory.asReadonly();
 
   constructor() {
-    this.loadHomeFeed().subscribe({
-      error: (err) => console.error('Initial home feed load encountered error:', err),
+    effect(() => {
+      const role = this.authSession.userRole();
+      if (role === 'CUSTOMER') {
+        untracked(() => {
+          this.loadHomeFeed().subscribe({
+            error: (err) => console.error('Initial home feed load encountered error:', err),
+          });
+        });
+      }
     });
   }
 
@@ -252,7 +260,7 @@ export class HomeService {
       return throwError(() => new Error('Home feed not initialized'));
     }
 
-    return this.http.post<any>(`${this.apiUrl}/vouchers/issue`, { offer_id: offer.id }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/vouchers/issue`, { offer_id: offer.id }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       map((res) => {
         const v = res?.data || res;
         const newVoucher: VoucherDTO = {

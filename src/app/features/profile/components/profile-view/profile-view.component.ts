@@ -148,10 +148,10 @@ export class ProfileViewComponent implements OnInit {
       const p = this.profile();
       if (p) {
         if (p.role === 'CUSTOMER') {
-          this.profileForm.controls['full_name'].setValidators([Validators.minLength(2)]);
+          this.profileForm.controls['full_name'].setValidators([Validators.required, Validators.minLength(2)]);
           this.profileForm.controls['whatsapp'].setValidators([Validators.minLength(10)]);
-          this.profileForm.controls['email'].setValidators([Validators.email]);
-          this.profileForm.controls['state_id'].clearValidators();
+          this.profileForm.controls['email'].setValidators([Validators.required, Validators.email]);
+          this.profileForm.controls['state_id'].setValidators([Validators.required]);
           this.profileForm.controls['district_id'].clearValidators();
           this.profileForm.controls['address'].clearValidators();
           this.profileForm.controls['business_name'].clearValidators();

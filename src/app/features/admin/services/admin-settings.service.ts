@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
@@ -29,7 +30,7 @@ export class AdminSettingsService {
   }
 
   updateSettings(data: Partial<PlatformSettings>): Observable<PlatformSettingsResponse> {
-    return this.http.put<PlatformSettingsResponse>(this.apiUrl, data);
+    return this.http.put<PlatformSettingsResponse>(this.apiUrl, data, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 
   getStates(): Observable<any[]> {

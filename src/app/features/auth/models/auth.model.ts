@@ -48,21 +48,21 @@ export interface AuthResponse extends AuthTokens {
 }
 
 export interface UserExistDto {
-  phone: string;
+  email: string;
 }
 
 export interface LoginDto {
-  phone: string;
+  email: string;
   pin: string;
 }
 
 export interface ForgotPinDto {
-  phone: string;
+  email: string;
 }
 
 export interface ResetPinDto {
-  phone: string;
-  firebaseToken: string;
+  email: string;
+  otp: string;
   newPin: string;
 }
 
@@ -73,7 +73,7 @@ export interface RegisterCustomerDto {
   whatsapp: string;
   email: string;
   address: string;
-  firebaseToken: string;
+  otp: string;
 }
 
 export interface RegisterMemberDto {
@@ -90,5 +90,5 @@ export interface RegisterMemberDto {
   business_description?: string;
   website?: string;
   gst_number?: string;
-  firebaseToken: string;
+  otp: string;
 }

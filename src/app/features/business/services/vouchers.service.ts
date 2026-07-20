@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -33,7 +34,7 @@ export class VouchersService {
   private readonly apiUrl = environment.apiUrl;
 
   issueVoucher(payload: IssueVoucherRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}/vouchers/issue`, payload).pipe(
+    return this.http.post(`${this.apiUrl}/vouchers/issue`, payload, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       catchError(err => throwError(() => err))
     );
   }
@@ -73,7 +74,7 @@ export class VouchersService {
     bill_amount?: number | null;
     wallet_amount_to_use?: number;
   }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/vouchers/redeem`, payload).pipe(
+    return this.http.post(`${this.apiUrl}/vouchers/redeem`, payload, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       catchError(err => throwError(() => err))
     );
   }

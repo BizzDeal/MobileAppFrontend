@@ -26,25 +26,23 @@
 
       <!-- Forgot PIN Card -->
       <section class="login-card bd-card">
-        <div id="recaptcha-container-forgot"></div>
+
         <form [formGroup]="forgotService.forgotForm">
           <!-- Step 1: Phone Number -->
           @if (forgotService.step() === 'phone') {
-            <label class="input-label" for="phoneInput">Phone Number <span class="required-star">*</span></label>
+            <label class="input-label" for="emailInput">Email Address <span class="required-star">*</span></label>
             <div
               class="input-container"
               [class.focused]="forgotService.isPhoneFocused()"
-              [class.error]="forgotService.forgotForm.controls.phoneNumber.invalid && forgotService.forgotForm.controls.phoneNumber.touched"
+              [class.error]="forgotService.forgotForm.controls.email.invalid && forgotService.forgotForm.controls.email.touched"
             >
-              <ion-icon name="phone-portrait-outline" class="input-icon" />
+              <ion-icon name="mail-outline" class="input-icon" />
               <div class="input-divider"></div>
               <input
-                id="phoneInput"
-                type="tel"
-                inputmode="numeric"
-                maxlength="10"
-                placeholder="10-digit mobile number"
-                formControlName="phoneNumber"
+                id="emailInput"
+                type="email"
+                placeholder="name@example.com"
+                formControlName="email"
                 class="phone-input"
                 (focus)="forgotService.setPhoneFocused(true)"
                 (blur)="forgotService.setPhoneFocused(false)"
@@ -54,8 +52,8 @@
             <div class="error-container">
               @if (forgotService.errorMessage()) {
                 <span class="error-text">{{ forgotService.errorMessage() }}</span>
-              } @else if (forgotService.forgotForm.controls.phoneNumber.invalid && forgotService.forgotForm.controls.phoneNumber.touched) {
-                <span class="error-text">Please enter a valid 10-digit mobile number</span>
+              } @else if (forgotService.forgotForm.controls.email.invalid && forgotService.forgotForm.controls.email.touched) {
+                <span class="error-text">Please enter a valid email address</span>
               }
             </div>
 
@@ -71,14 +69,14 @@
 
           <!-- Step 2: OTP Verification -->
           @if (forgotService.step() === 'otp') {
-            <label class="input-label" for="phoneReadonly">Phone Number</label>
+            <label class="input-label" for="emailReadonly">Email Address</label>
             <div class="input-container readonly">
-              <ion-icon name="phone-portrait-outline" class="input-icon" />
+              <ion-icon name="mail-outline" class="input-icon" />
               <div class="input-divider"></div>
               <input
-                id="phoneReadonly"
-                type="tel"
-                formControlName="phoneNumber"
+                id="emailReadonly"
+                type="email"
+                formControlName="email"
                 class="phone-input"
                 readonly
               />

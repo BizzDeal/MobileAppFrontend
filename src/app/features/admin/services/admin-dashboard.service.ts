@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -117,18 +118,18 @@ export class AdminDashboardService {
   }
 
   approveMember(id: string): Observable<{ success: boolean }> {
-    return this.http.put<{ success: boolean }>(`${this.apiUrl}/users/approve-member`, { memberId: id });
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/users/approve-member`, { memberId: id }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 
   rejectMember(id: string): Observable<{ success: boolean }> {
-    return this.http.put<{ success: boolean }>(`${this.apiUrl}/users/reject-member`, { memberId: id });
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/users/reject-member`, { memberId: id }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 
   approveOffer(id: string): Observable<{ success: boolean }> {
-    return this.http.put<{ success: boolean }>(`${this.apiUrl}/offers/approve`, { offer_id: id });
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/offers/approve`, { offer_id: id }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 
   rejectOffer(id: string): Observable<{ success: boolean }> {
-    return this.http.put<{ success: boolean }>(`${this.apiUrl}/offers/reject`, { offer_id: id });
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/offers/reject`, { offer_id: id }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 }

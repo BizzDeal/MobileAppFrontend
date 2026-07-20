@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable, forkJoin, of, throwError } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -51,11 +52,7 @@ export class MeetingsService {
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
 
-  constructor() {
-    this.loadMeetings().subscribe({
-      error: (err) => console.error('Initial meetings load failed:', err)
-    });
-  }
+  constructor() {}
 
   loadMeetings(): Observable<MeetingWithAttendee[]> {
     this._loading.set(true);
@@ -114,7 +111,7 @@ export class MeetingsService {
 
   updateRSVP(meetingId: string, newStatus: AttendeeStatus): void {
     this._error.set(null);
-    this.http.put<any>(`${this.apiUrl}/meetings/${meetingId}/rsvp`, { status: newStatus }).subscribe({
+    this.http.put<any>(`${this.apiUrl}/meetings/${meetingId}/rsvp`, { status: newStatus }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).subscribe({
       next: (res) => {
         const updatedAtt: MeetingAttendee = res?.data || res;
         this._meetingsWithAttendees.update((curr) =>

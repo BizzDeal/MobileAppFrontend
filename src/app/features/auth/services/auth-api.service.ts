@@ -17,8 +17,12 @@ export class AuthApiService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  checkUserExist(phone: string): Observable<{ exists: boolean }> {
-    return this.http.post<{ exists: boolean }>(`${this.apiUrl}/users/user-exist`, { phone });
+  checkUserExist(email: string): Observable<{ exists: boolean }> {
+    return this.http.post<{ exists: boolean }>(`${this.apiUrl}/users/user-exist`, { email });
+  }
+
+  sendOtp(email: string, purpose: 'register' | 'forgot-pin'): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/auth/send-otp`, { email, purpose });
   }
 
   login(dto: LoginDto): Observable<AuthResponse> {
@@ -37,10 +41,10 @@ export class AuthApiService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register-admin`, formData);
   }
 
-  forgotPin(phone: string): Observable<{ success: boolean; message: string }> {
+  forgotPin(email: string): Observable<{ success: boolean; message: string }> {
     return this.http.post<{ success: boolean; message: string }>(
       `${this.apiUrl}/auth/forgot-pin`,
-      { phone }
+      { email }
     );
   }
 

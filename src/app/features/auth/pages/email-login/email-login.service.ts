@@ -9,7 +9,7 @@ import { ProfileService } from '../../../profile/services/profile.service';
 import { UserRole } from '../../models/auth.model';
 
 @Injectable()
-export class PhoneLoginService {
+export class EmailLoginService {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly authApi = inject(AuthApiService);
@@ -38,7 +38,7 @@ export class PhoneLoginService {
   readonly isJoinModalOpen = this._isJoinModalOpen.asReadonly();
 
   readonly loginForm = this.fb.nonNullable.group({
-    phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+    email: ['', [Validators.required, Validators.email]],
     pin: ['', [Validators.required, Validators.pattern(/^[0-9]{4,6}$/)]],
     confirmPin: ['', [Validators.pattern(/^[0-9]{4,6}$/)]],
     otp: ['', [Validators.pattern(/^[0-9]{6}$/)]],
@@ -87,34 +87,34 @@ export class PhoneLoginService {
     const step = this._authStep();
 
     if (step === 'phone') {
-      const phoneControl = this.loginForm.controls.phoneNumber;
-      if (phoneControl.invalid) {
-        phoneControl.markAsTouched();
+      const emailControl = this.loginForm.controls.email;
+      if (emailControl.invalid) {
+        emailControl.markAsTouched();
         return;
       }
 
       this._isSubmitting.set(true);
-      const phoneNumber = phoneControl.value;
+      const email = emailControl.value;
 
-      this.authApi.checkUserExist(phoneNumber).subscribe({
+      this.authApi.checkUserExist(email).subscribe({
         next: async (res: any) => {
           if (res.exists) {
             this._authStep.set('pin');
             this._isSubmitting.set(false);
           } else {
-            try {
-              this.firebasePhoneAuth.initRecaptcha('recaptcha-container');
-              const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber}`;
-              this._confirmationResult = await this.firebasePhoneAuth.sendOtp(formattedPhone);
-              this._authStep.set('otp_register');
-            } catch (err: any) {
-              console.error('sendOtp error:', err);
-              this._errorMessage.set(
-                err?.message || 'Failed to send OTP. Please ensure the phone number is valid.'
-              );
-            } finally {
-              this._isSubmitting.set(false);
-            }
+            this.authApi.sendOtp(email, 'register').subscribe({
+              next: () => {
+                this._authStep.set('otp_register');
+                this._isSubmitting.set(false);
+              },
+              error: (err) => {
+                console.error('sendOtp error:', err);
+                this._errorMessage.set(
+                  err?.error?.message || 'Failed to send OTP. Please try again.'
+                );
+                this._isSubmitting.set(false);
+              }
+            });
           }
         },
         error: (err: any) => {
@@ -136,9 +136,9 @@ export class PhoneLoginService {
       }
 
       this._isSubmitting.set(true);
-      const { phoneNumber, pin } = this.loginForm.getRawValue();
+      const { email, pin } = this.loginForm.getRawValue();
 
-      this.authApi.login({ phone: phoneNumber, pin }).subscribe({
+      this.authApi.login({ email, pin } as any).subscribe({
         next: async (res: any) => {
           try {
             await this.authSession.setSession(res.accessToken, res.refreshToken, res.user);
@@ -163,7 +163,7 @@ export class PhoneLoginService {
         error: (err: any) => {
           console.error('login error:', err);
           this._errorMessage.set(
-            err?.error?.message || 'Invalid phone number or PIN. Please check and try again.'
+            err?.error?.message || 'Invalid email or PIN. Please check and try again.'
           );
           this._isSubmitting.set(false);
         },
@@ -187,25 +187,15 @@ export class PhoneLoginService {
         return;
       }
 
-      if (!this._confirmationResult) {
-        this._errorMessage.set('OTP session expired. Please switch number and try again.');
-        return;
-      }
-
       this._isSubmitting.set(true);
-      const { phoneNumber, pin, otp } = this.loginForm.getRawValue();
+      const { email, pin, otp } = this.loginForm.getRawValue();
 
       (async () => {
         try {
-          const firebaseToken = await this.firebasePhoneAuth.verifyOtp(
-            this._confirmationResult!,
-            otp
-          );
-
           const formData = new FormData();
-          formData.append('phone', phoneNumber);
+          formData.append('email', email);
           formData.append('pin', pin);
-          formData.append('firebaseToken', firebaseToken);
+          formData.append('otp', otp);
 
           this.authApi.registerCustomer(formData).subscribe({
             next: async (res: any) => {
@@ -240,8 +230,8 @@ export class PhoneLoginService {
   }
 
   forgotPin(): void {
-    const phone = this.loginForm.controls.phoneNumber.value;
-    this.router.navigate(['/auth/forgot-pin'], { queryParams: { phone } });
+    const email = this.loginForm.controls.email.value;
+    this.router.navigate(['/auth/forgot-pin'], { queryParams: { email } });
   }
 
   joinAsMember(): void {

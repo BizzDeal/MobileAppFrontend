@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { Observable, of, throwError, firstValueFrom } from 'rxjs';
 import { catchError, tap, switchMap } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { ImageCacheService } from '../../../core/platform/image-cache.service';
 import { ProfileDTO } from '../models/profile.model';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { LocationState, LocationDistrict } from '../../auth/services/member-onboarding.service';
 
 @Injectable({
@@ -187,7 +188,9 @@ export class ProfileService {
       return throwError(() => new Error('Profile is not loaded'));
     }
 
-    return this.http.put<any>(`${this.apiUrl}/users/profile`, dto).pipe(
+    return this.http.put<any>(`${this.apiUrl}/users/profile`, dto, {
+      context: new HttpContext().set(SHOW_SUCCESS_TOAST, true)
+    }).pipe(
       tap({
         next: (data) => {
           const p = data?.data || data;

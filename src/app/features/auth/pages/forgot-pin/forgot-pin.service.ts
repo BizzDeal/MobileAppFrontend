@@ -2,9 +2,7 @@ import { inject, Injectable, OnDestroy, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
-import { ConfirmationResult } from '@angular/fire/auth';
 import { AuthApiService } from '../../services/auth-api.service';
-import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
 
 @Injectable()
 export class ForgotPinService implements OnDestroy {
@@ -12,7 +10,6 @@ export class ForgotPinService implements OnDestroy {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly authApi = inject(AuthApiService);
-  private readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
 
   private readonly _step = signal<'phone' | 'otp' | 'reset'>('phone');
   private readonly _isSubmitting = signal(false);
@@ -39,20 +36,19 @@ export class ForgotPinService implements OnDestroy {
   readonly isConfirmPinFocused = this._isConfirmPinFocused.asReadonly();
 
   readonly forgotForm = this.fb.nonNullable.group({
-    phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+    email: ['', [Validators.required, Validators.email]],
     otp: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
     newPin: ['', [Validators.required, Validators.pattern(/^[0-9]{4,6}$/)]],
     confirmPin: ['', [Validators.required, Validators.pattern(/^[0-9]{4,6}$/)]],
   });
 
   private timerSubscription?: Subscription;
-  private _confirmationResult?: ConfirmationResult;
-  private _verifiedFirebaseToken?: string;
+  private _verifiedOtp?: string;
 
   constructor() {
     this.route.queryParams.subscribe((params) => {
-      if (params['phone'] && /^[0-9]{10}$/.test(params['phone'])) {
-        this.forgotForm.controls.phoneNumber.setValue(params['phone']);
+      if (params['email']) {
+        this.forgotForm.controls.email.setValue(params['email']);
       }
     });
   }
@@ -75,38 +71,27 @@ export class ForgotPinService implements OnDestroy {
 
   sendOtp(): void {
     this._errorMessage.set(null);
-    const phoneControl = this.forgotForm.controls.phoneNumber;
-    if (phoneControl.invalid) {
-      phoneControl.markAsTouched();
+    const emailControl = this.forgotForm.controls.email;
+    if (emailControl.invalid) {
+      emailControl.markAsTouched();
       return;
     }
 
     this._isSubmitting.set(true);
-    const phoneNumber = phoneControl.value;
+    const email = emailControl.value;
 
-    this.authApi.forgotPin(phoneNumber).subscribe({
-      next: async (res: any) => {
+    this.authApi.sendOtp(email, 'forgot-pin').subscribe({
+      next: (res: any) => {
         if (res.success) {
-          try {
-            this.firebasePhoneAuth.initRecaptcha('recaptcha-container-forgot');
-            const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber}`;
-            this._confirmationResult = await this.firebasePhoneAuth.sendOtp(formattedPhone);
-            this._step.set('otp');
-            this.startResendTimer();
-          } catch (err: any) {
-            console.error('sendOtp error:', err);
-            this._errorMessage.set(
-              err?.message || 'Failed to trigger SMS verification code.'
-            );
-          } finally {
-            this._isSubmitting.set(false);
-          }
+          this._step.set('otp');
+          this.startResendTimer();
         }
+        this._isSubmitting.set(false);
       },
       error: (err: any) => {
-        console.error('forgotPin error:', err);
+        console.error('sendOtp error:', err);
         this._errorMessage.set(
-          err?.error?.message || 'Phone number not found or account not active.'
+          err?.error?.message || 'Failed to trigger verification code. Account may not exist.'
         );
         this._isSubmitting.set(false);
       },
@@ -121,33 +106,14 @@ export class ForgotPinService implements OnDestroy {
       return;
     }
 
-    if (!this._confirmationResult) {
-      this._errorMessage.set('Verification session expired. Please send OTP again.');
-      return;
-    }
-
-    this._isSubmitting.set(true);
-    (async () => {
-      try {
-        const token = await this.firebasePhoneAuth.verifyOtp(
-          this._confirmationResult!,
-          otpControl.value
-        );
-        this._verifiedFirebaseToken = token;
-        this._step.set('reset');
-        this.stopTimer();
-      } catch (err: any) {
-        console.error('verifyOtp error:', err);
-        this._errorMessage.set(err?.message || 'Invalid or expired OTP code.');
-      } finally {
-        this._isSubmitting.set(false);
-      }
-    })();
+    this._verifiedOtp = otpControl.value;
+    this._step.set('reset');
+    this.stopTimer();
   }
 
   resetPin(): void {
     this._errorMessage.set(null);
-    const { newPin, confirmPin, phoneNumber } = this.forgotForm.controls;
+    const { newPin, confirmPin, email } = this.forgotForm.controls;
     if (newPin.invalid || confirmPin.invalid) {
       newPin.markAsTouched();
       confirmPin.markAsTouched();
@@ -157,8 +123,8 @@ export class ForgotPinService implements OnDestroy {
       this._pinMismatchError.set(true);
       return;
     }
-    if (!this._verifiedFirebaseToken) {
-      this._errorMessage.set('Firebase token missing. Please verify OTP again.');
+    if (!this._verifiedOtp) {
+      this._errorMessage.set('OTP missing. Please verify OTP again.');
       return;
     }
 
@@ -167,8 +133,8 @@ export class ForgotPinService implements OnDestroy {
 
     this.authApi
       .resetPin({
-        phone: phoneNumber.value,
-        firebaseToken: this._verifiedFirebaseToken,
+        email: email.value,
+        otp: this._verifiedOtp,
         newPin: newPin.value,
       })
       .subscribe({

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ConfirmationResult } from '@angular/fire/auth';
 import { MemberOnboardingService, MemberRegistrationPayload } from '../../services/member-onboarding.service';
 import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
+import { AuthApiService } from '../../services/auth-api.service';
 
 @Injectable()
 export class MemberRegistrationService {
@@ -11,6 +12,7 @@ export class MemberRegistrationService {
   private readonly router = inject(Router);
   readonly onboardingService = inject(MemberOnboardingService);
   readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
+  readonly authApi = inject(AuthApiService);
 
   readonly photoPreview = signal<string | null>(null);
   private photoFile: File | null = null;
@@ -23,7 +25,7 @@ export class MemberRegistrationService {
   readonly otpControl = new FormControl('', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]);
 
   private _confirmationResult?: ConfirmationResult;
-  private _verifiedFirebaseToken?: string;
+  private _verifiedOtp?: string;
 
   readonly regForm = this.fb.nonNullable.group({
     fullName: ['', [Validators.required, Validators.minLength(2)]],
@@ -33,7 +35,7 @@ export class MemberRegistrationService {
     email: ['', [Validators.required, Validators.email]],
     stateId: ['', [Validators.required]],
     districtId: ['', [Validators.required]],
-    address: ['', [Validators.required, Validators.minLength(5)]],
+    address: ['', [Validators.minLength(5)]],
     businessName: ['', [Validators.required, Validators.minLength(2)]],
     businessCategory: ['', [Validators.required]],
     businessDescription: ['', [Validators.required, Validators.minLength(5)]],
@@ -96,21 +98,23 @@ export class MemberRegistrationService {
       return;
     }
 
-    if (!this._verifiedFirebaseToken) {
+    if (!this._verifiedOtp) {
       this.isSubmitting.set(true);
       this.errorMessage.set(null);
-      try {
-        const phoneNumber = this.regForm.controls.phoneNumber.value;
-        this.firebasePhoneAuth.initRecaptcha('recaptcha-container-member');
-        const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber}`;
-        this._confirmationResult = await this.firebasePhoneAuth.sendOtp(formattedPhone);
-        this.isOtpModalOpen.set(true);
-      } catch (err: any) {
-        console.error('sendOtp error in member registration:', err);
-        this.errorMessage.set(err?.message || 'Failed to send SMS OTP code. Check phone number.');
-      } finally {
-        this.isSubmitting.set(false);
-      }
+      
+      const email = this.regForm.controls.email.value;
+      
+      this.authApi.sendOtp(email, 'register').subscribe({
+        next: () => {
+          this.isOtpModalOpen.set(true);
+          this.isSubmitting.set(false);
+        },
+        error: (err: any) => {
+          console.error('sendOtp error in member registration:', err);
+          this.errorMessage.set(err?.error?.message || 'Failed to send Email OTP code. Check your email address.');
+          this.isSubmitting.set(false);
+        }
+      });
       return;
     }
 
@@ -131,7 +135,7 @@ export class MemberRegistrationService {
         business_description: val.businessDescription,
         website: val.website,
         gst_number: val.gstNumber,
-        firebaseToken: this._verifiedFirebaseToken,
+        otp: this._verifiedOtp,
         reference_code: val.referenceCode || undefined,
       };
 
@@ -153,25 +157,12 @@ export class MemberRegistrationService {
       this.otpControl.markAsTouched();
       return;
     }
-    if (!this._confirmationResult) {
-      this.errorMessage.set('OTP session expired. Please submit registration again.');
-      return;
-    }
 
-    this.isSubmitting.set(true);
-    try {
-      const token = await this.firebasePhoneAuth.verifyOtp(
-        this._confirmationResult!,
-        this.otpControl.value
-      );
-      this._verifiedFirebaseToken = token;
-      this.isOtpModalOpen.set(false);
-      await this.submitRegistration();
-    } catch (err: any) {
-      console.error('verifyOtp error in member registration:', err);
-      this.errorMessage.set(err?.message || 'Invalid or expired OTP code.');
-      this.isSubmitting.set(false);
-    }
+    // Since verification happens on the backend now, we just save the OTP and proceed.
+    // If the OTP is invalid, the backend will return a 400 Bad Request which will be caught below.
+    this._verifiedOtp = this.otpControl.value;
+    this.isOtpModalOpen.set(false);
+    await this.submitRegistration();
   }
 
   closeOtpModal(): void {

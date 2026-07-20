@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, effect, untracked } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, throwError, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -6,13 +6,14 @@ import { environment } from '../../../../environments/environment';
 import { MemberDashboardData, MemberDashboardAnalytics } from '../models/member-dashboard.model';
 import { OfferDTO, VoucherDTO } from '../models/home.model';
 import { ProfileService } from '../../profile/services/profile.service';
-
+import { AuthSessionService } from '../../../core/services/auth-session.service';
 @Injectable({
   providedIn: 'root'
 })
 export class MemberDashboardService {
   private readonly http = inject(HttpClient);
   private readonly profileService = inject(ProfileService);
+  private readonly authSession = inject(AuthSessionService);
   private readonly apiUrl = environment.apiUrl;
 
   private readonly _dashboardData = signal<MemberDashboardData | null>(null);
@@ -24,8 +25,15 @@ export class MemberDashboardService {
   readonly error = this._error.asReadonly();
 
   constructor() {
-    this.loadDashboardData().subscribe({
-      error: (err) => console.error('Initial dashboard load failed:', err)
+    effect(() => {
+      const role = this.authSession.userRole();
+      if (role === 'MEMBER' || role === 'ADMIN') {
+        untracked(() => {
+          this.loadDashboardData().subscribe({
+            error: (err) => console.error('Initial dashboard load failed:', err)
+          });
+        });
+      }
     });
   }
 

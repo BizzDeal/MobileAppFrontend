@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../../core/interceptors/interceptor.tokens';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, IonDatetime, IonDatetimeButton, IonModal } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline } from 'ionicons/icons';
@@ -225,7 +226,7 @@ export class OfferFormPage implements OnInit {
     }
 
     if (this.isEditMode() && this.offerId()) {
-      this.http.put<any>(`${environment.apiUrl}/offers/${this.offerId()}`, formData).subscribe({
+      this.http.put<any>(`${environment.apiUrl}/offers/${this.offerId()}`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).subscribe({
         next: (res) => {
           this.submitting.set(false);
           this.dashboardService.loadDashboardData().subscribe();
@@ -264,7 +265,7 @@ export class OfferFormPage implements OnInit {
   }
 
   private sendCreateRequest(formData: FormData) {
-    this.http.post<any>(`${environment.apiUrl}/offers`, formData).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/offers`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).subscribe({
       next: (res) => {
         this.submitting.set(false);
         this.dashboardService.loadDashboardData().subscribe();

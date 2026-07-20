@@ -18,6 +18,7 @@ import {
   lockClosedOutline,
   phonePortraitOutline,
   refreshOutline,
+  mailOutline,
 } from 'ionicons/icons';
 import { ForgotPinService } from './forgot-pin.service';
 
@@ -51,6 +52,7 @@ export class ForgotPinPage {
       'checkmark-circle-outline': checkmarkCircleOutline,
       'refresh-outline': refreshOutline,
       'arrow-back-outline': arrowBackOutline,
+      'mail-outline': mailOutline,
     });
   }
 }

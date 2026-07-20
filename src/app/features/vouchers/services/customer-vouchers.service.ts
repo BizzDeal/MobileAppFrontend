@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, effect, untracked } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -25,14 +25,23 @@ export class CustomerVouchersService {
   readonly error = this._error.asReadonly();
 
   constructor() {
-    this.loadVouchers().subscribe({
-      error: (err) => console.error('Initial customer vouchers load encountered error:', err),
+    effect(() => {
+      const role = this.authSession.userRole();
+      if (role === 'CUSTOMER') {
+        untracked(() => {
+          this.loadVouchers().subscribe({
+            error: (err) => console.error('Initial customer vouchers load encountered error:', err),
+          });
+        });
+      }
     });
 
     // Handle WebSocket connection and listen for generic app events
-    if (this.authSession.isAuthenticated()) {
-      this.appSocket.connect();
-    }
+    effect(() => {
+      if (this.authSession.isAuthenticated()) {
+        untracked(() => this.appSocket.connect());
+      }
+    });
     
     this.appSocket.onEvent('VOUCHER_REDEEMED').subscribe(event => {
       this.updateVoucherStatus(event.payload.voucher_id, event.payload.status);

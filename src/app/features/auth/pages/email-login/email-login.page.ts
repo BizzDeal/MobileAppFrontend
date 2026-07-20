@@ -13,22 +13,23 @@ import {
   logInOutline,
   peopleOutline,
   phonePortraitOutline,
+  mailOutline,
 } from 'ionicons/icons';
-import { PhoneLoginService } from './phone-login.service';
+import { EmailLoginService } from './email-login.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { UserRole } from '../../models/auth.model';
 
 @Component({
-  selector: 'app-phone-login',
+  selector: 'app-email-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, IonContent, IonIcon, IonModal],
-  providers: [PhoneLoginService],
-  templateUrl: './phone-login.page.html',
-  styleUrl: './phone-login.page.scss',
+  providers: [EmailLoginService],
+  templateUrl: './email-login.page.html',
+  styleUrl: './email-login.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PhoneLoginPage implements OnInit {
-  readonly authService = inject(PhoneLoginService);
+export class EmailLoginPage implements OnInit {
+  readonly authService = inject(EmailLoginService);
   private readonly authSession = inject(AuthSessionService);
   private readonly router = inject(Router);
 
@@ -42,6 +43,7 @@ export class PhoneLoginPage implements OnInit {
       'git-network-outline': gitNetworkOutline,
       'gift-outline': giftOutline,
       'briefcase-outline': briefcaseOutline,
+      'mail-outline': mailOutline,
     });
   }
 

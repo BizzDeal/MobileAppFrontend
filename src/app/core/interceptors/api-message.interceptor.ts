@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ToastService } from '../services/toast.service';
+import { SHOW_SUCCESS_TOAST } from './interceptor.tokens';
 
 function extractResourceName(url: string): string {
   try {
@@ -77,8 +78,10 @@ export const apiMessageInterceptor: HttpInterceptorFn = (
           if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
             // Ignore 3xx/4xx/5xx statuses if they somehow get here, though usually they go to catchError
             if (event.status >= 200 && event.status < 300) {
-              const msg = getFriendlySuccessMessage(req, event);
-              toastService.showSuccess(msg);
+              if (req.context.get(SHOW_SUCCESS_TOAST)) {
+                const msg = getFriendlySuccessMessage(req, event);
+                toastService.showSuccess(msg);
+              }
             }
           }
         }

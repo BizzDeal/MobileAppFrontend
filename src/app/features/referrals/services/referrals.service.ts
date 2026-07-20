@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -22,7 +23,7 @@ export class ReferralsService {
     return this.http.post<any>(`${this.apiUrl}/referrals`, {
       referred_phone: referredPhone,
       referral_code: referralCode,
-    }).pipe(
+    }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       map((res) => res.data || res)
     );
   }
@@ -39,7 +40,7 @@ export class ReferralsService {
     return this.http.post<any>(`${this.apiUrl}/referrals/bulk`, {
       referred_phones: referredPhones,
       referral_code: referralCode,
-    }).pipe(
+    }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       map((res) => res.data || res)
     );
   }

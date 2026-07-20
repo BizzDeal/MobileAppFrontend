@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -42,7 +43,7 @@ export class AdminMeetingsService {
   }
 
   createMeeting(data: Partial<Meeting>): Observable<Meeting> {
-    return this.http.post<any>(`${this.apiUrl}/meetings`, data).pipe(
+    return this.http.post<any>(`${this.apiUrl}/meetings`, data, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       tap((res: any) => {
         const newMeeting = res?.data || res;
         this._meetings.update(curr => [newMeeting, ...curr]);
@@ -51,7 +52,7 @@ export class AdminMeetingsService {
   }
 
   updateMeeting(id: string, data: Partial<Meeting>): Observable<Meeting> {
-    return this.http.put<any>(`${this.apiUrl}/meetings/${id}`, data).pipe(
+    return this.http.put<any>(`${this.apiUrl}/meetings/${id}`, data, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       tap((res: any) => {
         const updated = res?.data || res;
         this._meetings.update(curr => curr.map(m => m.id === id ? { ...m, ...updated } : m));
@@ -60,7 +61,7 @@ export class AdminMeetingsService {
   }
 
   deleteMeeting(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/meetings/${id}`).pipe(
+    return this.http.delete<any>(`${this.apiUrl}/meetings/${id}`, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       tap(() => {
         this._meetings.update(curr => curr.filter(m => m.id !== id));
       })

@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { environment } from '../../../../environments/environment';
 import { AdminBusiness, BusinessStatus, ApiResponse, AdminOffer, AdminVoucher, OfferStatus } from '../models/admin-business.model';
 
@@ -31,7 +32,7 @@ export class AdminBusinessesService {
   }
 
   updateBusinessStatus(id: string, status: BusinessStatus): Observable<ApiResponse<AdminBusiness>> {
-    return this.http.patch<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/${id}/status`, { status }).pipe(
+    return this.http.patch<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/${id}/status`, { status }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       catchError(err => {
         throw new Error(err.error?.message || 'Failed to update business status');
       })
@@ -39,7 +40,7 @@ export class AdminBusinessesService {
   }
 
   featureBusiness(id: string, isFeatured: boolean): Observable<ApiResponse<AdminBusiness>> {
-    return this.http.put<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/feature`, { businessId: id, is_featured: isFeatured }).pipe(
+    return this.http.put<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/feature`, { businessId: id, is_featured: isFeatured }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       catchError(err => {
         throw new Error(err.error?.message || 'Failed to feature business');
       })
@@ -104,7 +105,7 @@ export class AdminBusinessesService {
 
   updateOfferStatus(offerId: string, status: OfferStatus, reason?: string): Observable<ApiResponse<AdminOffer>> {
     if (status === OfferStatus.APPROVED) {
-      return this.http.put<any>(`${this.apiUrl}/offers/approve`, { offer_id: offerId }).pipe(
+      return this.http.put<any>(`${this.apiUrl}/offers/approve`, { offer_id: offerId }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
         map(res => ({
           success: res && res.success !== undefined ? res.success : true,
           message: res && res.message ? res.message : 'Offer approved successfully',
@@ -115,7 +116,7 @@ export class AdminBusinessesService {
         })
       );
     } else if (status === OfferStatus.REJECTED) {
-      return this.http.put<any>(`${this.apiUrl}/offers/reject`, { offer_id: offerId, reason }).pipe(
+      return this.http.put<any>(`${this.apiUrl}/offers/reject`, { offer_id: offerId, reason }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
         map(res => ({
           success: res && res.success !== undefined ? res.success : true,
           message: res && res.message ? res.message : 'Offer rejected successfully',

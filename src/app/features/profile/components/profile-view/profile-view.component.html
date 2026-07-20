@@ -58,7 +58,7 @@
         <!-- Full Name -->
         <div class="form-group">
           <label class="form-label" for="full_name">
-            Full Name @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
+            Full Name <span class="required-star">*</span>
           </label>
           <div class="input-wrapper">
             <ion-icon name="person-outline" class="input-icon"></ion-icon>
@@ -88,6 +88,7 @@
               id="phone"
               formControlName="phone"
               class="form-input"
+              readonly="true"
               placeholder="Enter phone number"></ion-input>
           </div>
           <div class="error-container">
@@ -121,7 +122,7 @@
         <!-- Email Address -->
         <div class="form-group">
           <label class="form-label" for="email">
-            Email Address @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
+            Email Address <span class="required-star">*</span>
           </label>
           <div class="input-wrapper">
             <ion-icon name="mail-outline" class="input-icon"></ion-icon>
@@ -130,6 +131,7 @@
               id="email"
               formControlName="email"
               class="form-input"
+              readonly="true"
               placeholder="Enter email address"></ion-input>
           </div>
           <div class="error-container">
@@ -143,7 +145,7 @@
           <!-- State -->
           <div class="form-group">
             <label class="form-label" for="state_id">
-              State @if (userRole() !== 'CUSTOMER') { <span class="required-star">*</span> }
+              State <span class="required-star">*</span>
             </label>
             <div class="input-wrapper">
               <ion-icon name="map-outline" class="input-icon"></ion-icon>

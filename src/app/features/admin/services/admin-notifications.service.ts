@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -98,7 +99,7 @@ export class AdminNotificationsService {
       },
     };
 
-    return this.http.post<any>(this.apiUrl, body).pipe(
+    return this.http.post<any>(this.apiUrl, body, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       map((n: any) => {
         const newNotification: AdminNotification = {
           id: n.id,
@@ -143,7 +144,7 @@ export class AdminNotificationsService {
       },
     };
 
-    return this.http.post<any>(`${this.apiUrl}/send-bulk`, body).pipe(
+    return this.http.post<any>(`${this.apiUrl}/send-bulk`, body, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       map((res: any) => {
         const newNotification: AdminNotification = {
           id: 'bulk_' + Date.now(),
@@ -186,7 +187,7 @@ export class AdminNotificationsService {
       },
     };
 
-    return this.http.post<any>(`${this.apiUrl}/members`, body).pipe(
+    return this.http.post<any>(`${this.apiUrl}/members`, body, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       map((res: any) => {
         const newNotification: AdminNotification = {
           id: 'broadcast_members_' + Date.now(),
@@ -226,7 +227,7 @@ export class AdminNotificationsService {
       },
     };
 
-    return this.http.post<any>(`${this.apiUrl}/customers`, body).pipe(
+    return this.http.post<any>(`${this.apiUrl}/customers`, body, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       map((res: any) => {
         const newNotification: AdminNotification = {
           id: 'broadcast_customers_' + Date.now(),
@@ -254,7 +255,7 @@ export class AdminNotificationsService {
 
   // Delete Notification
   deleteNotification(id: string): Observable<{ success: boolean }> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
+    return this.http.delete<any>(`${this.apiUrl}/${id}`, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       map(() => {
         this._notifications.update((list) => list.filter((n) => n.id !== id));
         return { success: true };

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse } from '../models/admin-user.model';
@@ -27,6 +28,6 @@ export class AdminPaymentSettingsService {
   }
 
   updateSettings(settings: Omit<PaymentSettings, 'id'>): Observable<ApiResponse<PaymentSettings>> {
-    return this.http.put<ApiResponse<PaymentSettings>>(this.apiUrl, settings);
+    return this.http.put<ApiResponse<PaymentSettings>>(this.apiUrl, settings, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 }

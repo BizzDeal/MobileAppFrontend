@@ -1,15 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, effect, untracked } from '@angular/core';
 import { forkJoin, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { WalletDTO, WalletTransactionDTO } from '../models/wallet.model';
+import { AuthSessionService } from '../../../core/services/auth-session.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WalletService {
   private readonly http = inject(HttpClient);
+  private readonly authSession = inject(AuthSessionService);
   private readonly apiUrl = environment.apiUrl;
 
   private readonly _wallet = signal<WalletDTO | null>(null);
@@ -23,8 +25,15 @@ export class WalletService {
   readonly error = this._error.asReadonly();
 
   constructor() {
-    this.loadWalletData().subscribe({
-      error: (err) => console.error('Initial wallet data load encountered error:', err),
+    effect(() => {
+      const role = this.authSession.userRole();
+      if (role === 'MEMBER' || role === 'ADMIN') {
+        untracked(() => {
+          this.loadWalletData().subscribe({
+            error: (err) => console.error('Initial wallet data load encountered error:', err),
+          });
+        });
+      }
     });
   }
 

@@ -13,8 +13,6 @@
       <p class="subtitle">Complete your business profile</p>
     </header>
 
-    <div id="recaptcha-container-member"></div>
-
     <!-- Upload Profile Photo Placeholder -->
     <div class="photo-upload-section" style="margin-bottom: 24px;">
       <label class="photo-upload-circle" for="profilePhotoInput">
@@ -58,13 +56,13 @@
 
       <!-- Phone Number -->
       <div class="form-group">
-        <label class="input-label">Phone Number (Login) <span class="required-star">*</span></label>
+        <label class="input-label">Phone Number <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.phoneNumber.invalid && regService.regForm.controls.phoneNumber.touched">
           <ion-input type="tel" formControlName="phoneNumber" placeholder="10-digit mobile number" maxlength="10" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.phoneNumber.invalid && regService.regForm.controls.phoneNumber.touched) {
-            <span class="error-text">Valid 10-digit mobile number is required</span>
+            <span class="error-text">10-digit mobile number is required</span>
           }
         </div>
       </div>
@@ -207,13 +205,13 @@
 
       <!-- Business address (Relabeled from Address, moved after Business Description) -->
       <div class="form-group">
-        <label class="input-label">Business address <span class="required-star">*</span></label>
+        <label class="input-label">Business address</label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched">
           <ion-input type="text" formControlName="address" placeholder="Business or physical address" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched) {
-            <span class="error-text">Business address is required</span>
+            <span class="error-text">Business address must be at least 5 characters</span>
           }
         </div>
       </div>
@@ -259,7 +257,7 @@
         class="submit-btn bd-btn-primary"
         [disabled]="regService.isSubmitting()"
       >
-        <span>{{ regService.isSubmitting() ? 'Proceeding...' : 'Verify Phone & Register' }}</span>
+        <span>{{ regService.isSubmitting() ? 'Proceeding...' : 'Verify Email & Register' }}</span>
       </button>
     </form>
   </div>
@@ -268,9 +266,9 @@
   <ion-modal [isOpen]="regService.isOtpModalOpen()" (didDismiss)="regService.closeOtpModal()">
     <ng-template>
       <div style="padding: 24px; background: var(--bizzdeal-bg-surface); border-radius: 16px; margin: auto; max-width: 400px; text-align: center;">
-        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Verify Phone Number</h2>
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Verify Email Address</h2>
         <p style="font-size: 0.9rem; color: var(--bizzdeal-text-muted); margin-bottom: 16px;">
-          An OTP code has been sent via SMS to your mobile number.
+          An OTP code has been sent to your email address.
         </p>
         
         @if (regService.errorMessage()) {

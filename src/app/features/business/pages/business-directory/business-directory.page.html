@@ -68,17 +68,17 @@
 
           <!-- Quick Action Buttons -->
           <div class="actions-row">
-            <button class="action-btn" (click)="callBusiness(biz.phone)" type="button">
+            <button class="action-btn bd-btn-outline" (click)="callBusiness(biz.phone)" type="button">
               <ion-icon name="call-outline" class="action-icon"></ion-icon>
               <span>Call</span>
             </button>
             @if (userRole() !== 'CUSTOMER') {
-              <button class="action-btn chat-btn" (click)="startChat(biz.owner_id)" type="button">
+              <button class="action-btn bd-btn-primary" (click)="startChat(biz.owner_id)" type="button">
                 <ion-icon name="chatbubble-ellipses-outline" class="action-icon chat-color"></ion-icon>
                 <span>Chat</span>
               </button>
             }
-            <button class="action-btn" (click)="openWebsite(biz.website)" type="button">
+            <button class="action-btn bd-btn-outline" (click)="openWebsite(biz.website)" type="button">
               <ion-icon name="globe-outline" class="action-icon"></ion-icon>
               <span>Web</span>
             </button>

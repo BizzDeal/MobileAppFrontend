@@ -46,6 +46,7 @@ import { NotificationsPageComponent } from '../features/notifications/components
 import { NotificationService } from '../features/notifications/services/notification.service';
 import { ProfileViewComponent } from '../features/profile/components/profile-view/profile-view.component';
 import { WalletViewComponent } from '../features/wallet/components/wallet-view/wallet-view.component';
+import { WalletService } from '../features/wallet/services/wallet.service';
 import { ProfileService } from '../features/profile/services/profile.service';
 import { ToastService } from '../core/services/toast.service';
 import { CustomerHomeComponent } from '../features/home/components/customer-home/customer-home.component';
@@ -109,8 +110,21 @@ export class HomePage {
   private readonly customerVouchersService = inject(CustomerVouchersService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  readonly walletService = inject(WalletService);
 
   readonly userRole = computed(() => this.authSession.userRole() || this.profileService.profile()?.role || 'CUSTOMER');
+
+  readonly customerProfile = computed(() => {
+    const p = this.profileService.profile();
+    return {
+      id: p?.id || 'unknown',
+      name: p?.full_name || 'Customer',
+      phone: p?.phone || '',
+      address: p?.address || ''
+    };
+  });
+
+  readonly fallbackWallet = { id: '', user_id: '', balance: 0, total_savings: 0, created_at: '', updated_at: '' };
 
   readonly activeVouchers = computed(() => this.customerVouchersService.vouchers().filter(v => v.status === 'ISSUED'));
 
@@ -231,7 +245,9 @@ export class HomePage {
       forkJoin({
         profile: this.profileService.loadProfile().pipe(catchError(() => of(null))),
         dashboard: this.memberDashboardService.loadDashboardData().pipe(catchError(() => of(null))),
-        meetings: this.meetingsService.loadMeetings().pipe(catchError(() => of(null)))
+        meetings: this.meetingsService.loadMeetings().pipe(catchError(() => of(null))),
+        wallet: this.walletService.refreshWallet().pipe(catchError(() => of(null))),
+        notifications: this.notificationService.getNotifications().pipe(catchError(() => of(null)))
       }).subscribe(() => {
         if (event?.target?.complete) {
           event.target.complete();
@@ -240,7 +256,10 @@ export class HomePage {
     } else {
       forkJoin({
         profile: this.profileService.loadProfile().pipe(catchError(() => of(null))),
-        feed: this.homeService.loadHomeFeed().pipe(catchError(() => of(null)))
+        feed: this.homeService.loadHomeFeed().pipe(catchError(() => of(null))),
+        wallet: this.walletService.refreshWallet().pipe(catchError(() => of(null))),
+        notifications: this.notificationService.getNotifications().pipe(catchError(() => of(null))),
+        vouchers: this.customerVouchersService.loadVouchers().pipe(catchError(() => of(null)))
       }).subscribe(() => {
         if (event?.target?.complete) {
           event.target.complete();
@@ -278,6 +297,11 @@ export class HomePage {
           discountText: voucher.discountText || 'Special Offer',
           offer_type: offer.offer_type,
           discount_type: (offer.discount_type as any) || undefined
+        });
+        
+        // Refresh wallet state after claiming an offer which could affect savings or cashback balance
+        this.walletService.refreshWallet().subscribe({
+          error: (err) => console.error('Failed to refresh wallet after claim', err)
         });
       },
       error: (err) => {

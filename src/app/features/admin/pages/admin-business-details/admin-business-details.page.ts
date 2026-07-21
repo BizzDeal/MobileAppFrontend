@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, NavController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminBusiness, AdminOffer, AdminVoucher, BusinessStatus, OfferStatus } from '../../models/admin-business.model';
@@ -12,7 +12,7 @@ import {
   businessOutline, globeOutline, documentTextOutline, 
   starOutline, star, pricetagOutline, ticketOutline,
   personOutline, callOutline, pricetag, flashOutline, timeOutline, 
-  ticket, personCircleOutline, calendarOutline
+  ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -34,13 +34,14 @@ export class AdminBusinessDetailsPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private adminBusinessesService: AdminBusinessesService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private navCtrl: NavController
   ) {
     addIcons({
       businessOutline, globeOutline, documentTextOutline,
       starOutline, star, pricetagOutline, ticketOutline,
       personOutline, callOutline, pricetag, flashOutline, timeOutline,
-      ticket, personCircleOutline, calendarOutline
+      ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline
     });
   }
 
@@ -104,6 +105,16 @@ export class AdminBusinessDetailsPage implements OnInit {
     this.adminBusinessesService.featureBusiness(this.business.id, newStatus).subscribe(async res => {
       if (res.success) {
         this.business!.is_featured = newStatus;
+      }
+    });
+  }
+
+  updateStatus(newStatus: BusinessStatus) {
+    if (!this.business) return;
+    this.adminBusinessesService.updateBusinessStatus(this.business.id, newStatus).subscribe(res => {
+      if (res.success) {
+        this.business!.status = newStatus;
+        this.navCtrl.back();
       }
     });
   }

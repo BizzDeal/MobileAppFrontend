@@ -16,7 +16,7 @@
     @if (step === 'VERIFY') {
       <div class="auth-header">
         <h2>Voucher Redemption</h2>
-        <p>Enter the customer's phone and voucher code, or scan their voucher QR code to begin.</p>
+        <p>Enter the voucher code, or scan the voucher QR code to begin.</p>
       </div>
 
       <div class="premium-form-card">
@@ -32,32 +32,6 @@
         </div>
 
         <form [formGroup]="verificationForm" (ngSubmit)="onVerify()" class="premium-form">
-          <div class="form-group">
-            <label class="form-label">
-              Customer Phone <span class="required-star">*</span>
-            </label>
-            <ion-item class="premium-input-item" lines="none">
-              <ion-input
-                type="tel"
-                formControlName="customer_phone"
-                placeholder="e.g. 9876543210"
-                class="premium-input">
-              </ion-input>
-            </ion-item>
-            <div class="error-container">
-              @if (vf['customer_phone'].invalid && (vf['customer_phone'].dirty || vf['customer_phone'].touched)) {
-                <span class="error-message">
-                  @if (vf['customer_phone'].errors?.['required']) {
-                    Customer phone number is required
-                  }
-                  @if (vf['customer_phone'].errors?.['pattern']) {
-                    Phone number must be exactly 10 digits
-                  }
-                </span>
-              }
-            </div>
-          </div>
-
           <div class="form-group">
             <label class="form-label">
               Voucher Code <span class="required-star">*</span>
@@ -92,7 +66,7 @@
           }
 
           <div class="actions">
-            <button type="submit" class="action-btn primary full-width" [disabled]="verificationForm.invalid || isVerifying">
+            <button type="submit" class="bd-btn-primary action-btn full-width" [disabled]="verificationForm.invalid || isVerifying">
               @if (isVerifying) {
                 <ion-spinner name="crescent"></ion-spinner>
               } @else {
@@ -252,10 +226,10 @@
           }
 
           <div class="actions button-group">
-            <button type="button" class="action-btn secondary" (click)="resetPage()">
+            <button type="button" class="bd-btn-outline action-btn" (click)="resetPage()">
               Cancel
             </button>
-            <button type="submit" class="action-btn primary" [disabled]="redemptionForm.invalid || isRedeeming">
+            <button type="submit" class="bd-btn-primary action-btn" [disabled]="redemptionForm.invalid || isRedeeming">
               @if (isRedeeming) {
                 <ion-spinner name="crescent"></ion-spinner>
               } @else {

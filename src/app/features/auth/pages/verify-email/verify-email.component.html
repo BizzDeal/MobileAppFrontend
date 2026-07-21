@@ -16,7 +16,7 @@
       </div>
       <h2>Email Verified Successfully!</h2>
       <p>Your email has been confirmed. Your account is now pending admin approval.</p>
-      <button class="btn-primary" (click)="goToLogin()">Proceed to Login</button>
+      <button class="bd-btn-primary" style="width: 100%" (click)="goToLogin()">Proceed to Login</button>
     </div>
 
     <!-- Error State -->
@@ -28,7 +28,7 @@
       </div>
       <h2>Verification Failed</h2>
       <p>{{ errorMessage() }}</p>
-      <button class="btn-secondary" (click)="goToLogin()">Back to Login</button>
+      <button class="bd-btn-outline" style="width: 100%; margin-top: 12px;" (click)="goToLogin()">Back to Login</button>
     </div>
   </div>
 </div>

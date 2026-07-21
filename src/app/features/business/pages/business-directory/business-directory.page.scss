@@ -160,12 +160,8 @@
     justify-content: center;
     gap: 6px;
     padding: 10px 4px;
-    background: var(--bizzdeal-bg-surface-secondary);
-    border: 1px solid var(--bizzdeal-border-color);
-    border-radius: var(--bizzdeal-radius-md);
     font-size: 13px;
     font-weight: 600;
-    color: var(--bizzdeal-text-primary);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:active {
@@ -188,12 +184,10 @@
     }
 
     &.chat-btn {
-      border-color: rgba(14, 165, 233, 0.25);
-      background: rgba(14, 165, 233, 0.04);
-      color: var(--ion-color-secondary);
+      color: white; // Since it uses bd-btn-primary now, text should be white
 
-      &:active {
-        background: rgba(14, 165, 233, 0.1);
+      .action-icon.chat-color {
+        color: white;
       }
     }
   }

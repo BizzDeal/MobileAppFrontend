@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AdminPaymentSettingsService, PaymentSettings } from '../../services/admin-payment-settings.service';
 import { addIcons } from 'ionicons';
 import { saveOutline, refreshOutline, cardOutline } from 'ionicons/icons';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
 @Component({
   selector: 'app-admin-payment-details',
@@ -60,7 +61,7 @@ export class AdminPaymentDetailsPage implements OnInit {
       },
       error: (err: any) => {
         console.error('Failed to load payment settings:', err);
-        this.errorMessage.set(err.error?.message || err.message || 'Failed to load payment settings.');
+        this.errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to load payment settings.'));
         this.isLoading.set(false);
       }
     });
@@ -96,7 +97,7 @@ export class AdminPaymentDetailsPage implements OnInit {
       },
       error: (err: any) => {
         console.error('Failed to save payment settings:', err);
-        this.errorMessage.set(err.error?.message || err.message || 'Failed to save payment settings.');
+        this.errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to save payment settings.'));
         this.isSaving.set(false);
       }
     });

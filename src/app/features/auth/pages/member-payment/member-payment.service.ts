@@ -1,11 +1,13 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MemberOnboardingService } from '../../services/member-onboarding.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Injectable()
 export class MemberPaymentService {
   private readonly router = inject(Router);
   readonly onboardingService = inject(MemberOnboardingService);
+  private readonly toastService = inject(ToastService);
 
   readonly receiptPreview = signal<string | null>(null);
   readonly receiptFileName = signal<string | null>(null);
@@ -53,7 +55,7 @@ export class MemberPaymentService {
 
   copyToClipboard(text: string): void {
     navigator.clipboard.writeText(text);
-    alert(`Copied "${text}" to clipboard!`);
+    this.toastService.showSuccess(`Copied "${text}" to clipboard!`);
   }
 
   backStep(event: Event): void {

@@ -5,6 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { AuthResponse } from '../models/auth.model';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 export interface BusinessCategory {
   id: string;
@@ -52,7 +53,9 @@ export interface MemberRegistrationPayload {
   business_description: string;
   website: string;
   gst_number: string;
-  otp: string;
+  business_address?: string;
+  business_state_id?: string;
+  business_district_id?: string;
   reference_code?: string;
 }
 
@@ -75,6 +78,10 @@ export class MemberOnboardingService {
   readonly districts = signal<LocationDistrict[]>([]);
   readonly isLoadingDistricts = signal<boolean>(false);
   readonly districtsError = signal<string | null>(null);
+
+  readonly businessDistricts = signal<LocationDistrict[]>([]);
+  readonly isLoadingBusinessDistricts = signal<boolean>(false);
+  readonly businessDistrictsError = signal<string | null>(null);
 
   readonly paymentSettings = signal<PaymentSettings | null>(null);
   readonly isLoadingPaymentSettings = signal<boolean>(false);
@@ -99,7 +106,7 @@ export class MemberOnboardingService {
       this.categories.set(activeList);
     } catch (err: any) {
       console.error('Failed to fetch categories from BE:', err);
-      this.categoriesError.set(err.message || 'Failed to fetch business categories from server.');
+      this.categoriesError.set(extractFriendlyErrorMessage(err, 'Failed to fetch business categories from server.'));
       throw err;
     } finally {
       this.isLoadingCategories.set(false);
@@ -118,7 +125,7 @@ export class MemberOnboardingService {
       this.states.set(list);
     } catch (err: any) {
       console.error('Failed to fetch states from BE:', err);
-      this.statesError.set(err.message || 'Failed to fetch states from server.');
+      this.statesError.set(extractFriendlyErrorMessage(err, 'Failed to fetch states from server.'));
       throw err;
     } finally {
       this.isLoadingStates.set(false);
@@ -140,10 +147,32 @@ export class MemberOnboardingService {
       this.districts.set(list);
     } catch (err: any) {
       console.error('Failed to fetch districts from BE:', err);
-      this.districtsError.set(err.message || 'Failed to fetch districts from server.');
+      this.districtsError.set(extractFriendlyErrorMessage(err, 'Failed to fetch districts from server.'));
       throw err;
     } finally {
       this.isLoadingDistricts.set(false);
+    }
+  }
+
+  async fetchBusinessDistrictsByState(stateId: string): Promise<void> {
+    if (!stateId) {
+      this.businessDistricts.set([]);
+      return;
+    }
+    this.isLoadingBusinessDistricts.set(true);
+    this.businessDistrictsError.set(null);
+    try {
+      const res = await firstValueFrom(
+        this.http.get<any>(`${this.apiUrl}/locations/states/${stateId}/districts`)
+      );
+      const list: LocationDistrict[] = Array.isArray(res) ? res : res?.data || res?.items || [];
+      this.businessDistricts.set(list);
+    } catch (err: any) {
+      console.error('Failed to fetch business districts from BE:', err);
+      this.businessDistrictsError.set(extractFriendlyErrorMessage(err, 'Failed to fetch business districts from server.'));
+      throw err;
+    } finally {
+      this.isLoadingBusinessDistricts.set(false);
     }
   }
 
@@ -188,7 +217,9 @@ export class MemberOnboardingService {
       formData.append('business_description', data.business_description);
       formData.append('website', data.website);
       formData.append('gst_number', data.gst_number);
-      formData.append('otp', data.otp);
+      if (data.business_address) formData.append('business_address', data.business_address);
+      if (data.business_state_id) formData.append('business_state_id', data.business_state_id);
+      if (data.business_district_id) formData.append('business_district_id', data.business_district_id);
       if (data.reference_code) {
         formData.append('reference_code', data.reference_code);
       }
@@ -227,9 +258,7 @@ export class MemberOnboardingService {
       this.paymentSettings.set(data);
     } catch (err: any) {
       console.error('Failed to fetch payment settings from BE:', err);
-      this.paymentSettingsError.set(
-        err.error?.message || err.message || 'Failed to fetch payment settings from server.'
-      );
+      this.paymentSettingsError.set(extractFriendlyErrorMessage(err, 'Failed to fetch payment settings from server.'));
       throw err;
     } finally {
       this.isLoadingPaymentSettings.set(false);
@@ -244,7 +273,7 @@ export class MemberOnboardingService {
       return res;
     } catch (err: any) {
       console.error('Failed to verify email:', err);
-      throw new Error(err.error?.message || err.message || 'Email verification failed.');
+      throw new Error(extractFriendlyErrorMessage(err, 'Email verification failed.'));
     }
   }
 }

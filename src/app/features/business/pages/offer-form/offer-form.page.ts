@@ -4,9 +4,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { SHOW_SUCCESS_TOAST } from '../../../../core/interceptors/interceptor.tokens';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, IonDatetime, IonDatetimeButton, IonModal } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, IonDatetime, IonDatetimeButton, IonModal, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline } from 'ionicons/icons';
+import { imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline, trashOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { environment } from '../../../../../environments/environment';
@@ -32,6 +32,7 @@ export class OfferFormPage implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly dashboardService = inject(MemberDashboardService);
   private readonly profileService = inject(ProfileService);
+  private readonly alertCtrl = inject(AlertController);
 
   readonly isEditMode = signal(false);
   readonly offerId = signal<string | null>(null);
@@ -44,7 +45,7 @@ export class OfferFormPage implements OnInit {
   offerForm: FormGroup;
 
   constructor() {
-    addIcons({ imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline });
+    addIcons({ imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline, trashOutline });
     
     const now = new Date();
     const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -275,6 +276,44 @@ export class OfferFormPage implements OnInit {
         this.submitting.set(false);
         console.error('Create offer failed:', err);
         this.errorMessage.set(err?.error?.message || 'Failed to create offer. Please check your inputs and try again.');
+      }
+    });
+  }
+
+  async confirmDelete() {
+    const alert = await this.alertCtrl.create({
+      header: 'Delete Offer',
+      message: 'Are you sure you want to delete this offer? This action cannot be undone.',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: () => {
+            this.deleteOffer();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  deleteOffer() {
+    if (!this.offerId()) return;
+    this.submitting.set(true);
+    this.http.delete<any>(`${environment.apiUrl}/offers/${this.offerId()}`, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).subscribe({
+      next: (res) => {
+        this.submitting.set(false);
+        this.dashboardService.loadDashboardData().subscribe();
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.submitting.set(false);
+        console.error('Delete offer failed:', err);
+        this.errorMessage.set(err?.error?.message || 'Failed to delete offer. Please try again.');
       }
     });
   }

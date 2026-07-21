@@ -36,6 +36,9 @@ export interface AuthUser {
   gst_number?: string | null;
   business_logo_url?: string | null;
   category_id?: string | null;
+  business_address?: string | null;
+  business_state_id?: string | null;
+  business_district_id?: string | null;
 }
 
 export interface AuthTokens {
@@ -90,5 +93,8 @@ export interface RegisterMemberDto {
   business_description?: string;
   website?: string;
   gst_number?: string;
+  business_address?: string;
+  business_state_id?: string;
+  business_district_id?: string;
   otp: string;
 }

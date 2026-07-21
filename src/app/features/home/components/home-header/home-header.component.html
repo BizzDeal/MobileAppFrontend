@@ -1,8 +1,9 @@
 <header class="home-header">
   <div class="top-row">
-    <!-- Personalized Greeting -->
     <div class="user-greeting">
-      <h1 class="greeting-title" [title]="customer().name">Hi, <span class="truncate-name">{{ getFirstName(customer().name) }}</span>! 👋</h1>
+      <h1 class="greeting-title" [title]="customer().name"><span class="truncate-name">Hi, {{
+          getFirstName(customer().name)
+          }}</span></h1>
     </div>
 
     <!-- Quick Wallet Balance & Notification Bell -->
@@ -20,7 +21,7 @@
       <button class="notif-btn bd-btn-outline" (click)="onNotificationClick()" type="button" aria-label="Notifications">
         <ion-icon name="notifications-outline" class="notif-icon" />
         @if ((unreadCount() || 0) > 0) {
-          <span class="notif-badge">{{ unreadCount() }}</span>
+        <span class="notif-badge">{{ unreadCount() }}</span>
         }
       </button>
     </div>
@@ -28,13 +29,8 @@
 
   <!-- Search Bar Row -->
   <div class="search-row">
-    <ion-searchbar 
-      mode="ios"
-      placeholder="Search businesses, deals, vouchers..." 
-      [debounce]="300"
-      (ionInput)="onSearchInput($event)"
-      (search)="onSearchSubmit($event)"
-      (keyup.enter)="onSearchSubmit($event)"
+    <ion-searchbar mode="ios" placeholder="Search businesses, deals, vouchers..." [debounce]="300"
+      (ionInput)="onSearchInput($event)" (search)="onSearchSubmit($event)" (keyup.enter)="onSearchSubmit($event)"
       class="custom-searchbar">
     </ion-searchbar>
   </div>

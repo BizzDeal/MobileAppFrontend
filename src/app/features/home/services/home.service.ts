@@ -15,6 +15,7 @@ import {
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { ProfileService } from '../../profile/services/profile.service';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
+import { CustomerVouchersService } from '../../vouchers/services/customer-vouchers.service';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +24,7 @@ export class HomeService {
   private readonly http = inject(HttpClient);
   private readonly authSession = inject(AuthSessionService);
   private readonly profileService = inject(ProfileService);
+  private readonly customerVouchersService = inject(CustomerVouchersService);
   private readonly apiUrl = environment.apiUrl;
 
   private readonly _homeFeed = signal<CustomerHomeFeedDTO | null>(null);
@@ -54,12 +56,6 @@ export class HomeService {
 
     const currentUser = this.authSession.currentUser();
     const currentProf = this.profileService.profile();
-    const customer: CustomerProfileDTO = {
-      id: currentProf?.id || currentUser?.id || 'unknown',
-      name: currentProf?.full_name || currentUser?.full_name || 'Customer',
-      phone: currentProf?.phone || currentUser?.phone || '',
-      address: currentProf?.address || currentUser?.address || '',
-    };
 
     const queryParam = categoryId !== 'ALL' ? `?category_id=${categoryId}` : '';
 
@@ -69,9 +65,6 @@ export class HomeService {
       topBusinesses: this.http.get<any>(`${this.apiUrl}/businesses/top${queryParam}`),
       megaDeals: this.http.get<any>(`${this.apiUrl}/offers/mega${queryParam}`),
       trendingOffers: this.http.get<any>(`${this.apiUrl}/offers/trending${queryParam}`),
-      vouchers: this.http.get<any>(`${this.apiUrl}/vouchers/customer`),
-      wallet: this.http.get<any>(`${this.apiUrl}/wallet/balance`),
-      notifications: this.http.get<any>(`${this.apiUrl}/notifications`),
     }).pipe(
       map((res) => {
         // Map Categories
@@ -130,28 +123,7 @@ export class HomeService {
           bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
         }));
 
-        // Map Vouchers
-        const vouchersRaw: any[] = Array.isArray(res.vouchers) ? res.vouchers : res.vouchers?.data || res.vouchers?.items || [];
-        const myActiveVouchers: VoucherDTO[] = vouchersRaw.map((v) => ({
-          id: v.id,
-          voucher_code: v.voucher_code,
-          offer_id: v.offer_id,
-          customer_id: v.customer_id,
-          business_id: v.business_id,
-          status: v.status || 'ISSUED',
-          issued_at: v.issued_at || new Date().toISOString(),
-          redeemed_at: v.redeemed_at || null,
-          expires_at: v.expires_at || new Date().toISOString(),
-          redeemed_by_id: v.redeemed_by_id || null,
-          created_at: v.created_at || new Date().toISOString(),
-          updated_at: v.updated_at || new Date().toISOString(),
-          offerTitle: v.offerTitle || v.offer?.title || 'Promotional Offer',
-          businessName: v.businessName || v.business?.name || 'BizzDeal Partner',
-          discountText: v.discountText || (v.offer?.discount_type === 'PERCENTAGE' ? `${v.offer.discount_value}% OFF` : v.offer?.discount_type === 'FIXED_AMOUNT' ? `₹${v.offer.discount_value} OFF` : 'Special Deal'),
-          customer_phone: v.customer_phone || null,
-        }));
-        
-        const claimedOfferIds = new Set(myActiveVouchers.map(v => v.offer_id));
+        const claimedOfferIds = new Set(this.customerVouchersService.vouchers().map(v => v.offer_id));
 
         // Map Mega Deals
         const megaRaw: any[] = Array.isArray(res.megaDeals) ? res.megaDeals : res.megaDeals?.data || res.megaDeals?.items || [];
@@ -201,31 +173,12 @@ export class HomeService {
           isClaimed: claimedOfferIds.has(o.id),
         }));
 
-        // Map Wallet
-        const w = res.wallet?.data || res.wallet || {};
-        const wallet: WalletDTO = {
-          id: w.id || `wallet-${customer.id}`,
-          user_id: w.user_id || customer.id,
-          balance: Number(w.balance || 0),
-          total_savings: Number(w.total_savings || 0),
-          created_at: w.created_at || new Date().toISOString(),
-          updated_at: w.updated_at || new Date().toISOString(),
-        };
-
-        // Map Notifications Count
-        const notifRaw: any[] = Array.isArray(res.notifications) ? res.notifications : res.notifications?.data || res.notifications?.items || [];
-        const unreadNotificationsCount = notifRaw.filter((n) => !n.is_read).length;
-
         const feedData: CustomerHomeFeedDTO = {
-          customer,
-          wallet,
-          unreadNotificationsCount,
           categories,
           featuredBusinesses,
           topBusinesses,
           megaDeals,
           trendingOffers,
-          myActiveVouchers,
         };
 
         return feedData;
@@ -294,7 +247,6 @@ export class HomeService {
             ...currentFeed,
             megaDeals: updatedMegaDeals,
             trendingOffers: updatedTrendingOffers,
-            myActiveVouchers: [newVoucher, ...currentFeed.myActiveVouchers],
           });
         }
 

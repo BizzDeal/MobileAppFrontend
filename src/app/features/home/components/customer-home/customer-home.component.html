@@ -1,5 +1,5 @@
 <!-- 1. Header / Top Bar -->
-<app-home-header [customer]="feed.customer" [wallet]="feed.wallet" [unreadCount]="unreadNotificationsCount"
+<app-home-header [customer]="customer" [wallet]="wallet" [unreadCount]="unreadNotificationsCount"
   (walletClick)="walletClick.emit()" (notificationClick)="notificationClick.emit()"
   (searchChange)="searchChange.emit($event)" (searchSubmit)="searchSubmit.emit($event)" />
 

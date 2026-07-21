@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ToastService } from '../services/toast.service';
 import { SHOW_SUCCESS_TOAST } from './interceptor.tokens';
+import { extractFriendlyErrorMessage } from '../utils/error.utils';
 
 function extractResourceName(url: string): string {
   try {
@@ -29,23 +30,16 @@ function extractResourceName(url: string): string {
 }
 
 function getFriendlyErrorMessage(req: HttpRequest<any>, error: HttpErrorResponse): string {
-  // If backend provided a specific message, use it
-  if (error.error && typeof error.error.message === 'string') {
-    // Exclude generic Node/Nest routing errors if they leak URLs
-    if (!error.error.message.startsWith('Cannot ') && !error.error.message.includes('http')) {
-      return error.error.message;
-    }
-  }
-  
   const resource = extractResourceName(req.url);
+  let fallback = 'Operation failed';
   switch (req.method) {
-    case 'GET': return `Failed to get ${resource.toLowerCase()}`;
-    case 'POST': return `Failed to create ${resource.toLowerCase()}`;
+    case 'GET': fallback = `Failed to get ${resource.toLowerCase()}`; break;
+    case 'POST': fallback = `Failed to create ${resource.toLowerCase()}`; break;
     case 'PUT':
-    case 'PATCH': return `Failed to update ${resource.toLowerCase()}`;
-    case 'DELETE': return `Failed to delete ${resource.toLowerCase()}`;
-    default: return `Operation failed`;
+    case 'PATCH': fallback = `Failed to update ${resource.toLowerCase()}`; break;
+    case 'DELETE': fallback = `Failed to delete ${resource.toLowerCase()}`; break;
   }
+  return extractFriendlyErrorMessage(error, fallback);
 }
 
 function getFriendlySuccessMessage(req: HttpRequest<any>, res: HttpResponse<any>): string {

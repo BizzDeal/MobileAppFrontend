@@ -317,7 +317,7 @@
   gap: var(--bizzdeal-spacing-sm);
   padding: 0 0 var(--bizzdeal-spacing-xl) 0;
 
-  .save-btn {
+  .delete-btn, .save-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -329,26 +329,49 @@
     font-size: 14px;
     font-weight: 700;
     border-radius: var(--bizzdeal-radius-lg);
-    background: var(--bizzdeal-gradient-primary-diagonal);
-    color: var(--bizzdeal-text-on-primary);
-    box-shadow: var(--bizzdeal-shadow-primary);
     cursor: pointer;
     transition: all 0.2s ease;
     gap: 8px;
 
     &:active {
       transform: scale(0.98);
-      box-shadow: none;
     }
 
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      box-shadow: none;
     }
 
     .btn-icon {
       font-size: 18px;
+    }
+  }
+
+  .delete-btn {
+    background: rgba(var(--ion-color-danger-rgb), 0.1);
+    color: var(--ion-color-danger);
+    border: 1px solid rgba(var(--ion-color-danger-rgb), 0.3);
+
+    &:active {
+      background: rgba(var(--ion-color-danger-rgb), 0.2);
+    }
+    
+    &:disabled {
+      box-shadow: none;
+    }
+  }
+
+  .save-btn {
+    background: var(--bizzdeal-gradient-primary-diagonal);
+    color: var(--bizzdeal-text-on-primary);
+    box-shadow: var(--bizzdeal-shadow-primary);
+
+    &:active {
+      box-shadow: none;
+    }
+
+    &:disabled {
+      box-shadow: none;
     }
   }
 }

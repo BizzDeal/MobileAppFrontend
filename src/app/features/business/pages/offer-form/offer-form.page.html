@@ -154,6 +154,12 @@
       }
 
       <div class="action-buttons">
+        @if (isEditMode()) {
+          <button type="button" class="bd-btn-danger delete-btn" [disabled]="submitting()" (click)="confirmDelete()">
+            <ion-icon name="trash-outline" class="btn-icon"></ion-icon>
+            Delete Offer
+          </button>
+        }
         <button type="submit" class="bd-btn-primary save-btn" [disabled]="submitting()">
           <ion-icon name="save-outline" class="btn-icon"></ion-icon>
           {{ isEditMode() ? (submitting() ? 'Updating Offer...' : 'Update Offer') : (submitting() ? 'Creating Offer...' : 'Create Offer') }}

@@ -25,6 +25,9 @@ export interface BusinessDTO {
   description: string | null;
   website: string | null;
   gst_number: string | null;
+  address?: string | null;
+  state_id?: string | null;
+  district_id?: string | null;
   logo_id: string | null;
   status: BusinessStatus;
   is_featured: boolean;
@@ -96,13 +99,9 @@ export interface CustomerProfileDTO {
 }
 
 export interface CustomerHomeFeedDTO {
-  customer: CustomerProfileDTO;
-  wallet: WalletDTO;
-  unreadNotificationsCount: number;
   categories: BusinessCategoryDTO[];
   featuredBusinesses: BusinessDTO[];
   megaDeals: OfferDTO[];
   trendingOffers: OfferDTO[];
   topBusinesses: BusinessDTO[];
-  myActiveVouchers: VoucherDTO[];
 }

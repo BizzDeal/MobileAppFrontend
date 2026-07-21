@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { AdminMembersListComponent } from '../../components/admin-members-list/admin-members-list.component';
@@ -17,10 +17,22 @@ import { AdminCustomersListComponent } from '../../components/admin-customers-li
   styleUrls: ['./admin-users.page.scss']
 })
 export class AdminUsersPage {
+  @ViewChild(AdminMembersListComponent) membersList?: AdminMembersListComponent;
+  @ViewChild(AdminCustomersListComponent) customersList?: AdminCustomersListComponent;
+
   segmentValue = 'members';
   searchQuery = '';
 
   constructor() {}
+
+  ionViewWillEnter() {
+    if (this.membersList) {
+      this.membersList.loadMembers();
+    }
+    if (this.customersList) {
+      this.customersList.loadCustomers();
+    }
+  }
 
   segmentChanged(event: any) {
     this.segmentValue = event.detail.value;

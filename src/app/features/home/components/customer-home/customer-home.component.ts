@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { BusinessDTO, CustomerHomeFeedDTO, OfferDTO } from '../../models/home.model';
+import { BusinessDTO, CustomerHomeFeedDTO, OfferDTO, CustomerProfileDTO, WalletDTO } from '../../models/home.model';
 import { HomeHeaderComponent } from '../home-header/home-header.component';
 import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
 import { CategoryChipsComponent } from '../category-chips/category-chips.component';
@@ -27,6 +27,8 @@ import { DatePipe, NgClass } from '@angular/common';
 })
 export class CustomerHomeComponent {
   @Input({ required: true }) feed!: CustomerHomeFeedDTO;
+  @Input({ required: true }) customer!: CustomerProfileDTO;
+  @Input({ required: true }) wallet!: WalletDTO;
   @Input({ required: true }) unreadNotificationsCount!: number;
   @Input({ required: true }) selectedCategory!: string;
   @Input({ required: true }) filteredPercentageDeals!: OfferDTO[];

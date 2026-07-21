@@ -27,7 +27,7 @@
       </button>
     </div>
     } @else if (homeFeed(); as feed) {
-    <app-customer-home [feed]="feed" [unreadNotificationsCount]="unreadNotificationsCount()"
+    <app-customer-home [feed]="feed" [customer]="customerProfile()" [wallet]="walletService.wallet() || fallbackWallet" [unreadNotificationsCount]="unreadNotificationsCount()"
       [selectedCategory]="selectedCategory()" [filteredPercentageDeals]="filteredPercentageDealsBySearch()"
       [filteredTopBiz]="filteredTopBizBySearch()" [filteredFeaturedBiz]="filteredFeaturedBySearch()"
       [filteredFlatOffers]="filteredFlatOffersBySearch()" [filteredCashbackOffers]="filteredCashbackOffersBySearch()"

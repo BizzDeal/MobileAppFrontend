@@ -12,6 +12,7 @@ import { MeetingsService, AttendeeStatus } from '../../../meetings/services/meet
 import { MeetingCardComponent } from '../../../meetings/components/meeting-card/meeting-card.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { NotificationService } from '../../../notifications/services/notification.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
 
@@ -31,6 +32,7 @@ export class MemberHomeComponent implements OnInit {
   private readonly meetingsService = inject(MeetingsService);
   private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
+  private readonly toastService = inject(ToastService);
 
   readonly dashboardData = this.dashboardService.dashboardData;
   readonly profile = this.profileService.profile;
@@ -83,6 +85,10 @@ export class MemberHomeComponent implements OnInit {
   }
 
   onCreateOffer() {
+    if (this.profile()?.status === 'PENDING') {
+      this.toastService.showError('Pending members cannot create offers');
+      return;
+    }
     this.router.navigate(['/offers/new']);
   }
 

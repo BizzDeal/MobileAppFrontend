@@ -29,18 +29,18 @@ export class HomeHeaderComponent {
   readonly searchSubmit = output<string>();
 
   constructor() {
-    addIcons({ 
-      walletOutline, 
-      notificationsOutline, 
-      searchOutline, 
-      optionsOutline 
+    addIcons({
+      walletOutline,
+      notificationsOutline,
+      searchOutline,
+      optionsOutline
     });
   }
 
   getFirstName(fullName?: string): string {
     if (!fullName) return 'User';
     const first = fullName.trim().split(' ')[0];
-    return first.length > 5 ? `${first.substring(0, 5)}...` : first;
+    return first.length > 10 ? `${first.substring(0, 15)}...` : first;
   }
 
   onWalletClick(): void {

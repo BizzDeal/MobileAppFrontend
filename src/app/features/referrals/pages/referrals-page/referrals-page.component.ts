@@ -34,6 +34,7 @@ import { Capacitor, registerPlugin } from '@capacitor/core';
 import { ReferralsService } from '../../services/referrals.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { ReferralDTO, ReferralStatus } from '../../models/referral.model';
+import { ToastService } from '../../../../core/services/toast.service';
 
 const Contacts = registerPlugin<any>('Contacts');
 
@@ -67,6 +68,7 @@ const Contacts = registerPlugin<any>('Contacts');
 export class ReferralsPageComponent implements OnInit {
   private readonly referralsService = inject(ReferralsService);
   private readonly profileService = inject(ProfileService);
+  private readonly toastService = inject(ToastService);
 
   readonly referrals = signal<ReferralDTO[]>([]);
   readonly loading = signal<boolean>(true);
@@ -143,6 +145,10 @@ export class ReferralsPageComponent implements OnInit {
   }
 
   openModal(): void {
+    if (this.profileService.profile()?.status === 'PENDING') {
+      this.toastService.showError('Pending members cannot create referrals');
+      return;
+    }
     this.searchInput.set('');
     this.contactsList.set([]);
     this.isModalOpen.set(true);

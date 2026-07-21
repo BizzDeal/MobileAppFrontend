@@ -109,28 +109,28 @@
 
     <!-- Quick Actions -->
     <section class="quick-actions">
-      <button class="action-btn primary" (click)="onCreateOffer()">
+      <button class="action-btn bd-btn-primary" (click)="onCreateOffer()">
         <ion-icon name="add-circle-outline" />
         <span>Create New Offer</span>
       </button>
       <div class="secondary-actions">
-        <button class="action-btn" (click)="onIssueVoucher()">
+        <button class="action-btn secondary-btn" (click)="onIssueVoucher()">
           <ion-icon name="ticket-outline" />
           <span>Issue Voucher</span>
         </button>
-        <button class="action-btn bd-btn-outline" type="button" (click)="onRedeemVoucher()">
+        <button class="action-btn secondary-btn" type="button" (click)="onRedeemVoucher()">
           <ion-icon name="scan-outline" />
-          Redeem Voucher
+          <span>Redeem Voucher</span>
         </button>
       </div>
       <div class="secondary-actions">
-        <button class="action-btn" type="button" (click)="onViewAnalytics()">
+        <button class="action-btn secondary-btn" type="button" (click)="onViewAnalytics()">
           <ion-icon name="bar-chart-outline" />
           <span>Analytics</span>
         </button>
-        <button class="action-btn bd-btn-outline" type="button" (click)="onViewDirectory()">
+        <button class="action-btn secondary-btn" type="button" (click)="onViewDirectory()">
           <ion-icon name="business-outline" />
-          Business Directory
+          <span>Business Directory</span>
         </button>
       </div>
     </section>

@@ -156,6 +156,16 @@ ion-content {
   gap: 12px;
 }
 
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--bizzdeal-text-primary);
+  margin-top: 8px;
+  margin-bottom: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--bizzdeal-border-color);
+}
+
 .form-group {
   display: flex;
   flex-direction: column;

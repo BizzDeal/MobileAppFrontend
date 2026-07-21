@@ -95,6 +95,16 @@
                 </ion-label>
               </ion-item>
 
+              <ion-item class="premium-item" *ngIf="business.owner_email">
+                <div slot="start" class="icon-box">
+                  <ion-icon name="mail-outline" color="medium"></ion-icon>
+                </div>
+                <ion-label class="ion-text-wrap">
+                  <h3 class="text-medium text-xs font-semibold uppercase">Email</h3>
+                  <p class="text-dark font-medium mt-1">{{ business.owner_email }}</p>
+                </ion-label>
+              </ion-item>
+
               <ion-item class="premium-item" *ngIf="business.website">
                 <div slot="start" class="icon-box">
                   <ion-icon name="globe-outline" color="medium"></ion-icon>
@@ -225,3 +235,30 @@
     </div>
   </div>
 </ion-content>
+
+<ion-footer class="ion-no-border" *ngIf="!loading && business">
+  <ion-toolbar class="ion-padding-horizontal ion-padding-bottom bg-transparent" *ngIf="business.status === BusinessStatus.PENDING">
+    <ion-button expand="block" color="success" (click)="updateStatus(BusinessStatus.ACTIVE)" class="mb-3">
+      <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+      Approve Business
+    </ion-button>
+    <ion-button expand="block" color="danger" fill="outline" (click)="updateStatus(BusinessStatus.REJECTED)">
+      <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+      Reject Business
+    </ion-button>
+  </ion-toolbar>
+
+  <ion-toolbar class="ion-padding-horizontal ion-padding-bottom bg-transparent" *ngIf="business.status === BusinessStatus.ACTIVE">
+    <ion-button expand="block" color="danger" fill="outline" (click)="updateStatus(BusinessStatus.SUSPENDED)">
+      <ion-icon name="ban-outline" slot="start"></ion-icon>
+      Suspend Business
+    </ion-button>
+  </ion-toolbar>
+
+  <ion-toolbar class="ion-padding-horizontal ion-padding-bottom bg-transparent" *ngIf="business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED">
+    <ion-button expand="block" color="success" (click)="updateStatus(BusinessStatus.ACTIVE)">
+      <ion-icon name="refresh-outline" slot="start"></ion-icon>
+      Reactivate Business
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

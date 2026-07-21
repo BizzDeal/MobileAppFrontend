@@ -5,6 +5,8 @@ import { ConfirmationResult } from '@angular/fire/auth';
 import { MemberOnboardingService, MemberRegistrationPayload } from '../../services/member-onboarding.service';
 import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
 import { AuthApiService } from '../../services/auth-api.service';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Injectable()
 export class MemberRegistrationService {
@@ -13,19 +15,16 @@ export class MemberRegistrationService {
   readonly onboardingService = inject(MemberOnboardingService);
   readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
   readonly authApi = inject(AuthApiService);
+  private readonly toastService = inject(ToastService);
 
   readonly photoPreview = signal<string | null>(null);
   private photoFile: File | null = null;
   readonly logoPreview = signal<string | null>(null);
   private logoFile: File | null = null;
   readonly isSubmitting = signal<boolean>(false);
-
-  readonly isOtpModalOpen = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly otpControl = new FormControl('', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]);
 
   private _confirmationResult?: ConfirmationResult;
-  private _verifiedOtp?: string;
 
   readonly regForm = this.fb.nonNullable.group({
     fullName: ['', [Validators.required, Validators.minLength(2)]],
@@ -34,13 +33,16 @@ export class MemberRegistrationService {
     whatsappNumber: ['', [Validators.pattern(/^[0-9]{10}$/)]],
     email: ['', [Validators.required, Validators.email]],
     stateId: ['', [Validators.required]],
-    districtId: ['', [Validators.required]],
+    districtId: [''],
     address: ['', [Validators.minLength(5)]],
     businessName: ['', [Validators.required, Validators.minLength(2)]],
     businessCategory: ['', [Validators.required]],
     businessDescription: ['', [Validators.required, Validators.minLength(5)]],
     website: ['', [Validators.minLength(3)]],
     gstNumber: ['', [Validators.minLength(5)]],
+    businessStateId: [''],
+    businessDistrictId: [''],
+    businessAddress: ['', [Validators.minLength(5)]],
     referenceCode: [''],
   });
 
@@ -54,6 +56,15 @@ export class MemberRegistrationService {
         this.onboardingService.fetchDistrictsByState(stateId);
       } else {
         this.onboardingService.districts.set([]);
+      }
+    });
+
+    this.regForm.controls.businessStateId.valueChanges.subscribe((stateId) => {
+      this.regForm.controls.businessDistrictId.setValue('');
+      if (stateId) {
+        this.onboardingService.fetchBusinessDistrictsByState(stateId);
+      } else {
+        this.onboardingService.businessDistricts.set([]);
       }
     });
 
@@ -98,26 +109,6 @@ export class MemberRegistrationService {
       return;
     }
 
-    if (!this._verifiedOtp) {
-      this.isSubmitting.set(true);
-      this.errorMessage.set(null);
-      
-      const email = this.regForm.controls.email.value;
-      
-      this.authApi.sendOtp(email, 'register').subscribe({
-        next: () => {
-          this.isOtpModalOpen.set(true);
-          this.isSubmitting.set(false);
-        },
-        error: (err: any) => {
-          console.error('sendOtp error in member registration:', err);
-          this.errorMessage.set(err?.error?.message || 'Failed to send Email OTP code. Check your email address.');
-          this.isSubmitting.set(false);
-        }
-      });
-      return;
-    }
-
     this.isSubmitting.set(true);
     try {
       const val = this.regForm.getRawValue();
@@ -135,38 +126,22 @@ export class MemberRegistrationService {
         business_description: val.businessDescription,
         website: val.website,
         gst_number: val.gstNumber,
-        otp: this._verifiedOtp,
+        business_address: val.businessAddress || undefined,
+        business_state_id: val.businessStateId || undefined,
+        business_district_id: val.businessDistrictId || undefined,
         reference_code: val.referenceCode || undefined,
       };
 
       this.onboardingService.setRegistrationData(payload, this.photoFile, this.logoFile);
       await this.onboardingService.submitMemberRegistration();
-      alert('Welcome to BizzDeal! Your member registration has been submitted successfully.');
+      this.toastService.showSuccess('Welcome to BizzDeal! Your member registration has been submitted successfully. Please check your email to verify your account.');
       this.router.navigate(['/home']);
     } catch (err: any) {
       console.error('Failed to submit member registration:', err);
-      alert(err.message || 'Registration submission failed. Please try again.');
+      this.toastService.showError(extractFriendlyErrorMessage(err, 'Registration submission failed. Please try again.'));
     } finally {
       this.isSubmitting.set(false);
     }
-  }
-
-  async verifyOtpAndProceed(): Promise<void> {
-    this.errorMessage.set(null);
-    if (!this.otpControl.value || this.otpControl.invalid) {
-      this.otpControl.markAsTouched();
-      return;
-    }
-
-    // Since verification happens on the backend now, we just save the OTP and proceed.
-    // If the OTP is invalid, the backend will return a 400 Bad Request which will be caught below.
-    this._verifiedOtp = this.otpControl.value;
-    this.isOtpModalOpen.set(false);
-    await this.submitRegistration();
-  }
-
-  closeOtpModal(): void {
-    this.isOtpModalOpen.set(false);
   }
 
   backStep(event: Event): void {

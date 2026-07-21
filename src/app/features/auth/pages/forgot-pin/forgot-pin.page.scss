@@ -59,7 +59,6 @@ ion-content {
   height: 80px;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(25, 118, 210, 0.4);
   margin-bottom: 12px;
   background: transparent;
   border: none;
@@ -68,20 +67,25 @@ ion-content {
   justify-content: center;
 
   .logo-image {
-    width: 130%;
-    height: 130%;
-    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     object-position: center;
     display: block;
+    scale: 2;
   }
 }
 
-.app-title {
-  font-size: 25px;
-  font-weight: 800;
-  color: var(--bizzdeal-text-primary);
-  margin: 0;
-  letter-spacing: 0.5px;
+.app-title-image {
+  height: 32px;
+  width: auto;
+  margin-bottom: 4px;
+  object-fit: contain;
+
+  // Hero transition from splash screen
+  :host-context(.splash-removed) & {
+    view-transition-name: bizzdeal-text;
+  }
 }
 
 .app-subtitle {

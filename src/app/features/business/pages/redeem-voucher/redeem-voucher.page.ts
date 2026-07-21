@@ -70,7 +70,6 @@ export class RedeemVoucherPage implements OnInit {
 
   ngOnInit() {
     this.verificationForm = this.fb.group({
-      customer_phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       voucher_code: ['', [Validators.required, Validators.minLength(3)]]
     });
 
@@ -153,36 +152,26 @@ export class RedeemVoucherPage implements OnInit {
         console.log(`Scan result: ${decodedText}`);
         
         let voucherCode = decodedText;
-        let customerPhone = '';
         
-        // Try pipe-delimited format: CODE|PHONE
-        if (decodedText.includes('|')) {
-          const parts = decodedText.split('|');
-          voucherCode = parts[0];
-          customerPhone = parts[1] || '';
-        } else {
-          // Try JSON format as fallback
-          try {
-            const parsed = JSON.parse(decodedText);
-            if (parsed.code) voucherCode = parsed.code;
-            if (parsed.phone) customerPhone = parsed.phone;
-          } catch (e) {
-            // Plain voucher code string — use as-is
-          }
+        // Try JSON format as fallback
+        try {
+          const parsed = JSON.parse(decodedText);
+          if (parsed.code) voucherCode = parsed.code;
+        } catch (e) {
+          // Plain voucher code string — use as-is
         }
 
-        console.log(`Parsed voucher code: ${voucherCode}, phone: ${customerPhone}`);
+        console.log(`Parsed voucher code: ${voucherCode}`);
 
         this.verificationForm.patchValue({
-          voucher_code: voucherCode,
-          ...(customerPhone ? { customer_phone: customerPhone } : {})
+          voucher_code: voucherCode
         });
 
         // Stop scanning and close modal
         await this.closeScanner();
         
-        // If both fields are filled, auto-verify
-        if (this.verificationForm.value.customer_phone && this.verificationForm.value.voucher_code) {
+        // If voucher code is filled, auto-verify
+        if (this.verificationForm.value.voucher_code) {
           this.onVerify();
         }
       } else {
@@ -203,9 +192,9 @@ export class RedeemVoucherPage implements OnInit {
 
     this.isVerifying = true;
     this.errorMessage = null;
-    const { voucher_code, customer_phone } = this.verificationForm.value;
+    const { voucher_code } = this.verificationForm.value;
 
-    this.vouchersService.getVoucherDetails(voucher_code, customer_phone).subscribe({
+    this.vouchersService.getVoucherDetails(voucher_code).subscribe({
       next: (details) => {
         this.isVerifying = false;
         this.voucherDetails = details;

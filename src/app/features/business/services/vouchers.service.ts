@@ -39,15 +39,11 @@ export class VouchersService {
     );
   }
 
-  getVoucherDetails(code: string, phone: string): Observable<any> {
+  getVoucherDetails(code: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/vouchers/${code}`).pipe(
       map((voucher: any) => {
         // backend should return { data: ... } or just voucher object
         const v = voucher.data || voucher;
-        
-        if (v.customer_phone !== phone) {
-          throw new Error('Voucher does not belong to this customer phone number');
-        }
 
         if (v.status === 'REDEEMED') {
           throw new Error('Voucher has already been redeemed');

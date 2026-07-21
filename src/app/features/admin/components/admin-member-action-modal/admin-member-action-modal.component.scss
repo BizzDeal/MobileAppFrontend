@@ -7,6 +7,9 @@
   .member-avatar {
     width: 64px;
     height: 64px;
+    min-width: 64px;
+    min-height: 64px;
+    flex-shrink: 0;
     border-radius: 50%;
     overflow: hidden;
     background: #f0f0f0;
@@ -55,6 +58,7 @@
     .value {
       font-size: 0.95rem;
       color: var(--ion-color-dark);
+      word-break: break-word;
     }
   }
 }

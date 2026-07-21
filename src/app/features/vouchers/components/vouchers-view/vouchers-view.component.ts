@@ -109,9 +109,7 @@ export class VouchersViewComponent {
   }
 
   getQrData(voucher: CustomerVoucher): string {
-    const phone = voucher.customer_phone || '';
-    // Use pipe delimiter: CODE|PHONE — simple, no JSON encoding issues
-    return encodeURIComponent(`${voucher.voucher_code}|${phone}`);
+    return encodeURIComponent(voucher.voucher_code);
   }
 
   doRefresh(event: any) {

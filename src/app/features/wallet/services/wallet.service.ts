@@ -26,15 +26,24 @@ export class WalletService {
 
   constructor() {
     effect(() => {
-      const role = this.authSession.userRole();
-      if (role === 'MEMBER' || role === 'ADMIN') {
+      const isAuth = this.authSession.isAuthenticated();
+      if (isAuth) {
         untracked(() => {
           this.loadWalletData().subscribe({
             error: (err) => console.error('Initial wallet data load encountered error:', err),
           });
         });
+      } else {
+        untracked(() => {
+          this._wallet.set(null);
+          this._transactions.set([]);
+        });
       }
     });
+  }
+
+  refreshWallet(): Observable<{ wallet: WalletDTO; transactions: WalletTransactionDTO[] }> {
+    return this.loadWalletData();
   }
 
   loadWalletData(): Observable<{ wallet: WalletDTO; transactions: WalletTransactionDTO[] }> {

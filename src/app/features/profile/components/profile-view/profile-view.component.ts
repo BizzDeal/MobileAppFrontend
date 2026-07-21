@@ -81,11 +81,21 @@ export class ProfileViewComponent implements OnInit {
   readonly isIncompleteProfile = computed(() => {
     const p = this.profile();
     if (!p) return false;
+    
     const isMissingName = !p.full_name || p.full_name === 'Customer';
     const isMissingEmail = !p.email || p.email.includes('@bizzdeal.com');
+    const isMissingState = !p.state_id;
+    
+    if (p.role === 'CUSTOMER') {
+      return isMissingName || isMissingEmail || isMissingState;
+    }
+    
     const isMissingAddress = !p.address || p.address === 'Not Provided';
-    const isMissingLocation = !p.state_id || !p.district_id;
-    return isMissingName || isMissingEmail || isMissingAddress || isMissingLocation;
+    
+    const businessMissing = !p.business_name || !p.business_description || !p.category_id;
+    // Note: business location might not be fetched perfectly in this DTO depending on backend,
+    // so we can rely on the core ones that are always mapped.
+    return isMissingName || isMissingEmail || isMissingState || isMissingAddress || businessMissing;
   });
 
   readonly profileForm: FormGroup = this.fb.group({
@@ -100,7 +110,10 @@ export class ProfileViewComponent implements OnInit {
     business_description: [''],
     website: [''],
     gst_number: [''],
-    category_id: ['']
+    category_id: [''],
+    business_state_id: [''],
+    business_district_id: [''],
+    business_address: ['']
   });
 
   constructor() {
@@ -126,6 +139,15 @@ export class ProfileViewComponent implements OnInit {
 
     this.profileForm.controls['state_id'].valueChanges.subscribe((stateId) => {
       this.profileForm.controls['district_id'].setValue('', { emitEvent: false });
+      if (stateId) {
+        this.profileService.fetchDistrictsByState(stateId);
+      } else {
+        this.profileService.clearDistricts();
+      }
+    });
+
+    this.profileForm.controls['business_state_id'].valueChanges.subscribe((stateId) => {
+      this.profileForm.controls['business_district_id'].setValue('', { emitEvent: false });
       if (stateId) {
         this.profileService.fetchDistrictsByState(stateId);
       } else {
@@ -159,16 +181,22 @@ export class ProfileViewComponent implements OnInit {
           this.profileForm.controls['website'].clearValidators();
           this.profileForm.controls['gst_number'].clearValidators();
           this.profileForm.controls['category_id'].clearValidators();
+          this.profileForm.controls['business_state_id'].clearValidators();
+          this.profileForm.controls['business_district_id'].clearValidators();
+          this.profileForm.controls['business_address'].clearValidators();
         } else {
           this.profileForm.controls['full_name'].setValidators([Validators.required, Validators.minLength(2)]);
           this.profileForm.controls['whatsapp'].setValidators([Validators.minLength(10)]);
           this.profileForm.controls['email'].setValidators([Validators.required, Validators.email]);
           this.profileForm.controls['state_id'].setValidators([Validators.required]);
-          this.profileForm.controls['district_id'].setValidators([Validators.required]);
+          this.profileForm.controls['district_id'].clearValidators();
           this.profileForm.controls['address'].setValidators([Validators.required]);
           this.profileForm.controls['business_name'].setValidators([Validators.required, Validators.minLength(2)]);
           this.profileForm.controls['business_description'].setValidators([Validators.required, Validators.minLength(5)]);
           this.profileForm.controls['category_id'].setValidators([Validators.required]);
+          this.profileForm.controls['business_state_id'].setValidators([Validators.required]);
+          this.profileForm.controls['business_district_id'].clearValidators();
+          this.profileForm.controls['business_address'].setValidators([Validators.required]);
           this.profileForm.controls['website'].clearValidators();
           this.profileForm.controls['gst_number'].clearValidators();
         }
@@ -188,7 +216,10 @@ export class ProfileViewComponent implements OnInit {
           business_description: p.business_description || '',
           website: p.website || '',
           gst_number: p.gst_number || '',
-          category_id: p.category_id || ''
+          category_id: p.category_id || '',
+          business_state_id: (p as any).business_state_id || '',
+          business_district_id: (p as any).business_district_id || '',
+          business_address: (p as any).business_address || ''
         }, { emitEvent: false });
 
         if (p.state_id) {
@@ -284,6 +315,9 @@ export class ProfileViewComponent implements OnInit {
         if (formVal.website) formData.append('website', formVal.website);
         if (formVal.gst_number) formData.append('gst_number', formVal.gst_number);
         if (formVal.category_id) formData.append('category_id', formVal.category_id);
+        if (formVal.business_state_id) formData.append('business_state_id', formVal.business_state_id);
+        if (formVal.business_district_id) formData.append('business_district_id', formVal.business_district_id);
+        if (formVal.business_address) formData.append('business_address', formVal.business_address);
       }
       if (photoFile) formData.append('profile_pic', photoFile);
       if (logoFile) formData.append('business_logo', logoFile);
@@ -299,11 +333,16 @@ export class ProfileViewComponent implements OnInit {
         address: formVal.address
       };
       if (this.userRole() !== 'CUSTOMER') {
-        if (formVal.business_name) payload.business_name = formVal.business_name;
-        if (formVal.business_description) payload.business_description = formVal.business_description;
-        if (formVal.website) payload.website = formVal.website;
-        if (formVal.gst_number) payload.gst_number = formVal.gst_number;
-        if (formVal.category_id) payload.category_id = formVal.category_id;
+        Object.assign(payload, {
+          business_name: formVal.business_name,
+          business_description: formVal.business_description,
+          website: formVal.website,
+          gst_number: formVal.gst_number,
+          category_id: formVal.category_id,
+          business_state_id: formVal.business_state_id || null,
+          business_district_id: formVal.business_district_id || null,
+          business_address: formVal.business_address
+        });
       }
     }
 

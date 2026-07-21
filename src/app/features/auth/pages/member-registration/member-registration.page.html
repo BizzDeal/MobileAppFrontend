@@ -41,6 +41,8 @@
     <!-- Registration Form (No Card Wrapper) -->
     <form [formGroup]="regService.regForm" (ngSubmit)="regService.submitRegistration()" class="reg-form">
       
+      <div class="section-title">Profile Information</div>
+
       <!-- Full Name -->
       <div class="form-group">
         <label class="input-label">Full Name <span class="required-star">*</span></label>
@@ -106,6 +108,51 @@
         </div>
       </div>
 
+      <!-- State -->
+      <div class="form-group">
+        <label class="input-label">State <span class="required-star">*</span></label>
+        <div class="select-box" [class.input-error]="regService.regForm.controls.stateId.invalid && regService.regForm.controls.stateId.touched">
+          <ion-select formControlName="stateId" placeholder="Select state" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
+            @for (state of regService.onboardingService.states(); track state.id) {
+              <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.stateId.invalid && regService.regForm.controls.stateId.touched) {
+            <span class="error-text">State is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- District -->
+      <div class="form-group">
+        <label class="input-label">District</label>
+        <div class="select-box" [class.input-error]="regService.regForm.controls.districtId.invalid && regService.regForm.controls.districtId.touched">
+          <ion-select formControlName="districtId" placeholder="Select district" [disabled]="!regService.regForm.controls.stateId.value" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
+            @for (district of regService.onboardingService.districts(); track district.id) {
+              <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+        <div class="error-container"></div>
+      </div>
+
+      <!-- Address -->
+      <div class="form-group">
+        <label class="input-label">Address</label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched">
+          <ion-input type="text" formControlName="address" placeholder="Physical address" class="custom-input"></ion-input>
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched) {
+            <span class="error-text">Address must be at least 5 characters</span>
+          }
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top: 12px;">Business Information</div>
+
       <!-- Business Logo (Rectangular Upload with Preview) -->
       <div class="logo-upload-section">
         <label class="input-label">Business Logo</label>
@@ -169,48 +216,44 @@
         </div>
       </div>
 
-      <!-- State (Moved after Business Description) -->
+      <!-- Business State -->
       <div class="form-group">
-        <label class="input-label">State <span class="required-star">*</span></label>
-        <div class="select-box" [class.input-error]="regService.regForm.controls.stateId.invalid && regService.regForm.controls.stateId.touched">
-          <ion-select formControlName="stateId" placeholder="Select state" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
+        <label class="input-label">Business State <span class="required-star">*</span></label>
+        <div class="select-box" [class.input-error]="regService.regForm.controls.businessStateId.invalid && regService.regForm.controls.businessStateId.touched">
+          <ion-select formControlName="businessStateId" placeholder="Select state" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (state of regService.onboardingService.states(); track state.id) {
               <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
             }
           </ion-select>
         </div>
         <div class="error-container">
-          @if (regService.regForm.controls.stateId.invalid && regService.regForm.controls.stateId.touched) {
-            <span class="error-text">State is required</span>
+          @if (regService.regForm.controls.businessStateId.invalid && regService.regForm.controls.businessStateId.touched) {
+            <span class="error-text">Business State is required</span>
           }
         </div>
       </div>
 
-      <!-- District (Moved after Business Description) -->
+      <!-- Business District -->
       <div class="form-group">
-        <label class="input-label">District <span class="required-star">*</span></label>
-        <div class="select-box" [class.input-error]="regService.regForm.controls.districtId.invalid && regService.regForm.controls.districtId.touched">
-          <ion-select formControlName="districtId" placeholder="Select district" [disabled]="!regService.regForm.controls.stateId.value" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
-            @for (district of regService.onboardingService.districts(); track district.id) {
+        <label class="input-label">Business District</label>
+        <div class="select-box" [class.input-error]="regService.regForm.controls.businessDistrictId.invalid && regService.regForm.controls.businessDistrictId.touched">
+          <ion-select formControlName="businessDistrictId" placeholder="Select district" [disabled]="!regService.regForm.controls.businessStateId.value" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
+            @for (district of regService.onboardingService.businessDistricts(); track district.id) {
               <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
             }
           </ion-select>
         </div>
-        <div class="error-container">
-          @if (regService.regForm.controls.districtId.invalid && regService.regForm.controls.districtId.touched) {
-            <span class="error-text">District is required</span>
-          }
-        </div>
+        <div class="error-container"></div>
       </div>
 
-      <!-- Business address (Relabeled from Address, moved after Business Description) -->
+      <!-- Business Address -->
       <div class="form-group">
-        <label class="input-label">Business address</label>
-        <div class="input-box" [class.input-error]="regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched">
-          <ion-input type="text" formControlName="address" placeholder="Business or physical address" class="custom-input"></ion-input>
+        <label class="input-label">Business Address</label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.businessAddress.invalid && regService.regForm.controls.businessAddress.touched">
+          <ion-input type="text" formControlName="businessAddress" placeholder="Business or physical address" class="custom-input"></ion-input>
         </div>
         <div class="error-container">
-          @if (regService.regForm.controls.address.invalid && regService.regForm.controls.address.touched) {
+          @if (regService.regForm.controls.businessAddress.invalid && regService.regForm.controls.businessAddress.touched) {
             <span class="error-text">Business address must be at least 5 characters</span>
           }
         </div>
@@ -257,51 +300,10 @@
         class="submit-btn bd-btn-primary"
         [disabled]="regService.isSubmitting()"
       >
-        <span>{{ regService.isSubmitting() ? 'Proceeding...' : 'Verify Email & Register' }}</span>
+        <span>{{ regService.isSubmitting() ? 'Proceeding...' : 'Register' }}</span>
       </button>
     </form>
   </div>
 
-  <!-- OTP Verification Modal for Member Registration -->
-  <ion-modal [isOpen]="regService.isOtpModalOpen()" (didDismiss)="regService.closeOtpModal()">
-    <ng-template>
-      <div style="padding: 24px; background: var(--bizzdeal-bg-surface); border-radius: 16px; margin: auto; max-width: 400px; text-align: center;">
-        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Verify Email Address</h2>
-        <p style="font-size: 0.9rem; color: var(--bizzdeal-text-muted); margin-bottom: 16px;">
-          An OTP code has been sent to your email address.
-        </p>
-        
-        @if (regService.errorMessage()) {
-          <div class="error-container" style="margin-bottom: 12px;">
-            <span class="error-text">{{ regService.errorMessage() }}</span>
-          </div>
-        }
 
-        <div class="form-group" style="margin-bottom: 16px; text-align: left;">
-          <label class="input-label">Enter 6-digit OTP <span class="required-star">*</span></label>
-          <div class="input-box">
-            <ion-input type="tel" [formControl]="regService.otpControl" placeholder="123456" maxlength="6" class="custom-input"></ion-input>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          class="submit-btn bd-btn-primary"
-          style="width: 100%; margin-bottom: 12px;"
-          [disabled]="regService.isSubmitting()"
-          (click)="regService.verifyOtpAndProceed()"
-        >
-          <span>{{ regService.isSubmitting() ? 'Verifying...' : 'Confirm & Register' }}</span>
-        </button>
-
-        <button
-          type="button"
-          style="background: transparent; border: none; color: var(--bizzdeal-text-muted); font-size: 0.9rem; cursor: pointer;"
-          (click)="regService.closeOtpModal()"
-        >
-          Cancel
-        </button>
-      </div>
-    </ng-template>
-  </ion-modal>
 </ion-content>

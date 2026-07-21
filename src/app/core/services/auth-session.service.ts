@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, Injector, signal } from '@angular/core';
+import { computed, inject, Injectable, Injector, signal, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { StorageService } from '../storage/storage.service';
@@ -14,6 +14,7 @@ export class AuthSessionService {
   private readonly storage = inject(StorageService);
   private readonly router = inject(Router);
   private readonly injector = inject(Injector);
+  private readonly ngZone = inject(NgZone);
 
   private readonly _currentUser = signal<AuthUser | null>(null);
   private readonly _loadingSession = signal<boolean>(true);
@@ -121,7 +122,9 @@ export class AuthSessionService {
       await this.clearSession();
       this._isLoggingOut = false;
       if (redirectToLogin) {
-        this.router.navigate(['/auth/login'], { replaceUrl: true });
+        this.ngZone.run(() => {
+          this.router.navigate(['/auth/login'], { replaceUrl: true });
+        });
       }
     }
   }

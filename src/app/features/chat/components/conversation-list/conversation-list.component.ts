@@ -23,6 +23,8 @@ import {
 import { ChatMessage } from '../../models/chat.model';
 import { ChatService } from '../../services/chat.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { ToastService } from '../../../../core/services/toast.service';
+import { ProfileService } from '../../../profile/services/profile.service';
 
 @Component({
   selector: 'app-conversation-list',
@@ -43,6 +45,8 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 })
 export class ConversationListComponent {
   private readonly chatService = inject(ChatService);
+  private readonly toastService = inject(ToastService);
+  private readonly profileService = inject(ProfileService);
 
   readonly selectConversation = output<string>();
 
@@ -119,6 +123,11 @@ export class ConversationListComponent {
   }
 
   onSelectUnified(item: any): void {
+    if (this.profileService.profile()?.status === 'PENDING') {
+      this.toastService.showError('Pending members cannot use chat');
+      return;
+    }
+
     if (item.conversationId) {
       this.selectConversation.emit(item.conversationId);
     } else {

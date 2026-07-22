@@ -10,6 +10,7 @@ import { AppBackButtonService } from './core/platform/app-back-button.service';
 import { NotificationService } from './features/notifications/services/notification.service';
 import { SplashScreenComponent } from './shared/components/splash-screen/splash-screen.component';
 import { SmartLoadingScreenComponent } from './shared/components/smart-loading-screen/smart-loading-screen.component';
+import { SplashScreenService } from './core/services/splash-screen.service';
 
 @Component({
   selector: 'app-root',
@@ -34,7 +35,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private appBackButtonService: AppBackButtonService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private splashScreenService: SplashScreenService
   ) {}
 
   ngOnInit(): void {
@@ -64,10 +66,12 @@ export class AppComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       }).finished.then(() => {
         document.body.classList.remove('splash-removed');
+        this.splashScreenService.hideSplash();
       });
     } else {
       this.showSplash = false;
       this.cdr.detectChanges();
+      this.splashScreenService.hideSplash();
     }
   }
 

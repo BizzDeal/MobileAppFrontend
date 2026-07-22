@@ -45,7 +45,10 @@
       @for (attendee of filteredAttendees(); track attendee.id) {
         <ion-item class="attendee-item" lines="none">
           <ion-avatar slot="start">
-            <img src="assets/imgs/default-avatar.png" alt="avatar">
+            <img *ngIf="attendee.profile_pic" [appCachedImg]="attendee.profile_pic" alt="avatar" (error)="attendee.profile_pic = undefined" />
+            <div *ngIf="!attendee.profile_pic" class="initials-avatar">
+              {{ getInitials(attendee.full_name) }}
+            </div>
           </ion-avatar>
           <ion-label>
             <h3>{{ attendee.full_name || 'No Name' }}</h3>

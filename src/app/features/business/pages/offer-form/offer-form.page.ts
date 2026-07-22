@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { SHOW_SUCCESS_TOAST } from '../../../../core/interceptors/interceptor.tokens';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, IonDatetime, IonDatetimeButton, IonModal, AlertController } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline, trashOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
@@ -18,7 +18,7 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
   imports: [
     CommonModule, 
     ReactiveFormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, IonDatetime, IonDatetimeButton, IonModal,
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon,
     CachedImgDirective
   ],
   templateUrl: './offer-form.page.html',
@@ -55,8 +55,8 @@ export class OfferFormPage implements OnInit {
       description: ['', Validators.required],
       offer_category: ['', Validators.required],
       discount_value: [null, [Validators.required, Validators.min(0)]],
-      start_date: [now.toISOString(), Validators.required],
-      end_date: [nextMonth.toISOString(), Validators.required],
+      start_date: [this.formatDateForInput(now.toISOString()), Validators.required],
+      end_date: [this.formatDateForInput(nextMonth.toISOString()), Validators.required],
     }, { validators: this.dateValidator });
   }
 
@@ -114,8 +114,8 @@ export class OfferFormPage implements OnInit {
       description: offer.description || '',
       offer_category: category,
       discount_value: offer.discount_value ?? null,
-      start_date: offer.start_date || new Date().toISOString(),
-      end_date: offer.end_date || new Date().toISOString(),
+      start_date: this.formatDateForInput(offer.start_date || new Date().toISOString()),
+      end_date: this.formatDateForInput(offer.end_date || new Date().toISOString()),
     });
     const previewUrl = offer.imageUrl || offer.image_url || offer.image?.file_url;
     if (previewUrl) {
@@ -163,20 +163,11 @@ export class OfferFormPage implements OnInit {
     this.selectedImagePreview.set(null);
   }
 
-  onStartDateChange(event: CustomEvent): void {
-    const value = event.detail.value as string;
-    if (value) {
-      this.offerForm.get('start_date')?.setValue(value);
-      this.offerForm.get('start_date')?.markAsDirty();
-    }
-  }
-
-  onEndDateChange(event: CustomEvent): void {
-    const value = event.detail.value as string;
-    if (value) {
-      this.offerForm.get('end_date')?.setValue(value);
-      this.offerForm.get('end_date')?.markAsDirty();
-    }
+  private formatDateForInput(isoDate?: string): string {
+    if (!isoDate) return '';
+    const date = new Date(isoDate);
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    return date.toISOString().slice(0, 16);
   }
 
   isFieldInvalid(fieldName: string): boolean {

@@ -17,14 +17,18 @@
         <ion-item button (click)="onSelectUnified(item)" class="conversation-item">
           <!-- Avatar slot -->
           <div class="avatar-container" slot="start">
-            @if (item.contact.profile_pic_url) {
+            @if (item.isGroup) {
+              <div class="avatar-fallback group-avatar">
+                <ion-icon name="people-outline" />
+              </div>
+            } @else if (item.contact.profile_pic_url) {
               <img [appCachedImg]="item.contact.profile_pic_url" alt="{{ item.contact.full_name }}" class="partner-avatar" />
             } @else {
               <div class="avatar-fallback">
                 <ion-icon name="person-outline" />
               </div>
             }
-            @if (isOnline(item.contact.id)) {
+            @if (!item.isGroup && isOnline(item.contact.id)) {
               <span class="online-status-indicator online"></span>
             }
           </div>
@@ -34,7 +38,9 @@
             <div class="label-header">
               <div class="partner-name-row">
                 <h2 class="partner-name">{{ item.contact.full_name }}</h2>
-                @if (item.contact.role === 'ADMIN') {
+                @if (item.isDefaultGroup) {
+                  <span class="role-badge role-badge--admin">Community</span>
+                } @else if (item.contact.role === 'ADMIN') {
                   <span class="role-badge role-badge--admin">Admin</span>
                 }
               </div>

@@ -19,7 +19,7 @@ import {
   IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, personOutline, timeOutline } from 'ionicons/icons';
+import { arrowBackOutline, personOutline, peopleOutline, timeOutline } from 'ionicons/icons';
 import { ChatMessage, MessageType } from '../../models/chat.model';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { ChatService } from '../../services/chat.service';
@@ -69,12 +69,12 @@ export class ChatRoomComponent {
 
   readonly isPartnerOnline = computed(() => {
     const conv = this.activeConversation();
-    if (!conv) return false;
-    return this.onlineUsers().has(conv.partner.id);
+    if (!conv || !conv.partner) return false;
+    return this.onlineUsers().has(conv.partner!.id);
   });
 
   constructor() {
-    addIcons({ arrowBackOutline, personOutline, timeOutline });
+    addIcons({ arrowBackOutline, personOutline, peopleOutline, timeOutline });
 
     // Scroll to bottom automatically whenever messages update
     effect(() => {

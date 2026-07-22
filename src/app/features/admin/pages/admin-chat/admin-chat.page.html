@@ -1,7 +1,7 @@
 @if (!selectedConversationId()) {
 
 
-  <ion-content color="light">
+  <ion-content style="--background: #fff;">
     <div class="admin-chat-container">
       <app-conversation-list (selectConversation)="onConversationSelect($event)"></app-conversation-list>
     </div>

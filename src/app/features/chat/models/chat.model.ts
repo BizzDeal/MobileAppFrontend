@@ -41,13 +41,19 @@ export interface ChatMessage {
   status: MessageStatus;
 }
 
+export enum ConversationType {
+  DIRECT = 'DIRECT',
+  GROUP = 'GROUP',
+}
+
 export interface ChatConversation {
   id: string;
-  user_one_id: string;
-  user_two_id: string;
+  type: ConversationType;
+  name: string | null;
+  is_default_group: boolean;
   last_message_at: Date | string | null;
   created_at: Date | string;
   updated_at: Date | string;
   unread_count: number;
-  partner: ChatPartner;
+  partner: ChatPartner | null;
 }

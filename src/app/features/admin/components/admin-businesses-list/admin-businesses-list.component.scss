@@ -20,36 +20,104 @@
   background: transparent;
 }
 
-.premium-item {
-  --background: transparent;
-  --min-height: 56px;
-  border-bottom: 1px solid rgba(0,0,0,0.03);
-  transition: background-color 0.2s ease;
+.premium-business-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 12px;
+  border: 1px solid rgba(0,0,0,0.03);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
 
   &:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
   }
 
-  &::part(native):hover {
-    background-color: rgba(var(--ion-color-primary-rgb), 0.04);
-  }
-}
-
-.premium-business-logo {
-  width: 48px;
-  height: 48px;
-  border: 2px solid #f4f5f8;
-  margin-right: 16px;
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  img {
+  .business-card-body {
+    display: flex;
+    align-items: flex-start;
+    padding: 16px;
+    cursor: pointer;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    
+    &:hover, &:active {
+      background-color: rgba(var(--ion-color-primary-rgb), 0.04);
+    }
+  }
+
+  .business-logo {
+    flex-shrink: 0;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    img {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid #e0e0e0;
+      background: white;
+    }
+
+    .initials-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: var(--ion-color-primary, #3880ff);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 20px;
+      border: 1px solid #e0e0e0;
+    }
+  }
+
+  .business-info {
+    flex-grow: 1;
+    min-width: 0;
+    
+    h2 {
+      margin: 0 0 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    p {
+      margin: 0 0 4px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .business-action {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    margin-left: 12px;
+    align-self: center;
+  }
+
+  .business-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 4px 16px 12px;
+    gap: 8px;
+    border-top: 1px dashed rgba(0,0,0,0.05);
+    margin-top: -4px;
+    
+    ion-button {
+      margin: 0;
+      --padding-start: 8px;
+      --padding-end: 8px;
+    }
   }
 }
 

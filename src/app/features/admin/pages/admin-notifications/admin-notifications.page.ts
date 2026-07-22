@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { AdminNotificationsService } from '../../services/admin-notifications.service';
 import { AdminNotification, NotificationType, NotificationAudience } from '../../models/admin-notification.model';
 import { AdminNotificationComposeModalComponent } from '../../components/admin-notification-compose-modal/admin-notification-compose-modal.component';
@@ -23,7 +23,8 @@ export class AdminNotificationsPage implements OnInit {
 
   constructor(
     private adminNotificationsService: AdminNotificationsService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private alertController: AlertController
   ) {
     addIcons({
       notificationsOutline, trashOutline, peopleOutline, personOutline, 
@@ -124,13 +125,31 @@ export class AdminNotificationsPage implements OnInit {
   }
 
   async deleteNotification(id: string) {
-    this.adminNotificationsService.deleteNotification(id).subscribe({
-      next: () => {
-        this.loadNotifications();
-      },
-      error: (err) => {
-        console.error('Failed to delete notification', err);
-      }
+    const alert = await this.alertController.create({
+      header: 'Confirm Deletion',
+      message: 'Are you sure you want to delete this notification? This action cannot be undone.',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: () => {
+            this.adminNotificationsService.deleteNotification(id).subscribe({
+              next: () => {
+                this.loadNotifications();
+              },
+              error: (err) => {
+                console.error('Failed to delete notification', err);
+              }
+            });
+          }
+        }
+      ]
     });
+
+    await alert.present();
   }
 }

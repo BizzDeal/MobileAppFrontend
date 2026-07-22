@@ -49,7 +49,8 @@ export class AdminMeetingsPage implements OnInit {
   async openMeetingModal(meeting?: MeetingWithAttendee) {
     const modal = await this.modalCtrl.create({
       component: AdminMeetingActionModalComponent,
-      componentProps: { meeting }
+      componentProps: { meeting },
+      backdropDismiss: false
     });
 
     await modal.present();

@@ -59,6 +59,21 @@
     border: 1px solid var(--bizzdeal-border-color);
     box-shadow: var(--bizzdeal-shadow-sm);
 
+    ion-avatar {
+      .initials-avatar {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--ion-color-primary);
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        border-radius: 50%;
+      }
+    }
+
     h3 {
       font-weight: 600;
       color: var(--bizzdeal-text-primary);

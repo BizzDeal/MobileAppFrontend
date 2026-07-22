@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { Device } from '@capacitor/device';
 import { getMessaging, getToken, isSupported } from 'firebase/messaging';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -396,7 +397,37 @@ export class NotificationService {
     }
   }
 
-  private sendDeviceTokenToServer(fcmToken: string, deviceType: 'ANDROID' | 'IOS' | 'WEB'): void {
+  private async sendDeviceTokenToServer(fcmToken: string, deviceType: 'ANDROID' | 'IOS' | 'WEB'): Promise<void> {
+    let deviceName = `${deviceType} Device`;
+    let deviceModel: string | null = null;
+    let operatingSystem: string | null = null;
+    let osVersion: string | null = null;
+    let manufacturer: string | null = null;
+    let isVirtual: boolean | null = null;
+
+    try {
+      const info = await Device.getInfo();
+      deviceName = info.name || info.model || deviceName;
+      deviceModel = info.model || null;
+      operatingSystem = info.operatingSystem || null;
+      osVersion = info.osVersion || null;
+      manufacturer = info.manufacturer || null;
+      isVirtual = info.isVirtual;
+    } catch (e) {
+      console.warn('[Notifications] Could not fetch native device info:', e);
+    }
+
+    const payload = {
+      fcm_token: fcmToken,
+      device_type: deviceType,
+      device_name: deviceName,
+      device_model: deviceModel,
+      operating_system: operatingSystem,
+      os_version: osVersion,
+      manufacturer: manufacturer,
+      is_virtual: isVirtual
+    };
+
     this.http.get<any>(`${this.apiUrl}/notifications/devices`).pipe(
       catchError((err) => {
         console.warn('[Notifications] Could not fetch remote devices list, proceeding with registration check:', err);
@@ -413,11 +444,7 @@ export class NotificationService {
           return;
         }
 
-        this.http.post(`${this.apiUrl}/notifications/devices`, {
-          fcm_token: fcmToken,
-          device_type: deviceType,
-          device_name: `${deviceType} Device`
-        }).subscribe({
+        this.http.post(`${this.apiUrl}/notifications/devices`, payload).subscribe({
           next: () => {
             console.log('[Notifications] Device successfully registered for push notifications on login.');
             this.storage.set('bizzdeal_device_registered_v1', 'true');
@@ -433,11 +460,7 @@ export class NotificationService {
         });
       },
       error: () => {
-        this.http.post(`${this.apiUrl}/notifications/devices`, {
-          fcm_token: fcmToken,
-          device_type: deviceType,
-          device_name: `${deviceType} Device`
-        }).subscribe({
+        this.http.post(`${this.apiUrl}/notifications/devices`, payload).subscribe({
           next: () => {
             console.log('[Notifications] Device successfully registered for push notifications on login.');
             this.storage.set('bizzdeal_device_registered_v1', 'true');

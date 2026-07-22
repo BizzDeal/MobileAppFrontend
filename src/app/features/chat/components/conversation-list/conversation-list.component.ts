@@ -18,7 +18,8 @@ import {
   imageOutline,
   micOutline,
   personOutline,
-  searchOutline
+  searchOutline,
+  peopleOutline
 } from 'ionicons/icons';
 import { ChatMessage } from '../../models/chat.model';
 import { ChatService } from '../../services/chat.service';
@@ -67,26 +68,42 @@ export class ConversationListComponent {
         conversationId: null,
         unread_count: 0,
         last_message_at: null,
+        isGroup: false,
       });
     });
 
     convs.forEach(conv => {
-      if (map.has(conv.partner.id)) {
-        const item = map.get(conv.partner.id)!;
-        item.conversationId = conv.id;
-        item.unread_count = conv.unread_count;
-        item.last_message_at = conv.last_message_at;
-      } else {
-        map.set(conv.partner.id, {
-          contact: conv.partner,
+      if (conv.type === 'GROUP') {
+        map.set('group_' + conv.id, {
+          contact: { full_name: conv.name || 'Community Group', role: 'GROUP', profile_pic_url: null, id: 'group_' + conv.id },
           conversationId: conv.id,
           unread_count: conv.unread_count,
           last_message_at: conv.last_message_at,
+          isGroup: true,
+          isDefaultGroup: conv.is_default_group,
         });
+      } else if (conv.partner) {
+        if (map.has(conv.partner.id)) {
+          const item = map.get(conv.partner.id)!;
+          item.conversationId = conv.id;
+          item.unread_count = conv.unread_count;
+          item.last_message_at = conv.last_message_at;
+        } else {
+          map.set(conv.partner.id, {
+            contact: conv.partner,
+            conversationId: conv.id,
+            unread_count: conv.unread_count,
+            last_message_at: conv.last_message_at,
+            isGroup: false,
+          });
+        }
       }
     });
 
     return Array.from(map.values()).sort((a, b) => {
+      if (a.isGroup && !b.isGroup) return -1;
+      if (b.isGroup && !a.isGroup) return 1;
+
       if (a.contact.role === 'ADMIN' && b.contact.role !== 'ADMIN') return -1;
       if (b.contact.role === 'ADMIN' && a.contact.role !== 'ADMIN') return 1;
       
@@ -113,7 +130,8 @@ export class ConversationListComponent {
       personOutline,
       imageOutline,
       documentTextOutline,
-      micOutline
+      micOutline,
+      peopleOutline
     });
   }
 

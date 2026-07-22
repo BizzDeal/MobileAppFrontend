@@ -131,19 +131,38 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     await alert.present();
   }
 
-  toggleFeature(business: AdminBusiness) {
+  async toggleFeature(business: AdminBusiness) {
     const newFeaturedStatus = !business.is_featured;
-    this.adminBusinessesService.featureBusiness(business.id, newFeaturedStatus).subscribe({
-      next: (res) => {
-        if (res.success) {
-          business.is_featured = newFeaturedStatus;
-          this.loadBusinesses();
+    const actionText = newFeaturedStatus ? 'feature' : 'unfeature';
+    
+    const alert = await this.alertController.create({
+      header: 'Confirm Action',
+      message: `Are you sure you want to ${actionText} ${business.name}?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.adminBusinessesService.featureBusiness(business.id, newFeaturedStatus).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  business.is_featured = newFeaturedStatus;
+                  this.loadBusinesses();
+                }
+              },
+              error: (err) => {
+                // Handled by interceptor
+              }
+            });
+          }
         }
-      },
-      error: (err) => {
-        // Handled by interceptor
-      }
+      ]
     });
+
+    await alert.present();
   }
 
   getStatusColor(status: BusinessStatus): string {
@@ -159,5 +178,12 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
   getFallbackAvatar(name: string): string {
     const fallbackName = name ? encodeURIComponent(name) : 'Business';
     return `https://ui-avatars.com/api/?name=${fallbackName}&background=random&color=fff`;
+  }
+
+  getInitials(name: string): string {
+    if (!name) return 'B';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
   }
 }

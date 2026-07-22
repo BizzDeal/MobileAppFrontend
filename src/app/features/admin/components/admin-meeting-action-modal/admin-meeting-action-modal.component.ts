@@ -88,9 +88,4 @@ export class AdminMeetingActionModalComponent implements OnInit {
     await alert.present();
   }
 
-  onDateChange(event: any) {
-    const value = event.detail.value;
-    this.form.get('meeting_date')?.setValue(value);
-    this.form.get('meeting_date')?.markAsTouched();
-  }
 }

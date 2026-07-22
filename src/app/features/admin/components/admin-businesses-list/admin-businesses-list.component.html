@@ -1,48 +1,54 @@
-<ion-card class="premium-card m-0 mt-4 mx-4 shadow-md border-radius-xl">
+<div class="list-container m-0 mt-4 mx-4">
   <ion-list *ngIf="!isLoading; else skeleton" lines="none" class="p-0 m-0 bg-transparent">
-    <ion-item-sliding *ngFor="let business of filteredBusinesses">
-      <ion-item button detail="true" class="premium-item" (click)="viewBusiness(business)">
-        <div slot="start" class="premium-business-logo">
-          <img [appCachedImg]="business.logo_url || getFallbackAvatar(business.name)" [alt]="business.name" (error)="business.logo_url = getFallbackAvatar(business.name)" />
+    <div *ngFor="let business of filteredBusinesses" class="premium-business-card">
+      <div class="business-card-body" (click)="viewBusiness(business)">
+        <div class="business-logo">
+          <img *ngIf="business.logo_url" [appCachedImg]="business.logo_url" [alt]="business.name" (error)="business.logo_url = ''" />
+          <div *ngIf="!business.logo_url" class="initials-avatar">
+            {{ getInitials(business.name) }}
+          </div>
         </div>
-        <ion-label class="w-full">
+        <div class="business-info">
           <h2 class="font-bold text-dark flex items-center">
             {{ business.name }}
             <ion-icon *ngIf="business.is_featured" name="star" color="warning" class="ml-1 text-base"></ion-icon>
           </h2>
           <p class="text-medium mt-1">Owner: {{ business.owner_name }}</p>
-          <div class="mt-2 flex items-center gap-2">
+          <div class="mt-2 flex items-center gap-2 flex-wrap">
             <span class="category-badge">{{ business.category_name }}</span>
             <span class="status-badge" [ngClass]="'status-' + business.status.toLowerCase()">
               {{ business.status }}
             </span>
           </div>
-        </ion-label>
-      </ion-item>
+        </div>
+        <div class="business-action">
+          <ion-icon name="chevron-forward" class="text-medium"></ion-icon>
+        </div>
+      </div>
 
-      <ion-item-options side="end">
+      <div class="business-card-footer">
         <!-- Options for PENDING status -->
-        <ion-item-option *ngIf="business.status === BusinessStatus.PENDING" color="success" (click)="updateStatus(business, BusinessStatus.ACTIVE)">
-          <ion-icon slot="icon-only" name="checkmark-circle-outline"></ion-icon>
-        </ion-item-option>
-        <ion-item-option *ngIf="business.status === BusinessStatus.PENDING" color="danger" (click)="updateStatus(business, BusinessStatus.REJECTED)">
-          <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
-        </ion-item-option>
+        <ion-button *ngIf="business.status === BusinessStatus.PENDING" fill="clear" color="success" size="small" (click)="updateStatus(business, BusinessStatus.ACTIVE)">
+          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon> Approve
+        </ion-button>
+        <ion-button *ngIf="business.status === BusinessStatus.PENDING" fill="clear" color="danger" size="small" (click)="updateStatus(business, BusinessStatus.REJECTED)">
+          <ion-icon slot="start" name="close-circle-outline"></ion-icon> Reject
+        </ion-button>
 
         <!-- Options for ACTIVE status -->
-        <ion-item-option *ngIf="business.status === BusinessStatus.ACTIVE" color="danger" (click)="updateStatus(business, BusinessStatus.SUSPENDED)">
-          <ion-icon slot="icon-only" name="ban-outline"></ion-icon>
-        </ion-item-option>
-        <ion-item-option *ngIf="business.status === BusinessStatus.ACTIVE" color="warning" (click)="toggleFeature(business)">
-          <ion-icon slot="icon-only" [name]="business.is_featured ? 'star-outline' : 'star'"></ion-icon>
-        </ion-item-option>
+        <ion-button *ngIf="business.status === BusinessStatus.ACTIVE" fill="clear" color="danger" size="small" (click)="updateStatus(business, BusinessStatus.SUSPENDED)">
+          <ion-icon slot="start" name="ban-outline"></ion-icon> Suspend
+        </ion-button>
+        <ion-button *ngIf="business.status === BusinessStatus.ACTIVE" fill="clear" color="warning" size="small" (click)="toggleFeature(business)">
+          <ion-icon slot="start" [name]="business.is_featured ? 'star-outline' : 'star'"></ion-icon> Feature
+        </ion-button>
 
         <!-- Options for SUSPENDED / REJECTED status -->
-        <ion-item-option *ngIf="business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED" color="success" (click)="updateStatus(business, BusinessStatus.ACTIVE)">
-          <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
+        <ion-button *ngIf="business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED" fill="clear" color="success" size="small" (click)="updateStatus(business, BusinessStatus.ACTIVE)">
+          <ion-icon slot="start" name="refresh-outline"></ion-icon> Reactivate
+        </ion-button>
+      </div>
+    </div>
 
     <ion-item *ngIf="filteredBusinesses.length === 0">
       <div class="flex flex-col items-center justify-center p-8 w-full text-center text-gray-500">
@@ -51,7 +57,7 @@
       </div>
     </ion-item>
   </ion-list>
-</ion-card>
+</div>
 
 <ng-template #skeleton>
   <ion-card class="m-0 mt-4 shadow-sm border-radius-lg">

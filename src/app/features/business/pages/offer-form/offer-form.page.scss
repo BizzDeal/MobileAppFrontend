@@ -178,26 +178,7 @@
 
   }
 
-  .datetime-field {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: var(--bizzdeal-bg-surface-secondary);
-    border: 1px solid var(--bizzdeal-border-color);
-    border-radius: var(--bizzdeal-radius-md);
-    padding: 8px 12px;
-    min-height: 48px;
 
-    .datetime-icon {
-      font-size: 18px;
-      color: var(--bizzdeal-text-tertiary);
-      flex-shrink: 0;
-    }
-
-    ion-datetime-button {
-      flex: 1;
-    }
-  }
 
   .error-container {
     min-height: 20px;

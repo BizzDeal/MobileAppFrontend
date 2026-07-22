@@ -34,20 +34,10 @@
     <!-- Date -->
     <div class="form-group">
       <ion-label position="stacked">Date & Time <span class="required-star">*</span></ion-label>
-      <div class="datetime-field">
-        <ion-icon name="calendar-outline" class="datetime-icon"></ion-icon>
-        <ion-datetime-button datetime="meeting-datetime"></ion-datetime-button>
+      <div class="input-container">
+        <ion-icon name="calendar-outline" class="input-icon"></ion-icon>
+        <ion-input type="datetime-local" formControlName="meeting_date" class="form-input"></ion-input>
       </div>
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime
-            id="meeting-datetime"
-            presentation="date-time"
-            [value]="form.get('meeting_date')?.value"
-            (ionChange)="onDateChange($event)"
-          ></ion-datetime>
-        </ng-template>
-      </ion-modal>
       <div class="error-container">
         @if (f['meeting_date'].touched && f['meeting_date'].errors?.['required']) {
           <span class="error-text">Date & Time is required.</span>

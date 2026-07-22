@@ -13,24 +13,30 @@
         <div class="header-partner-info">
           <!-- Avatar -->
           <div class="partner-avatar-wrapper">
-            @if (conv.partner.profile_pic_url) {
-              <img [appCachedImg]="conv.partner.profile_pic_url" alt="{{ conv.partner.full_name }}" class="partner-avatar" />
+            @if (conv.type === 'GROUP') {
+              <div class="partner-avatar-placeholder">
+                <ion-icon name="people-outline" />
+              </div>
+            } @else if (conv.partner?.profile_pic_url) {
+              <img [appCachedImg]="conv.partner!.profile_pic_url" alt="{{ conv.partner!.full_name }}" class="partner-avatar" />
             } @else {
               <div class="partner-avatar-placeholder">
                 <ion-icon name="person-outline" />
               </div>
             }
-            @if (isPartnerOnline()) {
+            @if (conv.type !== 'GROUP' && isPartnerOnline()) {
               <span class="presence-dot online"></span>
             }
           </div>
 
           <!-- Name & presence text -->
           <div class="name-status-block">
-            <h1 class="partner-name">{{ conv.partner.full_name }}</h1>
-            <span class="partner-status" [ngClass]="{ 'online': isPartnerOnline() }">
-              {{ isPartnerOnline() ? 'Online' : 'Offline' }}
-            </span>
+            <h1 class="partner-name">{{ conv.type === 'GROUP' ? conv.name || 'Community Group' : conv.partner?.full_name }}</h1>
+            @if (conv.type !== 'GROUP') {
+              <span class="partner-status" [ngClass]="{ 'online': isPartnerOnline() }">
+                {{ isPartnerOnline() ? 'Online' : 'Offline' }}
+              </span>
+            }
           </div>
         </div>
       </ion-toolbar>
@@ -65,7 +71,7 @@
                 <span class="typing-dot"></span>
                 <span class="typing-dot"></span>
               </div>
-              <span class="typing-label">{{ conv.partner.full_name }} is typing...</span>
+              <span class="typing-label">{{ conv.type === 'GROUP' ? 'Someone is typing...' : conv.partner?.full_name + ' is typing...' }}</span>
             </div>
           }
         </div>
@@ -73,14 +79,18 @@
         <!-- Starter Empty State -->
         <div class="chat-starter-state">
           <div class="avatar-large">
-            @if (conv.partner.profile_pic_url) {
-              <img [src]="conv.partner.profile_pic_url" alt="{{ conv.partner.full_name }}" />
+            @if (conv.type === 'GROUP') {
+              <ion-icon name="people-outline" />
+            } @else if (conv.partner?.profile_pic_url) {
+              <img [src]="conv.partner!.profile_pic_url" alt="{{ conv.partner!.full_name }}" />
             } @else {
               <ion-icon name="person-outline" />
             }
           </div>
-          <h2>{{ conv.partner.full_name }}</h2>
-          <p class="role-desc">{{ conv.partner.role === 'MEMBER' ? 'Business Partner' : conv.partner.role }}</p>
+          <h2>{{ conv.type === 'GROUP' ? conv.name || 'Community Group' : conv.partner?.full_name }}</h2>
+          @if (conv.type !== 'GROUP' && conv.partner) {
+            <p class="role-desc">{{ conv.partner.role === 'MEMBER' ? 'Business Partner' : conv.partner.role }}</p>
+          }
           <div class="info-badge">
             <ion-icon name="time-outline" />
             <span>This is the start of your message history.</span>

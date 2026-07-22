@@ -1,24 +1,32 @@
-<ion-card class="premium-card m-0 mt-4 mx-4 shadow-md border-radius-xl">
+<div class="list-container m-0 mt-4 mx-4">
   <ion-list *ngIf="!loading; else skeleton" lines="none" class="p-0 m-0 bg-transparent">
-    <ion-item *ngFor="let member of filteredMembers" button (click)="viewUser(member)" detail="true" class="premium-item">
-      <ion-avatar slot="start" class="premium-avatar">
-        <img [appCachedImg]="member.profile_pic_url || getFallbackAvatar(member.full_name)" alt="avatar" (error)="member.profile_pic_url = getFallbackAvatar(member.full_name)">
-      </ion-avatar>
-      <ion-label>
-        <h2 class="font-bold text-dark">{{ member.full_name }}</h2>
-        <p class="text-medium mt-1">{{ member.phone }}</p>
-        <p class="text-sm text-gray-500 mt-1"><span class="role-badge">{{ member.role }}</span></p>
-      </ion-label>
-      <ion-badge slot="end" [color]="getStatusColor(member.status)" class="status-badge">
-        {{ member.status }}
-      </ion-badge>
-    </ion-item>
+    <div *ngFor="let member of filteredMembers" class="premium-user-card" (click)="viewUser(member)">
+      <div class="user-card-body">
+        <div class="user-avatar">
+          <img *ngIf="member.profile_pic_url" [appCachedImg]="member.profile_pic_url" alt="avatar" (error)="member.profile_pic_url = ''">
+          <div *ngIf="!member.profile_pic_url" class="initials-avatar">
+            {{ getInitials(member.full_name) }}
+          </div>
+        </div>
+        <div class="user-info">
+          <h2 class="font-bold text-dark">{{ member.full_name }}</h2>
+          <p class="text-medium mt-1">{{ member.phone }}</p>
+          <p class="text-sm text-gray-500 mt-1"><span class="role-badge">{{ member.role }}</span></p>
+        </div>
+        <div class="user-action">
+          <ion-badge [color]="getStatusColor(member.status)" class="status-badge">
+            {{ member.status }}
+          </ion-badge>
+          <ion-icon name="chevron-forward" class="text-medium ml-2"></ion-icon>
+        </div>
+      </div>
+    </div>
     
     <ion-item *ngIf="filteredMembers.length === 0">
       <ion-label class="ion-text-center py-4 text-gray-500">No members found.</ion-label>
     </ion-item>
   </ion-list>
-</ion-card>
+</div>
 
 <ng-template #skeleton>
   <ion-card class="m-0 mt-4 shadow-sm border-radius-lg">

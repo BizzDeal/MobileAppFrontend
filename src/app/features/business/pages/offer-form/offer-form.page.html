@@ -75,21 +75,11 @@
     <!-- Dates -->
     <!-- Dates -->
     <div class="form-group">
-      <label class="form-label">Start Date <span class="required-star">*</span></label>
-      <div class="datetime-field">
-        <ion-icon name="calendar-outline" class="datetime-icon"></ion-icon>
-        <ion-datetime-button datetime="start-datetime"></ion-datetime-button>
+      <label class="form-label" for="start_date">Start Date <span class="required-star">*</span></label>
+      <div class="input-wrapper">
+        <ion-icon name="calendar-outline" class="input-icon"></ion-icon>
+        <ion-input type="datetime-local" id="start_date" formControlName="start_date" class="form-input"></ion-input>
       </div>
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime
-            id="start-datetime"
-            presentation="date-time"
-            [value]="offerForm.get('start_date')?.value"
-            (ionChange)="onStartDateChange($event)"
-          ></ion-datetime>
-        </ng-template>
-      </ion-modal>
       <div class="error-container">
         @if (isFieldInvalid('start_date')) {
           <span class="error-message">Start Date is required.</span>
@@ -98,21 +88,11 @@
     </div>
 
     <div class="form-group">
-      <label class="form-label">End Date <span class="required-star">*</span></label>
-      <div class="datetime-field">
-        <ion-icon name="calendar-outline" class="datetime-icon"></ion-icon>
-        <ion-datetime-button datetime="end-datetime"></ion-datetime-button>
+      <label class="form-label" for="end_date">End Date <span class="required-star">*</span></label>
+      <div class="input-wrapper">
+        <ion-icon name="calendar-outline" class="input-icon"></ion-icon>
+        <ion-input type="datetime-local" id="end_date" formControlName="end_date" class="form-input"></ion-input>
       </div>
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime
-            id="end-datetime"
-            presentation="date-time"
-            [value]="offerForm.get('end_date')?.value"
-            (ionChange)="onEndDateChange($event)"
-          ></ion-datetime>
-        </ng-template>
-      </ion-modal>
       <div class="error-container">
         @if (isFieldInvalid('end_date')) {
           <span class="error-message">End Date is required.</span>

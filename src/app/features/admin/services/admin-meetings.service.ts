@@ -77,5 +77,6 @@ export interface AttendeeReportItem {
   id: string;
   full_name: string;
   phone: string;
+  profile_pic?: string;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'ATTENDED' | 'MISSED' | 'INVITED';
 }

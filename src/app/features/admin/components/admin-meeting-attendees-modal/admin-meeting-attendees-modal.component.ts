@@ -10,6 +10,7 @@ import {
   ApexDataLabels
 } from 'ng-apexcharts';
 import { AdminMeetingsService, AttendeeReportItem } from '../../services/admin-meetings.service';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
 export type ChartOptions = {
   series: ApexNonAxisChartSeries;
@@ -24,7 +25,7 @@ export type ChartOptions = {
 @Component({
   selector: 'app-admin-meeting-attendees-modal',
   standalone: true,
-  imports: [CommonModule, IonicModule, NgApexchartsModule],
+  imports: [CommonModule, IonicModule, NgApexchartsModule, CachedImgDirective],
   templateUrl: './admin-meeting-attendees-modal.component.html',
   styleUrls: ['./admin-meeting-attendees-modal.component.scss']
 })
@@ -120,5 +121,14 @@ export class AdminMeetingAttendeesModalComponent implements OnInit {
 
   dismiss() {
     this.modalCtrl.dismiss();
+  }
+
+  getInitials(name?: string): string {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   }
 }

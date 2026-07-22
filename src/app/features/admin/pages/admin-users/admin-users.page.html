@@ -14,7 +14,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="light">
+<ion-content style="--background: #fff;">
   <div [ngSwitch]="segmentValue">
     <app-admin-members-list *ngSwitchCase="'members'" [searchQuery]="searchQuery"></app-admin-members-list>
     <app-admin-customers-list *ngSwitchCase="'customers'" [searchQuery]="searchQuery"></app-admin-customers-list>

@@ -53,11 +53,12 @@ export class ChatService {
   }
 
   loadContactsAndConversations(): void {
+    // We only load initial default contacts (admins) for the "New Chat" screen
     this.http.get<any[]>(`${environment.apiUrl}/chat/contacts`).subscribe({
       next: (users) => {
         const partners = users.map(u => ({
           id: u.id,
-          full_name: u.full_name || 'Unknown User',
+          full_name: u.full_name || (u.role === 'ADMIN' ? 'Admin' : 'Unknown User'),
           phone: u.phone,
           role: u.role,
           profile_pic_url: null,
@@ -68,6 +69,10 @@ export class ChatService {
       },
       error: (err) => console.error('Failed to load contacts', err)
     });
+  }
+
+  searchContacts(query: string): import('rxjs').Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/chat/contacts?search=${encodeURIComponent(query)}`);
   }
 
   private loadConversations(): void {
@@ -81,17 +86,15 @@ export class ChatService {
   }
 
   private mapConversation(conv: any): ChatConversation {
-    const currentUserId = this.authSession.currentUser()?.id;
-    const partnerId = conv.user_one_id === currentUserId ? conv.user_two_id : conv.user_one_id;
-    let partner = this.contactsDirectory().find(c => c.id === partnerId);
-    if (!partner) {
-      partner = { id: partnerId, full_name: 'Unknown User', phone: '', role: 'MEMBER', profile_pic_url: null, isOnline: false };
+    let partner = conv.partner;
+    if (partner) {
+      partner.isOnline = this._onlineUsers().has(partner.id);
     }
     return { ...conv, partner };
   }
 
-  private loadMessages(conversationId: string): void {
-    this.http.get<ChatMessage[]>(`${environment.apiUrl}/chat/conversations/${conversationId}/messages`).subscribe({
+  private loadMessages(conversationId: string, page: number = 1): void {
+    this.http.get<ChatMessage[]>(`${environment.apiUrl}/chat/conversations/${conversationId}/messages?page=${page}&limit=50`).subscribe({
       next: (msgs) => this._activeMessages.set(msgs.map(m => this.mapMessage(m))),
       error: (err) => console.error('Failed to load messages', err)
     });

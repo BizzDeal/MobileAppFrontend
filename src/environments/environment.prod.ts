@@ -1,13 +1,13 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://bizz-deal.onrender.com/bizzdeal/api',
+  apiUrl: 'https://api.bizzdeal.in/bizzdeal/api',
   firebaseConfig: {
-    apiKey: 'AIzaSyBp9WgJDnBHZfrV0wLn117cAFqu-SiOyFo',
-    authDomain: 'bizzdeal.firebaseapp.com',
-    projectId: 'bizzdeal',
-    storageBucket: 'bizzdeal.firebasestorage.app',
-    messagingSenderId: '733354093584',
-    appId: '1:733354093584:web:7c509cd64322de17422e95',
-    measurementId: 'G-5EFJPYW1HD',
+    apiKey: 'AIzaSyCfTceNijt0yvT8Cbg1Pntz2u3jsala25o',
+    authDomain: 'bizzdeal-e82c6.firebaseapp.com',
+    projectId: 'bizzdeal-e82c6',
+    storageBucket: 'bizzdeal-e82c6.firebasestorage.app',
+    messagingSenderId: '852635887519',
+    appId: '1:852635887519:web:2275969c20f962ad393faa',
+    measurementId: 'G-E352KVFJFS',
   },
 };

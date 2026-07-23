@@ -10,7 +10,9 @@ import {
   IonButton,
   IonSpinner,
   IonModal,
-  IonButtons
+  IonButtons,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -46,7 +48,9 @@ type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'EXPIRED';
     IonButton,
     IonSpinner,
     IonModal,
-    IonButtons
+    IonButtons,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent
   ],
   templateUrl: './vouchers-view.component.html',
   styleUrls: ['./vouchers-view.component.scss'],
@@ -59,6 +63,7 @@ export class VouchersViewComponent {
   readonly vouchers = this.vouchersService.vouchers;
   readonly loading = this.vouchersService.loading;
   readonly error = this.vouchersService.error;
+  readonly hasMore = this.vouchersService.hasMore;
 
   readonly searchQuery = signal<string>('');
   readonly selectedFilter = signal<FilterStatus>('ACTIVE');
@@ -80,7 +85,8 @@ export class VouchersViewComponent {
       result = result.filter(v => v.status === 'EXPIRED' || v.status === 'CANCELLED');
     }
 
-    // Apply Search Query
+    // Search is now handled by backend, but we keep local filtering as a fallback 
+    // in case the list still has other types of vouchers that we want to filter locally.
     if (query) {
       result = result.filter(v =>
         v.offerTitle.toLowerCase().includes(query) ||
@@ -118,6 +124,7 @@ export class VouchersViewComponent {
   onSearchChange(event: any): void {
     const value = event.target.value;
     this.searchQuery.set(value || '');
+    this.vouchersService.loadVouchers(1, 20, false, this.searchQuery()).subscribe();
   }
 
   setFilter(filter: FilterStatus): void {
@@ -179,5 +186,17 @@ export class VouchersViewComponent {
     }
 
     return 'type-fixed'; // default fallback for colored items
+  }
+
+  loadMore(event: any) {
+    const obs = this.vouchersService.loadMoreVouchers(this.searchQuery());
+    if (obs) {
+      obs.subscribe({
+        next: () => event.target.complete(),
+        error: () => event.target.complete()
+      });
+    } else {
+      event.target.complete();
+    }
   }
 }

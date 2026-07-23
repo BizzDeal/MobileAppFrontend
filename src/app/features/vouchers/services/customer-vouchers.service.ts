@@ -1,5 +1,5 @@
 import { Injectable, inject, signal, effect, untracked } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -20,9 +20,15 @@ export class CustomerVouchersService {
   private readonly _loading = signal<boolean>(true);
   private readonly _error = signal<string | null>(null);
 
+  private readonly _page = signal<number>(1);
+  private readonly _limit = signal<number>(20);
+  private readonly _hasMore = signal<boolean>(true);
+
   readonly vouchers = this._vouchers.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
+  readonly page = this._page.asReadonly();
+  readonly hasMore = this._hasMore.asReadonly();
 
   constructor() {
     effect(() => {
@@ -48,11 +54,16 @@ export class CustomerVouchersService {
     });
   }
 
-  loadVouchers(): Observable<CustomerVoucher[]> {
+  loadVouchers(page = 1, limit = 20, append = false, search = ''): Observable<CustomerVoucher[]> {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.http.get<any>(`${this.apiUrl}/vouchers/customer`).pipe(
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+    if (search) params = params.set('search', search);
+
+    return this.http.get<any>(`${this.apiUrl}/vouchers/customer`, { params }).pipe(
       map((res) => {
         const rawList: any[] = Array.isArray(res) ? res : res?.data || res?.items || [];
         const list: CustomerVoucher[] = rawList.map((v) => ({
@@ -81,11 +92,24 @@ export class CustomerVouchersService {
           imageUrl: v.imageUrl || v.offer?.image_url || v.offer?.imageUrl || undefined,
           customer_phone: v.customer_phone || undefined,
         }));
-        return list;
+        return { list, meta: res?.meta };
       }),
       tap({
-        next: (list) => {
-          this._vouchers.set(list);
+        next: ({ list, meta }) => {
+          if (append) {
+            this._vouchers.update(prev => [...prev, ...list]);
+          } else {
+            this._vouchers.set(list);
+          }
+          
+          if (meta) {
+            this._page.set(meta.currentPage);
+            this._limit.set(meta.itemsPerPage);
+            this._hasMore.set(meta.currentPage < meta.totalPages);
+          } else {
+            this._page.set(page);
+            this._hasMore.set(list.length === limit);
+          }
           this._loading.set(false);
         },
         error: (err) => {
@@ -94,10 +118,16 @@ export class CustomerVouchersService {
           this._loading.set(false);
         }
       }),
+      map(({ list }) => list),
       catchError((err) => {
         return throwError(() => err);
       })
     );
+  }
+
+  loadMoreVouchers(search = ''): Observable<CustomerVoucher[]> | null {
+    if (!this._hasMore() || this._loading()) return null;
+    return this.loadVouchers(this._page() + 1, this._limit(), true, search);
   }
 
   addVoucher(voucher: CustomerVoucher): void {

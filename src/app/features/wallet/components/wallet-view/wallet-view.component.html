@@ -119,6 +119,10 @@
         <p>There are no transactions matching the selected filter.</p>
       </div>
     }
+    
+    <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore()">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more transactions..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   }
 </div>
 

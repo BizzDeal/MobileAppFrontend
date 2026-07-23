@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal, effect, untracked } from '@angular/core';
 import { forkJoin, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { WalletDTO, WalletTransactionDTO } from '../models/wallet.model';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
@@ -18,11 +19,17 @@ export class WalletService {
   private readonly _transactions = signal<WalletTransactionDTO[]>([]);
   private readonly _loading = signal<boolean>(true);
   private readonly _error = signal<string | null>(null);
+  
+  private readonly _page = signal<number>(1);
+  private readonly _limit = signal<number>(20);
+  private readonly _hasMore = signal<boolean>(true);
 
   readonly wallet = this._wallet.asReadonly();
   readonly transactions = this._transactions.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
+  readonly page = this._page.asReadonly();
+  readonly hasMore = this._hasMore.asReadonly();
 
   constructor() {
     effect(() => {
@@ -52,7 +59,9 @@ export class WalletService {
 
     return forkJoin({
       balanceRes: this.http.get<any>(`${this.apiUrl}/wallet/balance`),
-      historyRes: this.http.get<any>(`${this.apiUrl}/wallet/history`)
+      historyRes: this.http.get<any>(`${this.apiUrl}/wallet/history`, {
+        params: new HttpParams().set('page', '1').set('limit', this._limit().toString())
+      })
     }).pipe(
       map(({ balanceRes, historyRes }) => {
         const w = balanceRes?.data || balanceRes || {};
@@ -79,12 +88,21 @@ export class WalletService {
           updated_at: t.updated_at || new Date().toISOString()
         }));
 
-        return { wallet, transactions };
+        return { wallet, transactions, meta: historyRes?.meta };
       }),
       tap({
         next: (data) => {
           this._wallet.set(data.wallet);
           this._transactions.set(data.transactions);
+          
+          if (data.meta) {
+            this._page.set(data.meta.currentPage);
+            this._limit.set(data.meta.itemsPerPage);
+            this._hasMore.set(data.meta.currentPage < data.meta.totalPages);
+          } else {
+            this._page.set(1);
+            this._hasMore.set(data.transactions.length === this._limit());
+          }
           this._loading.set(false);
         },
         error: (err) => {
@@ -93,9 +111,57 @@ export class WalletService {
           this._loading.set(false);
         },
       }),
+      map(({ wallet, transactions }) => ({ wallet, transactions })),
       catchError((err) => {
         return throwError(() => err);
       })
+    );
+  }
+
+  loadMoreHistory(search = ''): Observable<WalletTransactionDTO[]> | null {
+    if (!this._hasMore() || this._loading()) return null;
+
+    let params = new HttpParams()
+      .set('page', (this._page() + 1).toString())
+      .set('limit', this._limit().toString());
+    if (search) params = params.set('search', search);
+
+    return this.http.get<any>(`${this.apiUrl}/wallet/history`, { params }).pipe(
+      map((res) => {
+        const rawTx: any[] = Array.isArray(res) ? res : res?.data || res?.items || [];
+        const wallet = this._wallet();
+        const transactions: WalletTransactionDTO[] = rawTx.map((t) => ({
+          id: t.id,
+          wallet_id: t.wallet_id || wallet?.id,
+          user_id: t.user_id || wallet?.user_id,
+          type: t.type || 'SAVING',
+          amount: Number(t.amount || 0),
+          description: t.description || null,
+          reference_type: t.reference_type || null,
+          reference_id: t.reference_id || null,
+          created_at: t.created_at || new Date().toISOString(),
+          updated_at: t.updated_at || new Date().toISOString()
+        }));
+        return { transactions, meta: res?.meta };
+      }),
+      tap({
+        next: ({ transactions, meta }) => {
+          this._transactions.update(prev => [...prev, ...transactions]);
+          if (meta) {
+            this._page.set(meta.currentPage);
+            this._limit.set(meta.itemsPerPage);
+            this._hasMore.set(meta.currentPage < meta.totalPages);
+          } else {
+            this._page.update(p => p + 1);
+            this._hasMore.set(transactions.length === this._limit());
+          }
+        },
+        error: (err) => {
+          const errMsg = err?.error?.message || err?.message || 'Failed to load more transactions';
+          this._error.set(errMsg);
+        }
+      }),
+      map(({ transactions }) => transactions)
     );
   }
 }

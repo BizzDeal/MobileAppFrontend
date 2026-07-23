@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -28,11 +28,16 @@ export class NotificationService {
   private readonly _notifications = signal<NotificationDTO[]>([]);
   private readonly _loading = signal<boolean>(true);
   private readonly _error = signal<string | null>(null);
+  private readonly _page = signal<number>(1);
+  private readonly _limit = signal<number>(20);
+  private readonly _hasMore = signal<boolean>(true);
   private pushListenersSetUp = false;
 
   readonly notifications = this._notifications.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
+  readonly page = this._page.asReadonly();
+  readonly hasMore = this._hasMore.asReadonly();
 
   readonly unreadCount = computed(() => {
     return this._notifications().filter(n => !n.is_read).length;
@@ -53,11 +58,19 @@ export class NotificationService {
     });
   }
 
-  getNotifications(): Observable<NotificationDTO[]> {
+  getNotifications(page = 1, limit = 20, append = false, search = ''): Observable<NotificationDTO[]> {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.http.get<any>(`${this.apiUrl}/notifications`).pipe(
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+    
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/notifications`, { params }).pipe(
       map((res) => {
         const rawList: any[] = Array.isArray(res) ? res : res?.data || res?.items || [];
         const list: NotificationDTO[] = rawList.map((n) => ({
@@ -72,11 +85,24 @@ export class NotificationService {
           created_at: n.created_at ? new Date(n.created_at) : new Date(),
           updated_at: n.updated_at ? new Date(n.updated_at) : new Date(),
         }));
-        return list;
+        return { list, meta: res?.meta };
       }),
       tap({
-        next: (list) => {
-          this._notifications.set(list);
+        next: ({ list, meta }) => {
+          if (append) {
+            this._notifications.update(prev => [...prev, ...list]);
+          } else {
+            this._notifications.set(list);
+          }
+          
+          if (meta) {
+            this._page.set(meta.currentPage);
+            this._limit.set(meta.itemsPerPage);
+            this._hasMore.set(meta.currentPage < meta.totalPages);
+          } else {
+            this._page.set(page);
+            this._hasMore.set(list.length === limit);
+          }
           this._loading.set(false);
         },
         error: (err) => {
@@ -85,10 +111,18 @@ export class NotificationService {
           this._loading.set(false);
         }
       }),
+      map(({ list }) => list),
       catchError((err) => {
         return throwError(() => err);
       })
     );
+  }
+
+  loadMoreNotifications(search = ''): Observable<NotificationDTO[]> | null {
+    if (this._hasMore() && !this._loading()) {
+      return this.getNotifications(this._page() + 1, this._limit(), true, search);
+    }
+    return null;
   }
 
   markAsRead(id: string): Observable<void> {

@@ -1,3 +1,5 @@
+import { PaginationMeta } from '../../../shared/models/pagination.model';
+
 export enum BusinessStatus {
   PENDING = 'PENDING',
   ACTIVE = 'ACTIVE',
@@ -32,6 +34,7 @@ export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
+  meta?: PaginationMeta;
 }
 
 export enum OfferType {

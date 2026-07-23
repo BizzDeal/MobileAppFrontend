@@ -14,7 +14,9 @@ import {
   IonList,
   IonModal,
   IonTitle,
-  IonToolbar
+  IonToolbar,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -52,7 +54,9 @@ import { NotificationService } from '../../services/notification.service';
     IonItemSliding,
     IonItemOptions,
     IonItemOption,
-    IonModal
+    IonModal,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent
   ],
   templateUrl: './notifications-page.component.html',
   styleUrl: './notifications-page.component.scss',
@@ -68,6 +72,7 @@ export class NotificationsPageComponent {
 
   readonly selectedFilter = signal<string>('ALL');
   readonly selectedNotification = signal<NotificationDTO | null>(null);
+  readonly hasMore = this.notificationService.hasMore;
 
   readonly filteredNotifications = computed(() => {
     const filter = this.selectedFilter();
@@ -146,6 +151,18 @@ export class NotificationsPageComponent {
       case NotificationType.GENERAL:
       default:
         return 'medium';
+    }
+  }
+
+  loadMore(event: any) {
+    const obs = this.notificationService.loadMoreNotifications();
+    if (obs) {
+      obs.subscribe({
+        next: () => event.target.complete(),
+        error: () => event.target.complete(),
+      });
+    } else {
+      event.target.complete();
     }
   }
 }

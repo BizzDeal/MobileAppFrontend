@@ -8,7 +8,9 @@ import {
   IonModal,
   IonSpinner,
   IonTitle,
-  IonToolbar
+  IonToolbar,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -41,7 +43,9 @@ import { WalletService } from '../../services/wallet.service';
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonButton
+    IonButton,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent
   ],
   templateUrl: './wallet-view.component.html',
   styleUrl: './wallet-view.component.scss',
@@ -54,6 +58,7 @@ export class WalletViewComponent {
   readonly transactions = this.walletService.transactions;
   readonly loading = this.walletService.loading;
   readonly error = this.walletService.error;
+  readonly hasMore = this.walletService.hasMore;
 
   readonly activeFilter = signal<'ALL' | 'CREDIT' | 'DEBIT' | 'SAVING'>('ALL');
   readonly selectedTransaction = signal<WalletTransactionDTO | null>(null);
@@ -113,5 +118,17 @@ export class WalletViewComponent {
 
   retryLoad(): void {
     this.walletService.loadWalletData().subscribe();
+  }
+
+  loadMore(event: any): void {
+    const obs = this.walletService.loadMoreHistory();
+    if (obs) {
+      obs.subscribe({
+        next: () => event.target.complete(),
+        error: () => event.target.complete()
+      });
+    } else {
+      event.target.complete();
+    }
   }
 }

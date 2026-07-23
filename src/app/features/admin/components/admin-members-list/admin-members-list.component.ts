@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { AdminUsersService } from '../../services/admin-users.service';
 import { AdminMember, UserStatus } from '../../models/admin-user.model';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-admin-members-list',
@@ -14,18 +16,25 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
   styleUrls: ['./admin-members-list.component.scss']
 })
 export class AdminMembersListComponent implements OnInit {
-  @Input() searchQuery = '';
+  @Input() set searchQuery(val: string) {
+    this._searchQuery = val;
+    this.searchSubject.next(val);
+  }
+  get searchQuery(): string {
+    return this._searchQuery;
+  }
+  private _searchQuery = '';
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
+
   members: AdminMember[] = [];
   loading = true;
+  page = 1;
+  limit = 20;
+  hasMore = true;
 
   get filteredMembers(): AdminMember[] {
-    if (!this.searchQuery) return this.members;
-    const q = this.searchQuery.toLowerCase().trim();
-    return this.members.filter(m => 
-      m.full_name.toLowerCase().includes(q) || 
-      m.phone.includes(q) ||
-      (m.email && m.email.toLowerCase().includes(q))
-    );
+    return this.members; // Filtering is now handled by the API
   }
 
   constructor(
@@ -35,14 +44,46 @@ export class AdminMembersListComponent implements OnInit {
 
   ngOnInit() {
     this.loadMembers();
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.page = 1;
+      this.members = [];
+      this.loadMembers();
+    });
   }
 
-  loadMembers() {
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+
+  loadMembers(event?: any) {
     this.loading = true;
-    this.adminUsersService.getMembers().subscribe((res) => {
-      this.members = res.data;
+    this.adminUsersService.getMembers(this.page, this.limit, this.searchQuery).subscribe((res) => {
+      this.members = [...this.members, ...res.data];
+      if (res.meta) {
+        this.page = res.meta.currentPage;
+        this.hasMore = res.meta.currentPage < res.meta.totalPages;
+      } else {
+        this.hasMore = res.data.length === this.limit;
+      }
       this.loading = false;
+      if (event) event.target.complete();
+    }, () => {
+      this.loading = false;
+      if (event) event.target.complete();
     });
+  }
+
+  loadMore(event: any) {
+    if (this.hasMore) {
+      this.page++;
+      this.loadMembers(event);
+    } else {
+      event.target.complete();
+    }
   }
 
   viewUser(member: AdminMember) {

@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { AdminUsersService } from '../../services/admin-users.service';
 import { AdminCustomer, UserStatus } from '../../models/admin-user.model';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-admin-customers-list',
@@ -14,18 +16,25 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
   styleUrls: ['./admin-customers-list.component.scss']
 })
 export class AdminCustomersListComponent implements OnInit {
-  @Input() searchQuery = '';
+  @Input() set searchQuery(val: string) {
+    this._searchQuery = val;
+    this.searchSubject.next(val);
+  }
+  get searchQuery(): string {
+    return this._searchQuery;
+  }
+  private _searchQuery = '';
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
+
   customers: AdminCustomer[] = [];
   loading = true;
+  page = 1;
+  limit = 20;
+  hasMore = true;
 
   get filteredCustomers(): AdminCustomer[] {
-    if (!this.searchQuery) return this.customers;
-    const q = this.searchQuery.toLowerCase().trim();
-    return this.customers.filter(c => 
-      c.full_name.toLowerCase().includes(q) || 
-      c.phone.includes(q) ||
-      (c.email && c.email.toLowerCase().includes(q))
-    );
+    return this.customers; // Filtering is now handled by the API
   }
 
   constructor(
@@ -35,14 +44,46 @@ export class AdminCustomersListComponent implements OnInit {
 
   ngOnInit() {
     this.loadCustomers();
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.page = 1;
+      this.customers = [];
+      this.loadCustomers();
+    });
   }
 
-  loadCustomers() {
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+
+  loadCustomers(event?: any) {
     this.loading = true;
-    this.adminUsersService.getCustomers().subscribe((res) => {
-      this.customers = res.data;
+    this.adminUsersService.getCustomers(this.page, this.limit, this.searchQuery).subscribe((res) => {
+      this.customers = [...this.customers, ...res.data];
+      if (res.meta) {
+        this.page = res.meta.currentPage;
+        this.hasMore = res.meta.currentPage < res.meta.totalPages;
+      } else {
+        this.hasMore = res.data.length === this.limit;
+      }
       this.loading = false;
+      if (event) event.target.complete();
+    }, () => {
+      this.loading = false;
+      if (event) event.target.complete();
     });
+  }
+
+  loadMore(event: any) {
+    if (this.hasMore) {
+      this.page++;
+      this.loadCustomers(event);
+    } else {
+      event.target.complete();
+    }
   }
 
   viewUser(customer: AdminCustomer) {

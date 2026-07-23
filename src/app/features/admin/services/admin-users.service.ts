@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -19,12 +19,16 @@ export class AdminUsersService {
 
   constructor(private http: HttpClient) {}
 
-  getMembers(): Observable<ApiResponse<AdminMember[]>> {
-    return this.http.get<ApiResponse<AdminMember[]>>(`${this.apiUrl}/members`);
+  getMembers(page = 1, limit = 20, search = ''): Observable<ApiResponse<AdminMember[]>> {
+    let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
+    if (search) params = params.set('search', search);
+    return this.http.get<ApiResponse<AdminMember[]>>(`${this.apiUrl}/members`, { params });
   }
 
-  getCustomers(): Observable<ApiResponse<AdminCustomer[]>> {
-    return this.http.get<ApiResponse<AdminCustomer[]>>(`${this.apiUrl}/customers`);
+  getCustomers(page = 1, limit = 20, search = ''): Observable<ApiResponse<AdminCustomer[]>> {
+    let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
+    if (search) params = params.set('search', search);
+    return this.http.get<ApiResponse<AdminCustomer[]>>(`${this.apiUrl}/customers`, { params });
   }
 
   approveMember(memberId: string): Observable<ApiResponse<{ memberId: string; status: UserStatus }>> {

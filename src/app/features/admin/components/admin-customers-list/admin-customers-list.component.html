@@ -26,6 +26,10 @@
       <ion-label class="ion-text-center py-4 text-gray-500">No customers found.</ion-label>
     </ion-item>
   </ion-list>
+  
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore" *ngIf="!loading">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more customers..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </div>
 
 <ng-template #skeleton>

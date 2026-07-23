@@ -2,6 +2,8 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminBusiness, BusinessStatus } from '../../models/admin-business.model';
 import { addIcons } from 'ionicons';
@@ -24,12 +26,33 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
   styleUrls: ['./admin-businesses-list.component.scss']
 })
 export class AdminBusinessesListComponent implements OnInit, OnChanges {
-  @Input() searchQuery = '';
-  @Input() statusFilter: 'ALL' | 'PENDING' | 'ACTIVE' | 'SUSPENDED' = 'ALL';
+  @Input() set searchQuery(val: string) {
+    this._searchQuery = val;
+    this.filterSubject.next();
+  }
+  get searchQuery(): string {
+    return this._searchQuery;
+  }
+  
+  @Input() set statusFilter(val: 'ALL' | 'PENDING' | 'ACTIVE' | 'SUSPENDED') {
+    this._statusFilter = val;
+    this.filterSubject.next();
+  }
+  get statusFilter(): 'ALL' | 'PENDING' | 'ACTIVE' | 'SUSPENDED' {
+    return this._statusFilter;
+  }
+
+  private _searchQuery = '';
+  private _statusFilter: 'ALL' | 'PENDING' | 'ACTIVE' | 'SUSPENDED' = 'ALL';
+  private filterSubject = new Subject<void>();
+  private filterSubscription?: Subscription;
 
   businesses: AdminBusiness[] = [];
   filteredBusinesses: AdminBusiness[] = [];
   isLoading = true;
+  page = 1;
+  limit = 20;
+  hasMore = true;
 
   // Enum access for template
   BusinessStatus = BusinessStatus;
@@ -52,47 +75,69 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.loadBusinesses();
+
+    this.filterSubscription = this.filterSubject.pipe(
+      debounceTime(300)
+    ).subscribe(() => {
+      this.page = 1;
+      this.businesses = [];
+      this.loadBusinesses();
+    });
+  }
+
+  ngOnDestroy() {
+    this.filterSubscription?.unsubscribe();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['searchQuery'] || changes['statusFilter']) {
-      this.filterBusinesses();
-    }
+    // handled by setters
   }
 
-  loadBusinesses() {
+  loadBusinesses(event?: any) {
     this.isLoading = true;
-    this.adminBusinessesService.getBusinesses().subscribe({
+    
+    const query: any = {
+      page: this.page,
+      limit: this.limit
+    };
+    if (this.searchQuery) query.search = this.searchQuery;
+    if (this.statusFilter !== 'ALL') query.status = this.statusFilter;
+
+    this.adminBusinessesService.getBusinesses(query).subscribe({
       next: (response) => {
         if (response.success) {
-          this.businesses = response.data;
+          this.businesses = [...this.businesses, ...response.data];
+          if (response.meta) {
+            this.page = response.meta.currentPage;
+            this.hasMore = response.meta.currentPage < response.meta.totalPages;
+          } else {
+            this.hasMore = response.data.length === this.limit;
+          }
           this.filterBusinesses();
         }
         this.isLoading = false;
+        if (event) event.target.complete();
       },
       error: (err) => {
         console.error('Error loading businesses', err);
         this.isLoading = false;
+        if (event) event.target.complete();
       }
     });
   }
 
+  loadMore(event: any) {
+    if (this.hasMore) {
+      this.page++;
+      this.loadBusinesses(event);
+    } else {
+      event.target.complete();
+    }
+  }
+
   filterBusinesses() {
+    // Local fallback filter if API didn't handle it
     let filtered = [...this.businesses];
-
-    if (this.statusFilter !== 'ALL') {
-      filtered = filtered.filter(b => b.status === this.statusFilter);
-    }
-
-    if (this.searchQuery && this.searchQuery.trim() !== '') {
-      const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(b => 
-        (b.name && b.name.toLowerCase().includes(query)) ||
-        (b.owner_name && b.owner_name.toLowerCase().includes(query)) ||
-        (b.category_name && b.category_name.toLowerCase().includes(query))
-      );
-    }
-
     this.filteredBusinesses = filtered;
   }
 

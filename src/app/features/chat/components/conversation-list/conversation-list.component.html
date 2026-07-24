@@ -44,15 +44,10 @@
                   <span class="role-badge role-badge--admin">Admin</span>
                 }
               </div>
-              <span class="last-time">
-                @if (item.conversationId) {
-                  @if (getLastMessage(item.conversationId); as lastMsg) {
-                    {{ lastMsg.created_at | date:'shortTime' }}
-                  } @else if (item.last_message_at) {
-                    {{ item.last_message_at | date:'shortTime' }}
-                  }
-                }
-              </span>
+              <!-- Unread badge in top right -->
+              @if (item.unread_count > 0) {
+                <ion-badge color="primary" class="unread-badge">{{ item.unread_count }}</ion-badge>
+              }
             </div>
 
             <div class="label-body">
@@ -83,10 +78,17 @@
                 }
               </div>
 
-              <!-- Unread badge -->
-              @if (item.unread_count > 0) {
-                <ion-badge color="primary" class="unread-badge">{{ item.unread_count }}</ion-badge>
-              }
+              <div class="meta-col">
+                <span class="last-time">
+                  @if (item.conversationId) {
+                    @if (getLastMessage(item.conversationId); as lastMsg) {
+                      {{ lastMsg.created_at | date:'shortTime' }}
+                    } @else if (item.last_message_at) {
+                      {{ item.last_message_at | date:'shortTime' }}
+                    }
+                  }
+                </span>
+              </div>
             </div>
           </ion-label>
         </ion-item>

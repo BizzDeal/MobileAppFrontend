@@ -176,15 +176,20 @@ export class NotificationService {
       if (Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('PushNotifications')) {
         await this.setupPushListeners();
 
-        console.log('[Notifications] Requesting push notification permissions on app load...');
-        const permResult = await PushNotifications.requestPermissions();
-        console.log('[Notifications] Permission result:', permResult.receive);
+        console.log('[Notifications] Checking push notification permissions on app load...');
+        let permStatus = await PushNotifications.checkPermissions();
+        console.log('[Notifications] Initial permission status:', permStatus.receive);
 
-        if (permResult.receive === 'granted') {
+        if (permStatus.receive === 'prompt' || permStatus.receive === 'prompt-with-rationale') {
+          permStatus = await PushNotifications.requestPermissions();
+          console.log('[Notifications] Requested permission status:', permStatus.receive);
+        }
+
+        if (permStatus.receive === 'granted') {
           await PushNotifications.register();
           console.log('[Notifications] Called PushNotifications.register() on startup.');
         } else {
-          console.warn('[Notifications] Push notification permission not granted by user.');
+          console.warn('[Notifications] Push notification permission not granted or denied by user.');
         }
       } else {
         await this.setupPushListeners();
@@ -237,7 +242,7 @@ export class NotificationService {
         try {
           await this.setupPushListeners();
           let permStatus = await PushNotifications.checkPermissions();
-          if (permStatus.receive !== 'granted') {
+          if (permStatus.receive === 'prompt' || permStatus.receive === 'prompt-with-rationale') {
             permStatus = await PushNotifications.requestPermissions();
           }
           if (permStatus.receive !== 'granted') {
@@ -317,11 +322,17 @@ export class NotificationService {
         return null;
       }
 
-      if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-          console.warn('[Notifications] Notification permission denied on web.');
+      if (typeof Notification !== 'undefined') {
+        if (Notification.permission === 'denied') {
+          console.warn('[Notifications] Notification permission explicitly denied on web.');
           return null;
+        }
+        if (Notification.permission !== 'granted') {
+          const permission = await Notification.requestPermission();
+          if (permission !== 'granted') {
+            console.warn('[Notifications] Notification permission denied on web.');
+            return null;
+          }
         }
       }
 
@@ -511,4 +522,19 @@ export class NotificationService {
       }
     });
   }
+
+  getUserDevices(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/notifications/devices`).pipe(
+      map(res => Array.isArray(res) ? res : res?.data || res?.items || [])
+    );
+  }
+
+  toggleDeviceStatus(deviceId: string, isActive: boolean): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/notifications/devices/${deviceId}/status`, { is_active: isActive });
+  }
+
+  deleteDevice(deviceId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/notifications/devices/${deviceId}`);
+  }
 }
+

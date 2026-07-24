@@ -2,7 +2,7 @@ export type BusinessStatus = 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED';
 export type OfferType = 'DISCOUNT' | 'CASHBACK';
 export type DiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
 export type OfferStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED' | 'INACTIVE';
-export type VoucherStatus = 'ISSUED' | 'REDEEMED' | 'EXPIRED' | 'CANCELLED';
+export type VoucherStatus = 'ISSUED' | 'REDEEMED' | 'CANCELLED';
 
 export interface BusinessCategoryDTO {
   id: string;
@@ -71,7 +71,6 @@ export interface VoucherDTO {
   status: VoucherStatus;
   issued_at: string;
   redeemed_at: string | null;
-  expires_at: string;
   redeemed_by_id: string | null;
   created_at: string;
   updated_at: string;

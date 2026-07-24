@@ -239,6 +239,13 @@
   }
 }
 
+.meta-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
 .unread-badge {
   --background: var(--ion-color-primary);
   --color: var(--bizzdeal-text-on-primary);

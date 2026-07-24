@@ -1,4 +1,4 @@
-export type VoucherStatus = 'ISSUED' | 'REDEEMED' | 'EXPIRED' | 'CANCELLED';
+export type VoucherStatus = 'ISSUED' | 'REDEEMED' | 'CANCELLED';
 
 export interface CustomerVoucher {
   id: string;
@@ -9,7 +9,6 @@ export interface CustomerVoucher {
   status: VoucherStatus;
   issued_at: string;
   redeemed_at: string | null;
-  expires_at: string;
   redeemed_by_id: string | null;
   created_at: string;
   updated_at: string;

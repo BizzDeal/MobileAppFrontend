@@ -18,6 +18,11 @@ export interface ProfileDTO {
   website?: string | null;
   gst_number?: string | null;
   business_logo_url?: string | null;
+  primary_business_name?: string | null;
+  primary_business_id?: string | null;
+  primary_business_category_name?: string | null;
+  primary_business_state_name?: string | null;
+  primary_business_district_name?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -91,6 +91,14 @@ export class MemberRegistrationService {
     }
   }
 
+  allowNumbersOnly(event: KeyboardEvent): boolean {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      return false;
+    }
+    return true;
+  }
+
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -135,7 +143,7 @@ export class MemberRegistrationService {
       this.onboardingService.setRegistrationData(payload, this.photoFile, this.logoFile);
       await this.onboardingService.submitMemberRegistration();
       this.toastService.showSuccess('Welcome to BizzDeal! Your member registration has been submitted successfully. Please check your email to verify your account.');
-      this.router.navigate(['/home']);
+      this.router.navigate(['/home']).catch(() => {});
     } catch (err: any) {
       console.error('Failed to submit member registration:', err);
       this.toastService.showError(extractFriendlyErrorMessage(err, 'Registration submission failed. Please try again.'));

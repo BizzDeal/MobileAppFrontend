@@ -345,3 +345,12 @@
 .custom-toggle input:checked + .slider:before {
   transform: translateX(20px);
 }
+
+ion-footer {
+  background: #ffffff;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+
+  ion-toolbar {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}

@@ -20,7 +20,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
-    provideHttpClient(withInterceptors([splashScreenInterceptor, authInterceptor, adminRegionFilterInterceptor, loadingInterceptor, apiMessageInterceptor])),
+    provideHttpClient(withInterceptors([apiMessageInterceptor, splashScreenInterceptor, authInterceptor, adminRegionFilterInterceptor, loadingInterceptor])),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),

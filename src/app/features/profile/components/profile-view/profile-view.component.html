@@ -73,7 +73,7 @@
         </label>
         <div class="input-wrapper">
           <ion-icon name="call-outline" class="input-icon"></ion-icon>
-          <ion-input type="tel" id="phone" formControlName="phone" class="form-input" readonly="true"
+          <ion-input type="tel" id="phone" formControlName="phone" class="form-input"
             placeholder="Enter phone number"></ion-input>
         </div>
         <div class="error-container">
@@ -163,7 +163,7 @@
       <!-- Physical Address -->
       <div class="form-group">
         <label class="form-label" for="address">
-          Physical Address <span class="required-star">*</span>
+          Physical Address
         </label>
         <div class="input-wrapper textarea-wrapper">
           <ion-icon name="location-outline" class="input-icon textarea-icon"></ion-icon>
@@ -380,9 +380,124 @@
         <span class="meta-label">Last Updated</span>
         <span class="meta-value">{{ profile()?.updated_at | date:'short' }}</span>
       </div>
+
+      @if (userRole() === 'CUSTOMER' && profile()?.primary_business_name) {
+      <div class="meta-row" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bizzdeal-border-color); flex-direction: column; align-items: flex-start; gap: 8px;">
+        <span class="meta-label" style="display: flex; align-items: center; gap: 5px; width: 100%;">
+          <ion-icon name="business-outline" style="color: var(--bizzdeal-primary);"></ion-icon>
+          Primary Business Details
+        </span>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 24px; width: 100%;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--bizzdeal-text-muted); font-size: 0.9em;">Name:</span>
+            <span style="font-weight: 600; color: var(--bizzdeal-text-color);">{{ profile()?.primary_business_name }}</span>
+          </div>
+          @if (profile()?.primary_business_category_name) {
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--bizzdeal-text-muted); font-size: 0.9em;">Category:</span>
+            <span style="font-weight: 500; color: var(--bizzdeal-text-color);">{{ profile()?.primary_business_category_name }}</span>
+          </div>
+          }
+          @if (profile()?.primary_business_state_name) {
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--bizzdeal-text-muted); font-size: 0.9em;">Location:</span>
+            <span style="font-weight: 500; color: var(--bizzdeal-text-color);">
+              {{ profile()?.primary_business_district_name ? profile()?.primary_business_district_name + ', ' : '' }}{{ profile()?.primary_business_state_name }}
+            </span>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- 3b. Registered Devices Section -->
+
+    <div class="form-section bd-card devices-section">
+      <div class="devices-header">
+        <h3 class="section-title">Registered Devices</h3>
+        <button type="button" class="refresh-devices-btn" (click)="loadDevices()" [disabled]="loadingDevices()" aria-label="Refresh Devices">
+          <ion-icon name="refresh-outline" [class.spin]="loadingDevices()"></ion-icon>
+        </button>
+      </div>
+
+      @if (loadingDevices()) {
+      <div class="devices-loading">
+        <ion-spinner name="crescent" size="small"></ion-spinner>
+        <span>Loading registered devices...</span>
+      </div>
+      } @else if (registeredDevices().length === 0) {
+      <div class="devices-empty">
+        <p>No registered devices found for this account.</p>
+      </div>
+      } @else {
+      <div class="devices-list">
+        @for (device of registeredDevices(); track device.id) {
+        <div class="device-item" [class.inactive]="!device.is_active">
+          <div class="device-icon">
+            <ion-icon [name]="device.device_type === 'WEB' ? 'desktop-outline' : 'phone-portrait-outline'"></ion-icon>
+          </div>
+
+          <div class="device-info">
+            <div class="device-name-row">
+              <span class="device-name">{{ device.device_name || device.device_model || (device.device_type + ' Device') }}</span>
+              <span class="device-status-badge" [class.status-active]="device.is_active" [class.status-inactive]="!device.is_active">
+                {{ device.is_active ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+            <div class="device-subtext">
+              @if (device.operating_system) {
+                <span>{{ device.operating_system }} {{ device.os_version || '' }} • </span>
+              }
+              <span>Registered {{ device.created_at | date:'mediumDate' }}</span>
+            </div>
+          </div>
+
+          <div class="device-actions">
+            <!-- 1. Active / Deactivate Toggle Icon Button -->
+            <button
+              type="button"
+              class="icon-action-btn toggle-btn"
+              [class.active-mode]="device.is_active"
+              [class.inactive-mode]="!device.is_active"
+              (click)="onToggleDeviceStatus(device)"
+              [disabled]="togglingDeviceId() === device.id"
+              [attr.title]="device.is_active ? 'Deactivate Device' : 'Activate Device'"
+              [attr.aria-label]="device.is_active ? 'Deactivate Device' : 'Activate Device'"
+            >
+              @if (togglingDeviceId() === device.id) {
+                <ion-spinner name="crescent" size="small"></ion-spinner>
+              } @else if (device.is_active) {
+                <ion-icon name="power-outline"></ion-icon>
+              } @else {
+                <ion-icon name="ban-outline"></ion-icon>
+              }
+            </button>
+
+            <!-- 2. Delete Device Icon Button -->
+            <button
+              type="button"
+              class="icon-action-btn delete-btn"
+              (click)="onDeleteDevice(device)"
+              [disabled]="deletingDeviceId() === device.id"
+              title="Delete Device"
+              aria-label="Delete Device"
+            >
+              @if (deletingDeviceId() === device.id) {
+                <ion-spinner name="crescent" size="small"></ion-spinner>
+              } @else {
+                <ion-icon name="trash-outline"></ion-icon>
+              }
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+      }
     </div>
 
     <!-- 4. Action Buttons -->
+
     <div class="action-buttons">
       <button type="submit" class="bd-btn-primary save-btn" [disabled]="updating() || profileForm.invalid">
         @if (updating()) {

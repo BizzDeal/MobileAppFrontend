@@ -32,6 +32,7 @@ export class AdminMembersListComponent implements OnInit {
   page = 1;
   limit = 20;
   hasMore = true;
+  private isInitialLoad = true;
 
   get filteredMembers(): AdminMember[] {
     return this.members; // Filtering is now handled by the API
@@ -59,10 +60,24 @@ export class AdminMembersListComponent implements OnInit {
     this.searchSubscription?.unsubscribe();
   }
 
+  refresh() {
+    this.page = 1;
+    this.members = [];
+    this.loadMembers();
+  }
+
   loadMembers(event?: any) {
     this.loading = true;
     this.adminUsersService.getMembers(this.page, this.limit, this.searchQuery).subscribe((res) => {
-      this.members = [...this.members, ...res.data];
+      if (this.page === 1) {
+        this.members = res.data;
+      } else {
+        // filter out duplicates just in case
+        const existingIds = new Set(this.members.map(m => m.id));
+        const newMembers = res.data.filter((m: any) => !existingIds.has(m.id));
+        this.members = [...this.members, ...newMembers];
+      }
+      
       if (res.meta) {
         this.page = res.meta.currentPage;
         this.hasMore = res.meta.currentPage < res.meta.totalPages;

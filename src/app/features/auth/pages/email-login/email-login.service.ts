@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfirmationResult } from '@angular/fire/auth';
+import { AlertController } from '@ionic/angular/standalone';
 import { AuthApiService } from '../../services/auth-api.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
@@ -16,6 +17,7 @@ export class EmailLoginService {
   private readonly authSession = inject(AuthSessionService);
   private readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
   private readonly profileService = inject(ProfileService);
+  private readonly alertController = inject(AlertController);
 
   private readonly _authStep = signal<'phone' | 'pin' | 'otp_register'>('phone');
   private readonly _isSubmitting = signal(false);
@@ -61,6 +63,15 @@ export class EmailLoginService {
       description: 'Reward customers and boost sales',
     },
   ];
+
+  private async showStatusAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
 
   setPhoneFocused(focused: boolean): void {
     this._isPhoneFocused.set(focused);
@@ -145,14 +156,14 @@ export class EmailLoginService {
             this.profileService.loadProfile().subscribe();
             this._isSubmitting.set(false);
             if (res.user.role === UserRole.ADMIN) {
-              this.router.navigate(['/admin']);
+              this.router.navigate(['/admin']).catch(() => {});
             } else {
               const u = res.user;
               const isIncomplete = !u.full_name || u.full_name === 'Customer' || !u.email || u.email.includes('@bizzdeal.com') || !u.address || u.address === 'Not Provided';
               if (isIncomplete && u.role === UserRole.CUSTOMER) {
-                this.router.navigate(['/home'], { queryParams: { tab: 'profile' } });
+                this.router.navigate(['/home'], { queryParams: { tab: 'profile' } }).catch(() => {});
               } else {
-                this.router.navigate(['/home']);
+                this.router.navigate(['/home']).catch(() => {});
               }
             }
           } catch (err: any) {
@@ -162,9 +173,16 @@ export class EmailLoginService {
         },
         error: (err: any) => {
           console.error('login error:', err);
-          this._errorMessage.set(
-            err?.error?.message || 'Invalid email or PIN. Please check and try again.'
-          );
+          const errorCode = err?.error?.errorCode;
+          if (errorCode === 'MEMBER_UNVERIFIED') {
+            this.showStatusAlert('Verification Required', 'Please verify your email to continue. Check your inbox for the verification link.');
+          } else if (errorCode === 'MEMBER_PENDING') {
+            this.showStatusAlert('Approval Pending', 'Your account is pending admin approval. You will be able to log in once approved.');
+          } else {
+            this._errorMessage.set(
+              err?.error?.message || 'Invalid email or PIN. Please check and try again.'
+            );
+          }
           this._isSubmitting.set(false);
         },
       });

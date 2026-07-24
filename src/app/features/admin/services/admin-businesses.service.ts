@@ -65,11 +65,19 @@ export class AdminBusinessesService {
       });
     }
     return this.http.get<any>(`${this.apiUrl}/offers`, { params }).pipe(
-      map(res => ({
-        success: res && res.success !== undefined ? res.success : true,
-        message: res && res.message ? res.message : 'Offers fetched successfully',
-        data: res && res.success !== undefined ? res.data : res
-      })),
+      map(res => {
+        let actualData = res;
+        if (res && res.data && res.meta) {
+          actualData = res.data;
+        } else if (res && res.success !== undefined) {
+          actualData = res.data;
+        }
+        return {
+          success: res && res.success !== undefined ? res.success : true,
+          message: res && res.message ? res.message : 'Offers fetched successfully',
+          data: actualData
+        };
+      }),
       catchError(err => {
         throw new Error(err.error?.message || 'Failed to fetch offers');
       })
@@ -78,11 +86,19 @@ export class AdminBusinessesService {
 
   getBusinessOffers(businessId: string): Observable<ApiResponse<AdminOffer[]>> {
     return this.http.get<any>(`${this.apiUrl}/offers/business/${businessId}`).pipe(
-      map(res => ({
-        success: res && res.success !== undefined ? res.success : true,
-        message: res && res.message ? res.message : 'Business offers fetched successfully',
-        data: res && res.success !== undefined ? res.data : res
-      })),
+      map(res => {
+        let actualData = res;
+        if (res && res.data && res.meta) {
+          actualData = res.data;
+        } else if (res && res.success !== undefined) {
+          actualData = res.data;
+        }
+        return {
+          success: res && res.success !== undefined ? res.success : true,
+          message: res && res.message ? res.message : 'Business offers fetched successfully',
+          data: actualData
+        };
+      }),
       catchError(err => {
         throw new Error(err.error?.message || 'Failed to fetch business offers');
       })
@@ -92,11 +108,19 @@ export class AdminBusinessesService {
   getBusinessVouchers(businessId: string): Observable<ApiResponse<AdminVoucher[]>> {
     const params = new HttpParams().set('business_id', businessId);
     return this.http.get<any>(`${this.apiUrl}/vouchers/history`, { params }).pipe(
-      map(res => ({
-        success: res && res.success !== undefined ? res.success : true,
-        message: res && res.message ? res.message : 'Business vouchers fetched successfully',
-        data: res && res.success !== undefined ? res.data : res
-      })),
+      map(res => {
+        let actualData = res;
+        if (res && res.data && res.meta) {
+          actualData = res.data;
+        } else if (res && res.success !== undefined) {
+          actualData = res.data;
+        }
+        return {
+          success: res && res.success !== undefined ? res.success : true,
+          message: res && res.message ? res.message : 'Business vouchers fetched successfully',
+          data: actualData
+        };
+      }),
       catchError(err => {
         throw new Error(err.error?.message || 'Failed to fetch business vouchers');
       })

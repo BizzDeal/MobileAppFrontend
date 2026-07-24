@@ -27,10 +27,10 @@ export class AdminUsersPage {
 
   ionViewWillEnter() {
     if (this.membersList) {
-      this.membersList.loadMembers();
+      this.membersList.refresh();
     }
     if (this.customersList) {
-      this.customersList.loadCustomers();
+      this.customersList.refresh();
     }
   }
 

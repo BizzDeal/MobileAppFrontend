@@ -6,6 +6,7 @@ import { HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { WalletDTO, WalletTransactionDTO } from '../models/wallet.model';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { AppSocketService } from '../../../core/services/app-socket.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,7 @@ import { AuthSessionService } from '../../../core/services/auth-session.service'
 export class WalletService {
   private readonly http = inject(HttpClient);
   private readonly authSession = inject(AuthSessionService);
+  private readonly appSocket = inject(AppSocketService);
   private readonly apiUrl = environment.apiUrl;
 
   private readonly _wallet = signal<WalletDTO | null>(null);
@@ -44,6 +46,14 @@ export class WalletService {
         untracked(() => {
           this._wallet.set(null);
           this._transactions.set([]);
+        });
+      }
+    });
+
+    this.appSocket.onEvent('VOUCHER_REDEEMED').subscribe(() => {
+      if (this.authSession.isAuthenticated()) {
+        this.refreshWallet().subscribe({
+          error: (err) => console.error('Failed to refresh wallet on voucher redemption:', err)
         });
       }
     });

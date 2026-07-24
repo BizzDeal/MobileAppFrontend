@@ -89,6 +89,12 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     this.filterSubscription?.unsubscribe();
   }
 
+  refresh() {
+    this.page = 1;
+    this.businesses = [];
+    this.loadBusinesses();
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     // handled by setters
   }
@@ -106,7 +112,14 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     this.adminBusinessesService.getBusinesses(query).subscribe({
       next: (response) => {
         if (response.success) {
-          this.businesses = [...this.businesses, ...response.data];
+          if (this.page === 1) {
+            this.businesses = response.data;
+          } else {
+            // filter out duplicates just in case
+            const existingIds = new Set(this.businesses.map(b => b.id));
+            const newBusinesses = response.data.filter((b: any) => !existingIds.has(b.id));
+            this.businesses = [...this.businesses, ...newBusinesses];
+          }
           if (response.meta) {
             this.page = response.meta.currentPage;
             this.hasMore = response.meta.currentPage < response.meta.totalPages;

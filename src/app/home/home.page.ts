@@ -235,8 +235,13 @@ export class HomePage {
       }
     });
 
-    // Ensure profile is loaded immediately when arriving on home screen
+    // Ensure profile and customer vouchers are loaded immediately when arriving on home screen
     this.profileService.loadProfile().subscribe();
+    if (this.authSession.isAuthenticated()) {
+      this.customerVouchersService.loadVouchers().subscribe({
+        error: (err) => console.error('HomePage initial customer vouchers load error:', err)
+      });
+    }
   }
 
   onRefresh(event: any): void {
@@ -288,7 +293,6 @@ export class HomePage {
           status: 'ISSUED',
           issued_at: voucher.issued_at,
           redeemed_at: null,
-          expires_at: voucher.expires_at,
           redeemed_by_id: null,
           created_at: voucher.created_at,
           updated_at: voucher.updated_at,
@@ -373,8 +377,7 @@ export class HomePage {
   }
 
   getQrData(v: any): string {
-    const phone = v.customer_phone || '';
-    return encodeURIComponent(`${v.voucher_code}|${phone}`);
+    return encodeURIComponent(v.voucher_code);
   }
 
   copyVoucherCode(code: string): void {

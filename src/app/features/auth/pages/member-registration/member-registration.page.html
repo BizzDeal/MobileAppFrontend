@@ -73,7 +73,7 @@
       <div class="form-group">
         <label class="input-label">Login PIN <span class="required-star">*</span></label>
         <div class="input-box" [class.input-error]="regService.regForm.controls.loginPin.invalid && regService.regForm.controls.loginPin.touched">
-          <ion-input type="password" formControlName="loginPin" placeholder="...." maxlength="6" class="custom-input"></ion-input>
+          <ion-input type="password" inputmode="numeric" formControlName="loginPin" placeholder="...." maxlength="6" class="custom-input" (keypress)="regService.allowNumbersOnly($event)"></ion-input>
         </div>
         <div class="error-container">
           @if (regService.regForm.controls.loginPin.invalid && regService.regForm.controls.loginPin.touched) {

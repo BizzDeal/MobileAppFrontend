@@ -411,3 +411,42 @@
     }
   }
 }
+
+// 4b. Registered Devices Styles
+.devices-section {
+  margin-top: var(--bizzdeal-spacing-md);
+  .devices-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--bizzdeal-spacing-sm);
+    .section-title { margin-bottom: 0; }
+    .refresh-devices-btn { background: transparent; border: none; color: var(--bizzdeal-text-secondary); font-size: 18px; padding: 4px; cursor: pointer; display: flex; border-radius: 50%;
+      &:hover { color: var(--bizzdeal-primary); }
+      ion-icon.spin { animation: spin 1s linear infinite; }
+    }
+  }
+  .devices-loading, .devices-empty { display: flex; align-items: center; justify-content: center; gap: 8px; padding: var(--bizzdeal-spacing-md) 0; color: var(--bizzdeal-text-secondary); font-size: 13px; text-align: center; }
+  .devices-list { display: flex; flex-direction: column; gap: var(--bizzdeal-spacing-sm); }
+  .device-item { display: flex; align-items: center; gap: var(--bizzdeal-spacing-md); padding: 8px 12px; background-color: var(--bizzdeal-bg-surface-secondary); border: 1px solid var(--bizzdeal-border-color); border-radius: var(--bizzdeal-radius-md);
+    &.inactive { opacity: 0.7; }
+    .device-icon { font-size: 20px; color: var(--bizzdeal-primary); display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background-color: rgba(99, 102, 241, 0.1); flex-shrink: 0; }
+    .device-info { flex: 1; min-width: 0;
+      .device-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        .device-name { font-weight: 600; font-size: 13px; color: var(--bizzdeal-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .device-status-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: var(--bizzdeal-radius-full); text-transform: uppercase;
+          &.status-active { background-color: rgba(16, 185, 129, 0.15); color: #10b981; }
+          &.status-inactive { background-color: rgba(107, 114, 128, 0.15); color: #6b7280; }
+        }
+      }
+      .device-subtext { font-size: 11px; color: var(--bizzdeal-text-muted); margin-top: 2px; }
+    }
+    .device-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+      .icon-action-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--bizzdeal-radius-md); border: 1px solid var(--bizzdeal-border-color); background-color: var(--bizzdeal-bg-surface); font-size: 15px; cursor: pointer;
+        &:disabled { opacity: 0.5; cursor: not-allowed; }
+        &.toggle-btn.active-mode { color: #10b981; border-color: rgba(16, 185, 129, 0.3); background-color: rgba(16, 185, 129, 0.08); }
+        &.toggle-btn.inactive-mode { color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); background-color: rgba(245, 158, 11, 0.08); }
+        &.delete-btn { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background-color: rgba(239, 68, 68, 0.08); }
+      }
+    }
+  }
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+

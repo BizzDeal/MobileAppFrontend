@@ -1,4 +1,7 @@
 <div class="vouchers-content">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div style="padding: var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md) 0 var(--bizzdeal-spacing-md);">
     <div class="page-top-header">
       <div class="header-content">
@@ -37,9 +40,9 @@
         (click)="setFilter('REDEEMED')">
         Redeemed
       </button>
-      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'EXPIRED'"
-        (click)="setFilter('EXPIRED')">
-        Expired
+      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'CANCELLED'"
+        (click)="setFilter('CANCELLED')">
+        Cancelled
       </button>
     </div>
   </div>
@@ -102,19 +105,14 @@
       <div class="card-footer">
         @if (voucher.status === 'ISSUED') {
         <span class="date-info exp-date">
-          <ion-icon name="time-outline"></ion-icon>
-          Expires: {{ voucher.expires_at | date:'mediumDate' }}
+          <ion-icon name="ticket-outline"></ion-icon>
+          Issued: {{ voucher.issued_at | date:'mediumDate' }}
         </span>
         <span class="claim-hint">Present at counter to redeem</span>
         } @else if (voucher.status === 'REDEEMED') {
         <span class="date-info red-date">
           <ion-icon name="checkmark-circle-outline"></ion-icon>
           Redeemed: {{ voucher.redeemed_at | date:'mediumDate' }}
-        </span>
-        } @else if (voucher.status === 'EXPIRED') {
-        <span class="date-info exp-date-expired">
-          <ion-icon name="alert-circle-outline"></ion-icon>
-          Expired: {{ voucher.expires_at | date:'mediumDate' }}
         </span>
         } @else {
         <span class="date-info exp-date-expired">
@@ -139,8 +137,8 @@
         You have no active vouchers. Claim some deals on the home screen!
         } @else if (selectedFilter() === 'REDEEMED') {
         You haven't redeemed any vouchers yet.
-        } @else if (selectedFilter() === 'EXPIRED') {
-        No expired or cancelled vouchers.
+        } @else if (selectedFilter() === 'CANCELLED') {
+        No cancelled vouchers.
         } @else {
         You don't have any vouchers yet. Claim trending deals on the home screen to get started!
         }
@@ -188,7 +186,7 @@
           <span class="qr-code-label">Voucher Code</span>
           <span class="qr-code-value">{{ voucher.voucher_code }}</span>
           <span class="qr-code-label" style="margin-top: 6px; font-size: 0.7rem; color: #94a3b8;">QR Data: {{
-            voucher.voucher_code }}|{{ voucher.customer_phone || 'NO_PHONE' }}</span>
+            voucher.voucher_code }}</span>
         </div>
 
         <div class="qr-instructions">
@@ -198,8 +196,8 @@
 
         <div class="qr-footer">
           <span class="qr-expiry">
-            <ion-icon name="time-outline"></ion-icon>
-            Expires: {{ voucher.expires_at | date:'mediumDate' }}
+            <ion-icon name="ticket-outline"></ion-icon>
+            Issued: {{ voucher.issued_at | date:'mediumDate' }}
           </span>
         </div>
       </div>

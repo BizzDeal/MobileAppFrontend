@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -12,7 +12,9 @@ import {
   IonModal,
   IonButtons,
   IonInfiniteScroll,
-  IonInfiniteScrollContent
+  IonInfiniteScrollContent,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -32,7 +34,7 @@ import { CustomerVouchersService } from '../../services/customer-vouchers.servic
 import { ToastService } from '../../../../core/services/toast.service';
 import { CustomerVoucher, VoucherStatus } from '../../models/voucher.model';
 
-type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'EXPIRED';
+type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'CANCELLED';
 
 @Component({
   selector: 'app-vouchers-view',
@@ -50,13 +52,15 @@ type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'EXPIRED';
     IonModal,
     IonButtons,
     IonInfiniteScroll,
-    IonInfiniteScrollContent
+    IonInfiniteScrollContent,
+    IonRefresher,
+    IonRefresherContent
   ],
   templateUrl: './vouchers-view.component.html',
   styleUrls: ['./vouchers-view.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class VouchersViewComponent {
+export class VouchersViewComponent implements OnInit {
   private readonly vouchersService = inject(CustomerVouchersService);
   private readonly toastService = inject(ToastService);
 
@@ -81,8 +85,8 @@ export class VouchersViewComponent {
       result = result.filter(v => v.status === 'ISSUED');
     } else if (filter === 'REDEEMED') {
       result = result.filter(v => v.status === 'REDEEMED');
-    } else if (filter === 'EXPIRED') {
-      result = result.filter(v => v.status === 'EXPIRED' || v.status === 'CANCELLED');
+    } else if (filter === 'CANCELLED') {
+      result = result.filter(v => v.status === 'CANCELLED');
     }
 
     // Search is now handled by backend, but we keep local filtering as a fallback 
@@ -114,11 +118,21 @@ export class VouchersViewComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.vouchersService.loadVouchers(1, 20, false, this.searchQuery()).subscribe({
+      error: (err) => console.error('VouchersViewComponent failed to load vouchers on init:', err)
+    });
+  }
+
   getQrData(voucher: CustomerVoucher): string {
     return encodeURIComponent(voucher.voucher_code);
   }
 
-  doRefresh(event: any) {
+  doRefresh(event: any): void {
+    this.vouchersService.loadVouchers(1, 20, false, this.searchQuery()).subscribe({
+      next: () => event?.target?.complete(),
+      error: () => event?.target?.complete()
+    });
   }
 
   onSearchChange(event: any): void {
@@ -144,7 +158,6 @@ export class VouchersViewComponent {
     switch (status) {
       case 'ISSUED': return 'ticket-outline';
       case 'REDEEMED': return 'checkmark-circle-outline';
-      case 'EXPIRED': return 'alert-circle-outline';
       case 'CANCELLED': return 'ban-outline';
     }
   }
@@ -153,7 +166,6 @@ export class VouchersViewComponent {
     switch (status) {
       case 'ISSUED': return 'Active';
       case 'REDEEMED': return 'Redeemed';
-      case 'EXPIRED': return 'Expired';
       case 'CANCELLED': return 'Cancelled';
     }
   }

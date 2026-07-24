@@ -51,9 +51,9 @@ export class EmailLoginPage implements OnInit {
     if (this.authSession.isAuthenticated()) {
       const role = this.authSession.userRole();
       if (role === UserRole.ADMIN) {
-        this.router.navigate(['/admin'], { replaceUrl: true });
+        this.router.navigate(['/admin'], { replaceUrl: true }).catch(() => {});
       } else {
-        this.router.navigate(['/home'], { replaceUrl: true });
+        this.router.navigate(['/home'], { replaceUrl: true }).catch(() => {});
       }
     }
   }

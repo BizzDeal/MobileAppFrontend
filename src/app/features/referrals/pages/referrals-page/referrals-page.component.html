@@ -155,11 +155,11 @@
             } @else {
               <ion-list class="contacts-ion-list">
                 @for (contact of filteredContacts(); track contact.phone) {
-                  <ion-item class="contact-item" (click)="toggleContact(contact.phone)" lines="none">
+                  <ion-item class="contact-item" lines="none">
                     <ion-checkbox
                       slot="start"
                       [checked]="contact.selected"
-                      (click)="$event.stopPropagation(); toggleContact(contact.phone)"
+                      (ionChange)="setContactSelection(contact.phone, $event.detail.checked)"
                       aria-label="Select contact">
                     </ion-checkbox>
                     <ion-label class="contact-text">

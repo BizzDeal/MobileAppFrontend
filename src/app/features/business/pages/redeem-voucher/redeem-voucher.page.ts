@@ -158,7 +158,10 @@ export class RedeemVoucherPage implements OnInit {
           const parsed = JSON.parse(decodedText);
           if (parsed.code) voucherCode = parsed.code;
         } catch (e) {
-          // Plain voucher code string — use as-is
+          // Plain voucher code string — check for pipe delimited format: CODE|PHONE
+          if (voucherCode.includes('|')) {
+            voucherCode = voucherCode.split('|')[0];
+          }
         }
 
         console.log(`Parsed voucher code: ${voucherCode}`);
@@ -197,12 +200,17 @@ export class RedeemVoucherPage implements OnInit {
     this.vouchersService.getVoucherDetails(voucher_code).subscribe({
       next: (details) => {
         this.isVerifying = false;
+        
+        // Ensure wallet_balance is always a number to prevent template errors
+        details.wallet_balance = Number(details.wallet_balance || 0);
+        
         this.voucherDetails = details;
         this.step = 'REDEEM';
         
         // Apply conditional validations
         const billControl = this.redemptionForm.get('bill_amount');
-        if (details.offer?.discount_type === 'PERCENTAGE') {
+        const discountType = details.discount_type || details.offer?.discount_type;
+        if (discountType === 'PERCENTAGE') {
           // Bill amount is mandatory for percentage discount
           billControl?.setValidators([Validators.required, Validators.min(0.01)]);
         } else {
@@ -229,11 +237,19 @@ export class RedeemVoucherPage implements OnInit {
     let cashbackEarned = 0;
     let remainingWalletCredit = 0;
 
-    const isCashback = this.voucherDetails.offer?.offer_type === 'CASHBACK';
+    const offerType = this.voucherDetails.offer_type || this.voucherDetails.offer?.offer_type;
+    const discountType = this.voucherDetails.discount_type || this.voucherDetails.offer?.discount_type;
+    const rawDiscountVal = this.voucherDetails.discount_value !== undefined && this.voucherDetails.discount_value !== null
+      ? this.voucherDetails.discount_value
+      : this.voucherDetails.offer?.discount_value || 0;
+      
+    const discountVal = Number(rawDiscountVal);
 
-    if (this.voucherDetails.offer?.discount_type === 'PERCENTAGE') {
+    const isCashback = offerType === 'CASHBACK';
+
+    if (discountType === 'PERCENTAGE') {
       if (billAmount > 0) {
-        const amt = (billAmount * (this.voucherDetails.offer?.discount_value || 0)) / 100;
+        const amt = (billAmount * discountVal) / 100;
         if (isCashback) {
           cashbackEarned = amt;
         } else {
@@ -242,7 +258,6 @@ export class RedeemVoucherPage implements OnInit {
       }
     } else {
       // FIXED discount
-      const discountVal = this.voucherDetails.offer?.discount_value || 0;
       if (isCashback) {
         cashbackEarned = discountVal;
       } else {

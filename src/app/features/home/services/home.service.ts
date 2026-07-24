@@ -225,17 +225,16 @@ export class HomeService {
           status: v.status || 'ISSUED',
           issued_at: v.issued_at || new Date().toISOString(),
           redeemed_at: v.redeemed_at || null,
-          expires_at: v.expires_at || offer.end_date,
           redeemed_by_id: v.redeemed_by_id || null,
           created_at: v.created_at || new Date().toISOString(),
           updated_at: v.updated_at || new Date().toISOString(),
           offerTitle: v.offerTitle || offer.title,
           businessName: v.businessName || offer.businessName || 'BizzDeal Partner',
-          discountText: v.discountText || (offer.discount_type === 'PERCENTAGE' 
-            ? `${offer.discount_value}% OFF` 
-            : offer.discount_type === 'FIXED_AMOUNT' 
-              ? `₹${offer.discount_value} OFF` 
-              : 'Special Deal'),
+          discountText: v.discountText || (offer.offer_type === 'CASHBACK'
+            ? `₹${offer.discount_value} Cashback`
+            : offer.discount_type === 'PERCENTAGE' 
+              ? `${offer.discount_value}% OFF` 
+              : `₹${offer.discount_value} Flat OFF`),
         };
 
         const currentFeed = this._homeFeed();

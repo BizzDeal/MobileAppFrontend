@@ -17,13 +17,8 @@ export interface MockVoucher {
   customer_phone: string;
   customer_name: string;
   customer_id: string;
-  status: 'ISSUED' | 'REDEEMED' | 'EXPIRED' | 'CANCELLED';
+  status: 'ISSUED' | 'REDEEMED' | 'CANCELLED';
   offerTitle: string;
-  discountText: string;
-  discount_type: 'PERCENTAGE' | 'FIXED';
-  discount_value: number;
-  wallet_balance: number;
-  expires_at: string;
 }
 
 @Injectable({
@@ -51,12 +46,6 @@ export class VouchersService {
 
         if (v.status === 'CANCELLED') {
           throw new Error('Voucher is cancelled');
-        }
-
-        const now = new Date();
-        const expiry = new Date(v.expires_at);
-        if (v.status === 'EXPIRED' || now > expiry) {
-          throw new Error('Voucher has expired');
         }
         
         return v;

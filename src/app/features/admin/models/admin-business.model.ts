@@ -23,6 +23,9 @@ export interface AdminBusiness {
   phone?: string;
   whatsapp?: string;
   owner_email?: string;
+  address?: string | null;
+  state_name?: string | null;
+  district_name?: string | null;
   created_at: Date;
   updated_at: Date;
   logo_url: string | null;

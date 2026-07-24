@@ -61,8 +61,24 @@
         <span class="value">{{ business.owner_name || 'N/A' }}</span>
       </div>
       <div class="detail-item">
+        <span class="label">Email</span>
+        <span class="value">{{ business.owner_email || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
         <span class="label">Phone</span>
-        <span class="value">{{ business.owner_phone || 'N/A' }}</span>
+        <span class="value">{{ business.owner_phone || business.phone || 'N/A' }}</span>
+      </div>
+      <div class="detail-item" *ngIf="business.state_name">
+        <span class="label">State</span>
+        <span class="value">{{ business.state_name }}</span>
+      </div>
+      <div class="detail-item" *ngIf="business.district_name">
+        <span class="label">District</span>
+        <span class="value">{{ business.district_name }}</span>
+      </div>
+      <div class="detail-item w-full" *ngIf="business.address">
+        <span class="label">Address</span>
+        <span class="value">{{ business.address }}</span>
       </div>
       <div class="detail-item" *ngIf="business.gst_number">
         <span class="label">GST Number</span>

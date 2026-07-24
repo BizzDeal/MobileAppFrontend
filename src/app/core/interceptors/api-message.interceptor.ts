@@ -82,8 +82,13 @@ export const apiMessageInterceptor: HttpInterceptorFn = (
       },
     }),
     catchError((error: HttpErrorResponse) => {
-      const msg = getFriendlyErrorMessage(req, error);
-      toastService.showError(msg);
+      // 401 Unauthorized errors are handled by authInterceptor (refresh token or logout).
+      // We only show a toast for 401s if it's a login request (e.g. invalid credentials).
+      const isLoginRequest = req.url.includes('/auth/login');
+      if (error.status !== 401 || isLoginRequest) {
+        const msg = getFriendlyErrorMessage(req, error);
+        toastService.showError(msg);
+      }
       return throwError(() => error);
     })
   );

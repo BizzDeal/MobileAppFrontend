@@ -32,6 +32,7 @@ export class AdminCustomersListComponent implements OnInit {
   page = 1;
   limit = 20;
   hasMore = true;
+  private isInitialLoad = true;
 
   get filteredCustomers(): AdminCustomer[] {
     return this.customers; // Filtering is now handled by the API
@@ -59,10 +60,24 @@ export class AdminCustomersListComponent implements OnInit {
     this.searchSubscription?.unsubscribe();
   }
 
+  refresh() {
+    this.page = 1;
+    this.customers = [];
+    this.loadCustomers();
+  }
+
   loadCustomers(event?: any) {
     this.loading = true;
     this.adminUsersService.getCustomers(this.page, this.limit, this.searchQuery).subscribe((res) => {
-      this.customers = [...this.customers, ...res.data];
+      if (this.page === 1) {
+        this.customers = res.data;
+      } else {
+        // filter out duplicates just in case
+        const existingIds = new Set(this.customers.map(c => c.id));
+        const newCustomers = res.data.filter((c: any) => !existingIds.has(c.id));
+        this.customers = [...this.customers, ...newCustomers];
+      }
+
       if (res.meta) {
         this.page = res.meta.currentPage;
         this.hasMore = res.meta.currentPage < res.meta.totalPages;

@@ -24,7 +24,7 @@ export class AdminBusinessesPage {
 
   ionViewWillEnter() {
     if (this.listComponent) {
-      this.listComponent.loadBusinesses();
+      this.listComponent.refresh();
     }
   }
 

@@ -85,10 +85,14 @@
           <ion-icon name="ticket-outline"></ion-icon>
         </div>
         <div class="v-details">
-          <span class="v-biz">{{ v.businessName }}</span>
+          <div class="v-top-row">
+            <span class="v-biz">{{ v.businessName }}</span>
+            @if (v.discountText) {
+            <span class="v-discount-badge">{{ v.discountText }}</span>
+            }
+          </div>
           <h4 class="v-title">{{ v.offerTitle }}</h4>
-          <span class="v-exp"><ion-icon name="time-outline"></ion-icon> Expires: {{ v.expires_at | date:'mediumDate'
-            }}</span>
+          <span class="v-exp"><ion-icon name="ticket-outline"></ion-icon> Issued: {{ v.issued_at | date:'mediumDate' }}</span>
         </div>
       </div>
       <div class="v-stub">

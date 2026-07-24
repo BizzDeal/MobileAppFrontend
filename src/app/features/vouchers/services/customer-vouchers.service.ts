@@ -32,8 +32,9 @@ export class CustomerVouchersService {
 
   constructor() {
     effect(() => {
+      const isAuth = this.authSession.isAuthenticated();
       const role = this.authSession.userRole();
-      if (role === 'CUSTOMER') {
+      if (isAuth && (role === 'CUSTOMER' || !role)) {
         untracked(() => {
           this.loadVouchers().subscribe({
             error: (err) => console.error('Initial customer vouchers load encountered error:', err),
@@ -75,17 +76,16 @@ export class CustomerVouchersService {
           status: v.status || 'ISSUED',
           issued_at: v.issued_at || new Date().toISOString(),
           redeemed_at: v.redeemed_at || null,
-          expires_at: v.expires_at || new Date().toISOString(),
           redeemed_by_id: v.redeemed_by_id || null,
           created_at: v.created_at || new Date().toISOString(),
           updated_at: v.updated_at || new Date().toISOString(),
           offerTitle: v.offerTitle || v.offer?.title || 'Promotional Offer',
           businessName: v.businessName || v.business?.name || 'BizzDeal Partner',
-          discountText: v.discountText || (v.offer?.discount_type === 'PERCENTAGE' 
-            ? `${v.offer.discount_value}% OFF` 
-            : v.offer?.discount_type === 'FIXED_AMOUNT' 
-              ? `₹${v.offer.discount_value} OFF` 
-              : 'Special Deal'),
+          discountText: v.discountText || (v.offer_type === 'CASHBACK' || v.offer?.offer_type === 'CASHBACK'
+            ? `₹${v.discount_value ?? v.offer?.discount_value} Cashback`
+            : v.discount_type === 'PERCENTAGE' || v.offer?.discount_type === 'PERCENTAGE' 
+              ? `${v.discount_value ?? v.offer?.discount_value}% OFF` 
+              : `₹${v.discount_value ?? v.offer?.discount_value} Flat OFF`),
           discount_type: v.discount_type || v.offer?.discount_type || undefined,
           discount_value: v.discount_value ?? v.offer?.discount_value ?? undefined,
           offer_type: v.offer_type || v.offer?.offer_type || undefined,
@@ -137,7 +137,7 @@ export class CustomerVouchersService {
     }
   }
 
-  updateVoucherStatus(voucherId: string, status: 'ISSUED' | 'REDEEMED' | 'EXPIRED' | 'CANCELLED'): void {
+  updateVoucherStatus(voucherId: string, status: 'ISSUED' | 'REDEEMED' | 'CANCELLED'): void {
     this._vouchers.update(vouchers =>
       vouchers.map(v => (v.id === voucherId ? { ...v, status, redeemed_at: status === 'REDEEMED' ? new Date().toISOString() : v.redeemed_at } : v))
     );

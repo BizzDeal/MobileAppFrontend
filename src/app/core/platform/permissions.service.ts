@@ -23,33 +23,13 @@ export class PermissionsService {
   async requestStartupPermissions(): Promise<void> {
     try {
       if (Capacitor.isNativePlatform()) {
-        // On native platforms (Android/iOS), request via custom plugin and capacitor filesystem
         try {
-          await StartupPermissions.requestAll();
-        } catch (err) {
-          console.warn('StartupPermissions native request failed or not available:', err);
-        }
-
-        try {
-          await Filesystem.requestPermissions();
-        } catch (err) {
-          console.warn('Filesystem permissions request failed:', err);
-        }
-      } else {
-        // On Web browser or non-native environment, request camera, mic, and filesystem permissions
-        try {
-          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-            stream.getTracks().forEach((track) => track.stop());
+          const fsStatus = await Filesystem.checkPermissions();
+          if (fsStatus.publicStorage === 'prompt' || fsStatus.publicStorage === 'prompt-with-rationale') {
+            await Filesystem.requestPermissions();
           }
         } catch (err) {
-          console.log('Web media (camera/recording) permissions not granted initially.', err);
-        }
-
-        try {
-          await Filesystem.requestPermissions();
-        } catch (err) {
-          console.log('Web filesystem permissions not granted or supported initially.', err);
+          console.warn('Filesystem permissions check/request failed:', err);
         }
       }
     } catch (error) {

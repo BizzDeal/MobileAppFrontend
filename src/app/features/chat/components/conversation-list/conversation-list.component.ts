@@ -27,6 +27,8 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 import { ToastService } from '../../../../core/services/toast.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 
+import { AuthSessionService } from '../../../../core/services/auth-session.service';
+
 @Component({
   selector: 'app-conversation-list',
   standalone: true,
@@ -48,6 +50,7 @@ export class ConversationListComponent {
   private readonly chatService = inject(ChatService);
   private readonly toastService = inject(ToastService);
   private readonly profileService = inject(ProfileService);
+  private readonly authSession = inject(AuthSessionService);
 
   readonly selectConversation = output<string>();
 
@@ -60,9 +63,12 @@ export class ConversationListComponent {
   readonly unifiedList = computed(() => {
     const convs = this.conversations();
     const contacts = this.contactsDirectory();
+    const currentUserId = this.authSession.currentUser()?.id;
 
     const map = new Map<string, any>();
     contacts.forEach(contact => {
+      if (contact.id === currentUserId) return;
+      
       map.set(contact.id, {
         contact,
         conversationId: null,
@@ -83,6 +89,8 @@ export class ConversationListComponent {
           isDefaultGroup: conv.is_default_group,
         });
       } else if (conv.partner) {
+        if (conv.partner.id === currentUserId) return;
+        
         if (map.has(conv.partner.id)) {
           const item = map.get(conv.partner.id)!;
           item.conversationId = conv.id;

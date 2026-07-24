@@ -124,6 +124,10 @@
     .v-title {
       color: #047857;
     }
+    .v-discount-badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: #047857;
+    }
     .v-stub {
       color: #10b981;
       border-left-color: rgba(16, 185, 129, 0.3);
@@ -141,6 +145,10 @@
       color: #ffffff;
     }
     .v-title {
+      color: #c2410c;
+    }
+    .v-discount-badge {
+      background: rgba(249, 115, 22, 0.15);
       color: #c2410c;
     }
     .v-stub {
@@ -162,6 +170,10 @@
     .v-title {
       color: #6d28d9;
     }
+    .v-discount-badge {
+      background: rgba(139, 92, 246, 0.15);
+      color: #6d28d9;
+    }
     .v-stub {
       color: #8b5cf6;
       border-left-color: rgba(139, 92, 246, 0.3);
@@ -175,13 +187,30 @@
     flex-direction: column;
     gap: 2px;
 
-    .v-biz {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--bizzdeal-text-tertiary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .v-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+
+      .v-biz {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--bizzdeal-text-tertiary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .v-discount-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #2563eb;
+        background: rgba(37, 99, 235, 0.1);
+        padding: 1px 6px;
+        border-radius: 4px;
+        white-space: nowrap;
+      }
     }
 
     .v-title {
@@ -196,7 +225,7 @@
 
     .v-exp {
       font-size: 0.7rem;
-      color: var(--ion-color-danger, #eb445a);
+      color: #2563eb;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -205,6 +234,7 @@
 
       ion-icon {
         font-size: 0.85rem;
+        color: #2563eb;
       }
     }
   }

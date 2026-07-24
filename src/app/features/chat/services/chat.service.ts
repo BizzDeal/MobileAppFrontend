@@ -58,10 +58,10 @@ export class ChatService {
       next: (users) => {
         const partners = users.map(u => ({
           id: u.id,
-          full_name: u.full_name || (u.role === 'ADMIN' ? 'Admin' : 'Unknown User'),
+          full_name: u.profile?.full_name || u.full_name || (u.role === 'ADMIN' ? 'Admin' : 'Unknown User'),
           phone: u.phone,
           role: u.role,
-          profile_pic_url: null,
+          profile_pic_url: u.profile?.profile_pic_url || null,
           isOnline: this._onlineUsers().has(u.id),
         }));
         this._contactsDirectory.set(partners);

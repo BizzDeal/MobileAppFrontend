@@ -186,11 +186,16 @@ export class ReferralsPageComponent implements OnInit {
         next: (eligiblePhones) => {
           const eligibleSet = new Set(eligiblePhones);
           
-          // Map to unique contact by phone number to remove duplicates
+          // Map to unique contact by normalized phone number to remove duplicates
           const uniqueContactsMap = new Map<string, { name: string; phone: string }>();
           for (const c of rawContacts) {
-            if (eligibleSet.has(c.phone) && !uniqueContactsMap.has(c.phone)) {
-              uniqueContactsMap.set(c.phone, c);
+            if (eligibleSet.has(c.phone)) {
+              // Normalize phone to last 10 digits to deduplicate robustly across different formats (+91, spaces, dashes)
+              const cleanPhone = c.phone.replace(/\D/g, '').slice(-10);
+              
+              if (cleanPhone && !uniqueContactsMap.has(cleanPhone)) {
+                uniqueContactsMap.set(cleanPhone, c);
+              }
             }
           }
           
@@ -216,9 +221,9 @@ export class ReferralsPageComponent implements OnInit {
     }
   }
 
-  toggleContact(phone: string): void {
+  setContactSelection(phone: string, selected: boolean): void {
     this.contactsList.update(list => 
-      list.map(c => c.phone === phone ? { ...c, selected: !c.selected } : c)
+      list.map(c => c.phone === phone ? { ...c, selected } : c)
     );
   }
 

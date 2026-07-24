@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
 import {
+  AlertController,
   IonAlert,
   IonIcon,
   IonInput,
@@ -28,13 +29,20 @@ import {
   personOutline,
   businessOutline,
   globeOutline,
-  documentTextOutline
+  documentTextOutline,
+  powerOutline,
+  banOutline,
+  trashOutline,
+  phonePortraitOutline,
+  desktopOutline,
+  refreshOutline
 } from 'ionicons/icons';
 import { ProfileService } from '../../services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { MemberOnboardingService } from '../../../auth/services/member-onboarding.service';
+import { NotificationService } from '../../../notifications/services/notification.service';
 
 @Component({
   selector: 'app-profile-view',
@@ -63,6 +71,9 @@ export class ProfileViewComponent implements OnInit {
   readonly profileService = inject(ProfileService);
   private readonly toastService = inject(ToastService);
   public readonly onboardingService = inject(MemberOnboardingService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly alertController = inject(AlertController);
+
 
   readonly profile = this.profileService.profile;
   readonly userRole = this.profileService.userRole;
@@ -78,6 +89,12 @@ export class ProfileViewComponent implements OnInit {
   readonly picLoadError = signal<boolean>(false);
   readonly logoLoadError = signal<boolean>(false);
 
+  readonly registeredDevices = signal<any[]>([]);
+  readonly loadingDevices = signal<boolean>(false);
+  readonly togglingDeviceId = signal<string | null>(null);
+  readonly deletingDeviceId = signal<string | null>(null);
+
+
   readonly isIncompleteProfile = computed(() => {
     const p = this.profile();
     if (!p) return false;
@@ -90,12 +107,10 @@ export class ProfileViewComponent implements OnInit {
       return isMissingName || isMissingEmail || isMissingState;
     }
     
-    const isMissingAddress = !p.address || p.address === 'Not Provided';
-    
     const businessMissing = !p.business_name || !p.business_description || !p.category_id;
     // Note: business location might not be fetched perfectly in this DTO depending on backend,
     // so we can rely on the core ones that are always mapped.
-    return isMissingName || isMissingEmail || isMissingState || isMissingAddress || businessMissing;
+    return isMissingName || isMissingEmail || isMissingState || businessMissing;
   });
 
   readonly profileForm: FormGroup = this.fb.group({
@@ -132,7 +147,13 @@ export class ProfileViewComponent implements OnInit {
       checkmarkCircleOutline,
       businessOutline,
       globeOutline,
-      documentTextOutline
+      documentTextOutline,
+      powerOutline,
+      banOutline,
+      trashOutline,
+      phonePortraitOutline,
+      desktopOutline,
+      refreshOutline
     });
 
     this.profileService.fetchStates();
@@ -190,7 +211,7 @@ export class ProfileViewComponent implements OnInit {
           this.profileForm.controls['email'].setValidators([Validators.required, Validators.email]);
           this.profileForm.controls['state_id'].setValidators([Validators.required]);
           this.profileForm.controls['district_id'].clearValidators();
-          this.profileForm.controls['address'].setValidators([Validators.required]);
+          this.profileForm.controls['address'].clearValidators();
           this.profileForm.controls['business_name'].setValidators([Validators.required, Validators.minLength(2)]);
           this.profileForm.controls['business_description'].setValidators([Validators.required, Validators.minLength(5)]);
           this.profileForm.controls['category_id'].setValidators([Validators.required]);
@@ -247,7 +268,103 @@ export class ProfileViewComponent implements OnInit {
   ngOnInit(): void {
     this.profileService.loadProfile().subscribe();
     this.onboardingService.fetchCategories();
+    this.loadDevices();
   }
+
+  loadDevices(): void {
+    this.loadingDevices.set(true);
+    this.notificationService.getUserDevices().subscribe({
+      next: (devices) => {
+        this.registeredDevices.set(devices || []);
+        this.loadingDevices.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load registered devices:', err);
+        this.loadingDevices.set(false);
+      }
+    });
+  }
+
+  private async confirmAction(header: string, message: string, confirmText: string = 'Confirm'): Promise<boolean> {
+    return new Promise(async (resolve) => {
+      const alert = await this.alertController.create({
+        header,
+        message,
+        buttons: [
+          { text: 'Cancel', role: 'cancel', handler: () => resolve(false) },
+          { text: confirmText, role: 'confirm', handler: () => resolve(true) }
+        ]
+      });
+      await alert.present();
+    });
+  }
+
+  async onToggleDeviceStatus(device: any): Promise<void> {
+    if (!device || !device.id || this.togglingDeviceId()) return;
+    const currentActive = device.is_active === true || device.is_active === 'true';
+    const targetStatus = !currentActive;
+    const actionName = targetStatus ? 'activate' : 'deactivate';
+    const devName = device.device_name || device.device_model || (device.device_type ? `${device.device_type} Device` : 'this device');
+
+    const confirmed = await this.confirmAction(
+      `${targetStatus ? 'Activate' : 'Deactivate'} Device`,
+      `Are you sure you want to ${actionName} "${devName}"?`,
+      targetStatus ? 'Activate' : 'Deactivate'
+    );
+
+    if (!confirmed) return;
+
+    this.togglingDeviceId.set(device.id);
+    this.notificationService.toggleDeviceStatus(device.id, targetStatus).subscribe({
+      next: (res) => {
+        this.togglingDeviceId.set(null);
+        const updatedStatus = (res && res.is_active !== undefined)
+          ? (res.is_active === true || res.is_active === 'true')
+          : targetStatus;
+
+        this.registeredDevices.update(list =>
+          list.map(d => d.id === device.id ? { ...d, is_active: updatedStatus } : d)
+        );
+        this.toastService.showSuccess(
+          updatedStatus ? '🟢 Device activated successfully' : '🟠 Device deactivated successfully'
+        );
+      },
+      error: (err) => {
+        this.togglingDeviceId.set(null);
+        console.error('Failed to update device status:', err);
+        this.toastService.showError(err?.error?.message || 'Failed to update device status');
+      }
+    });
+  }
+
+  async onDeleteDevice(device: any): Promise<void> {
+    if (!device || !device.id || this.deletingDeviceId()) return;
+    const devName = device.device_name || device.device_model || (device.device_type ? `${device.device_type} Device` : 'this device');
+
+    const confirmed = await this.confirmAction(
+      'Delete Device',
+      `Are you sure you want to delete "${devName}"? This action cannot be undone.`,
+      'Delete'
+    );
+
+    if (!confirmed) return;
+
+    this.deletingDeviceId.set(device.id);
+    this.notificationService.deleteDevice(device.id).subscribe({
+      next: () => {
+        this.deletingDeviceId.set(null);
+        this.registeredDevices.update(list => list.filter(d => d.id !== device.id));
+        this.toastService.showSuccess('🗑️ Device deleted successfully');
+      },
+      error: (err) => {
+        this.deletingDeviceId.set(null);
+        console.error('Failed to delete device:', err);
+        this.toastService.showError(err?.error?.message || 'Failed to delete device');
+      }
+    });
+  }
+
+
 
   onPhotoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -319,8 +436,8 @@ export class ProfileViewComponent implements OnInit {
         if (formVal.business_district_id) formData.append('business_district_id', formVal.business_district_id);
         if (formVal.business_address) formData.append('business_address', formVal.business_address);
       }
-      if (photoFile) formData.append('profile_pic', photoFile);
-      if (logoFile) formData.append('business_logo', logoFile);
+      if (photoFile) formData.append('profile_pic', photoFile, photoFile.name || 'profile.jpg');
+      if (logoFile) formData.append('business_logo', logoFile, logoFile.name || 'logo.jpg');
       payload = formData;
     } else {
       payload = {

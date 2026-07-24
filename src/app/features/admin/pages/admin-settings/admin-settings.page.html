@@ -5,7 +5,7 @@
     <p>Loading settings...</p>
   </div>
 
-  <div *ngIf="!isLoading" class="settings-container" style="max-width: 600px; margin: 0 auto;">
+  <div *ngIf="!isLoading" class="settings-container" style="max-width: 600px; margin: 0 auto; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));">
     <div class="form-section" style="margin-bottom: 24px;">
       <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px; padding: 0 8px;">Mega Deals Configuration</h3>
       <div class="form-content">

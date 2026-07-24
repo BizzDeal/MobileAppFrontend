@@ -35,6 +35,7 @@ import { ReferralsService } from '../../services/referrals.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { ReferralDTO, ReferralStatus } from '../../models/referral.model';
 import { ToastService } from '../../../../core/services/toast.service';
+import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 
 const Contacts = registerPlugin<any>('Contacts');
 
@@ -59,7 +60,8 @@ const Contacts = registerPlugin<any>('Contacts');
     IonCheckbox,
     IonList,
     IonItem,
-    IonLabel
+    IonLabel,
+    ListSkeletonComponent
   ],
   templateUrl: './referrals-page.component.html',
   styleUrl: './referrals-page.component.scss',

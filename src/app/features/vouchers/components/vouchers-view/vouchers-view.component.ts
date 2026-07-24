@@ -33,6 +33,7 @@ import {
 import { CustomerVouchersService } from '../../services/customer-vouchers.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { CustomerVoucher, VoucherStatus } from '../../models/voucher.model';
+import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 
 type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'CANCELLED';
 
@@ -48,13 +49,13 @@ type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'CANCELLED';
     IonInput,
     IonIcon,
     IonButton,
-    IonSpinner,
     IonModal,
     IonButtons,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     IonRefresher,
-    IonRefresherContent
+    IonRefresherContent,
+    CardSkeletonComponent
   ],
   templateUrl: './vouchers-view.component.html',
   styleUrls: ['./vouchers-view.component.scss'],

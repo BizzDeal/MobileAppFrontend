@@ -11,6 +11,7 @@ import {
 import { Observable } from 'rxjs';
 import { AdminMemberActionModalComponent } from '../../components/admin-member-action-modal/admin-member-action-modal.component';
 import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
+import { DashboardSkeletonComponent } from '../../../../shared/components/skeletons/dashboard-skeleton/dashboard-skeleton.component';
 
 import { addIcons } from 'ionicons';
 import { 
@@ -33,7 +34,7 @@ import ApexCharts from 'apexcharts';
   templateUrl: './admin-dashboard.page.html',
   styleUrls: ['./admin-dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, NgApexchartsModule, DatePipe]
+  imports: [CommonModule, IonicModule, NgApexchartsModule, DatePipe, DashboardSkeletonComponent]
 })
 export class AdminDashboardPage implements OnInit {
   analytics$!: Observable<AdminAnalyticsDto>;

@@ -15,11 +15,12 @@ import { NotificationService } from '../../../notifications/services/notificatio
 import { ToastService } from '../../../../core/services/toast.service';
 
 import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
+import { DashboardSkeletonComponent } from '../../../../shared/components/skeletons/dashboard-skeleton/dashboard-skeleton.component';
 
 @Component({
   selector: 'app-member-home',
   standalone: true,
-  imports: [CommonModule, IonIcon, IonSpinner, MeetingCardComponent, CachedImgDirective, HeroCarouselComponent],
+  imports: [CommonModule, IonIcon, MeetingCardComponent, CachedImgDirective, HeroCarouselComponent, DashboardSkeletonComponent],
   templateUrl: './member-home.component.html',
   styleUrls: ['./member-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

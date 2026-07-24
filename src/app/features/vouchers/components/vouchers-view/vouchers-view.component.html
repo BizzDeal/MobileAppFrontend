@@ -50,9 +50,8 @@
   <!-- Main Content Areas -->
   @if (loading() && filteredVouchers().length === 0) {
   <!-- Loading State -->
-  <div class="loading-container">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p class="loading-text">Retrieving your vouchers...</p>
+  <div style="padding: 16px;">
+    <app-card-skeleton [count]="3"></app-card-skeleton>
   </div>
   } @else if (error()) {
   <!-- Error State -->

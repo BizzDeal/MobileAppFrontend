@@ -43,22 +43,24 @@ import { AuthSessionService } from '../../../../core/services/auth-session.servi
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { MemberOnboardingService } from '../../../auth/services/member-onboarding.service';
 import { NotificationService } from '../../../notifications/services/notification.service';
+import { ProfileSkeletonComponent } from '../../../../shared/components/skeletons/profile-skeleton/profile-skeleton.component';
 
 @Component({
   selector: 'app-profile-view',
   standalone: true,
   imports: [
-    NgClass,
     DatePipe,
+    NgClass,
     ReactiveFormsModule,
-    IonAlert,
-    IonSpinner,
     IonIcon,
+    IonSpinner,
     IonInput,
     IonSelect,
     IonSelectOption,
     IonTextarea,
-    CachedImgDirective
+    IonAlert,
+    CachedImgDirective,
+    ProfileSkeletonComponent
   ],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.scss',

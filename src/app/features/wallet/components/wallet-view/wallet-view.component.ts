@@ -28,6 +28,7 @@ import {
 } from 'ionicons/icons';
 import { WalletTransactionDTO } from '../../models/wallet.model';
 import { WalletService } from '../../services/wallet.service';
+import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 
 @Component({
   selector: 'app-wallet-view',
@@ -36,7 +37,6 @@ import { WalletService } from '../../services/wallet.service';
     NgClass,
     DatePipe,
     DecimalPipe,
-    IonSpinner,
     IonIcon,
     IonModal,
     IonHeader,
@@ -45,7 +45,8 @@ import { WalletService } from '../../services/wallet.service';
     IonButtons,
     IonButton,
     IonInfiniteScroll,
-    IonInfiniteScrollContent
+    IonInfiniteScrollContent,
+    ListSkeletonComponent
   ],
   templateUrl: './wallet-view.component.html',
   styleUrl: './wallet-view.component.scss',

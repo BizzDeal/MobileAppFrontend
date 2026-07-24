@@ -23,6 +23,10 @@ export class AdminChatPage {
   
   readonly selectedConversationId = this.chatService.activeConversationId;
 
+  ionViewWillEnter(): void {
+    this.chatService.refreshContactsAndConversations().subscribe();
+  }
+
   onConversationSelect(id: string): void {
     this.chatService.setActiveConversation(id);
   }

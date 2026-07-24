@@ -1,7 +1,6 @@
 @if (loading()) {
-  <div class="loading-state">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p class="loading-text">Loading your dashboard...</p>
+  <div class="dashboard-content" style="padding-top: 16px;">
+    <app-dashboard-skeleton></app-dashboard-skeleton>
   </div>
 } @else if (dashboardData(); as data) {
   <div class="member-dashboard">

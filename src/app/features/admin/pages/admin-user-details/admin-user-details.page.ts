@@ -13,12 +13,12 @@ import {
 } from 'ionicons/icons';
 import mediumZoom, { Zoom } from 'medium-zoom';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
-
+import { ProfileSkeletonComponent } from '../../../../shared/components/skeletons/profile-skeleton/profile-skeleton.component';
 
 @Component({
   selector: 'app-admin-user-details',
   standalone: true,
-  imports: [CommonModule, IonicModule, CachedImgDirective],
+  imports: [CommonModule, IonicModule, CachedImgDirective, ProfileSkeletonComponent],
   templateUrl: './admin-user-details.page.html',
   styleUrls: ['./admin-user-details.page.scss']
 })

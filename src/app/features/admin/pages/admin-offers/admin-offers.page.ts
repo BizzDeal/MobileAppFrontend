@@ -4,6 +4,7 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminOffer, OfferStatus } from '../../models/admin-business.model';
 import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
+import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 
 import { addIcons } from 'ionicons';
 import { pricetagOutline, timeOutline, flashOutline, businessOutline, filterOutline, flash, chevronForward } from 'ionicons/icons';
@@ -11,7 +12,7 @@ import { pricetagOutline, timeOutline, flashOutline, businessOutline, filterOutl
 @Component({
   selector: 'app-admin-offers',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, CardSkeletonComponent],
   templateUrl: './admin-offers.page.html',
   styleUrls: ['./admin-offers.page.scss']
 })

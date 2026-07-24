@@ -1,3 +1,5 @@
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { computed, inject, Injectable, signal, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -52,26 +54,33 @@ export class ChatService {
     });
   }
 
-  loadContactsAndConversations(): void {
-    // We only load initial default contacts (admins) for the "New Chat" screen
-    this.http.get<any[]>(`${environment.apiUrl}/chat/contacts`).subscribe({
-      next: (users) => {
-        const partners = users.map(u => ({
+  refreshContactsAndConversations(): Observable<{ contacts: any[]; conversations: ChatConversation[] }> {
+    return forkJoin({
+      contacts: this.http.get<any[]>(`${environment.apiUrl}/chat/contacts`).pipe(catchError(() => of([]))),
+      conversations: this.http.get<ChatConversation[]>(`${environment.apiUrl}/chat/conversations`).pipe(catchError(() => of([])))
+    }).pipe(
+      tap(({ contacts, conversations }) => {
+        const partners = contacts.map(u => ({
           id: u.id,
           full_name: u.profile?.full_name || u.full_name || (u.role === 'ADMIN' ? 'Admin' : 'Unknown User'),
           phone: u.phone,
           role: u.role,
-          profile_pic_url: u.profile?.profile_pic_url || null,
+          profile_pic_url: u.profile_pic_url || u.profile?.profile_pic_url || null,
           isOnline: this._onlineUsers().has(u.id),
         }));
         this._contactsDirectory.set(partners);
-        this.loadConversations();
-      },
-      error: (err) => console.error('Failed to load contacts', err)
-    });
+
+        const mapped = conversations.map(c => this.mapConversation(c));
+        this._conversations.set(mapped);
+      })
+    );
   }
 
-  searchContacts(query: string): import('rxjs').Observable<any[]> {
+  loadContactsAndConversations(): void {
+    this.refreshContactsAndConversations().subscribe();
+  }
+
+  searchContacts(query: string): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/chat/contacts?search=${encodeURIComponent(query)}`);
   }
 
@@ -121,19 +130,17 @@ export class ChatService {
   }
 
   // Create a new conversation or select existing one
-  createOrGetConversation(partnerId: string): void {
-    this.http.post<ChatConversation>(`${environment.apiUrl}/chat/conversations`, { target_user_id: partnerId }).subscribe({
-      next: (conv) => {
-        const mappedConv = this.mapConversation(conv);
-        // If not in our list, add it
+  createOrGetConversation(partnerId: string): Observable<ChatConversation> {
+    return this.http.post<ChatConversation>(`${environment.apiUrl}/chat/conversations`, { target_user_id: partnerId }).pipe(
+      map(conv => this.mapConversation(conv)),
+      tap(mappedConv => {
         const exists = this._conversations().find(c => c.id === mappedConv.id);
         if (!exists) {
           this._conversations.update(convs => [mappedConv, ...convs]);
         }
         this.setActiveConversation(mappedConv.id);
-      },
-      error: (err) => console.error('Failed to create/get conversation', err)
-    });
+      })
+    );
   }
 
   // Send a message via WebSocket
@@ -239,6 +246,12 @@ export class ChatService {
     this.chatSocket.on('receive_message', (rawMessage: any) => {
       const message = this.mapMessage(rawMessage);
       const activeId = this._activeConversationId();
+      
+      const convExists = this._conversations().some(c => c.id === message.conversation_id);
+      if (!convExists) {
+        this.loadConversations();
+      }
+
       if (activeId === message.conversation_id) {
         this._activeMessages.update(msgs => [...msgs, message]);
         // Send delivered tick

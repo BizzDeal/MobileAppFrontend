@@ -125,6 +125,23 @@
   border: 1.5px solid var(--bizzdeal-border-color);
 }
 
+.initials-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--bizzdeal-radius-full);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--bizzdeal-font-family);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  border: 1.5px solid var(--bizzdeal-border-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  text-transform: uppercase;
+}
+
 .online-status-indicator {
   position: absolute;
   bottom: 0;

@@ -17,9 +17,8 @@
   </ion-segment>
 
   @if (loading()) {
-    <div class="loading-state">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Loading meetings...</p>
+    <div style="padding: 16px 0;">
+      <app-card-skeleton [count]="2"></app-card-skeleton>
     </div>
   } @else {
     <div class="meetings-list">

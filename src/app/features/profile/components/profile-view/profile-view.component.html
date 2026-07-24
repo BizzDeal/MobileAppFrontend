@@ -11,9 +11,8 @@
     </div>
   </div>
   @if (loading() && !profile()) {
-  <div class="loading-state">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p>Loading profile details...</p>
+  <div style="padding-top: 8px;">
+    <app-profile-skeleton></app-profile-skeleton>
   </div>
   } @else if (error()) {
   <div class="error-state">

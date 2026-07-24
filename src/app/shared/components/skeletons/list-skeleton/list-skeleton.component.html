@@ -1,0 +1,16 @@
+<div class="skeleton-list-container">
+  @for (item of countArray; track $index) {
+    <div class="skeleton-list-item">
+      <div class="skeleton-avatar">
+        <ion-skeleton-text animated style="width: 100%; height: 100%; border-radius: 50%; margin: 0;"></ion-skeleton-text>
+      </div>
+      <div class="skeleton-item-body">
+        <ion-skeleton-text animated style="width: 60%; height: 16px; border-radius: 4px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 40%; height: 13px; margin-top: 6px; border-radius: 4px;"></ion-skeleton-text>
+      </div>
+      <div class="skeleton-item-end">
+        <ion-skeleton-text animated style="width: 50px; height: 16px; border-radius: 4px;"></ion-skeleton-text>
+      </div>
+    </div>
+  }
+</div>

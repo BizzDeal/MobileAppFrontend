@@ -11,9 +11,8 @@
     </div>
   </div>
   @if (loading() && !wallet()) {
-    <div class="loading-state">
-      <ion-spinner name="crescent" color="primary"></ion-spinner>
-      <p>Syncing wallet & ledger records...</p>
+    <div style="padding-top: 8px;">
+      <app-list-skeleton [count]="5"></app-list-skeleton>
     </div>
   } @else if (error()) {
     <div class="error-state">

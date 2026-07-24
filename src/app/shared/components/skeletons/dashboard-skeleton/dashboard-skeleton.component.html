@@ -1,0 +1,45 @@
+<div class="skeleton-dashboard-container">
+  <!-- Hero / Summary Banner -->
+  <div class="skeleton-hero-banner">
+    <ion-skeleton-text animated style="width: 40%; height: 16px; border-radius: 4px;"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 70%; height: 28px; margin-top: 8px; border-radius: 6px;"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 50%; height: 14px; margin-top: 8px; border-radius: 4px;"></ion-skeleton-text>
+  </div>
+
+  <!-- Stats Grid (2 Cards) -->
+  <div class="skeleton-stats-row">
+    <div class="skeleton-stat-card">
+      <ion-skeleton-text animated style="width: 30px; height: 30px; border-radius: 8px; margin: 0;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 60%; height: 20px; margin-top: 10px; border-radius: 4px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 80%; height: 12px; margin-top: 4px; border-radius: 4px;"></ion-skeleton-text>
+    </div>
+    <div class="skeleton-stat-card">
+      <ion-skeleton-text animated style="width: 30px; height: 30px; border-radius: 8px; margin: 0;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 60%; height: 20px; margin-top: 10px; border-radius: 4px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 80%; height: 12px; margin-top: 4px; border-radius: 4px;"></ion-skeleton-text>
+    </div>
+  </div>
+
+  <!-- Quick Actions Grid (4 Tiles) -->
+  <div class="skeleton-section-header">
+    <ion-skeleton-text animated style="width: 45%; height: 18px; border-radius: 4px;"></ion-skeleton-text>
+  </div>
+  <div class="skeleton-actions-grid">
+    @for (item of [1, 2, 3, 4]; track $index) {
+      <div class="skeleton-action-tile">
+        <ion-skeleton-text animated style="width: 40px; height: 40px; border-radius: 12px; margin: 0;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 70%; height: 12px; margin-top: 8px; border-radius: 4px;"></ion-skeleton-text>
+      </div>
+    }
+  </div>
+
+  <!-- Recent Items Header & Card -->
+  <div class="skeleton-section-header" style="margin-top: 8px;">
+    <ion-skeleton-text animated style="width: 50%; height: 18px; border-radius: 4px;"></ion-skeleton-text>
+  </div>
+  <div class="skeleton-recent-card">
+    <ion-skeleton-text animated style="width: 70%; height: 16px; border-radius: 4px;"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 90%; height: 14px; margin-top: 8px; border-radius: 4px;"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 40%; height: 14px; margin-top: 6px; border-radius: 4px;"></ion-skeleton-text>
+  </div>
+</div>

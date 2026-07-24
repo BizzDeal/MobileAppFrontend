@@ -244,6 +244,12 @@ export class HomePage {
     }
   }
 
+  ionViewWillEnter(): void {
+    if (this.authSession.isAuthenticated() && this.userRole() !== 'CUSTOMER') {
+      this.chatService.refreshContactsAndConversations().subscribe();
+    }
+  }
+
   onRefresh(event: any): void {
     const role = this.userRole();
     if (role === 'MEMBER') {
@@ -252,7 +258,8 @@ export class HomePage {
         dashboard: this.memberDashboardService.loadDashboardData().pipe(catchError(() => of(null))),
         meetings: this.meetingsService.loadMeetings().pipe(catchError(() => of(null))),
         wallet: this.walletService.refreshWallet().pipe(catchError(() => of(null))),
-        notifications: this.notificationService.getNotifications().pipe(catchError(() => of(null)))
+        notifications: this.notificationService.getNotifications().pipe(catchError(() => of(null))),
+        chat: this.chatService.refreshContactsAndConversations().pipe(catchError(() => of(null)))
       }).subscribe(() => {
         if (event?.target?.complete) {
           event.target.complete();
@@ -264,7 +271,8 @@ export class HomePage {
         feed: this.homeService.loadHomeFeed().pipe(catchError(() => of(null))),
         wallet: this.walletService.refreshWallet().pipe(catchError(() => of(null))),
         notifications: this.notificationService.getNotifications().pipe(catchError(() => of(null))),
-        vouchers: this.customerVouchersService.loadVouchers().pipe(catchError(() => of(null)))
+        vouchers: this.customerVouchersService.loadVouchers().pipe(catchError(() => of(null))),
+        chat: this.chatService.refreshContactsAndConversations().pipe(catchError(() => of(null)))
       }).subscribe(() => {
         if (event?.target?.complete) {
           event.target.complete();
@@ -327,6 +335,9 @@ export class HomePage {
       return;
     }
     this.activeNavTab.set(tab);
+    if (tab === 'chat') {
+      this.chatService.refreshContactsAndConversations().subscribe();
+    }
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { tab },

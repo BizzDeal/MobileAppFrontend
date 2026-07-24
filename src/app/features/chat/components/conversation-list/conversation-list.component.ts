@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, output, signal } from '@angular/core';
 import {
   IonBadge,
   IonHeader,
@@ -7,6 +7,8 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonRefresher,
+  IonRefresherContent,
   IonSearchbar,
   IonTitle,
   IonToolbar
@@ -40,13 +42,15 @@ import { AuthSessionService } from '../../../../core/services/auth-session.servi
     IonLabel,
     IonSearchbar,
     IonBadge,
+    IonRefresher,
+    IonRefresherContent,
     CachedImgDirective
   ],
   templateUrl: './conversation-list.component.html',
   styleUrl: './conversation-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConversationListComponent {
+export class ConversationListComponent implements OnInit {
   private readonly chatService = inject(ChatService);
   private readonly toastService = inject(ToastService);
   private readonly profileService = inject(ProfileService);
@@ -96,6 +100,9 @@ export class ConversationListComponent {
           item.conversationId = conv.id;
           item.unread_count = conv.unread_count;
           item.last_message_at = conv.last_message_at;
+          if (conv.partner.profile_pic_url) {
+            item.contact.profile_pic_url = conv.partner.profile_pic_url;
+          }
         } else {
           map.set(conv.partner.id, {
             contact: conv.partner,
@@ -143,6 +150,25 @@ export class ConversationListComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.refresh();
+  }
+
+  ionViewWillEnter(): void {
+    this.refresh();
+  }
+
+  refresh(): void {
+    this.chatService.refreshContactsAndConversations().subscribe();
+  }
+
+  handleRefresh(event: any): void {
+    this.chatService.refreshContactsAndConversations().subscribe({
+      next: () => (event as any)?.target?.complete(),
+      error: () => (event as any)?.target?.complete()
+    });
+  }
+
   onSearchChange(event: any): void {
     const val = event.target?.value ?? event.detail?.value ?? '';
     this.searchFilter.set(val);
@@ -156,8 +182,17 @@ export class ConversationListComponent {
 
     if (item.conversationId) {
       this.selectConversation.emit(item.conversationId);
-    } else {
-      this.chatService.createOrGetConversation(item.contact.id);
+    } else if (item.contact?.id) {
+      this.chatService.createOrGetConversation(item.contact.id).subscribe({
+        next: (conv) => {
+          if (conv?.id) {
+            this.selectConversation.emit(conv.id);
+          }
+        },
+        error: () => {
+          this.toastService.showError('Failed to start conversation');
+        }
+      });
     }
   }
 
@@ -168,5 +203,30 @@ export class ConversationListComponent {
 
   isOnline(userId: string): boolean {
     return this.onlineUsers().has(userId);
+  }
+
+  getInitials(name: string): string {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  }
+
+  getAvatarColor(name: string): string {
+    if (!name) return 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
+    const colors = [
+      'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)', // Blue
+      'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)', // Purple
+      'linear-gradient(135deg, #10b981 0%, #047857 100%)', // Emerald
+      'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)', // Amber
+      'linear-gradient(135deg, #ec4899 0%, #be185d 100%)', // Pink
+      'linear-gradient(135deg, #06b6d4 0%, #0e7490 100%)', // Cyan
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
   }
 }

@@ -16,9 +16,8 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div *ngIf="loading" class="loading-state">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p class="loading-text">Loading notifications history...</p>
+  <div *ngIf="loading" style="padding: 16px;">
+    <app-list-skeleton [count]="4"></app-list-skeleton>
   </div>
 
   <div *ngIf="!loading && filteredNotifications.length === 0" class="ion-padding ion-text-center mt-4">

@@ -8,13 +8,14 @@ import { AdminMeetingsService } from '../../services/admin-meetings.service';
 import { AdminMeetingActionModalComponent } from '../../components/admin-meeting-action-modal/admin-meeting-action-modal.component';
 import { AdminMeetingAttendeesModalComponent } from '../../components/admin-meeting-attendees-modal/admin-meeting-attendees-modal.component';
 import { MeetingWithAttendee } from '../../../meetings/services/meetings.service';
+import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 
 @Component({
   selector: 'app-admin-meetings',
   templateUrl: './admin-meetings.page.html',
   styleUrls: ['./admin-meetings.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, MeetingCardComponent]
+  imports: [CommonModule, IonicModule, MeetingCardComponent, CardSkeletonComponent]
 })
 export class AdminMeetingsPage implements OnInit {
   private readonly adminMeetingsService = inject(AdminMeetingsService);

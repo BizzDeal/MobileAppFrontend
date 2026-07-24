@@ -32,9 +32,8 @@
 
   <!-- Loading State -->
   @if (loading() && referrals().length === 0) {
-    <div class="state-container">
-      <ion-spinner name="crescent" color="primary"></ion-spinner>
-      <p class="state-text">Loading referrals...</p>
+    <div style="padding: 16px;">
+      <app-list-skeleton [count]="4"></app-list-skeleton>
     </div>
   }
 

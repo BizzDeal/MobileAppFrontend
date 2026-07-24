@@ -27,6 +27,7 @@ import { ChatService } from '../../../chat/services/chat.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { environment } from '../../../../../environments/environment';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 
 export interface DirectoryBusinessDTO {
   id: string;
@@ -54,8 +55,8 @@ export interface DirectoryBusinessDTO {
     IonIcon,
     IonInput,
     IonButton,
-    IonSpinner,
-    CachedImgDirective
+    CachedImgDirective,
+    CardSkeletonComponent
   ],
   templateUrl: './business-directory.page.html',
   styleUrl: './business-directory.page.scss',

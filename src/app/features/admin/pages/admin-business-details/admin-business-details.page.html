@@ -8,9 +8,8 @@
 </ion-header>
 
 <ion-content style="--background: #fff;">
-  <div *ngIf="loading" class="loading-state">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p class="loading-text">Loading details...</p>
+  <div *ngIf="loading" style="padding: 16px;">
+    <app-card-skeleton [count]="2"></app-card-skeleton>
   </div>
 
   <div *ngIf="!loading && !business" class="ion-padding ion-text-center mt-4">

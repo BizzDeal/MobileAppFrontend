@@ -1,0 +1,31 @@
+.skeleton-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.skeleton-card {
+  margin: 0;
+  border-radius: var(--bizzdeal-card-radius, 26px);
+  background: var(--bizzdeal-surface, #ffffff);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+
+  .skeleton-image-box {
+    width: 100%;
+    height: 120px;
+    background: #f0f3f8;
+  }
+
+  .skeleton-content-box {
+    padding: 16px;
+  }
+
+  .skeleton-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

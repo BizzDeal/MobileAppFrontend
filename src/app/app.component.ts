@@ -9,7 +9,7 @@ import { PermissionsService } from './core/platform/permissions.service';
 import { AppBackButtonService } from './core/platform/app-back-button.service';
 import { NotificationService } from './features/notifications/services/notification.service';
 import { SplashScreenComponent } from './shared/components/splash-screen/splash-screen.component';
-import { SmartLoadingScreenComponent } from './shared/components/smart-loading-screen/smart-loading-screen.component';
+//import { SmartLoadingScreenComponent } from './shared/components/smart-loading-screen/smart-loading-screen.component';
 import { SplashScreenService } from './core/services/splash-screen.service';
 
 @Component({
@@ -21,7 +21,7 @@ import { SplashScreenService } from './core/services/splash-screen.service';
     IonicModule,
     RouterModule,
     SplashScreenComponent,
-    SmartLoadingScreenComponent
+    // SmartLoadingScreenComponent
   ],
 })
 export class AppComponent implements OnInit, OnDestroy {
@@ -37,7 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
     private splashScreenService: SplashScreenService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.statusBarService.initialize();

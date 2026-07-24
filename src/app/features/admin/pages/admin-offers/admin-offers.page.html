@@ -16,9 +16,8 @@
 </ion-header>
 
 <ion-content style="--background: #fff;">
-  <div *ngIf="loading" class="loading-state">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p class="loading-text">Loading offers...</p>
+  <div *ngIf="loading" style="padding: 16px;">
+    <app-card-skeleton [count]="3"></app-card-skeleton>
   </div>
 
   <div *ngIf="!loading && filteredOffers.length === 0" class="ion-padding ion-text-center mt-4">

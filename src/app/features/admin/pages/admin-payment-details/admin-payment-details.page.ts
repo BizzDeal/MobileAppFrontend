@@ -6,11 +6,12 @@ import { AdminPaymentSettingsService, PaymentSettings } from '../../services/adm
 import { addIcons } from 'ionicons';
 import { saveOutline, refreshOutline, cardOutline } from 'ionicons/icons';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
+import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 
 @Component({
   selector: 'app-admin-payment-details',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, CardSkeletonComponent],
   templateUrl: './admin-payment-details.page.html',
   styleUrls: ['./admin-payment-details.page.scss']
 })

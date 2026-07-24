@@ -4,6 +4,7 @@ import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { AdminNotificationsService } from '../../services/admin-notifications.service';
 import { AdminNotification, NotificationType, NotificationAudience } from '../../models/admin-notification.model';
 import { AdminNotificationComposeModalComponent } from '../../components/admin-notification-compose-modal/admin-notification-compose-modal.component';
+import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 
 import { addIcons } from 'ionicons';
 import { notificationsOutline, trashOutline, peopleOutline, personOutline, megaphoneOutline, timeOutline, filterOutline, addOutline } from 'ionicons/icons';
@@ -11,7 +12,7 @@ import { notificationsOutline, trashOutline, peopleOutline, personOutline, megap
 @Component({
   selector: 'app-admin-notifications',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, ListSkeletonComponent],
   templateUrl: './admin-notifications.page.html',
   styleUrls: ['./admin-notifications.page.scss']
 })

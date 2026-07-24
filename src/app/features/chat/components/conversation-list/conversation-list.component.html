@@ -1,4 +1,8 @@
 <div class="conv-list-container">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <!-- Search bar -->
   <div class="search-section">
     <ion-searchbar 
@@ -22,10 +26,10 @@
                 <ion-icon name="people-outline" />
               </div>
             } @else if (item.contact.profile_pic_url) {
-              <img [appCachedImg]="item.contact.profile_pic_url" alt="{{ item.contact.full_name }}" class="partner-avatar" />
+              <img [appCachedImg]="item.contact.profile_pic_url" alt="{{ item.contact.full_name }}" class="partner-avatar" (error)="item.contact.profile_pic_url = null" />
             } @else {
-              <div class="avatar-fallback">
-                <ion-icon name="person-outline" />
+              <div class="initials-avatar" [style.background]="getAvatarColor(item.contact.full_name)">
+                {{ getInitials(item.contact.full_name) }}
               </div>
             }
             @if (!item.isGroup && isOnline(item.contact.id)) {

@@ -254,7 +254,7 @@ export class HomePage {
     const role = this.userRole();
     if (role === 'MEMBER') {
       forkJoin({
-        profile: this.profileService.loadProfile().pipe(catchError(() => of(null))),
+        profile: this.profileService.loadProfile(true).pipe(catchError(() => of(null))),
         dashboard: this.memberDashboardService.loadDashboardData().pipe(catchError(() => of(null))),
         meetings: this.meetingsService.loadMeetings().pipe(catchError(() => of(null))),
         wallet: this.walletService.refreshWallet().pipe(catchError(() => of(null))),
@@ -267,7 +267,7 @@ export class HomePage {
       });
     } else {
       forkJoin({
-        profile: this.profileService.loadProfile().pipe(catchError(() => of(null))),
+        profile: this.profileService.loadProfile(true).pipe(catchError(() => of(null))),
         feed: this.homeService.loadHomeFeed().pipe(catchError(() => of(null))),
         wallet: this.walletService.refreshWallet().pipe(catchError(() => of(null))),
         notifications: this.notificationService.getNotifications().pipe(catchError(() => of(null))),

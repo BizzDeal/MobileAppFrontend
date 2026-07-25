@@ -10,6 +10,41 @@
       </div>
     </div>
   </div>
+
+  @if (profile() && !loading()) {
+    <div class="completion-card bd-card" [class.incomplete]="isIncompleteProfile()" [class.pass]="!isIncompleteProfile()">
+      <div class="completion-header">
+        <h3>Profile Completion</h3>
+        <div class="grade-badge">
+          @if (isIncompleteProfile()) {
+            <ion-icon name="alert-circle-outline"></ion-icon> INCOMPLETE
+          } @else {
+            <ion-icon name="checkmark-circle-outline"></ion-icon> PASS
+          }
+        </div>
+      </div>
+      
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" [style.width]="completionScore() + '%'" 
+             [class.full]="completionScore() === 100" [class.partial]="completionScore() < 100">
+        </div>
+      </div>
+      
+      <p class="score-text">{{ completionScore() }}% Completed</p>
+      
+      @if (isIncompleteProfile() && missingFields().length > 0) {
+        <div class="missing-fields">
+          <p>Please complete the following mandatory fields:</p>
+          <div class="tags-container">
+            @for (field of missingFields(); track field) {
+              <span class="missing-tag">{{ field.replace('_id', '').replace('_', ' ') }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
   @if (loading() && !profile()) {
   <div style="padding-top: 8px;">
     <app-profile-skeleton></app-profile-skeleton>
@@ -310,16 +345,16 @@
       <!-- Business Address -->
       <div class="form-group">
         <label class="form-label" for="business_address">
-          Business Address <span class="required-star">*</span>
+          Business Address
         </label>
         <div class="input-wrapper textarea-wrapper">
           <ion-icon name="location-outline" class="input-icon textarea-icon"></ion-icon>
           <ion-textarea id="business_address" formControlName="business_address" class="form-input form-textarea"
-            rows="3" placeholder="Enter business address"></ion-textarea>
+            rows="3" placeholder="Enter business address (optional)"></ion-textarea>
         </div>
         <div class="error-container">
           @if (profileForm.get('business_address')?.touched && profileForm.get('business_address')?.invalid) {
-          <span class="error-message">Address is required</span>
+          <span class="error-message">Business address must be at least 5 characters</span>
           }
         </div>
       </div>

@@ -486,5 +486,21 @@ ion-searchbar {
   transition: background-color 0.3s ease;
 }
 
+/* Permission Modal Dialog Styling */
+ion-modal.permission-modal-dialog {
+  --height: auto;
+  --width: 90%;
+  --max-width: 380px;
+  --border-radius: var(--bizzdeal-radius-xl, 26px);
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+  &::part(content) {
+    border-radius: var(--bizzdeal-radius-xl, 26px);
+    overflow: hidden;
+    background: #ffffff;
+  }
+}
+
+
 
 

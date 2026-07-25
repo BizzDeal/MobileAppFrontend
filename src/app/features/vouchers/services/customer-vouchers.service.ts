@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, effect, untracked } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, tap, shareReplay, finalize } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { CustomerVoucher } from '../models/voucher.model';
 import { AppSocketService } from '../../../core/services/app-socket.service';
@@ -23,6 +23,7 @@ export class CustomerVouchersService {
   private readonly _page = signal<number>(1);
   private readonly _limit = signal<number>(20);
   private readonly _hasMore = signal<boolean>(true);
+  private inFlightVouchers$: Observable<CustomerVoucher[]> | null = null;
 
   readonly vouchers = this._vouchers.asReadonly();
   readonly loading = this._loading.asReadonly();
@@ -36,9 +37,11 @@ export class CustomerVouchersService {
       const role = this.authSession.userRole();
       if (isAuth && (role === 'CUSTOMER' || !role)) {
         untracked(() => {
-          this.loadVouchers().subscribe({
-            error: (err) => console.error('Initial customer vouchers load encountered error:', err),
-          });
+          if (this._vouchers().length === 0) {
+            this.loadVouchers().subscribe({
+              error: (err) => console.error('Initial customer vouchers load encountered error:', err),
+            });
+          }
         });
       }
     });
@@ -56,6 +59,9 @@ export class CustomerVouchersService {
   }
 
   loadVouchers(page = 1, limit = 20, append = false, search = ''): Observable<CustomerVoucher[]> {
+    if (page === 1 && !append && !search && this.inFlightVouchers$) {
+      return this.inFlightVouchers$;
+    }
     this._loading.set(true);
     this._error.set(null);
 
@@ -64,7 +70,7 @@ export class CustomerVouchersService {
       .set('limit', limit.toString());
     if (search) params = params.set('search', search);
 
-    return this.http.get<any>(`${this.apiUrl}/vouchers/customer`, { params }).pipe(
+    const request$ = this.http.get<any>(`${this.apiUrl}/vouchers/customer`, { params }).pipe(
       map((res) => {
         const rawList: any[] = Array.isArray(res) ? res : res?.data || res?.items || [];
         const list: CustomerVoucher[] = rawList.map((v) => ({
@@ -121,8 +127,20 @@ export class CustomerVouchersService {
       map(({ list }) => list),
       catchError((err) => {
         return throwError(() => err);
-      })
+      }),
+      finalize(() => {
+        if (page === 1 && !append && !search) {
+          this.inFlightVouchers$ = null;
+        }
+      }),
+      shareReplay(1)
     );
+
+    if (page === 1 && !append && !search) {
+      this.inFlightVouchers$ = request$;
+    }
+
+    return request$;
   }
 
   loadMoreVouchers(search = ''): Observable<CustomerVoucher[]> | null {

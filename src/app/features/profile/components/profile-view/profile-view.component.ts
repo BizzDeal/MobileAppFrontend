@@ -11,7 +11,8 @@ import {
   IonSelect,
   IonSelectOption,
   IonSpinner,
-  IonTextarea
+  IonTextarea,
+  ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -44,6 +45,9 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 import { MemberOnboardingService } from '../../../auth/services/member-onboarding.service';
 import { NotificationService } from '../../../notifications/services/notification.service';
 import { ProfileSkeletonComponent } from '../../../../shared/components/skeletons/profile-skeleton/profile-skeleton.component';
+import { compressImageClientSide } from '../../../../shared/utils/image-compressor.util';
+import { validateFileSize } from '../../../../shared/utils/file-validator.util';
+import { ImageCropperModalComponent, ImageCropResult } from '../../../../shared/components/image-cropper-modal/image-cropper-modal.component';
 
 @Component({
   selector: 'app-profile-view',
@@ -75,6 +79,7 @@ export class ProfileViewComponent implements OnInit {
   public readonly onboardingService = inject(MemberOnboardingService);
   private readonly notificationService = inject(NotificationService);
   private readonly alertController = inject(AlertController);
+  private readonly modalCtrl = inject(ModalController);
 
 
   readonly profile = this.profileService.profile;
@@ -100,20 +105,11 @@ export class ProfileViewComponent implements OnInit {
   readonly isIncompleteProfile = computed(() => {
     const p = this.profile();
     if (!p) return false;
-    
-    const isMissingName = !p.full_name || p.full_name === 'Customer';
-    const isMissingEmail = !p.email || p.email.includes('@bizzdeal.com');
-    const isMissingState = !p.state_id;
-    
-    if (p.role === 'CUSTOMER') {
-      return isMissingName || isMissingEmail || isMissingState;
-    }
-    
-    const businessMissing = !p.business_name || !p.business_description || !p.category_id;
-    // Note: business location might not be fetched perfectly in this DTO depending on backend,
-    // so we can rely on the core ones that are always mapped.
-    return isMissingName || isMissingEmail || isMissingState || businessMissing;
+    return p.grade === 'INCOMPLETE';
   });
+  
+  readonly completionScore = computed(() => this.profile()?.completion_score || 0);
+  readonly missingFields = computed(() => this.profile()?.missing_fields || []);
 
   readonly profileForm: FormGroup = this.fb.group({
     full_name: ['', [Validators.minLength(2)]],
@@ -219,7 +215,7 @@ export class ProfileViewComponent implements OnInit {
           this.profileForm.controls['category_id'].setValidators([Validators.required]);
           this.profileForm.controls['business_state_id'].setValidators([Validators.required]);
           this.profileForm.controls['business_district_id'].clearValidators();
-          this.profileForm.controls['business_address'].setValidators([Validators.required]);
+          this.profileForm.controls['business_address'].clearValidators();
           this.profileForm.controls['website'].clearValidators();
           this.profileForm.controls['gst_number'].clearValidators();
         }
@@ -232,17 +228,17 @@ export class ProfileViewComponent implements OnInit {
           phone: p.phone || '',
           whatsapp: p.whatsapp || '',
           email: p.email || '',
-          state_id: p.state_id || '',
-          district_id: p.district_id || '',
+          state_id: p.state_id || p.business_state_id || '',
+          district_id: p.district_id || p.business_district_id || '',
           address: p.address || '',
           business_name: p.business_name || '',
           business_description: p.business_description || '',
           website: p.website || '',
           gst_number: p.gst_number || '',
           category_id: p.category_id || '',
-          business_state_id: (p as any).business_state_id || '',
-          business_district_id: (p as any).business_district_id || '',
-          business_address: (p as any).business_address || ''
+          business_state_id: p.business_state_id || p.state_id || '',
+          business_district_id: p.business_district_id || p.district_id || '',
+          business_address: p.business_address || ''
         }, { emitEvent: false });
 
         if (p.state_id) {
@@ -368,37 +364,74 @@ export class ProfileViewComponent implements OnInit {
 
 
 
-  onPhotoSelected(event: Event): void {
+  async onPhotoSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const file = input.files[0];
-      this.selectedPhotoFile.set(file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        const resultUrl = reader.result as string;
-        this.selectedPhotoUrl.set(resultUrl);
+      const rawFile = input.files[0];
+      const validation = validateFileSize(rawFile, 10);
+      if (!validation.valid) {
+        this.toastService.showError(validation.error || 'File size exceeds limit');
+        input.value = '';
+        return;
+      }
+
+      const modal = await this.modalCtrl.create({
+        component: ImageCropperModalComponent,
+        componentProps: {
+          imageSource: rawFile,
+          title: 'Crop Profile Photo',
+          roundCropper: true,
+          outputFileName: 'profile-photo.jpg'
+        }
+      });
+
+      await modal.present();
+      const { data, role } = await modal.onDidDismiss<ImageCropResult>();
+
+      if (role === 'confirm' && data) {
+        this.selectedPhotoFile.set(data.file);
+        this.selectedPhotoUrl.set(data.base64);
         this.picLoadError.set(false);
-        // Inform the service to update local signal picture URL
-        this.profileService.updateProfilePic(resultUrl);
-        this.toastService.showSuccess('📸 Profile picture selected!');
-      };
-      reader.readAsDataURL(file);
+        this.profileService.updateProfilePic(data.base64);
+        this.toastService.showSuccess('📸 Profile picture adjusted & cropped successfully!');
+      }
+
+      input.value = '';
     }
   }
 
-  onBusinessLogoSelected(event: Event): void {
+  async onBusinessLogoSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const file = input.files[0];
-      this.selectedBusinessLogoFile.set(file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        const resultUrl = reader.result as string;
-        this.selectedBusinessLogoUrl.set(resultUrl);
+      const rawFile = input.files[0];
+      const validation = validateFileSize(rawFile, 10);
+      if (!validation.valid) {
+        this.toastService.showError(validation.error || 'File size exceeds limit');
+        input.value = '';
+        return;
+      }
+
+      const modal = await this.modalCtrl.create({
+        component: ImageCropperModalComponent,
+        componentProps: {
+          imageSource: rawFile,
+          title: 'Crop Brand Image',
+          roundCropper: false,
+          outputFileName: 'brand-logo.jpg'
+        }
+      });
+
+      await modal.present();
+      const { data, role } = await modal.onDidDismiss<ImageCropResult>();
+
+      if (role === 'confirm' && data) {
+        this.selectedBusinessLogoFile.set(data.file);
+        this.selectedBusinessLogoUrl.set(data.base64);
         this.logoLoadError.set(false);
-        this.toastService.showSuccess('📸 Brand image selected!');
-      };
-      reader.readAsDataURL(file);
+        this.toastService.showSuccess('📸 Brand image adjusted & cropped successfully!');
+      }
+
+      input.value = '';
     }
   }
 

@@ -36,6 +36,7 @@ import { ProfileService } from '../../../profile/services/profile.service';
 import { ReferralDTO, ReferralStatus } from '../../models/referral.model';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
+import { PermissionsService } from '../../../../core/platform/permissions.service';
 
 const Contacts = registerPlugin<any>('Contacts');
 
@@ -71,6 +72,7 @@ export class ReferralsPageComponent implements OnInit {
   private readonly referralsService = inject(ReferralsService);
   private readonly profileService = inject(ProfileService);
   private readonly toastService = inject(ToastService);
+  private readonly permissionsService = inject(PermissionsService);
 
   readonly referrals = signal<ReferralDTO[]>([]);
   readonly loading = signal<boolean>(true);
@@ -161,6 +163,13 @@ export class ReferralsPageComponent implements OnInit {
     this.isModalOpen.set(false);
   }
 
+  async requestContactsPermission(): Promise<void> {
+    const granted = await this.permissionsService.ensurePermission('contacts');
+    if (granted) {
+      this.loadContacts();
+    }
+  }
+
   async loadContacts(): Promise<void> {
     if (!Capacitor.isNativePlatform()) {
       console.log('Contacts plugin is only available on native platforms.');
@@ -168,9 +177,21 @@ export class ReferralsPageComponent implements OnInit {
       return;
     }
 
+    const hasPermission = await this.permissionsService.ensurePermission(
+      'contacts',
+      'BizzDeal needs contacts access so you can easily select friends and colleagues to invite.'
+    );
+
+    if (!hasPermission) {
+      this.permissionDenied.set(true);
+      this.isContactsLoading.set(false);
+      return;
+    }
+
     this.isContactsLoading.set(true);
     this.error.set(null);
     this.permissionDenied.set(false);
+
 
     try {
       const result = await Contacts.getContacts();

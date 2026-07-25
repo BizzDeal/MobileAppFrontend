@@ -7,6 +7,10 @@ import { FirebasePhoneAuthService } from '../../../../core/services/firebase-pho
 import { AuthApiService } from '../../services/auth-api.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { ToastService } from '../../../../core/services/toast.service';
+import { compressImageClientSide } from '../../../../shared/utils/image-compressor.util';
+import { validateFileSize } from '../../../../shared/utils/file-validator.util';
+import { ModalController } from '@ionic/angular/standalone';
+import { ImageCropperModalComponent, ImageCropResult } from '../../../../shared/components/image-cropper-modal/image-cropper-modal.component';
 
 @Injectable()
 export class MemberRegistrationService {
@@ -16,6 +20,7 @@ export class MemberRegistrationService {
   readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
   readonly authApi = inject(AuthApiService);
   private readonly toastService = inject(ToastService);
+  private readonly modalCtrl = inject(ModalController);
 
   readonly photoPreview = signal<string | null>(null);
   private photoFile: File | null = null;
@@ -79,15 +84,37 @@ export class MemberRegistrationService {
     });
   }
 
-  onFileSelected(event: Event): void {
+  async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.photoFile = input.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.photoPreview.set(reader.result as string);
-      };
-      reader.readAsDataURL(this.photoFile);
+      const rawFile = input.files[0];
+      const validation = validateFileSize(rawFile, 10);
+      if (!validation.valid) {
+        this.toastService.showError(validation.error || 'File size exceeds limit');
+        input.value = '';
+        return;
+      }
+
+      const modal = await this.modalCtrl.create({
+        component: ImageCropperModalComponent,
+        componentProps: {
+          imageSource: rawFile,
+          title: 'Crop Profile Photo',
+          roundCropper: true,
+          outputFileName: 'profile-photo.jpg'
+        }
+      });
+
+      await modal.present();
+      const { data, role } = await modal.onDidDismiss<ImageCropResult>();
+
+      if (role === 'confirm' && data) {
+        this.photoFile = data.file;
+        this.photoPreview.set(data.base64);
+        this.toastService.showSuccess('📸 Profile picture cropped successfully!');
+      }
+
+      input.value = '';
     }
   }
 
@@ -99,15 +126,37 @@ export class MemberRegistrationService {
     return true;
   }
 
-  onLogoSelected(event: Event): void {
+  async onLogoSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.logoFile = input.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.logoPreview.set(reader.result as string);
-      };
-      reader.readAsDataURL(this.logoFile);
+      const rawFile = input.files[0];
+      const validation = validateFileSize(rawFile, 10);
+      if (!validation.valid) {
+        this.toastService.showError(validation.error || 'File size exceeds limit');
+        input.value = '';
+        return;
+      }
+
+      const modal = await this.modalCtrl.create({
+        component: ImageCropperModalComponent,
+        componentProps: {
+          imageSource: rawFile,
+          title: 'Crop Brand Image',
+          roundCropper: false,
+          outputFileName: 'brand-logo.jpg'
+        }
+      });
+
+      await modal.present();
+      const { data, role } = await modal.onDidDismiss<ImageCropResult>();
+
+      if (role === 'confirm' && data) {
+        this.logoFile = data.file;
+        this.logoPreview.set(data.base64);
+        this.toastService.showSuccess('📸 Brand image cropped successfully!');
+      }
+
+      input.value = '';
     }
   }
 

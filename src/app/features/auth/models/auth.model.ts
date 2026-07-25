@@ -39,6 +39,13 @@ export interface AuthUser {
   business_address?: string | null;
   business_state_id?: string | null;
   business_district_id?: string | null;
+  
+  // Profile Completion Tracking
+  is_profile_completed?: boolean;
+  completion_score?: number;
+  grade?: 'PASS' | 'INCOMPLETE';
+  missing_fields?: string[];
+  completed_fields?: string[];
 }
 
 export interface AuthTokens {

@@ -197,9 +197,10 @@ export class MemberOnboardingService {
     }
 
     const receipt = paymentReceipt || this.paymentReceiptFile();
-    if (!receipt) {
-      throw new Error('Payment receipt is missing. Please upload your payment screenshot.');
-    }
+    // Payment receipt is optional
+    // if (!receipt) {
+    //   throw new Error('Payment receipt is missing. Please upload your payment screenshot.');
+    // }
 
     this.isSubmitting.set(true);
     try {
@@ -232,7 +233,9 @@ export class MemberOnboardingService {
       if (businessLogo) {
         formData.append('business_logo', businessLogo, businessLogo.name);
       }
-      formData.append('payment_receipt', receipt, receipt.name);
+      if (receipt) {
+        formData.append('payment_receipt', receipt, receipt.name);
+      }
 
       const res: any = await firstValueFrom(
         this.http.post<AuthResponse>(`${this.apiUrl}/auth/register-member`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) })

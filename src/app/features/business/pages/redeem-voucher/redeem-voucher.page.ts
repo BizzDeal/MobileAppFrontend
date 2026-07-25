@@ -17,6 +17,7 @@ import {
 } from 'ionicons/icons';
 import { VouchersService } from '../../services/vouchers.service';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { PermissionsService } from '../../../../core/platform/permissions.service';
 
 @Component({
   selector: 'app-redeem-voucher',
@@ -29,6 +30,7 @@ export class RedeemVoucherPage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly vouchersService = inject(VouchersService);
+  private readonly permissionsService = inject(PermissionsService);
 
   step: 'VERIFY' | 'REDEEM' | 'SUCCESS' = 'VERIFY';
   isScannerOpen = false;
@@ -51,8 +53,6 @@ export class RedeemVoucherPage implements OnInit {
   remainingBill = 0;
   finalPayment = 0;
   newWalletBalance = 0;
-
-
 
   constructor() {
     addIcons({ 
@@ -107,8 +107,18 @@ export class RedeemVoucherPage implements OnInit {
   }
 
   async openScanner() {
-    this.isScannerOpen = true;
     this.errorMessage = null;
+
+    const hasPermission = await this.permissionsService.ensurePermission(
+      'camera',
+      'BizzDeal needs camera access to scan merchant QR codes for voucher redemption.'
+    );
+
+    if (!hasPermission) {
+      return;
+    }
+
+    this.isScannerOpen = true;
 
     // Delay initialization to ensure the modal and its content are rendered
     setTimeout(() => {
@@ -128,16 +138,10 @@ export class RedeemVoucherPage implements OnInit {
 
   private async startScanner() {
     try {
-      const { camera } = await BarcodeScanner.requestPermissions();
-      if (camera !== 'granted' && camera !== 'limited') {
-        this.errorMessage = 'Camera permission is required to scan QR codes.';
-        this.isScannerOpen = false;
-        return;
-      }
-
       document.body.classList.add('barcode-scanner-active');
 
       const result = await BarcodeScanner.scan();
+
       
       if (result && result.barcodes && result.barcodes.length > 0) {
         let decodedText = result.barcodes[0].displayValue;

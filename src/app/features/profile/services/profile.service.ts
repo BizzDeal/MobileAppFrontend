@@ -1,7 +1,7 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { Observable, of, throwError, firstValueFrom } from 'rxjs';
-import { catchError, tap, switchMap } from 'rxjs/operators';
+import { catchError, tap, switchMap, shareReplay, finalize } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { ImageCacheService } from '../../../core/platform/image-cache.service';
@@ -22,6 +22,7 @@ export class ProfileService {
   private readonly _loading = signal<boolean>(true);
   private readonly _error = signal<string | null>(null);
   private readonly _updating = signal<boolean>(false);
+  private inFlightProfile$: Observable<ProfileDTO | null> | null = null;
 
   readonly states = signal<LocationState[]>([]);
   readonly isLoadingStates = signal<boolean>(false);
@@ -88,7 +89,15 @@ export class ProfileService {
     this.districts.set([]);
   }
 
-  loadProfile(): Observable<ProfileDTO | null> {
+  loadProfile(forceRefresh = false): Observable<ProfileDTO | null> {
+    if (!forceRefresh && this._profile() && !this._loading()) {
+      return of(this._profile());
+    }
+
+    if (this.inFlightProfile$) {
+      return this.inFlightProfile$;
+    }
+
     this._loading.set(true);
     this._error.set(null);
 
@@ -118,7 +127,7 @@ export class ProfileService {
       });
     }
 
-    return this.http.post<any>(`${this.apiUrl}/users/profile`, {}).pipe(
+    this.inFlightProfile$ = this.http.post<any>(`${this.apiUrl}/users/profile`, {}).pipe(
       tap({
         next: (data) => {
           const p = data?.data || data;
@@ -141,11 +150,19 @@ export class ProfileService {
             website: p.website || (currentUser as any)?.website || null,
             gst_number: p.gst_number || (currentUser as any)?.gst_number || null,
             business_logo_url: p.business_logo_url || (currentUser as any)?.business_logo_url || null,
+            business_address: p.business_address || (currentUser as any)?.business_address || null,
+            business_state_id: p.business_state_id || (currentUser as any)?.business_state_id || p.state_id || null,
+            business_district_id: p.business_district_id || (currentUser as any)?.business_district_id || p.district_id || null,
             primary_business_name: p.primary_business_name || (currentUser as any)?.primary_business_name || null,
             primary_business_id: p.primary_business_id || (currentUser as any)?.primary_business_id || null,
             primary_business_category_name: p.primary_business_category_name || (currentUser as any)?.primary_business_category_name || null,
             primary_business_state_name: p.primary_business_state_name || (currentUser as any)?.primary_business_state_name || null,
             primary_business_district_name: p.primary_business_district_name || (currentUser as any)?.primary_business_district_name || null,
+            is_profile_completed: p.is_profile_completed,
+            completion_score: p.completion_score,
+            grade: p.grade,
+            missing_fields: p.missing_fields,
+            completed_fields: p.completed_fields,
             created_at: p.created_at || new Date().toISOString(),
             updated_at: p.updated_at || new Date().toISOString(),
           };
@@ -176,8 +193,14 @@ export class ProfileService {
       }),
       catchError((err: any) => {
         return throwError(() => err);
-      })
+      }),
+      finalize(() => {
+        this.inFlightProfile$ = null;
+      }),
+      shareReplay(1)
     );
+
+    return this.inFlightProfile$;
   }
 
   clearProfile(): void {
@@ -227,6 +250,11 @@ export class ProfileService {
               ...((updated.gst_number ? { gst_number: updated.gst_number } : {}) as any),
               ...((updated.business_logo_url ? { business_logo_url: updated.business_logo_url } : {}) as any),
               ...((updated.category_id ? { category_id: updated.category_id } : {}) as any),
+              is_profile_completed: updated.is_profile_completed,
+              completion_score: updated.completion_score,
+              grade: updated.grade,
+              missing_fields: updated.missing_fields,
+              completed_fields: updated.completed_fields,
             }).catch(() => {});
           }
           this._updating.set(false);

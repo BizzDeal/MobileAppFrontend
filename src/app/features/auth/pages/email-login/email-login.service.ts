@@ -159,8 +159,7 @@ export class EmailLoginService {
               this.router.navigate(['/admin']).catch(() => {});
             } else {
               const u = res.user;
-              const isIncomplete = !u.full_name || u.full_name === 'Customer' || !u.email || u.email.includes('@bizzdeal.com') || !u.address || u.address === 'Not Provided';
-              if (isIncomplete && u.role === UserRole.CUSTOMER) {
+              if (u.grade === 'INCOMPLETE') {
                 this.router.navigate(['/home'], { queryParams: { tab: 'profile' } }).catch(() => {});
               } else {
                 this.router.navigate(['/home']).catch(() => {});

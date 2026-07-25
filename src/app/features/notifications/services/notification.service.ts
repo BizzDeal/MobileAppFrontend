@@ -7,8 +7,8 @@ import { PushNotifications } from '@capacitor/push-notifications';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Device } from '@capacitor/device';
 import { getMessaging, getToken, isSupported } from 'firebase/messaging';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, tap, shareReplay, finalize } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { NotificationDTO, NotificationType } from '../models/notification.model';
 import { StorageService } from '../../../core/storage/storage.service';
@@ -32,6 +32,7 @@ export class NotificationService {
   private readonly _limit = signal<number>(20);
   private readonly _hasMore = signal<boolean>(true);
   private pushListenersSetUp = false;
+  private inFlightNotifications$: Observable<NotificationDTO[]> | null = null;
 
   readonly notifications = this._notifications.asReadonly();
   readonly loading = this._loading.asReadonly();
@@ -48,9 +49,11 @@ export class NotificationService {
       const user = this.authSession.currentUser();
       if (user) {
         untracked(() => {
-          this.getNotifications().subscribe({
-            error: (err) => console.error('Notifications load encountered error:', err),
-          });
+          if (this._notifications().length === 0) {
+            this.getNotifications().subscribe({
+              error: (err) => console.error('Notifications load encountered error:', err),
+            });
+          }
         });
       } else {
         this._notifications.set([]);
@@ -59,6 +62,10 @@ export class NotificationService {
   }
 
   getNotifications(page = 1, limit = 20, append = false, search = ''): Observable<NotificationDTO[]> {
+    if (page === 1 && !append && !search && this.inFlightNotifications$) {
+      return this.inFlightNotifications$;
+    }
+
     this._loading.set(true);
     this._error.set(null);
 
@@ -70,7 +77,7 @@ export class NotificationService {
       params = params.set('search', search);
     }
 
-    return this.http.get<any>(`${this.apiUrl}/notifications`, { params }).pipe(
+    const request$ = this.http.get<any>(`${this.apiUrl}/notifications`, { params }).pipe(
       map((res) => {
         const rawList: any[] = Array.isArray(res) ? res : res?.data || res?.items || [];
         const list: NotificationDTO[] = rawList.map((n) => ({
@@ -114,8 +121,20 @@ export class NotificationService {
       map(({ list }) => list),
       catchError((err) => {
         return throwError(() => err);
-      })
+      }),
+      finalize(() => {
+        if (page === 1 && !append && !search) {
+          this.inFlightNotifications$ = null;
+        }
+      }),
+      shareReplay(1)
     );
+
+    if (page === 1 && !append && !search) {
+      this.inFlightNotifications$ = request$;
+    }
+
+    return request$;
   }
 
   loadMoreNotifications(search = ''): Observable<NotificationDTO[]> | null {

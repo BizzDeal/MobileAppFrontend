@@ -61,7 +61,7 @@ export class WalletViewComponent {
   readonly error = this.walletService.error;
   readonly hasMore = this.walletService.hasMore;
 
-  readonly activeFilter = signal<'ALL' | 'CREDIT' | 'DEBIT' | 'SAVING'>('ALL');
+  readonly activeFilter = signal<'ALL' | 'CREDIT' | 'DEBIT'>('ALL');
   readonly selectedTransaction = signal<WalletTransactionDTO | null>(null);
 
   readonly filteredTransactions = computed(() => {
@@ -87,7 +87,7 @@ export class WalletViewComponent {
     });
   }
 
-  setFilter(filter: 'ALL' | 'CREDIT' | 'DEBIT' | 'SAVING'): void {
+  setFilter(filter: 'ALL' | 'CREDIT' | 'DEBIT'): void {
     this.activeFilter.set(filter);
   }
 

@@ -6,7 +6,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:prod":"ng serve --configuration production",
+    "start:prod": "ng serve --configuration production",
     "build": "ng build --configuration development",
     "build:android": "npm run build:assets && npm run build  && npx cap sync android && npx cap open android",
     "build:android:prod": "npm run build:assets && ng build --configuration production && npx cap sync android && npx cap open android",
@@ -44,6 +44,7 @@
     "ionicons": "^7.0.0",
     "medium-zoom": "^1.1.0",
     "ng-apexcharts": "^2.4.0",
+    "ngx-image-cropper": "^9.1.6",
     "rxjs": "~7.8.0",
     "socket.io-client": "^4.8.3",
     "swiper": "^14.0.5",

@@ -8,6 +8,9 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton,
 import { addIcons } from 'ionicons';
 import { imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline, trashOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { compressImageClientSide } from '../../../../shared/utils/image-compressor.util';
+import { validateFileSize } from '../../../../shared/utils/file-validator.util';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { environment } from '../../../../../environments/environment';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
@@ -32,6 +35,7 @@ export class OfferFormPage implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly dashboardService = inject(MemberDashboardService);
   private readonly profileService = inject(ProfileService);
+  private readonly toastService = inject(ToastService);
   private readonly alertCtrl = inject(AlertController);
 
   readonly isEditMode = signal(false);
@@ -142,9 +146,17 @@ export class OfferFormPage implements OnInit {
     return null;
   }
 
-  onImageSelected(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
+  async onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const rawFile = input.files?.[0];
+    if (rawFile) {
+      const validation = validateFileSize(rawFile, 10);
+      if (!validation.valid) {
+        this.toastService.showError(validation.error || 'File size exceeds limit');
+        input.value = '';
+        return;
+      }
+      const file = await compressImageClientSide(rawFile);
       this.selectedImageName.set(file.name);
       this.selectedImageFile.set(file);
 

@@ -19,8 +19,6 @@ import {
   alertCircleOutline,
 } from 'ionicons/icons';
 import { MemberPaymentService } from './member-payment.service';
-import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
-
 @Component({
   selector: 'app-member-payment',
   standalone: true,
@@ -34,7 +32,6 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
     IonBackButton,
     IonIcon,
     IonSpinner,
-    CachedImgDirective
   ],
   providers: [MemberPaymentService],
   templateUrl: './member-payment.page.html',

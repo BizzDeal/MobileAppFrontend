@@ -1,0 +1,49 @@
+<ion-header class="ion-no-border permission-header">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss('cancel')" aria-label="Close modal">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding permission-content" scroll-y="false">
+  <div class="permission-body">
+    <div class="icon-circle" [class.denied]="isDenied">
+      <ion-icon [name]="isDenied ? 'alert-circle-outline' : icon"></ion-icon>
+    </div>
+
+    <h2 class="permission-title">{{ title }}</h2>
+
+    <p class="permission-description">
+      {{ rationale }}
+    </p>
+
+    @if (isDenied) {
+      <div class="denied-info-box">
+        <ion-icon name="settings-outline" class="info-icon"></ion-icon>
+        <span>
+          Permission was previously denied. To use this feature, please enable <strong>{{ getPermissionName() }}</strong> in your device settings.
+        </span>
+      </div>
+    }
+
+    <div class="action-buttons">
+      @if (isDenied) {
+        <button type="button" class="bd-btn-primary full-btn" (click)="dismiss('open_settings')">
+          <ion-icon name="settings-outline" style="margin-right: 8px;"></ion-icon>
+          Open Device Settings
+        </button>
+      } @else {
+        <button type="button" class="bd-btn-primary full-btn" (click)="dismiss('grant')">
+          Continue & Allow
+        </button>
+      }
+
+      <button type="button" class="bd-btn-secondary full-btn" (click)="dismiss('cancel')">
+        Not Now
+      </button>
+    </div>
+  </div>
+</ion-content>

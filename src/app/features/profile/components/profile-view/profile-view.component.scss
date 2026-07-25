@@ -12,6 +12,113 @@
   }
 }
 
+/* Completion Card Styles */
+.completion-card {
+  padding: var(--bizzdeal-spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bizzdeal-spacing-sm);
+  background: linear-gradient(145deg, #ffffff, #f9f9fa);
+  border-left: 4px solid var(--ion-color-success);
+  margin-bottom: var(--bizzdeal-spacing-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  &.incomplete {
+    border-left-color: #ff9800;
+  }
+
+  .completion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--bizzdeal-text-primary);
+    }
+
+    .grade-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+      background: var(--ion-color-success);
+      color: #ffffff;
+      
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+  }
+
+  &.incomplete .completion-header .grade-badge {
+    background: #ff9800;
+    color: #ffffff;
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 4px;
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease-out;
+
+      &.full {
+        background-color: var(--ion-color-success);
+      }
+      &.partial {
+        background-color: #ff9800;
+      }
+    }
+  }
+
+  .score-text {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--bizzdeal-text-secondary);
+  }
+
+  .missing-fields {
+    margin-top: var(--bizzdeal-spacing-sm);
+    padding-top: var(--bizzdeal-spacing-sm);
+    border-top: 1px dashed var(--bizzdeal-border-color);
+
+    p {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: var(--bizzdeal-text-secondary);
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+
+      .missing-tag {
+        font-size: 11px;
+        font-weight: 600;
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 4px 8px;
+        border-radius: 6px;
+        text-transform: capitalize;
+      }
+    }
+  }
+}
+
 // 1. Loading & Error States
 .loading-state,
 .error-state {

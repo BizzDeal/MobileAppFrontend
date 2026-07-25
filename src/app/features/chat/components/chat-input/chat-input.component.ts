@@ -21,6 +21,9 @@ import {
 } from 'ionicons/icons';
 import { ChatMessage, MessageType } from '../../models/chat.model';
 import { ChatService } from '../../services/chat.service';
+import { PermissionsService } from '../../../../core/platform/permissions.service';
+import { compressImageClientSide } from '../../../../shared/utils/image-compressor.util';
+import { validateFileSize } from '../../../../shared/utils/file-validator.util';
 
 @Component({
   selector: 'app-chat-input',
@@ -38,6 +41,7 @@ import { ChatService } from '../../services/chat.service';
 })
 export class ChatInputComponent {
   private readonly chatService = inject(ChatService);
+  private readonly permissionsService = inject(PermissionsService);
 
   readonly editModeMessage = input<ChatMessage | null>(null);
 
@@ -147,9 +151,12 @@ export class ChatInputComponent {
   }
 
   // File selection triggering
-  private triggerCameraInput(): void {
+  private async triggerCameraInput(): Promise<void> {
     this.closeActionSheet();
-    setTimeout(() => this.cameraInputRef?.nativeElement.click(), 300);
+    const hasCamera = await this.permissionsService.ensurePermission('camera');
+    if (hasCamera) {
+      setTimeout(() => this.cameraInputRef?.nativeElement.click(), 300);
+    }
   }
 
   private triggerImageInput(): void {
@@ -163,15 +170,24 @@ export class ChatInputComponent {
   }
 
   // Real media upload processing
-  onFileSelected(event: Event, type: 'IMAGE' | 'FILE'): void {
+  async onFileSelected(event: Event, type: 'IMAGE' | 'FILE'): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
-    const file = input.files[0];
+    const rawFile = input.files[0];
     
     // Clear input so same file can be selected again
     input.value = '';
 
+    const validation = validateFileSize(rawFile, 10);
+    if (!validation.valid) {
+      alert(validation.error);
+      return;
+    }
+
     this.isUploading.set(true);
+
+    const file = type === 'IMAGE' ? await compressImageClientSide(rawFile) : rawFile;
+
     this.chatService.uploadMedia(file).subscribe({
       next: (res) => {
         this.isUploading.set(false);
@@ -188,7 +204,7 @@ export class ChatInputComponent {
       error: (err) => {
         this.isUploading.set(false);
         console.error('Failed to upload file', err);
-        alert('File upload failed. Please try again.');
+        alert(err?.error?.message || 'File upload failed. Please try again.');
       }
     });
   }
@@ -204,13 +220,23 @@ export class ChatInputComponent {
     }
   }
 
-  startRecording(): void {
+  async startRecording(): Promise<void> {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       alert('Your browser does not support audio recording.');
       return;
     }
 
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+    const hasPermission = await this.permissionsService.ensurePermission(
+      'microphone',
+      'BizzDeal needs microphone access so you can record and send voice notes in chat.'
+    );
+
+    if (!hasPermission) {
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       this.mediaRecorder = new MediaRecorder(stream);
       this.audioChunks = [];
 
@@ -233,11 +259,12 @@ export class ChatInputComponent {
       this.recordingInterval = setInterval(() => {
         this.recordingSeconds.update(s => s + 1);
       }, 1000);
-    }).catch(err => {
+    } catch (err) {
       console.error('Microphone permission denied or error', err);
-      alert('Microphone permission denied. Please allow microphone access to send voice notes.');
-    });
+      await this.permissionsService.ensurePermission('microphone');
+    }
   }
+
 
   cancelRecording(): void {
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
@@ -263,6 +290,12 @@ export class ChatInputComponent {
     const file = new File([blob], `voice-note-${Date.now()}.webm`, { type: 'audio/webm' });
     const duration = this.recordingSeconds();
 
+    const validation = validateFileSize(file, 5);
+    if (!validation.valid) {
+      alert(validation.error);
+      return;
+    }
+
     this.isUploading.set(true);
     this.chatService.uploadMedia(file).subscribe({
       next: (res) => {
@@ -279,7 +312,7 @@ export class ChatInputComponent {
       error: (err) => {
         this.isUploading.set(false);
         console.error('Failed to upload voice note', err);
-        alert('Voice note upload failed. Please try again.');
+        alert(err?.error?.message || 'Voice note upload failed. Please try again.');
       }
     });
   }

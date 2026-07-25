@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal, effect, untracked } from '@angular/core';
-import { forkJoin, Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { catchError, map, tap, shareReplay, finalize } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { WalletDTO, WalletTransactionDTO } from '../models/wallet.model';
@@ -25,6 +25,7 @@ export class WalletService {
   private readonly _page = signal<number>(1);
   private readonly _limit = signal<number>(20);
   private readonly _hasMore = signal<boolean>(true);
+  private inFlightWallet$: Observable<{ wallet: WalletDTO; transactions: WalletTransactionDTO[] }> | null = null;
 
   readonly wallet = this._wallet.asReadonly();
   readonly transactions = this._transactions.asReadonly();
@@ -38,9 +39,11 @@ export class WalletService {
       const isAuth = this.authSession.isAuthenticated();
       if (isAuth) {
         untracked(() => {
-          this.loadWalletData().subscribe({
-            error: (err) => console.error('Initial wallet data load encountered error:', err),
-          });
+          if (!this._wallet()) {
+            this.loadWalletData().subscribe({
+              error: (err) => console.error('Initial wallet data load encountered error:', err),
+            });
+          }
         });
       } else {
         untracked(() => {
@@ -60,14 +63,22 @@ export class WalletService {
   }
 
   refreshWallet(): Observable<{ wallet: WalletDTO; transactions: WalletTransactionDTO[] }> {
-    return this.loadWalletData();
+    return this.loadWalletData(true);
   }
 
-  loadWalletData(): Observable<{ wallet: WalletDTO; transactions: WalletTransactionDTO[] }> {
+  loadWalletData(forceRefresh = false): Observable<{ wallet: WalletDTO; transactions: WalletTransactionDTO[] }> {
+    if (!forceRefresh && this._wallet() && !this._loading()) {
+      return of({ wallet: this._wallet()!, transactions: this._transactions() });
+    }
+
+    if (this.inFlightWallet$) {
+      return this.inFlightWallet$;
+    }
+
     this._loading.set(true);
     this._error.set(null);
 
-    return forkJoin({
+    const request$ = forkJoin({
       balanceRes: this.http.get<any>(`${this.apiUrl}/wallet/balance`),
       historyRes: this.http.get<any>(`${this.apiUrl}/wallet/history`, {
         params: new HttpParams().set('page', '1').set('limit', this._limit().toString())
@@ -124,8 +135,15 @@ export class WalletService {
       map(({ wallet, transactions }) => ({ wallet, transactions })),
       catchError((err) => {
         return throwError(() => err);
-      })
+      }),
+      finalize(() => {
+        this.inFlightWallet$ = null;
+      }),
+      shareReplay(1)
     );
+
+    this.inFlightWallet$ = request$;
+    return this.inFlightWallet$;
   }
 
   loadMoreHistory(search = ''): Observable<WalletTransactionDTO[]> | null {

@@ -439,6 +439,14 @@ app-admin-layout .page-container.has-parent-header ion-header ion-toolbar {
   transition: transform 0.1s ease-out !important;
 }
 
+/* Prevent touch/scroll gesture passive event listener conflicts on ApexCharts */
+apx-chart,
+.apexcharts-canvas,
+.apexcharts-svg,
+.apexcharts-inner {
+  touch-action: pan-y !important;
+}
+
 /* App-wide search bar height increase (prevent thin search bars and provide comfortable, modern touch targets) */
 ion-searchbar {
   --min-height: 54px !important;

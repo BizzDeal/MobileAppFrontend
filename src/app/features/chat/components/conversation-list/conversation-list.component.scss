@@ -16,7 +16,7 @@
 .conv-list-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   box-sizing: border-box;
 }
@@ -43,7 +43,7 @@
 }
 
 .search-section {
-  padding: 4px var(--bizzdeal-spacing-md) 6px var(--bizzdeal-spacing-md);
+  padding: 10px var(--bizzdeal-spacing-md) 8px var(--bizzdeal-spacing-md);
   margin: 0;
   background: transparent;
 }
@@ -79,7 +79,6 @@
   padding: 4px 0;
   margin: 0 var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md);
   border: 1px solid var(--bizzdeal-border-color);
-  overflow: hidden;
 }
 
 .conversation-item {

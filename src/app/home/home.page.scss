@@ -136,7 +136,18 @@
 }
 
 /* Modal Styling */
-.vouchers-modal, .deal-modal, .biz-modal {
+.deal-modal, .biz-modal {
+  --border-radius: var(--bizzdeal-radius-xl) var(--bizzdeal-radius-xl) 0 0;
+  --height: auto;
+}
+
+.auto-height-content {
+  max-height: 85vh;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.vouchers-modal {
   --border-radius: var(--bizzdeal-radius-xl) var(--bizzdeal-radius-xl) 0 0;
   --height: 85%;
 }
@@ -301,6 +312,19 @@
   position: relative;
 }
 
+.fallback-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .fallback-hero-text {
+    font-size: 4rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 2px;
+  }
+}
+
 .detail-discount {
   position: absolute;
   bottom: 14px;
@@ -382,6 +406,16 @@
   object-fit: cover;
   border: 2px solid var(--bizzdeal-border-color);
   box-shadow: var(--bizzdeal-shadow-sm);
+}
+
+.fallback-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
 }
 
 .detail-cat {

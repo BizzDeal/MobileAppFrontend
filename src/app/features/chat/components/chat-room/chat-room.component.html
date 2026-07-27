@@ -12,16 +12,16 @@
         
         <div class="header-partner-info">
           <!-- Avatar -->
-          <div class="partner-avatar-wrapper">
+          <div class="partner-avatar-wrapper" (click)="isAvatarOpen.set(true)" style="cursor: pointer;">
             @if (conv.type === 'GROUP') {
               <div class="partner-avatar-placeholder">
                 <ion-icon name="people-outline" />
               </div>
             } @else if (conv.partner?.profile_pic_url) {
-              <img [appCachedImg]="conv.partner!.profile_pic_url" alt="{{ conv.partner!.full_name }}" class="partner-avatar" />
+              <img [appCachedImg]="conv.partner!.profile_pic_url" alt="{{ conv.partner!.full_name }}" class="partner-avatar" (error)="conv.partner!.profile_pic_url = null" />
             } @else {
-              <div class="partner-avatar-placeholder">
-                <ion-icon name="person-outline" />
+              <div class="initials-avatar" [style.background]="getAvatarColor(conv.partner?.full_name)">
+                {{ getInitials(conv.partner?.full_name) }}
               </div>
             }
             @if (conv.type !== 'GROUP' && isPartnerOnline()) {
@@ -78,15 +78,19 @@
       } @else {
         <!-- Starter Empty State -->
         <div class="chat-starter-state">
-          <div class="avatar-large">
-            @if (conv.type === 'GROUP') {
+          @if (conv.type === 'GROUP') {
+            <div class="avatar-large group">
               <ion-icon name="people-outline" />
-            } @else if (conv.partner?.profile_pic_url) {
-              <img [src]="conv.partner!.profile_pic_url" alt="{{ conv.partner!.full_name }}" />
-            } @else {
-              <ion-icon name="person-outline" />
-            }
-          </div>
+            </div>
+          } @else if (conv.partner?.profile_pic_url) {
+            <div class="avatar-large">
+              <img [appCachedImg]="conv.partner!.profile_pic_url" alt="{{ conv.partner!.full_name }}" (error)="conv.partner!.profile_pic_url = null" />
+            </div>
+          } @else {
+            <div class="avatar-large initials-avatar" [style.background]="getAvatarColor(conv.partner?.full_name)">
+              {{ getInitials(conv.partner?.full_name) }}
+            </div>
+          }
           <h2>{{ conv.type === 'GROUP' ? conv.name || 'Community Group' : conv.partner?.full_name }}</h2>
           @if (conv.type !== 'GROUP' && conv.partner) {
             <p class="role-desc">{{ conv.partner.role === 'MEMBER' ? 'Business Partner' : conv.partner.role }}</p>
@@ -106,4 +110,35 @@
       (cancelEdit)="onCancelEdit()" />
 
   </div>
+
+  <!-- Avatar Zoom Modal -->
+  <ion-modal [isOpen]="isAvatarOpen()" (didDismiss)="isAvatarOpen.set(false)" class="image-viewer-modal">
+    <ng-template>
+      <ion-header class="ion-no-border premium-header">
+        <ion-toolbar>
+          <ion-title>Photo Preview</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isAvatarOpen.set(false)">
+              <ion-icon name="close-outline" slot="icon-only" />
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="image-viewer-content">
+        <div class="zoomed-image-container">
+          @if (conv.type === 'GROUP') {
+            <div class="zoomed-placeholder group">
+              <ion-icon name="people-outline" />
+            </div>
+          } @else if (conv.partner?.profile_pic_url) {
+            <img [src]="conv.partner!.profile_pic_url" class="zoomed-img" alt="zoom view" />
+          } @else {
+            <div class="zoomed-placeholder initials-avatar" [style.background]="getAvatarColor(conv.partner?.full_name)">
+              {{ getInitials(conv.partner?.full_name) }}
+            </div>
+          }
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 }

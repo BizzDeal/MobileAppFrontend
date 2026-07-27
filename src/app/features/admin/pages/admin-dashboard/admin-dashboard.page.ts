@@ -112,6 +112,7 @@ export class AdminDashboardPage implements OnInit {
         height: 300,
         type: this.chartType,
         toolbar: { show: false },
+        zoom: { enabled: false },
         fontFamily: 'inherit'
       },
       dataLabels: { enabled: false },

@@ -15,7 +15,8 @@ import {
   logOutOutline,
   chevronForwardOutline,
   chatbubblesOutline,
-  cardOutline
+  cardOutline,
+  shareSocialOutline
 } from 'ionicons/icons';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 
@@ -154,6 +155,7 @@ export class AdminSidebarComponent {
     { title: 'Users', url: '/admin/users', icon: 'people' },
     { title: 'Businesses', url: '/admin/businesses', icon: 'business' },
     { title: 'Offers/Deals', url: '/admin/offers', icon: 'pricetags' },
+    { title: 'Referrals', url: '/admin/referrals', icon: 'share-social' },
     { title: 'Meetings', url: '/admin/meetings', icon: 'calendar' },
     { title: 'Chat', url: '/admin/chat', icon: 'chatbubbles' },
     { title: 'Payment Details', url: '/admin/payment-details', icon: 'card' },
@@ -177,9 +179,11 @@ export class AdminSidebarComponent {
       logOutOutline,
       chevronForwardOutline,
       chatbubblesOutline,
-      cardOutline
+      cardOutline,
+      shareSocialOutline
     });
   }
+
 
   onItemClick(): void {
     this.closeSidebar.emit();

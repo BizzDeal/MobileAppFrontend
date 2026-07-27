@@ -1,5 +1,5 @@
 <div class="referrals-page">
-  <!-- Top Custom Header (consistent with Meetings page design) -->
+  <!-- Header Card -->
   <div class="referrals-header">
     <div class="header-content">
       <div class="header-icon-box">
@@ -7,187 +7,348 @@
       </div>
       <div class="header-text">
         <h2>Referrals</h2>
-        <p>Invite other members and track their onboarding status.</p>
+        <p>Manage and track your member referral slips.</p>
       </div>
     </div>
   </div>
 
-  <!-- Top Analytics Overview -->
-  <div class="analytics-overview">
-    <div class="analytics-grid">
-      <div class="analytics-card bd-card">
-        <span class="stat-label">Total Referred</span>
-        <h3 class="stat-value">{{ totalReferrals() }}</h3>
-      </div>
-      <div class="analytics-card bd-card">
-        <span class="stat-label">Joined</span>
-        <h3 class="stat-value">{{ joinedReferrals() }}</h3>
-      </div>
-      <div class="analytics-card bd-card">
-        <span class="stat-label">Invited</span>
-        <h3 class="stat-value">{{ pendingReferrals() }}</h3>
-      </div>
-    </div>
-  </div>
+  <!-- Segment Control -->
+  <ion-segment [value]="activeSegment()" (ionChange)="segmentChanged($event)" class="premium-segment" mode="ios">
+    <ion-segment-button value="GIVEN">
+      <ion-label>Given</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="RECEIVED">
+      <ion-label>Received</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 
-  <!-- Loading State -->
-  @if (loading() && referrals().length === 0) {
-    <div style="padding: 16px;">
-      <app-list-skeleton [count]="4"></app-list-skeleton>
-    </div>
-  }
+  <!-- Content Container -->
+  <div class="referrals-content">
+    <!-- Loading State -->
+    <app-list-skeleton *ngIf="loading()"></app-list-skeleton>
 
-  <!-- Error State (if any) -->
-  @if (error()) {
-    <div class="error-banner">
-      <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
-      <span class="error-message">{{ error() }}</span>
-    </div>
-  }
-
-  <!-- Empty State -->
-  @if (!loading() && referrals().length === 0) {
-    <div class="state-container empty-state">
-      <div class="icon-glow-box">
-        <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+    <!-- Error State -->
+    <div *ngIf="error() && !loading()" class="empty-state">
+      <div class="empty-icon-wrapper danger">
+        <ion-icon name="alert-circle-outline"></ion-icon>
       </div>
-      <h3 class="empty-title">Invite New Members</h3>
-      <p class="empty-desc">
-        Invite other businesses and members to sign up. Once they register, you can track their onboarding and membership status here.
-      </p>
-      <button type="button" class="bd-btn-primary invite-cta-btn" (click)="openModal()">
-        Invite Someone Now
-      </button>
+      <h3>Oops!</h3>
+      <p>{{ error() }}</p>
+      <ion-button fill="clear" (click)="fetchReferrals()">Try Again</ion-button>
     </div>
-  }
 
-  <!-- Referrals List -->
-  @if (referrals().length > 0) {
-    <div class="list-container">
-      <h4 class="section-title">All Invitations</h4>
-      <div class="referral-list">
-        @for (ref of referrals(); track ref.id) {
-          <div class="referral-card bd-card">
-            <div class="ref-details">
-              <span class="phone-number">{{ ref.referred_phone }}</span>
-              <span class="ref-date">
-                <ion-icon name="time-outline"></ion-icon>
-                Referred on {{ ref.created_at | date:'mediumDate' }}
-              </span>
-              <span class="code-badge">Code: {{ ref.referral_code }}</span>
+    <!-- Empty State -->
+    <div *ngIf="!loading() && !error() && filteredReferrals().length === 0" class="empty-state">
+      <div class="empty-icon-wrapper">
+        <ion-icon name="gift-outline"></ion-icon>
+      </div>
+      <h3>No Referrals Found</h3>
+      <p>You haven't {{ activeSegment() === 'GIVEN' ? 'given' : 'received' }} any referrals yet.</p>
+    </div>
+
+    <!-- Referrals Cards List (Compact Items) -->
+    <div *ngIf="!loading() && !error() && filteredReferrals().length > 0" class="referrals-list">
+      <div *ngFor="let ref of filteredReferrals()" 
+           class="referral-item-card" 
+           [class.inside-card]="ref.referral_type === 'INSIDE'" 
+           [class.outside-card]="ref.referral_type === 'OUTSIDE'"
+           (click)="openDetailModal(ref)">
+        
+        <div class="item-header">
+          <div class="contact-title-group">
+            <h3 class="contact-name">{{ ref.contact_name }}</h3>
+            <span class="type-badge" [class.inside]="ref.referral_type === 'INSIDE'" [class.outside]="ref.referral_type === 'OUTSIDE'">
+              {{ ref.referral_type }}
+            </span>
+          </div>
+          <span class="item-date">{{ ref.created_at | date:'MMM d, yyyy' }}</span>
+        </div>
+
+        <div class="item-summary-row">
+          <div class="summary-info">
+            <div class="info-pill">
+              <ion-icon name="call-outline"></ion-icon>
+              <span>{{ ref.contact_phone }}</span>
             </div>
-            
-            <div class="ref-status-box">
-              <span class="status-badge" [ngClass]="getStatusBadgeClass(ref.status)">
-                <ion-icon [name]="getStatusIcon(ref.status)"></ion-icon>
-                {{ getStatusLabel(ref.status) }}
-              </span>
+            <div class="info-pill member-pill">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>{{ activeSegment() === 'GIVEN' ? ref.to_member.full_name : ref.referrer.full_name }}</span>
             </div>
           </div>
-        }
+          
+          <div class="action-arrow">
+            <div class="stars-mini" *ngIf="ref.rating">
+              <ion-icon name="star" class="star-mini-icon"></ion-icon>
+              <span class="rating-num">{{ ref.rating }}</span>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+          </div>
+        </div>
+
       </div>
     </div>
-  }
 
-  <!-- Floating Action Button for Adding Referral -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button class="fab-btn" (click)="openModal()" aria-label="Add Referral">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)" [disabled]="!hasMore()">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more referrals..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
 
-  <!-- Add Referral Modal -->
-  <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()" class="referral-modal">
+  <!-- Custom Floating FAB Button -->
+  <button class="fab-add-button" (click)="openModal()" aria-label="Add Referral">
+    <ion-icon name="add"></ion-icon>
+  </button>
+
+  <!-- Add Referral Modal (Full Page Overlay) -->
+  <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()">
     <ng-template>
-      <ion-header class="ion-no-border premium-header">
+      <ion-header class="ion-no-border">
         <ion-toolbar>
-          <ion-title>Select Contacts</ion-title>
+          <ion-title>REFERRAL SLIP</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="closeModal()" class="close-btn">
-              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            <ion-button (click)="closeModal()">
+              <ion-icon name="close-outline"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
-      <ion-content class="modal-content-pad" scroll-y="false">
-        <div class="modal-contacts-container">
-          <!-- Search Bar -->
-          <ion-searchbar
-            placeholder="Search contacts by name or phone..."
-            [value]="searchInput()"
-            (ionInput)="onSearchChange($event)"
-            class="contacts-searchbar">
-          </ion-searchbar>
+      <ion-content class="ion-padding" color="light">
+        <div class="modal-body">
+          
+          <!-- Member Search Section -->
+          <div class="form-section">
+            <ion-segment [value]="referralType()" (ionChange)="referralTypeChanged($event)" mode="ios" class="type-segment">
+              <ion-segment-button value="INSIDE">
+                <ion-label>Inside</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="OUTSIDE">
+                <ion-label>Outside</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+            
+            <p class="search-helper">
+              {{ referralType() === 'INSIDE' ? 'Search for a member in your current district.' : 'Search for a member outside your district.' }}
+            </p>
 
-          <!-- Select All Panel -->
-          @if (!isContactsLoading() && !permissionDenied() && filteredContacts().length > 0) {
-            <div class="select-all-header">
-              <ion-checkbox
-                [checked]="allSelected()"
-                (ionChange)="toggleSelectAll($event)"
-                class="select-all-checkbox">
-                Select All
-              </ion-checkbox>
-              <span class="selected-badge">{{ selectedCount() }} Selected</span>
-            </div>
-          }
-
-          <!-- Scrollable Contact List Container -->
-          <div class="contacts-list-scrollable">
-            @if (isContactsLoading()) {
-              <div class="modal-state-box">
-                <ion-spinner name="crescent" color="primary"></ion-spinner>
-                <p>Loading eligible contacts...</p>
-              </div>
-            } @else if (permissionDenied()) {
-              <div class="modal-state-box error-state">
-                <ion-icon name="alert-circle-outline"></ion-icon>
-                <p>Contacts permission is required to import your phone contacts.</p>
-                <button type="button" class="bd-btn-primary" style="margin-top: 12px; padding: 10px 18px; font-size: 14px;" (click)="requestContactsPermission()">
-                  Allow Contacts Access
-                </button>
-              </div>
-            } @else if (filteredContacts().length === 0) {
-              <div class="modal-state-box empty-state">
-                <ion-icon name="people-outline"></ion-icon>
-                <p>No eligible contacts found.</p>
-                <span class="sub-text">Only showing contacts without BizzDeal accounts.</span>
-              </div>
-            } @else {
-              <ion-list class="contacts-ion-list">
-                @for (contact of filteredContacts(); track contact.phone) {
-                  <ion-item class="contact-item" lines="none">
-                    <ion-checkbox
-                      slot="start"
-                      [checked]="contact.selected"
-                      (ionChange)="setContactSelection(contact.phone, $event.detail.checked)"
-                      aria-label="Select contact">
-                    </ion-checkbox>
-                    <ion-label class="contact-text">
-                      <h2>{{ contact.name }}</h2>
-                      <p>{{ contact.phone }}</p>
+            <div class="search-container">
+              <ion-searchbar 
+                [value]="searchInput()" 
+                (ionInput)="onSearchChange($event)" 
+                (ionFocus)="onSearchFocus()"
+                (click)="onSearchFocus()"
+                placeholder="Search member by name or business..."
+                debounce="300">
+              </ion-searchbar>
+              
+              <div class="search-results" *ngIf="isSearchFocused() && membersList().length > 0 && !selectedMember()">
+                <ion-list lines="full">
+                  <ion-item *ngFor="let member of membersList()" button (click)="selectMember(member)">
+                    <ion-label>
+                      <h2>{{ member.full_name }}</h2>
+                      <p class="business-title">{{ member.businessProfile?.business_name || 'No Business' }}</p>
+                      <p class="member-contact">{{ member.email }} • {{ member.phone }}</p>
                     </ion-label>
                   </ion-item>
-                }
-              </ion-list>
-            }
+                </ion-list>
+              </div>
+              <div class="search-results" *ngIf="isSearchFocused() && isMembersLoading()">
+                <ion-item lines="none">
+                  <ion-spinner name="crescent"></ion-spinner>
+                  <ion-label class="ion-margin-start">Searching...</ion-label>
+                </ion-item>
+              </div>
+            </div>
           </div>
 
-          <!-- Bottom Action Button Panel -->
-          <div class="modal-actions-panel">
-            <button
-              type="button"
-              class="bd-btn-primary full-btn"
-              [disabled]="selectedCount() === 0 || submitting()"
-              (click)="submitReferral()">
-              @if (submitting()) {
-                <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
-                Sending...
-              } @else {
-                Send Invitation @if (selectedCount() > 0) { ({{ selectedCount() }}) }
-              }
-            </button>
+          <!-- Referral Form Details -->
+          <div class="form-section" [class.disabled]="!selectedMember()" (click)="isSearchFocused.set(false)">
+            <h3>Referral Details</h3>
+            
+            <div class="checkbox-row">
+              <ion-item lines="none" class="checkbox-item">
+                <ion-checkbox [checked]="toldToCall()" (ionChange)="toldToCall.set($event.detail.checked)">
+                  Told them you would call
+                </ion-checkbox>
+              </ion-item>
+              <ion-item lines="none" class="checkbox-item">
+                <ion-checkbox [checked]="cardGiven()" (ionChange)="cardGiven.set($event.detail.checked)">
+                  Given your card
+                </ion-checkbox>
+              </ion-item>
+            </div>
+
+            <ion-item class="input-item">
+              <ion-input labelPlacement="stacked" placeholder="Prospect Name" [value]="contactName()" (ionInput)="contactName.set($any($event.target).value)">
+                <div slot="label">Name <span class="required-star">*</span></div>
+              </ion-input>
+            </ion-item>
+
+            <ion-item class="input-item">
+              <ion-input type="tel" labelPlacement="stacked" placeholder="Phone Number" [value]="contactPhone()" (ionInput)="contactPhone.set($any($event.target).value)">
+                <div slot="label">Telephone <span class="required-star">*</span></div>
+              </ion-input>
+            </ion-item>
+
+            <ion-item class="input-item">
+              <ion-input label="Email" type="email" labelPlacement="stacked" placeholder="Email Address" [value]="contactEmail()" (ionInput)="contactEmail.set($any($event.target).value)"></ion-input>
+            </ion-item>
+
+            <ion-item class="input-item">
+              <ion-textarea label="Address" labelPlacement="stacked" placeholder="Address" [value]="contactAddress()" (ionInput)="contactAddress.set($any($event.target).value)"></ion-textarea>
+            </ion-item>
+
+            <ion-item class="input-item">
+              <ion-textarea label="Comments" labelPlacement="stacked" placeholder="Any comments..." [value]="comments()" (ionInput)="comments.set($any($event.target).value)"></ion-textarea>
+            </ion-item>
+            
+            <div class="rating-section">
+              <p>How hot is this referral?</p>
+              <div class="stars-container">
+                <ion-icon 
+                  *ngFor="let i of [1,2,3,4,5]" 
+                  [name]="i <= rating() ? 'star' : 'star-outline'" 
+                  (click)="setRating(i)"
+                  class="interactive-star">
+                </ion-icon>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </ion-content>
+      <ion-footer class="ion-no-border">
+        <ion-toolbar>
+          <div class="footer-actions">
+            <ion-button expand="block" (click)="submitReferral()" [disabled]="submitting() || !selectedMember() || !contactName().trim() || !contactPhone().trim()">
+              <ion-spinner *ngIf="submitting()" name="crescent"></ion-spinner>
+              <span *ngIf="!submitting()">Submit Slip</span>
+            </ion-button>
+          </div>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <!-- View Detailed Referral Slip Modal -->
+  <ion-modal [isOpen]="isDetailModalOpen()" (didDismiss)="closeDetailModal()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>REFERRAL DETAILS</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeDetailModal()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding" color="light" *ngIf="selectedReferralForView() as ref">
+        <div class="modal-detail-wrapper">
+          <div class="referral-card" [class.inside-card]="ref.referral_type === 'INSIDE'" [class.outside-card]="ref.referral_type === 'OUTSIDE'">
+            <!-- Top Banner Header -->
+            <div class="card-top">
+              <div class="contact-profile">
+                <div class="avatar-circle">
+                  <ion-icon name="person-outline"></ion-icon>
+                </div>
+                <div class="contact-info">
+                  <h2 class="contact-name">{{ ref.contact_name }}</h2>
+                  <div class="badge-row">
+                    <span class="type-badge" [class.inside]="ref.referral_type === 'INSIDE'" [class.outside]="ref.referral_type === 'OUTSIDE'">
+                      {{ ref.referral_type }}
+                    </span>
+                    <span class="date-chip">
+                      <ion-icon name="calendar-outline"></ion-icon>
+                      {{ ref.created_at | date:'MMM d, yyyy' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-divider"></div>
+
+            <!-- Detail List -->
+            <div class="card-body">
+              <div class="detail-grid">
+                <!-- Phone -->
+                <div class="detail-item">
+                  <div class="icon-wrap phone-icon">
+                    <ion-icon name="call-outline"></ion-icon>
+                  </div>
+                  <div class="detail-content">
+                    <span class="item-label">Phone</span>
+                    <a [href]="'tel:' + ref.contact_phone" class="item-value phone-link">{{ ref.contact_phone }}</a>
+                  </div>
+                </div>
+
+                <!-- Email -->
+                <div class="detail-item" *ngIf="ref.contact_email">
+                  <div class="icon-wrap mail-icon">
+                    <ion-icon name="mail-outline"></ion-icon>
+                  </div>
+                  <div class="detail-content">
+                    <span class="item-label">Email</span>
+                    <a [href]="'mailto:' + ref.contact_email" class="item-value mail-link" title="{{ ref.contact_email }}">{{ ref.contact_email }}</a>
+                  </div>
+                </div>
+
+                <!-- Member -->
+                <div class="detail-item">
+                  <div class="icon-wrap member-icon">
+                    <ion-icon name="people-outline"></ion-icon>
+                  </div>
+                  <div class="detail-content">
+                    <span class="item-label">{{ activeSegment() === 'GIVEN' ? 'To Member' : 'From Member' }}</span>
+                    <span class="item-value font-highlight">{{ activeSegment() === 'GIVEN' ? ref.to_member.full_name : ref.referrer.full_name }}</span>
+                  </div>
+                </div>
+
+                <!-- Address (if present) -->
+                <div class="detail-item" *ngIf="ref.contact_address">
+                  <div class="icon-wrap location-icon">
+                    <ion-icon name="location-outline"></ion-icon>
+                  </div>
+                  <div class="detail-content">
+                    <span class="item-label">Address</span>
+                    <span class="item-value">{{ ref.contact_address }}</span>
+                  </div>
+                </div>
+
+                <!-- Comments (if present) -->
+                <div class="detail-item full-width" *ngIf="ref.comments">
+                  <div class="icon-wrap comment-icon">
+                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                  </div>
+                  <div class="detail-content">
+                    <span class="item-label">Comments</span>
+                    <span class="item-value comment-text">"{{ ref.comments }}"</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Footer Bar: Badges & Rating -->
+              <div class="card-footer" *ngIf="ref.told_to_call || ref.card_given || ref.rating">
+                <div class="status-tags" *ngIf="ref.told_to_call || ref.card_given">
+                  <span class="status-tag tag-call" *ngIf="ref.told_to_call">
+                    <ion-icon name="checkmark-circle-outline"></ion-icon>
+                    Told to call
+                  </span>
+                  <span class="status-tag tag-card" *ngIf="ref.card_given">
+                    <ion-icon name="card-outline"></ion-icon>
+                    Card given
+                  </span>
+                </div>
+                
+                <div class="rating-badge" *ngIf="ref.rating">
+                  <div class="stars">
+                    <ion-icon *ngFor="let i of [1,2,3,4,5]" [name]="i <= ref.rating ? 'star' : 'star-outline'" class="star-icon"></ion-icon>
+                  </div>
+                  <span class="rating-val">{{ ref.rating }}/5</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </ion-content>

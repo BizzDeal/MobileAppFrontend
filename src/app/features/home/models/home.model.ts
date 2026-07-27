@@ -27,7 +27,7 @@ export interface BusinessDTO {
   gst_number: string | null;
   address?: string | null;
   state_id?: string | null;
-  district_id?: string | null;
+  district_id: string;
   logo_id: string | null;
   status: BusinessStatus;
   is_featured: boolean;

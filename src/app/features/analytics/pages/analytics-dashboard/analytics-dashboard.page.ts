@@ -82,6 +82,7 @@ export class AnalyticsDashboardPage implements OnInit {
       type: 'bar',
       height: 220,
       toolbar: { show: false },
+      zoom: { enabled: false },
       sparkline: { enabled: false }
     },
     plotOptions: {

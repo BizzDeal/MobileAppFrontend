@@ -6,6 +6,26 @@ import { inject, provideAppInitializer } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 
+// Fix for ApexCharts and third-party libraries calling e.preventDefault() inside touch/wheel event listeners.
+// Browsers treat touchstart, touchmove, wheel, and mousewheel listeners as passive by default unless explicit passive: false is specified.
+const originalAddEventListener = EventTarget.prototype.addEventListener;
+EventTarget.prototype.addEventListener = function (
+  type: string,
+  listener: EventListenerOrEventListenerObject,
+  options?: boolean | AddEventListenerOptions
+) {
+  if (['touchstart', 'touchmove', 'mousewheel', 'wheel'].includes(type)) {
+    if (typeof options === 'object' && options !== null) {
+      if (options.passive === undefined) {
+        options = { ...options, passive: false };
+      }
+    } else if (options === undefined || typeof options === 'boolean') {
+      options = { capture: !!options, passive: false };
+    }
+  }
+  return originalAddEventListener.call(this, type, listener, options);
+};
+
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';

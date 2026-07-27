@@ -15,9 +15,27 @@
   </div>
 
   <!-- Conversations list -->
-  @if (filteredUnifiedList().length > 0) {
+  @if (isLoading()) {
     <ion-list lines="inset" class="conversations-list">
-      @for (item of filteredUnifiedList(); track item.contact.id) {
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <ion-item class="conversation-item">
+          <div class="avatar-container" slot="start">
+            <ion-skeleton-text animated style="width: 48px; height: 48px; border-radius: 50%;"></ion-skeleton-text>
+          </div>
+          <ion-label class="item-label">
+            <div class="label-header">
+              <ion-skeleton-text animated style="width: 50%; height: 20px;"></ion-skeleton-text>
+            </div>
+            <div class="label-body">
+              <ion-skeleton-text animated style="width: 80%; height: 16px; margin-top: 4px;"></ion-skeleton-text>
+            </div>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  } @else if (displayedList().length > 0) {
+    <ion-list lines="inset" class="conversations-list">
+      @for (item of displayedList(); track item.contact.id) {
         <ion-item button (click)="onSelectUnified(item)" class="conversation-item">
           <!-- Avatar slot -->
           <div class="avatar-container" slot="start">
@@ -98,6 +116,9 @@
         </ion-item>
       }
     </ion-list>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)" [disabled]="!hasMore() || isLoading()">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more chats..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   } @else {
     <!-- Empty state -->
     <div class="empty-conversations-state">

@@ -1,0 +1,253 @@
+<div class="admin-referrals-container">
+  <!-- Summary Metric Cards (Inline 1 Row) -->
+  <div class="metrics-grid">
+    <div class="metric-card blue">
+      <div class="metric-icon">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </div>
+      <div class="metric-info">
+        <span class="metric-label">TOTAL</span>
+        <h3 class="metric-value">{{ summary().totalCount }}</h3>
+      </div>
+    </div>
+
+    <div class="metric-card green">
+      <div class="metric-icon">
+        <ion-icon name="people-outline"></ion-icon>
+      </div>
+      <div class="metric-info">
+        <span class="metric-label">INSIDE</span>
+        <h3 class="metric-value">{{ summary().insideCount }}</h3>
+      </div>
+    </div>
+
+    <div class="metric-card purple">
+      <div class="metric-icon">
+        <ion-icon name="briefcase-outline"></ion-icon>
+      </div>
+      <div class="metric-info">
+        <span class="metric-label">OUTSIDE</span>
+        <h3 class="metric-value">{{ summary().outsideCount }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Controls Bar -->
+  <div class="controls-bar">
+    <div class="search-wrapper">
+      <ion-searchbar
+        [value]="searchQuery()"
+        (ionInput)="onSearchInput($event)"
+        placeholder="Search by contact name, phone, referrer or recipient..."
+        debounce="300"
+        class="custom-searchbar">
+      </ion-searchbar>
+    </div>
+
+    <div class="segment-wrapper">
+      <ion-segment [value]="selectedType()" (ionChange)="segmentChanged($event)" mode="ios" class="admin-type-segment">
+        <ion-segment-button value="ALL">
+          <ion-label>All</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="INSIDE">
+          <ion-label>Inside</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="OUTSIDE">
+          <ion-label>Outside</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
+
+  <!-- Content State Container -->
+  <div class="content-body">
+    <!-- Loading State -->
+    <app-list-skeleton *ngIf="loading()"></app-list-skeleton>
+
+    <!-- Error State -->
+    <div *ngIf="error() && !loading()" class="state-card error-card">
+      <div class="state-icon danger">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+      </div>
+      <h3>Failed to Load Referrals</h3>
+      <p>{{ error() }}</p>
+      <ion-button fill="outline" color="danger" (click)="reloadReferrals()">Retry</ion-button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading() && !error() && referrals().length === 0" class="state-card empty-card">
+      <div class="state-icon">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </div>
+      <h3>No Referrals Found</h3>
+      <p>No referral slips match your current filter or search criteria.</p>
+    </div>
+
+    <!-- Referrals Cards List -->
+    <div *ngIf="!loading() && !error() && referrals().length > 0" class="referrals-grid">
+      <div
+        *ngFor="let ref of referrals()"
+        class="admin-referral-card"
+        (click)="openDetailModal(ref)">
+
+        <div class="card-header">
+          <div class="card-header-main">
+            <h3 class="contact-name">{{ ref.contact_name }}</h3>
+            <span class="type-pill" [class.inside]="ref.referral_type === 'INSIDE'" [class.outside]="ref.referral_type === 'OUTSIDE'">
+              {{ ref.referral_type }}
+            </span>
+          </div>
+          <span class="created-date">{{ ref.created_at | date:'MMM d, yyyy • h:mm a' }}</span>
+        </div>
+
+        <div class="card-flow">
+          <!-- Referrer Member -->
+          <div class="member-box referrer">
+            <span class="role-tag">GIVEN BY</span>
+            <strong class="member-name">{{ ref.referrer ? ref.referrer.full_name : 'Unknown Member' }}</strong>
+            <span class="business-name">{{ ref.referrer.businessProfile?.business_name || 'No Business Listed' }}</span>
+          </div>
+
+          <div class="flow-arrow">
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </div>
+
+          <!-- Recipient Member -->
+          <div class="member-box recipient">
+            <span class="role-tag">SENT TO</span>
+            <strong class="member-name">{{ ref.to_member ? ref.to_member.full_name : 'Unknown Member' }}</strong>
+            <span class="business-name">{{ ref.to_member.businessProfile?.business_name || 'No Business Listed' }}</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-pills">
+            <div class="info-chip">
+              <ion-icon name="call-outline"></ion-icon>
+              <span>{{ ref.contact_phone }}</span>
+            </div>
+            <div class="info-chip" *ngIf="ref.contact_email">
+              <ion-icon name="mail-outline"></ion-icon>
+              <span>{{ ref.contact_email }}</span>
+            </div>
+          </div>
+
+          <div class="rating-badge" *ngIf="ref.rating">
+            <ion-icon name="star" class="star-active"></ion-icon>
+            <span>{{ ref.rating }}/5 Heat</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Infinite Scroll -->
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)" [disabled]="!hasMore()">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more referrals..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+  </div>
+</div>
+
+<!-- Detailed Referral Inspection Modal -->
+<ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeDetailModal()">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar color="primary">
+        <ion-title>REFERRAL SLIP DETAILS</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeDetailModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding" color="light" *ngIf="selectedReferral() as ref">
+      <div class="modal-detail-container">
+        
+        <!-- Header status pill -->
+        <div class="modal-top-bar">
+          <span class="type-badge-lg" [class.inside]="ref.referral_type === 'INSIDE'" [class.outside]="ref.referral_type === 'OUTSIDE'">
+            {{ ref.referral_type }} REFERRAL
+          </span>
+          <span class="date-stamp">{{ ref.created_at | date:'fullDate' }}</span>
+        </div>
+
+        <!-- Prospect Card -->
+        <div class="detail-section-card">
+          <h4>Prospect / Contact Info</h4>
+          <div class="detail-row">
+            <span class="label">Contact Name:</span>
+            <strong class="value">{{ ref.contact_name }}</strong>
+          </div>
+          <div class="detail-row">
+            <span class="label">Phone:</span>
+            <span class="value">{{ ref.contact_phone }}</span>
+          </div>
+          <div class="detail-row" *ngIf="ref.contact_email">
+            <span class="label">Email:</span>
+            <span class="value">{{ ref.contact_email }}</span>
+          </div>
+          <div class="detail-row" *ngIf="ref.contact_address">
+            <span class="label">Address:</span>
+            <span class="value">{{ ref.contact_address }}</span>
+          </div>
+        </div>
+
+        <!-- Flow Details -->
+        <div class="detail-section-card">
+          <h4>Member Exchange</h4>
+          <div class="exchange-grid">
+            <div class="exchange-col">
+              <h5>Referrer (Sender)</h5>
+              <p class="name">{{ ref.referrer.full_name || 'N/A' }}</p>
+              <p class="sub">{{ ref.referrer.businessProfile?.business_name || 'No Business' }}</p>
+              <p class="contact-sub">{{ ref.referrer.phone }}</p>
+            </div>
+            <div class="exchange-col">
+              <h5>Recipient (Receiver)</h5>
+              <p class="name">{{ ref.to_member.full_name || 'N/A' }}</p>
+              <p class="sub">{{ ref.to_member.businessProfile?.business_name || 'No Business' }}</p>
+              <p class="contact-sub">{{ ref.to_member.phone }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Flags & Heat Rating -->
+        <div class="detail-section-card">
+          <h4>Referral Warmth & Notes</h4>
+          
+          <div class="flag-chips">
+            <span class="flag-chip" [class.active]="ref.told_to_call">
+              <ion-icon [name]="ref.told_to_call ? 'checkmark-circle-outline' : 'close-outline'"></ion-icon>
+              Told to Call
+            </span>
+            <span class="flag-chip" [class.active]="ref.card_given">
+              <ion-icon [name]="ref.card_given ? 'checkmark-circle-outline' : 'close-outline'"></ion-icon>
+              Card Given
+            </span>
+          </div>
+
+          <div class="heat-rating-display" *ngIf="ref.rating">
+            <p>Referral Warmth Rating:</p>
+            <div class="stars">
+              <ion-icon
+                *ngFor="let i of [1,2,3,4,5]"
+                [name]="i <= ref.rating ? 'star' : 'star-outline'"
+                class="star-icon">
+              </ion-icon>
+              <span class="rating-num">({{ ref.rating }}/5)</span>
+            </div>
+          </div>
+
+          <div class="comments-box" *ngIf="ref.comments">
+            <p class="comments-label">Comments / Notes:</p>
+            <p class="comments-text">{{ ref.comments }}</p>
+          </div>
+        </div>
+
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

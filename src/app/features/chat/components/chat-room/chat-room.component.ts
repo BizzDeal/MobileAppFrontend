@@ -16,7 +16,9 @@ import {
   IonHeader,
   IonIcon,
   IonTitle,
-  IonToolbar
+  IonToolbar,
+  IonModal,
+  IonContent
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, personOutline, peopleOutline, timeOutline } from 'ionicons/icons';
@@ -26,6 +28,7 @@ import { ChatService } from '../../services/chat.service';
 import { ChatBubbleComponent } from '../chat-bubble/chat-bubble.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-chat-room',
@@ -38,7 +41,11 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
     IonButtons,
     ChatBubbleComponent,
     ChatInputComponent,
-    CachedImgDirective
+    CachedImgDirective,
+    IonModal,
+    IonContent,
+    IonTitle,
+    IonButton
   ],
   templateUrl: './chat-room.component.html',
   styleUrl: './chat-room.component.scss',
@@ -60,6 +67,7 @@ export class ChatRoomComponent {
 
   // Editing state
   readonly editingMessage = signal<ChatMessage | null>(null);
+  readonly isAvatarOpen = signal(false);
 
   readonly isPartnerTyping = computed(() => {
     const conv = this.activeConversation();
@@ -72,6 +80,14 @@ export class ChatRoomComponent {
     if (!conv || !conv.partner) return false;
     return this.onlineUsers().has(conv.partner!.id);
   });
+
+  getInitials(name?: string | null): string {
+    return getInitials(name);
+  }
+
+  getAvatarColor(name?: string | null): string {
+    return getAvatarColor(name);
+  }
 
   constructor() {
     addIcons({ arrowBackOutline, personOutline, peopleOutline, timeOutline });

@@ -193,7 +193,7 @@ export class ProfileViewComponent implements OnInit {
           this.profileForm.controls['whatsapp'].setValidators([Validators.minLength(10)]);
           this.profileForm.controls['email'].setValidators([Validators.required, Validators.email]);
           this.profileForm.controls['state_id'].setValidators([Validators.required]);
-          this.profileForm.controls['district_id'].clearValidators();
+          this.profileForm.controls['district_id'].setValidators([Validators.required]);
           this.profileForm.controls['address'].clearValidators();
           this.profileForm.controls['business_name'].clearValidators();
           this.profileForm.controls['business_description'].clearValidators();
@@ -208,13 +208,13 @@ export class ProfileViewComponent implements OnInit {
           this.profileForm.controls['whatsapp'].setValidators([Validators.minLength(10)]);
           this.profileForm.controls['email'].setValidators([Validators.required, Validators.email]);
           this.profileForm.controls['state_id'].setValidators([Validators.required]);
-          this.profileForm.controls['district_id'].clearValidators();
+          this.profileForm.controls['district_id'].setValidators([Validators.required]);
           this.profileForm.controls['address'].clearValidators();
           this.profileForm.controls['business_name'].setValidators([Validators.required, Validators.minLength(2)]);
           this.profileForm.controls['business_description'].setValidators([Validators.required, Validators.minLength(5)]);
           this.profileForm.controls['category_id'].setValidators([Validators.required]);
           this.profileForm.controls['business_state_id'].setValidators([Validators.required]);
-          this.profileForm.controls['business_district_id'].clearValidators();
+          this.profileForm.controls['business_district_id'].setValidators([Validators.required]);
           this.profileForm.controls['business_address'].clearValidators();
           this.profileForm.controls['website'].clearValidators();
           this.profileForm.controls['gst_number'].clearValidators();

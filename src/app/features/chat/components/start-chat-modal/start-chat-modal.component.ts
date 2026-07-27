@@ -18,6 +18,7 @@ import { closeOutline, personOutline, searchOutline } from 'ionicons/icons';
 import { ChatPartner } from '../../models/chat.model';
 import { ChatService } from '../../services/chat.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-start-chat-modal',
@@ -57,10 +58,18 @@ export class StartChatModalComponent {
     const query = this.searchQuery().toLowerCase().trim();
     if (!query) return contacts;
     return contacts.filter(
-      c => c.full_name.toLowerCase().includes(query) ||
-        c.phone.toLowerCase().includes(query)
+      c => (c?.full_name && c.full_name.toLowerCase().includes(query)) ||
+        (c?.phone && c.phone.toLowerCase().includes(query))
     );
   });
+
+  getInitials(name?: string | null): string {
+    return getInitials(name);
+  }
+
+  getAvatarColor(name?: string | null): string {
+    return getAvatarColor(name);
+  }
 
   constructor() {
     addIcons({ closeOutline, searchOutline, personOutline });

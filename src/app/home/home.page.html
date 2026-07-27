@@ -8,7 +8,7 @@
   <div class="home-layout">
     @if (activeNavTab() === 'home') {
     @if (userRole() === 'MEMBER') {
-    <app-member-home (notificationClick)="onNotificationClick()" />
+    <app-member-home (notificationClick)="onNotificationClick()" (referralsClick)="onTabSelect('referrals')" />
     } @else {
     @if (loading() && !homeFeed()) {
     <!-- Loading State -->
@@ -47,8 +47,8 @@
     <app-menu-view />
     } @else if (activeNavTab() === 'search') {
     <!-- Search View Component -->
-    <app-search-view [(searchQuery)]="searchQuery" [businesses]="homeFeed()?.topBusinesses || []"
-      [offers]="homeFeed()?.trendingOffers || []" (businessClick)="onBusinessClick($event)"
+    <app-search-view [(searchQuery)]="searchQuery" 
+      (businessClick)="onBusinessClick($event)"
       (offerClick)="onDealClick($event)" />
     } @else if (activeNavTab() === 'chat') {
     @if (selectedConversationId()) {
@@ -123,7 +123,7 @@
 </ion-modal>
 
 <!-- Deal Details Modal -->
-<ion-modal [isOpen]="!!selectedDealModal()" (didDismiss)="selectedDealModal.set(null)" class="deal-modal">
+<ion-modal [isOpen]="!!selectedDealModal()" (didDismiss)="selectedDealModal.set(null)" class="deal-modal" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
   <ng-template>
     @if (selectedDealModal(); as deal) {
     <ion-header class="ion-no-border premium-header">
@@ -136,12 +136,20 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <div class="auto-height-content">
       <div class="deal-detail-view">
+        @if (deal.imageUrl) {
         <div class="detail-hero" [appCachedBgImg]="deal.imageUrl">
           <span class="detail-discount">{{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' +
             deal.discount_value + ' OFF' }}</span>
         </div>
+        } @else {
+        <div class="detail-hero fallback-hero" [style.background]="getAvatarColor(deal.businessName)">
+          <span class="fallback-hero-text">{{ getInitials(deal.businessName) }}</span>
+          <span class="detail-discount">{{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' +
+            deal.discount_value + ' OFF' }}</span>
+        </div>
+        }
         <div class="detail-body">
           <span class="detail-biz">{{ deal.businessName }}</span>
           <h2 class="detail-title">{{ deal.title }}</h2>
@@ -156,7 +164,7 @@
           </button>
         </div>
       </div>
-    </ion-content>
+    </div>
     }
   </ng-template>
 </ion-modal>
@@ -204,7 +212,7 @@
 </ion-modal>
 
 <!-- Business Details Modal -->
-<ion-modal [isOpen]="!!selectedBizModal()" (didDismiss)="selectedBizModal.set(null)" class="biz-modal">
+<ion-modal [isOpen]="!!selectedBizModal()" (didDismiss)="selectedBizModal.set(null)" class="biz-modal" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
   <ng-template>
     @if (selectedBizModal(); as biz) {
     <ion-header class="ion-no-border premium-header">
@@ -217,12 +225,24 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <div class="auto-height-content">
       <div class="biz-detail-view">
+        @if (biz.bannerUrl) {
         <div class="detail-hero" [appCachedBgImg]="biz.bannerUrl"></div>
+        } @else {
+        <div class="detail-hero fallback-hero" [style.background]="getAvatarColor(biz.name)">
+          <span class="fallback-hero-text">{{ getInitials(biz.name) }}</span>
+        </div>
+        }
         <div class="detail-body">
           <div class="biz-header-row">
+            @if (biz.logoUrl) {
             <img [appCachedImg]="biz.logoUrl" alt="logo" class="detail-logo" />
+            } @else {
+            <div class="detail-logo fallback-logo" [style.background]="getAvatarColor(biz.name)">
+              {{ getInitials(biz.name) }}
+            </div>
+            }
             <div>
               <h2 class="detail-title">{{ biz.name }}</h2>
               <span class="detail-cat">{{ biz.categoryName }} • {{ biz.status }}</span>
@@ -246,7 +266,7 @@
           }
         </div>
       </div>
-    </ion-content>
+    </div>
     }
   </ng-template>
 </ion-modal>

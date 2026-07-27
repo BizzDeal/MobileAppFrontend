@@ -72,7 +72,7 @@
           <span class="stat-label">Growth</span>
           <h3 class="stat-value highlight">+{{ data.analytics.businessGrowth }}%</h3>
         </div>
-        <div class="stat-card">
+        <div class="stat-card clickable" (click)="referralsClick.emit()">
           <span class="stat-label">Referrals</span>
           <h2 class="stat-value">{{ data.analytics.successfulReferrals }}</h2>
         </div>

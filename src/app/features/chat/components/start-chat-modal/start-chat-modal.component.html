@@ -28,10 +28,10 @@
         <ion-item button (click)="onSelect(c)" class="contact-item">
           <div class="avatar-wrapper" slot="start">
             @if (c.profile_pic_url) {
-              <img [appCachedImg]="c.profile_pic_url" alt="{{ c.full_name }}" class="contact-avatar" />
+              <img [appCachedImg]="c.profile_pic_url" alt="{{ c.full_name }}" class="contact-avatar" (error)="c.profile_pic_url = null" />
             } @else {
-              <div class="avatar-placeholder">
-                <ion-icon name="person-outline" />
+              <div class="initials-avatar" [style.background]="getAvatarColor(c.full_name)">
+                {{ getInitials(c.full_name) }}
               </div>
             }
             @if (c.isOnline) {

@@ -7,6 +7,7 @@ import { AdminUserDetailsPage } from './pages/admin-user-details/admin-user-deta
 import { AdminBusinessesPage } from './pages/admin-businesses/admin-businesses.page';
 import { AdminBusinessDetailsPage } from './pages/admin-business-details/admin-business-details.page';
 import { AdminOffersPage } from './pages/admin-offers/admin-offers.page';
+import { AdminReferralsPage } from './pages/admin-referrals/admin-referrals.page';
 import { AdminNotificationsPage } from './pages/admin-notifications/admin-notifications.page';
 import { AdminAnalyticsPage } from './pages/admin-analytics/admin-analytics.page';
 import { AdminMeetingsPage } from './pages/admin-meetings/admin-meetings.page';
@@ -49,6 +50,10 @@ export const ADMIN_ROUTES: Routes = [
         component: AdminOffersPage,
       },
       {
+        path: 'referrals',
+        component: AdminReferralsPage,
+      },
+      {
         path: 'meetings',
         component: AdminMeetingsPage,
       },
@@ -75,3 +80,4 @@ export const ADMIN_ROUTES: Routes = [
     ],
   },
 ];
+

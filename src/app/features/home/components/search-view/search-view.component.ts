@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input, model, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, model, output, signal } from '@angular/core';
 import { IonIcon, IonSearchbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -14,48 +14,39 @@ import {
   star,
   timeOutline
 } from 'ionicons/icons';
+import { IonSkeletonText, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/standalone';
 import { BusinessDTO, OfferDTO } from '../../models/home.model';
+import { HomeService } from '../../services/home.service';
 import { CachedBgImgDirective } from '../../../../shared/directives/cached-bg-img.directive';
+import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-search-view',
   standalone: true,
-  imports: [IonIcon, IonSearchbar, DatePipe, CachedBgImgDirective],
+  imports: [IonIcon, IonSearchbar, DatePipe, CachedBgImgDirective, IonSkeletonText, IonInfiniteScroll, IonInfiniteScrollContent],
   templateUrl: './search-view.component.html',
   styleUrl: './search-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchViewComponent {
+  private readonly homeService = inject(HomeService);
+
   readonly searchQuery = model<string>('');
-  readonly businesses = input<BusinessDTO[]>([]);
-  readonly offers = input<OfferDTO[]>([]);
   
   readonly businessClick = output<BusinessDTO>();
   readonly offerClick = output<OfferDTO>();
 
   readonly activeTab = signal<'businesses' | 'offers'>('businesses');
-
-  readonly filteredBusinesses = computed(() => {
-    const list = this.businesses();
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return list;
-    return list.filter((b: BusinessDTO) => 
-      b.name.toLowerCase().includes(query) || 
-      (b.description && b.description.toLowerCase().includes(query)) ||
-      (b.categoryName && b.categoryName.toLowerCase().includes(query))
-    );
-  });
-
-  readonly filteredOffers = computed(() => {
-    const list = this.offers();
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return list;
-    return list.filter((o: OfferDTO) => 
-      o.title.toLowerCase().includes(query) || 
-      o.description.toLowerCase().includes(query) ||
-      (o.businessName && o.businessName.toLowerCase().includes(query))
-    );
-  });
+  
+  readonly displayedBusinesses = signal<BusinessDTO[]>([]);
+  readonly displayedOffers = signal<OfferDTO[]>([]);
+  
+  readonly isLoading = signal<boolean>(false);
+  
+  private currentPage = 1;
+  private readonly pageSize = 15;
+  readonly hasMore = signal<boolean>(true);
+  private isLoadingMore = false;
 
   constructor() {
     addIcons({
@@ -70,7 +61,81 @@ export class SearchViewComponent {
       receiptOutline,
       timeOutline
     });
+
+    effect(() => {
+      const query = this.searchQuery();
+      const tab = this.activeTab();
+      this.resetAndSearch();
+    });
   }
+
+  private resetAndSearch() {
+    this.currentPage = 1;
+    this.hasMore.set(false);
+    this.isLoadingMore = false;
+    this.displayedBusinesses.set([]);
+    this.displayedOffers.set([]);
+    this.loadData();
+  }
+
+  private loadData(event?: any) {
+    if (this.isLoadingMore) {
+      event?.target?.complete();
+      return;
+    }
+
+    const query = this.searchQuery();
+    const isInitial = this.currentPage === 1;
+    if (isInitial) {
+      this.isLoading.set(true);
+    }
+    this.isLoadingMore = true;
+
+    if (this.activeTab() === 'businesses') {
+      this.homeService.searchBusinesses(query, this.currentPage, this.pageSize).subscribe({
+        next: (res) => {
+          this.displayedBusinesses.update(prev => isInitial ? res.data : [...prev, ...res.data]);
+          this.hasMore.set(res.meta.currentPage < res.meta.totalPages);
+          this.isLoading.set(false);
+          this.isLoadingMore = false;
+          event?.target?.complete();
+        },
+        error: () => {
+          this.isLoading.set(false);
+          this.isLoadingMore = false;
+          this.hasMore.set(false);
+          event?.target?.complete();
+        }
+      });
+    } else {
+      this.homeService.searchOffers(query, this.currentPage, this.pageSize).subscribe({
+        next: (res) => {
+          this.displayedOffers.update(prev => isInitial ? res.data : [...prev, ...res.data]);
+          this.hasMore.set(res.meta.currentPage < res.meta.totalPages);
+          this.isLoading.set(false);
+          this.isLoadingMore = false;
+          event?.target?.complete();
+        },
+        error: () => {
+          this.isLoading.set(false);
+          this.isLoadingMore = false;
+          this.hasMore.set(false);
+          event?.target?.complete();
+        }
+      });
+    }
+  }
+
+  onIonInfinite(event: any) {
+    if (this.hasMore() && !this.isLoadingMore) {
+      this.currentPage++;
+      this.loadData(event);
+    } else {
+      event.target.complete();
+    }
+  }
+
+
 
   setTab(tab: 'businesses' | 'offers'): void {
     this.activeTab.set(tab);
@@ -84,5 +149,13 @@ export class SearchViewComponent {
 
   onSearchClear(): void {
     this.searchQuery.set('');
+  }
+
+  getInitials(name?: string | null): string {
+    return getInitials(name);
+  }
+
+  getAvatarColor(name?: string | null): string {
+    return getAvatarColor(name);
   }
 }

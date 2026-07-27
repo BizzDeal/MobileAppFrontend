@@ -60,6 +60,7 @@ import { CustomerVouchersService } from '../features/vouchers/services/customer-
 import { AuthSessionService } from '../core/services/auth-session.service';
 import { CachedImgDirective } from '../shared/directives/cached-img.directive';
 import { CachedBgImgDirective } from '../shared/directives/cached-bg-img.directive';
+import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-home',
@@ -109,8 +110,11 @@ export class HomePage {
   private readonly authSession = inject(AuthSessionService);
   private readonly customerVouchersService = inject(CustomerVouchersService);
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  readonly router = inject(Router);
   readonly walletService = inject(WalletService);
+  
+  readonly getInitials = getInitials;
+  readonly getAvatarColor = getAvatarColor;
 
   readonly userRole = computed(() => this.authSession.userRole() || this.profileService.profile()?.role || 'CUSTOMER');
 

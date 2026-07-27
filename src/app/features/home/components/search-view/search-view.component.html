@@ -22,7 +22,6 @@
       (click)="setTab('businesses')">
       <ion-icon name="business-outline" class="tab-icon" />
       <span class="tab-label">Businesses</span>
-      <span class="count-badge">{{ filteredBusinesses().length }}</span>
     </button>
     <button 
       type="button" 
@@ -31,7 +30,6 @@
       (click)="setTab('offers')">
       <ion-icon name="pricetag-outline" class="tab-icon" />
       <span class="tab-label">Offers & Deals</span>
-      <span class="count-badge">{{ filteredOffers().length }}</span>
     </button>
   </div>
 
@@ -39,11 +37,31 @@
   <div class="results-container">
     @if (activeTab() === 'businesses') {
       <!-- BUSINESSES LIST -->
-      @if (filteredBusinesses().length > 0) {
+      @if (isLoading()) {
         <div class="results-list">
-          @for (biz of filteredBusinesses(); track biz.id) {
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <div class="result-card business-item skeleton-card">
+              <ion-skeleton-text animated style="width: 60px; height: 60px; border-radius: 8px; margin-right: 16px;"></ion-skeleton-text>
+              <div class="card-info" style="flex: 1;">
+                <ion-skeleton-text animated style="width: 70%; height: 20px; margin-bottom: 8px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 40%; height: 16px; margin-bottom: 8px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 90%; height: 14px; margin-bottom: 8px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 50%; height: 14px;"></ion-skeleton-text>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (displayedBusinesses().length > 0) {
+        <div class="results-list">
+          @for (biz of displayedBusinesses(); track biz.id) {
             <div class="result-card business-item" (click)="businessClick.emit(biz)">
-              <div class="card-thumbnail" [appCachedBgImg]="biz.logoUrl"></div>
+              @if (biz.logoUrl) {
+                <div class="card-thumbnail" [appCachedBgImg]="biz.logoUrl"></div>
+              } @else {
+                <div class="card-thumbnail initials-fallback" [style.background]="getAvatarColor(biz.name)">
+                  <span>{{ getInitials(biz.name) }}</span>
+                </div>
+              }
               
               <div class="card-info">
                 <div class="card-header">
@@ -81,15 +99,38 @@
       }
     } @else {
       <!-- OFFERS LIST -->
-      @if (filteredOffers().length > 0) {
+      @if (isLoading()) {
         <div class="results-list">
-          @for (offer of filteredOffers(); track offer.id) {
-            <div class="result-card offer-item" (click)="offerClick.emit(offer)">
-              <div class="card-thumbnail" [appCachedBgImg]="offer.imageUrl">
-                <span class="discount-banner">
-                  {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '% OFF' : '₹' + offer.discount_value + ' OFF' }}
-                </span>
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <div class="result-card offer-item skeleton-card">
+              <ion-skeleton-text animated style="width: 70px; height: 70px; border-radius: 8px; margin-right: 16px;"></ion-skeleton-text>
+              <div class="card-info" style="flex: 1;">
+                <ion-skeleton-text animated style="width: 80%; height: 20px; margin-bottom: 8px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 50%; height: 16px; margin-bottom: 8px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 90%; height: 14px; margin-bottom: 8px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 40%; height: 14px;"></ion-skeleton-text>
               </div>
+            </div>
+          }
+        </div>
+      } @else if (displayedOffers().length > 0) {
+        <div class="results-list">
+          @for (offer of displayedOffers(); track offer.id) {
+            <div class="result-card offer-item" (click)="offerClick.emit(offer)">
+              @if (offer.imageUrl) {
+                <div class="card-thumbnail" [appCachedBgImg]="offer.imageUrl">
+                  <span class="discount-banner">
+                    {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '% OFF' : '₹' + offer.discount_value + ' OFF' }}
+                  </span>
+                </div>
+              } @else {
+                <div class="card-thumbnail initials-fallback" [style.background]="getAvatarColor(offer.businessName || offer.title)">
+                  <span>{{ getInitials(offer.businessName || offer.title) }}</span>
+                  <span class="discount-banner">
+                    {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '% OFF' : '₹' + offer.discount_value + ' OFF' }}
+                  </span>
+                </div>
+              }
               
               <div class="card-info">
                 <div class="card-header">
@@ -116,5 +157,10 @@
         </div>
       }
     }
+
+    <!-- Single infinite scroll outside conditionals so it persists in the DOM -->
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)" [disabled]="!hasMore()">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   </div>
 </div>

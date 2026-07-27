@@ -5,6 +5,7 @@ import { arrowForwardOutline, locationOutline, starOutline } from 'ionicons/icon
 import { BusinessDTO } from '../../models/home.model';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { CachedBgImgDirective } from '../../../../shared/directives/cached-bg-img.directive';
+import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-business-card',
@@ -21,5 +22,13 @@ export class BusinessCardComponent {
 
   constructor() {
     addIcons({ starOutline, locationOutline, arrowForwardOutline });
+  }
+
+  getInitials(name?: string | null): string {
+    return getInitials(name);
+  }
+
+  getAvatarColor(name?: string | null): string {
+    return getAvatarColor(name);
   }
 }

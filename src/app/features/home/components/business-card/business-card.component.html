@@ -6,7 +6,13 @@
 
   <div class="card-content">
     <div class="biz-header">
-      <img [appCachedImg]="business().logoUrl" alt="logo" class="biz-logo" />
+      @if (business().logoUrl) {
+        <img [appCachedImg]="business().logoUrl" alt="logo" class="biz-logo" />
+      } @else {
+        <div class="biz-logo initials-fallback" [style.background]="getAvatarColor(business().name)">
+          <span>{{ getInitials(business().name) }}</span>
+        </div>
+      }
       <div class="title-row">
         <h3 class="biz-name">{{ business().name }}</h3>
       </div>

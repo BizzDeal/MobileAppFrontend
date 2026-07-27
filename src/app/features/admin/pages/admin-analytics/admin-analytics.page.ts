@@ -89,7 +89,8 @@ export class AdminAnalyticsPage implements OnInit {
     // Shared common options for styling
     const commonChartOptions = {
       fontFamily: 'inherit',
-      toolbar: { show: false }
+      toolbar: { show: false },
+      zoom: { enabled: false }
     };
 
     this.userGrowthChartOptions = {

@@ -27,6 +27,7 @@ import { DashboardSkeletonComponent } from '../../../../shared/components/skelet
 })
 export class MemberHomeComponent implements OnInit {
   @Output() notificationClick = new EventEmitter<void>();
+  @Output() referralsClick = new EventEmitter<void>();
 
   private readonly dashboardService = inject(MemberDashboardService);
   private readonly profileService = inject(ProfileService);

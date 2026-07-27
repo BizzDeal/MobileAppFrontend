@@ -95,6 +95,7 @@ export class HomeService {
           gst_number: b.gst_number || null,
           logo_id: b.logo_id || null,
           status: b.status || 'ACTIVE',
+          district_id: b.district_id || '',
           is_featured: b.is_featured ?? true,
           created_at: b.created_at || new Date().toISOString(),
           updated_at: b.updated_at || new Date().toISOString(),
@@ -115,6 +116,7 @@ export class HomeService {
           gst_number: b.gst_number || null,
           logo_id: b.logo_id || null,
           status: b.status || 'ACTIVE',
+          district_id: b.district_id || '',
           is_featured: b.is_featured ?? false,
           created_at: b.created_at || new Date().toISOString(),
           updated_at: b.updated_at || new Date().toISOString(),
@@ -255,6 +257,79 @@ export class HomeService {
         const errorMessage = err?.error?.message || err?.message || 'Failed to claim deal via server API';
         this._error.set(errorMessage);
         return throwError(() => err);
+      })
+    );
+  }
+
+  searchBusinesses(query: string, page: number = 1, limit: number = 15): Observable<any> {
+    const params = new URLSearchParams();
+    if (query) params.set('search', query);
+    params.set('page', page.toString());
+    params.set('limit', limit.toString());
+    return this.http.get<any>(`${this.apiUrl}/businesses/search?${params.toString()}`).pipe(
+      map(res => {
+        const dataRaw = Array.isArray(res) ? res : res.data || res.items || [];
+        const meta = res.meta || { currentPage: page, totalPages: 1 };
+        
+        const mappedData: BusinessDTO[] = dataRaw.map((b: any) => ({
+          id: b.id,
+          owner_id: b.owner_id,
+          category_id: b.category_id,
+          name: b.name,
+          description: b.description || null,
+          website: b.website || null,
+          gst_number: b.gst_number || null,
+          logo_id: b.logo_id || null,
+          status: b.status || 'ACTIVE',
+          district_id: b.district_id || '',
+          is_featured: b.is_featured ?? false,
+          created_at: b.created_at || new Date().toISOString(),
+          updated_at: b.updated_at || new Date().toISOString(),
+          categoryName: b.categoryName || b.category?.name || 'Partner Business',
+          logoUrl: b.logoUrl || b.business_logo_url || null,
+          bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
+        }));
+        
+        return { data: mappedData, meta };
+      })
+    );
+  }
+
+  searchOffers(query: string, page: number = 1, limit: number = 15): Observable<any> {
+    const params = new URLSearchParams();
+    if (query) params.set('search', query);
+    params.set('page', page.toString());
+    params.set('limit', limit.toString());
+    
+    return this.http.get<any>(`${this.apiUrl}/offers/search?${params.toString()}`).pipe(
+      map(res => {
+        const dataRaw = Array.isArray(res) ? res : res.data || res.items || [];
+        const meta = res.meta || { currentPage: page, totalPages: 1 };
+        const claimedOfferIds = new Set(this.customerVouchersService.vouchers().map(v => v.offer_id));
+        
+        const mappedData: OfferDTO[] = dataRaw.map((o: any) => ({
+          id: o.id,
+          business_id: o.business_id,
+          title: o.title,
+          description: o.description || '',
+          offer_type: o.offer_type || 'DISCOUNT',
+          discount_value: o.discount_value ?? null,
+          discount_type: o.discount_type || null,
+          start_date: o.start_date || new Date().toISOString(),
+          end_date: o.end_date || new Date().toISOString(),
+          image_id: o.image_id || null,
+          status: o.status || 'APPROVED',
+          approved_by_id: o.approved_by_id || null,
+          approved_at: o.approved_at || null,
+          created_at: o.created_at || new Date().toISOString(),
+          updated_at: o.updated_at || new Date().toISOString(),
+          businessName: o.businessName || o.business?.name || 'Partner Business',
+          businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || o.business?.logoUrl || null,
+          imageUrl: o.imageUrl || o.image_url || null,
+          isClaimed: claimedOfferIds.has(o.id),
+        }));
+        
+        return { data: mappedData, meta };
       })
     );
   }

@@ -84,6 +84,14 @@ export class ChatService {
     return this.http.get<any[]>(`${environment.apiUrl}/chat/contacts?search=${encodeURIComponent(query)}`);
   }
 
+  getChatList(page: number = 1, limit: number = 20, search?: string): Observable<any> {
+    let url = `${environment.apiUrl}/chat/list?page=${page}&limit=${limit}`;
+    if (search) {
+      url += `&search=${encodeURIComponent(search)}`;
+    }
+    return this.http.get<any>(url);
+  }
+
   private loadConversations(): void {
     this.http.get<ChatConversation[]>(`${environment.apiUrl}/chat/conversations`).subscribe({
       next: (convs) => {
@@ -134,8 +142,31 @@ export class ChatService {
     return this.http.post<ChatConversation>(`${environment.apiUrl}/chat/conversations`, { target_user_id: partnerId }).pipe(
       map(conv => this.mapConversation(conv)),
       tap(mappedConv => {
-        const exists = this._conversations().find(c => c.id === mappedConv.id);
-        if (!exists) {
+        if (!mappedConv.partner) {
+          const contact = this._contactsDirectory().find(c => c.id === partnerId);
+          if (contact) {
+            mappedConv.partner = {
+              id: contact.id,
+              full_name: contact.full_name,
+              phone: contact.phone,
+              role: contact.role,
+              profile_pic_url: contact.profile_pic_url,
+              isOnline: this._onlineUsers().has(contact.id),
+            };
+          }
+        }
+        const index = this._conversations().findIndex(c => c.id === mappedConv.id);
+        if (index >= 0) {
+          this._conversations.update(convs => {
+            const updated = [...convs];
+            updated[index] = {
+              ...updated[index],
+              ...mappedConv,
+              partner: mappedConv.partner || updated[index].partner,
+            };
+            return updated;
+          });
+        } else {
           this._conversations.update(convs => [mappedConv, ...convs]);
         }
         this.setActiveConversation(mappedConv.id);

@@ -2,535 +2,750 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: var(--bizzdeal-spacing-md);
-  padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); /* Space for bottom nav + FAB padding */
-  background: var(--bizzdeal-bg-main);
+  padding: var(--bizzdeal-spacing-md, 16px);
+  padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); /* space for bottom nav */
+  background: var(--bizzdeal-bg-main, #f8fafc);
   overflow-y: auto;
-}
+  position: relative;
 
-// 1. Custom Header (consistent with Meetings page design)
-.referrals-header {
-  background: var(--bizzdeal-bg-surface);
-  border-radius: var(--bizzdeal-radius-lg);
-  padding: var(--bizzdeal-spacing-md);
-  margin-bottom: var(--bizzdeal-spacing-md);
-  box-shadow: var(--bizzdeal-shadow-sm);
-  border: 1px solid var(--bizzdeal-border-color);
-  animation: fadeIn 0.4s ease-out;
+  .referrals-header {
+    background: var(--bizzdeal-bg-surface, #ffffff);
+    border-radius: var(--bizzdeal-radius-lg, 16px);
+    padding: var(--bizzdeal-spacing-md, 16px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--bizzdeal-border-color, #e2e8f0);
+    animation: fadeIn 0.4s ease-out;
 
-  .header-content {
-    display: flex;
-    align-items: center;
-    gap: var(--bizzdeal-spacing-md);
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 6px 16px rgba(30, 136, 229, 0.3);
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+    }
+
+    .header-text {
+      h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--bizzdeal-text-primary, #0f172a);
+        letter-spacing: -0.02em;
+      }
+
+      p {
+        margin: 2px 0 0 0;
+        font-size: 0.85rem;
+        color: var(--bizzdeal-text-secondary, #64748b);
+      }
+    }
   }
 
-  .header-icon-box {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--bizzdeal-radius-md);
-    background: var(--bizzdeal-gradient-primary-diagonal);
+  .premium-segment {
+    margin: 16px 0;
+    --background: rgba(30, 136, 229, 0.08);
+    border-radius: 12px;
+    padding: 4px;
+    height: 46px;
+
+    ion-segment-button {
+      --color: var(--bizzdeal-text-secondary, #64748b);
+      --color-checked: var(--ion-color-primary, #1e88e5);
+      --indicator-color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      min-height: 38px;
+
+      &::part(indicator) {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+    }
+  }
+
+  .referrals-content {
+    display: flex;
+    flex-direction: column;
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      text-align: center;
+      background: var(--bizzdeal-bg-surface, #ffffff);
+      border-radius: 16px;
+      border: 1px dashed var(--bizzdeal-border-color, #cbd5e1);
+      margin-top: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      animation: fadeIn 0.5s ease-out;
+
+      .empty-icon-wrapper {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(30, 136, 229, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+
+        &.danger {
+          background: rgba(239, 68, 68, 0.08);
+          ion-icon {
+            color: #ef4444;
+          }
+        }
+
+        ion-icon {
+          font-size: 2rem;
+          color: var(--ion-color-primary, #1e88e5);
+        }
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--bizzdeal-text-primary, #0f172a);
+        font-weight: 600;
+      }
+
+      p {
+        margin: 8px 0 0;
+        font-size: 0.85rem;
+        color: var(--bizzdeal-text-secondary, #64748b);
+        max-width: 240px;
+        line-height: 1.4;
+      }
+    }
+
+    .referrals-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+
+  /* Custom Floating Add Button */
+  .fab-add-button {
+    position: fixed;
+    bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--bizzdeal-text-on-primary);
-    box-shadow: var(--bizzdeal-shadow-primary);
+    cursor: pointer;
+    z-index: 99;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:active {
+      transform: scale(0.92);
+    }
 
     ion-icon {
-      font-size: 1.5rem;
-    }
-  }
-
-  .header-text {
-    h2 {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--bizzdeal-text-primary);
-      letter-spacing: -0.02em;
-    }
-
-    p {
-      margin: 2px 0 0 0;
-      font-size: 0.85rem;
-      color: var(--bizzdeal-text-secondary);
+      font-size: 1.75rem;
     }
   }
 }
 
-// 2. Analytics Overview Layout
-.analytics-overview {
-  margin-bottom: var(--bizzdeal-spacing-md);
-}
-
-.analytics-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--bizzdeal-spacing-sm);
-}
-
-.analytics-card {
-  background: var(--bizzdeal-bg-surface);
-  border: 1px solid var(--bizzdeal-border-color);
-  border-radius: var(--bizzdeal-radius-lg);
-  padding: var(--bizzdeal-spacing-sm) var(--bizzdeal-spacing-md);
-  text-align: center;
-  box-shadow: var(--bizzdeal-shadow-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:active {
-    transform: scale(0.97);
-  }
-
-  .stat-label {
-    display: block;
-    font-size: 11px;
-    color: var(--bizzdeal-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: var(--bizzdeal-spacing-xs);
-  }
-
-  .stat-value {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--bizzdeal-text-primary);
-  }
-}
-
-// 3. Main List Containers & Sections
-.list-container {
-  padding: 0;
-  margin-top: var(--bizzdeal-spacing-sm);
-}
-
-.section-title {
-  margin: 0 0 var(--bizzdeal-spacing-sm) 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--bizzdeal-text-primary);
-  letter-spacing: 0.3px;
-}
-
-.referral-list {
+/* ==========================================================
+   COMPACT LIST ITEM CARD (Top-Level Scope)
+   ========================================================== */
+.referral-item-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.22s ease;
   display: flex;
   flex-direction: column;
-  gap: var(--bizzdeal-spacing-sm);
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+
+  &:hover, &:active {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+    background: #f8fafc;
+  }
+
+  .item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    .contact-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+
+      .contact-name {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .type-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+
+        &.inside {
+          background-color: rgba(30, 136, 229, 0.12);
+          color: #1e88e5;
+        }
+
+        &.outside {
+          background-color: rgba(139, 92, 246, 0.12);
+          color: #8b5cf6;
+        }
+      }
+    }
+
+    .item-date {
+      font-size: 0.78rem;
+      color: #64748b;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+  }
+
+  .item-summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    .summary-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+      min-width: 0;
+
+      .info-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        color: #475569;
+        font-weight: 500;
+
+        ion-icon {
+          font-size: 1rem;
+          color: #1e88e5;
+        }
+
+        &.member-pill {
+          ion-icon {
+            color: #10b981;
+          }
+          span {
+            font-weight: 600;
+            color: #0f172a;
+          }
+        }
+      }
+    }
+
+    .action-arrow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+
+      .stars-mini {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: rgba(245, 158, 11, 0.12);
+        padding: 2px 7px;
+        border-radius: 8px;
+
+        .star-mini-icon {
+          font-size: 0.85rem;
+          color: #f59e0b;
+        }
+
+        .rating-num {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #b45309;
+        }
+      }
+
+      .chevron-icon {
+        font-size: 1.15rem;
+        color: #94a3b8;
+      }
+    }
+  }
+}
+
+/* ==========================================================
+   FULL REFERRAL CARD (Inside Modal & Top-Level Scope)
+   ========================================================== */
+.modal-detail-wrapper {
+  padding: 4px 0 16px 0;
 }
 
 .referral-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bizzdeal-bg-surface);
-  border: 1px solid var(--bizzdeal-border-color);
-  border-radius: var(--bizzdeal-radius-xl);
-  padding: var(--bizzdeal-spacing-md);
-  box-shadow: var(--bizzdeal-shadow-sm);
-  transition: transform 0.2s ease;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  animation: fadeIn 0.4s ease-out;
+  position: relative;
+  overflow: hidden;
 
-  &:active {
-    transform: scale(0.99);
-  }
-}
+  .card-top {
+    .contact-profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
 
-.ref-details {
-  display: flex;
-  flex-direction: column;
-  gap: var(--bizzdeal-spacing-xs);
+      .avatar-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(30, 136, 229, 0.18) 0%, rgba(30, 136, 229, 0.05) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #1e88e5;
+        border: 1.5px solid rgba(30, 136, 229, 0.25);
 
-  .phone-number {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--bizzdeal-text-primary);
-  }
+        ion-icon {
+          font-size: 1.5rem;
+        }
+      }
 
-  .ref-date {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    color: var(--bizzdeal-text-secondary);
+      .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        min-width: 0;
 
-    ion-icon {
-      font-size: 14px;
+        .contact-name {
+          margin: 0;
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #0f172a;
+          line-height: 1.3;
+          letter-spacing: -0.01em;
+          word-break: break-word;
+        }
+
+        .badge-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+
+          .type-badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+
+            &.inside {
+              background-color: rgba(30, 136, 229, 0.12);
+              color: #1e88e5;
+            }
+
+            &.outside {
+              background-color: rgba(139, 92, 246, 0.12);
+              color: #8b5cf6;
+            }
+          }
+
+          .date-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.78rem;
+            color: #64748b;
+            font-weight: 500;
+
+            ion-icon {
+              font-size: 0.9rem;
+            }
+          }
+        }
+      }
     }
   }
 
-  .code-badge {
-    font-size: 11px;
-    background: var(--bizzdeal-bg-surface-secondary);
-    border: 1px dashed var(--bizzdeal-border-color);
-    padding: 2px 6px;
-    border-radius: var(--bizzdeal-radius-sm);
-    color: var(--bizzdeal-text-secondary);
-    width: fit-content;
-    margin-top: 2px;
-  }
-}
-
-.ref-status-box {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--bizzdeal-spacing-xs);
-}
-
-// Status Badges & Colors
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: var(--bizzdeal-radius-full);
-  font-size: 12px;
-  font-weight: 600;
-
-  ion-icon {
-    font-size: 14px;
+  .card-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 16px 0 16px 0;
   }
 
-  &.status-pending {
-    background: rgba(245, 158, 11, 0.1);
-    color: var(--ion-color-warning);
-  }
+  .card-body {
+    .detail-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
 
-  &.status-joined {
-    background: rgba(14, 165, 233, 0.1);
-    color: var(--ion-color-secondary);
-  }
+      .detail-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
 
-  &.status-cancelled {
-    background: rgba(100, 116, 139, 0.1);
-    color: var(--ion-color-medium);
-  }
-}
+        &.full-width {
+          flex-direction: column;
+          gap: 8px;
 
-// 4. States Banner and Container Styles
-.state-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 65vh;
-  width: 100%;
-  text-align: center;
-  padding: var(--bizzdeal-spacing-xl) var(--bizzdeal-spacing-md);
-  margin-top: 20px;
+          .detail-content {
+            padding-left: 0;
+          }
+        }
 
-  .state-text {
-    margin-top: var(--bizzdeal-spacing-sm);
-    color: var(--bizzdeal-text-secondary);
-    font-size: 14px;
-  }
-}
+        .icon-wrap {
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          margin-top: 1px;
 
-.empty-state {
-  .icon-glow-box {
-    width: 80px;
-    height: 80px;
-    border-radius: var(--bizzdeal-radius-full);
-    background: rgba(30, 136, 229, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: var(--bizzdeal-spacing-md);
-    box-shadow: 0 0 20px rgba(30, 136, 229, 0.1);
-  }
+          ion-icon {
+            font-size: 1.2rem;
+          }
 
-  .empty-icon {
-    font-size: 38px;
-    color: var(--ion-color-primary);
-  }
+          &.phone-icon {
+            background: rgba(30, 136, 229, 0.12);
+            color: #1e88e5;
+          }
 
-  .empty-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--bizzdeal-text-primary);
-    margin: 0 0 var(--bizzdeal-spacing-sm) 0;
-  }
+          &.mail-icon {
+            background: rgba(139, 92, 246, 0.12);
+            color: #8b5cf6;
+          }
 
-  .empty-desc {
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--bizzdeal-text-secondary);
-    margin: 0 0 var(--bizzdeal-spacing-lg) 0;
-    max-width: 280px;
-  }
+          &.member-icon {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+          }
 
-  .invite-cta-btn {
-    width: auto;
-    padding-left: var(--bizzdeal-spacing-xl);
-    padding-right: var(--bizzdeal-spacing-xl);
-  }
-}
+          &.location-icon {
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+          }
 
-.error-banner {
-  display: flex;
-  align-items: center;
-  gap: var(--bizzdeal-spacing-sm);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: var(--bizzdeal-radius-md);
-  padding: var(--bizzdeal-spacing-sm) var(--bizzdeal-spacing-md);
-  margin: var(--bizzdeal-spacing-md) 0;
+          &.comment-icon {
+            background: rgba(100, 116, 139, 0.12);
+            color: #64748b;
+          }
+        }
 
-  .error-icon {
-    font-size: 20px;
-    color: var(--ion-color-danger);
-    flex-shrink: 0;
-  }
+        .detail-content {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          flex: 1;
+          min-width: 0;
 
-  .error-message {
-    font-size: 13px;
-    color: var(--ion-color-danger);
-    font-weight: 500;
-  }
-}
+          .item-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+          }
 
-// 5. Floating Action Button
-ion-fab {
-  position: fixed !important;
-  bottom: calc(var(--bizzdeal-spacing-md) + 90px + env(safe-area-inset-bottom, 0px)) !important; /* Float right above the 90px bottom menu bar */
-  right: var(--bizzdeal-spacing-md) !important;
-  z-index: 99999;
-}
+          .item-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0f172a;
+            word-break: break-word;
 
-.fab-btn {
-  --background: var(--bizzdeal-gradient-primary);
-  --background-activated: var(--bizzdeal-gradient-dark);
-  --box-shadow: var(--bizzdeal-shadow-primary);
-  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            &.phone-link, &.mail-link {
+              text-decoration: none;
+              color: #1e88e5;
+              font-weight: 600;
+              transition: color 0.15s ease;
 
-  ion-icon {
-    font-size: 24px;
-    color: var(--bizzdeal-text-on-primary);
-  }
+              &:hover, &:active {
+                text-decoration: underline;
+              }
+            }
 
-  &:hover {
-    --box-shadow: var(--bizzdeal-shadow-primary-glow);
-  }
-}
+            &.font-highlight {
+              color: #1e88e5;
+              font-weight: 700;
+            }
 
-// 6. Modal and Form Styling (using direct ion-modal selector to style shadow host)
-ion-modal.referral-modal {
-  --height: 100%;
-  --width: 100%;
-  --max-width: 100%;
-  --border-radius: 0;
-  --box-shadow: none;
-  align-items: stretch;
-
-  @media (min-width: 576px) {
-    align-items: stretch;
-    --width: 100%;
-    --height: 100%;
-    --max-width: 100%;
-    --border-radius: 0;
-  }
-}
-
-.modal-content-pad {
-  --background: var(--bizzdeal-bg-surface);
-  --padding-top: 0px;
-  --padding-bottom: 0px;
-  --padding-start: 0px;
-  --padding-end: 0px;
-}
-
-.modal-contacts-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 0 var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md);
-}
-
-.contacts-searchbar {
-  --background: var(--bizzdeal-bg-surface-secondary);
-  --border-radius: var(--bizzdeal-radius-md);
-  padding-left: 0;
-  padding-right: 0;
-  margin-bottom: var(--bizzdeal-spacing-xs);
-}
-
-.select-all-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--bizzdeal-spacing-sm) 0;
-  border-bottom: 1px solid var(--bizzdeal-border-color);
-
-  .select-all-checkbox {
-    --size: 22px;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--bizzdeal-text-primary);
-  }
-
-  .selected-badge {
-    background: var(--bizzdeal-bg-surface-secondary);
-    color: var(--ion-color-primary);
-    font-size: 13px;
-    font-weight: 700;
-    padding: 2px 10px;
-    border-radius: var(--bizzdeal-radius-full);
-  }
-}
-
-.contacts-list-scrollable {
-  flex: 1;
-  overflow-y: auto;
-  margin-top: var(--bizzdeal-spacing-xs);
-  margin-bottom: var(--bizzdeal-spacing-sm);
-}
-
-.contacts-ion-list {
-  background: transparent;
-  padding: 0;
-}
-
-.contact-item {
-  --background: transparent;
-  --min-height: 60px;
-  --border-radius: var(--bizzdeal-radius-md);
-  margin-bottom: var(--bizzdeal-spacing-xs);
-  border: 1px solid transparent;
-  transition: background-color 0.2s ease;
-
-  &::part(native) {
-    padding-left: 0;
-  }
-
-  &:active {
-    --background: var(--bizzdeal-bg-surface-secondary);
-  }
-
-  ion-checkbox {
-    --size: 22px;
-  }
-
-  .contact-text {
-    margin-left: var(--bizzdeal-spacing-sm);
-
-    h2 {
-      margin: 0;
-      font-size: 16.5px;
-      font-weight: 600;
-      color: var(--bizzdeal-text-primary);
+            &.comment-text {
+              font-style: italic;
+              font-weight: 500;
+              color: #334155;
+              background: #f8fafc;
+              padding: 10px 14px;
+              border-radius: 10px;
+              border-left: 3.5px solid #cbd5e1;
+              margin-top: 4px;
+            }
+          }
+        }
+      }
     }
 
-    p {
-      margin: 2px 0 0 0;
-      font-size: 14px;
-      color: var(--bizzdeal-text-secondary);
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px dashed #cbd5e1;
+      flex-wrap: wrap;
+
+      .status-tags {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+
+        .status-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          padding: 5px 12px;
+          border-radius: 20px;
+
+          ion-icon {
+            font-size: 0.95rem;
+          }
+
+          &.tag-call {
+            background: rgba(34, 197, 94, 0.14);
+            color: #15803d;
+          }
+
+          &.tag-card {
+            background: rgba(245, 158, 11, 0.14);
+            color: #b45309;
+          }
+        }
+      }
+
+      .rating-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(245, 158, 11, 0.12);
+        padding: 5px 10px;
+        border-radius: 12px;
+
+        .stars {
+          display: flex;
+          align-items: center;
+          gap: 2px;
+
+          .star-icon {
+            font-size: 1.1rem;
+            color: #f59e0b;
+          }
+        }
+
+        .rating-val {
+          font-size: 0.78rem;
+          font-weight: 700;
+          color: #b45309;
+        }
+      }
     }
   }
 }
 
-.modal-state-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 250px;
-  text-align: center;
-  color: var(--bizzdeal-text-secondary);
+// Modal Styles
+.modal-body {
+  padding: 0.5rem 0;
 
-  p {
-    margin-top: var(--bizzdeal-spacing-sm);
-    font-size: 14px;
-    font-weight: 500;
-  }
+  .form-section {
+    background: var(--bizzdeal-bg-surface, #ffffff);
+    border-radius: var(--bizzdeal-radius-lg, 16px);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--bizzdeal-border-color, #e2e8f0);
+    transition: opacity 0.3s ease;
 
-  &.error-state {
-    color: var(--ion-color-danger);
-    ion-icon {
-      font-size: 32px;
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: var(--bizzdeal-text-primary, #0f172a);
+    }
+
+    .type-segment {
+      margin-bottom: 0.5rem;
+    }
+
+    .search-helper {
+      font-size: 0.8rem;
+      color: var(--bizzdeal-text-secondary, #64748b);
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .search-container {
+      position: relative;
+
+      .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        z-index: 20;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        max-height: 380px;
+        overflow-y: auto;
+
+        ion-item {
+          --background: transparent;
+
+          h2 {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--bizzdeal-text-primary, #0f172a);
+          }
+          p.business-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--ion-color-primary, #1e88e5);
+            margin: 2px 0;
+          }
+          p.member-contact {
+            font-size: 0.78rem;
+            color: var(--bizzdeal-text-secondary, #64748b);
+            margin: 0;
+          }
+        }
+      }
+    }
+
+    .checkbox-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+
+      .checkbox-item {
+        --padding-start: 0;
+        --inner-padding-end: 0;
+        --background: transparent;
+        font-size: 0.9rem;
+      }
+    }
+
+    .input-item {
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      --background: transparent;
+      margin-bottom: 1rem;
+
+      ion-input,
+      ion-textarea {
+        --padding-start: 0;
+        font-size: 1rem;
+      }
+    }
+
+    .rating-section {
+      margin-top: 1.5rem;
+      text-align: center;
+
+      p {
+        font-weight: 600;
+        color: var(--bizzdeal-text-primary, #0f172a);
+        margin-bottom: 0.5rem;
+      }
+
+      .stars-container {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+
+        .interactive-star {
+          font-size: 2.2rem;
+          color: #f59e0b;
+          transition: transform 0.2s ease;
+
+          &:active {
+            transform: scale(1.2);
+          }
+        }
+      }
     }
   }
-
-  &.empty-state {
-    ion-icon {
-      font-size: 32px;
-      color: var(--ion-color-primary);
-    }
-    .sub-text {
-      font-size: 12px;
-      color: var(--bizzdeal-text-secondary);
-      margin-top: 4px;
-    }
-  }
 }
 
-.modal-actions-panel {
-  padding-top: var(--bizzdeal-spacing-sm);
-  padding-bottom: calc(var(--bizzdeal-spacing-sm) + env(safe-area-inset-bottom, 0px));
-  background: var(--bizzdeal-bg-surface);
+.footer-actions {
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
 }
 
-// General button styles
-.bd-btn-primary {
-  width: 100%;
-  background: var(--bizzdeal-gradient-primary);
-  color: var(--bizzdeal-text-on-primary);
-  border: none;
-  border-radius: var(--bizzdeal-radius-lg);
-  padding: 14px 20px;
-  font-size: 15px;
-  font-weight: 600;
-  box-shadow: var(--bizzdeal-shadow-primary);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.25s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-
-  &:active:not(:disabled) {
-    transform: scale(0.98);
-    box-shadow: var(--bizzdeal-shadow-sm);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-
-  .btn-spinner {
-    width: 18px;
-    height: 18px;
-    --color: var(--bizzdeal-text-on-primary);
-  }
-}
-
-.full-btn {
-  margin-top: var(--bizzdeal-spacing-sm);
-}
-
-// Animations
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-// Dark Mode Palette Adjustments
-:host-context(html.ion-palette-dark) {
-  .analytics-overview, .referral-card, .modal-content-pad {
-    background: var(--bizzdeal-bg-surface);
-  }
-  .analytics-card {
-    background: var(--bizzdeal-bg-surface-secondary);
-  }
-  .code-badge {
-    background: var(--bizzdeal-bg-surface-secondary);
-  }
-  .input-wrapper {
-    background: var(--bizzdeal-bg-surface-secondary);
   }
 }

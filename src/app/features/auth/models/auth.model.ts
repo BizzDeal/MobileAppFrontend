@@ -19,7 +19,7 @@ export interface AuthUser {
   email?: string | null;
   address?: string | null;
   state_id?: string | null;
-  district_id?: string | null;
+  district_id: string;
   role: UserRole;
   status: UserStatus;
   approved_by_id?: string | null;
@@ -38,7 +38,7 @@ export interface AuthUser {
   category_id?: string | null;
   business_address?: string | null;
   business_state_id?: string | null;
-  business_district_id?: string | null;
+  business_district_id: string;
   
   // Profile Completion Tracking
   is_profile_completed?: boolean;
@@ -102,6 +102,6 @@ export interface RegisterMemberDto {
   gst_number?: string;
   business_address?: string;
   business_state_id?: string;
-  business_district_id?: string;
+  business_district_id: string;
   otp: string;
 }

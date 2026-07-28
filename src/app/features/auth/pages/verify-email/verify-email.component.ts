@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MemberOnboardingService } from '../../services/member-onboarding.service';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
 @Component({
   selector: 'app-verify-email',
@@ -37,7 +38,7 @@ export class VerifyEmailComponent implements OnInit {
       await this.onboardingService.verifyEmail(token);
       this.isSuccess.set(true);
     } catch (err: any) {
-      this.errorMessage.set(err.message || 'Verification failed. The link may have expired or is invalid.');
+      this.errorMessage.set(extractFriendlyErrorMessage(err, 'Verification failed. The link may have expired or is invalid.'));
     } finally {
       this.isLoading.set(false);
     }

@@ -30,6 +30,7 @@ import ApexCharts from 'apexcharts';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { environment } from '../../../../../environments/environment';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
 @Component({
   selector: 'app-analytics-dashboard',
@@ -425,7 +426,7 @@ export class AnalyticsDashboardPage implements OnInit {
       error: (err) => {
         this.isLoading.set(false);
         console.error('Failed to load real analytics:', err);
-        this.errorMessage.set(err?.error?.message || 'Failed to load member analytics.');
+        this.errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to load member analytics.'));
       }
     });
   }

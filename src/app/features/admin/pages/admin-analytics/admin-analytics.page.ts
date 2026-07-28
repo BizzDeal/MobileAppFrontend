@@ -85,6 +85,55 @@ export class AdminAnalyticsPage implements OnInit {
     });
   }
 
+  private ensureTimeSeriesRange(
+    rawMonths: string[],
+    seriesMaps: { [key: string]: number[] }
+  ): { months: string[]; seriesData: { [key: string]: number[] } } {
+    let months = [...(rawMonths || [])];
+    const seriesKeys = Object.keys(seriesMaps);
+    const seriesData: { [key: string]: number[] } = {};
+
+    seriesKeys.forEach((key) => {
+      seriesData[key] = [...(seriesMaps[key] || [])];
+    });
+
+    if (months.length < 6) {
+      const targetCount = 6;
+      const lastMonthStr = months.length > 0 ? months[months.length - 1] : new Date().toISOString().slice(0, 7);
+      const parts = lastMonthStr.split('-');
+      const year = parseInt(parts[0], 10) || new Date().getFullYear();
+      const month = (parseInt(parts[1], 10) || 1) - 1; // 0-indexed
+
+      const paddedMonths: string[] = [];
+      const paddedSeriesData: { [key: string]: number[] } = {};
+      seriesKeys.forEach((key) => (paddedSeriesData[key] = []));
+
+      for (let i = targetCount - 1; i >= 0; i--) {
+        const d = new Date(year, month - i, 1);
+        const yStr = d.getFullYear();
+        const mStr = String(d.getMonth() + 1).padStart(2, '0');
+        const monthKey = `${yStr}-${mStr}`;
+        paddedMonths.push(monthKey);
+
+        const existingIdx = months.indexOf(monthKey);
+        seriesKeys.forEach((key) => {
+          if (existingIdx !== -1) {
+            paddedSeriesData[key].push(seriesData[key][existingIdx] ?? 0);
+          } else {
+            paddedSeriesData[key].push(0);
+          }
+        });
+      }
+
+      months = paddedMonths;
+      seriesKeys.forEach((key) => {
+        seriesData[key] = paddedSeriesData[key];
+      });
+    }
+
+    return { months, seriesData };
+  }
+
   initCharts(data: DetailedAnalyticsDto) {
     // Shared common options for styling
     const commonChartOptions = {
@@ -93,27 +142,42 @@ export class AdminAnalyticsPage implements OnInit {
       zoom: { enabled: false }
     };
 
+    // 1. User Growth Chart
+    const userGrowthNorm = this.ensureTimeSeriesRange(data.userGrowth.months, {
+      customers: data.userGrowth.customers,
+      members: data.userGrowth.members,
+    });
+
     this.userGrowthChartOptions = {
       series: [
-        { name: 'Customers', data: data.userGrowth.customers },
-        { name: 'Members', data: data.userGrowth.members }
+        { name: 'Customers', data: userGrowthNorm.seriesData['customers'] },
+        { name: 'Members', data: userGrowthNorm.seriesData['members'] }
       ],
       chart: { id: 'user-growth-chart', type: 'area', height: 350, ...commonChartOptions },
       dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: 2 },
-      xaxis: { categories: data.userGrowth.months },
+      stroke: { curve: 'smooth', width: 3 },
+      markers: { size: 5, strokeWidth: 2, hover: { size: 7 } },
+      grid: { show: true, strokeDashArray: 4, borderColor: '#e2e8f0' },
+      tooltip: { shared: true, intersect: false },
+      xaxis: { categories: userGrowthNorm.months },
       colors: ['#3880ff', '#2dd36f'],
       fill: {
         type: 'gradient',
-        gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.2, stops: [0, 90, 100] }
+        gradient: { shadeIntensity: 1, opacityFrom: 0.6, opacityTo: 0.1, stops: [0, 90, 100] }
       },
       legend: { position: 'top' }
     };
 
+    // 2. Voucher Performance Chart
+    const voucherNorm = this.ensureTimeSeriesRange(data.voucherPerformance.months, {
+      issued: data.voucherPerformance.issued,
+      redeemed: data.voucherPerformance.redeemed,
+    });
+
     this.voucherPerformanceChartOptions = {
       series: [
-        { name: 'Issued', data: data.voucherPerformance.issued },
-        { name: 'Redeemed', data: data.voucherPerformance.redeemed }
+        { name: 'Issued', data: voucherNorm.seriesData['issued'] },
+        { name: 'Redeemed', data: voucherNorm.seriesData['redeemed'] }
       ],
       chart: { id: 'voucher-performance-chart', type: 'bar', height: 350, ...commonChartOptions },
       plotOptions: {
@@ -121,12 +185,14 @@ export class AdminAnalyticsPage implements OnInit {
       },
       dataLabels: { enabled: false },
       stroke: { show: true, width: 2, colors: ['transparent'] },
-      xaxis: { categories: data.voucherPerformance.months },
+      grid: { show: true, strokeDashArray: 4, borderColor: '#e2e8f0' },
+      xaxis: { categories: voucherNorm.months },
       colors: ['#92949c', '#ffc409'],
       fill: { opacity: 1 },
       legend: { position: 'top' }
     };
 
+    // 3. Business Distribution Chart
     this.businessDistributionChartOptions = {
       series: data.businessDistribution.counts,
       chart: { id: 'business-distribution-chart', type: 'donut', height: 350, ...commonChartOptions },
@@ -140,23 +206,33 @@ export class AdminAnalyticsPage implements OnInit {
       legend: { position: 'bottom' }
     };
 
+    // 4. Wallet Volume Chart
+    const walletNorm = this.ensureTimeSeriesRange(data.walletVolume.months, {
+      credits: data.walletVolume.credits,
+      debits: data.walletVolume.debits,
+    });
+
     this.walletVolumeChartOptions = {
       series: [
-        { name: 'Credits', data: data.walletVolume.credits },
-        { name: 'Debits', data: data.walletVolume.debits }
+        { name: 'Credits', data: walletNorm.seriesData['credits'] },
+        { name: 'Debits', data: walletNorm.seriesData['debits'] }
       ],
       chart: { id: 'wallet-volume-chart', type: 'area', height: 350, ...commonChartOptions },
       dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: 2 },
-      xaxis: { categories: data.walletVolume.months },
+      stroke: { curve: 'smooth', width: 3 },
+      markers: { size: 5, strokeWidth: 2, hover: { size: 7 } },
+      grid: { show: true, strokeDashArray: 4, borderColor: '#e2e8f0' },
+      tooltip: { shared: true, intersect: false },
+      xaxis: { categories: walletNorm.months },
       colors: ['#2dd36f', '#eb445a'],
       fill: {
         type: 'gradient',
-        gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.2, stops: [0, 90, 100] }
+        gradient: { shadeIntensity: 1, opacityFrom: 0.6, opacityTo: 0.1, stops: [0, 90, 100] }
       },
       legend: { position: 'top' }
     };
 
+    // 5. Referral Conversion Chart
     this.referralConversionChartOptions = {
       series: [data.referralStats.conversionRate],
       chart: { id: 'referral-conversion-chart', type: 'radialBar', height: 350, ...commonChartOptions },

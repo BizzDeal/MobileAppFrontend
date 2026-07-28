@@ -7,6 +7,8 @@ import { MemberDashboardData, MemberDashboardAnalytics } from '../models/member-
 import { OfferDTO, VoucherDTO } from '../models/home.model';
 import { ProfileService } from '../../profile/services/profile.service';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,10 +29,10 @@ export class MemberDashboardService {
   constructor() {
     effect(() => {
       const role = this.authSession.userRole();
-      if (role === 'MEMBER' || role === 'ADMIN') {
+      if (role === 'MEMBER') {
         untracked(() => {
           this.loadDashboardData().subscribe({
-            error: (err) => console.error('Initial dashboard load failed:', err)
+            error: (err) => console.error('Initial member dashboard load encountered error:', err),
           });
         });
       }
@@ -42,15 +44,10 @@ export class MemberDashboardService {
     this._error.set(null);
 
     return forkJoin({
-      offersRes: this.http.get<any>(`${this.apiUrl}/offers?my_offers=true`).pipe(
-        catchError(() => of([]))
-      ),
-      vouchersRes: this.http.get<any>(`${this.apiUrl}/vouchers/history`).pipe(
-        catchError(() => of([]))
-      ),
-      referralsRes: this.http.get<any>(`${this.apiUrl}/referrals`).pipe(
-        catchError(() => of([]))
-      )
+      profile: this.http.get<any>(`${this.apiUrl}/users/profile`).pipe(catchError(() => of(null))),
+      vouchers: this.http.get<any>(`${this.apiUrl}/vouchers/my`).pipe(catchError(() => of([]))),
+      myOffers: this.http.get<any>(`${this.apiUrl}/offers/my`).pipe(catchError(() => of([]))),
+      analytics: this.http.get<any>(`${this.apiUrl}/analytics/member/summary`).pipe(catchError(() => of(null)))
     }).pipe(
       map((response: any) => {
         const { offersRes, vouchersRes, referralsRes } = response;
@@ -124,7 +121,7 @@ export class MemberDashboardService {
           this._loading.set(false);
         },
         error: (err) => {
-          const errMsg = err?.error?.message || err?.message || 'Failed to load member dashboard from server';
+          const errMsg = extractFriendlyErrorMessage(err, 'Failed to load member dashboard.');
           this._error.set(errMsg);
           this._loading.set(false);
         }

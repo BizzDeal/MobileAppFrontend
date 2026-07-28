@@ -79,25 +79,84 @@ body, html, ion-app, ion-content, .ion-page {
   padding: var(--bizzdeal-spacing-lg);
 }
 
+/* App-wide Unified Button Design System */
+.bd-btn-primary,
+.bd-btn-outline,
+.bd-btn-secondary,
+.bd-btn-danger,
+.retry-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  min-height: 42px;
+  min-width: max-content;
+  white-space: nowrap;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-radius: var(--bizzdeal-radius-md, 12px);
+
+  &:hover:not(:disabled) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none !important;
+  }
+
+  &.full-btn,
+  &.full-width {
+    width: 100%;
+  }
+}
+
 .bd-btn-primary {
   background: var(--bizzdeal-gradient-primary);
-  color: var(--bizzdeal-text-on-primary);
-  border-radius: var(--bizzdeal-radius-md);
-  box-shadow: var(--bizzdeal-shadow-primary);
-  font-weight: 600;
+  color: var(--bizzdeal-text-on-primary, #ffffff);
   border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: var(--bizzdeal-shadow-primary);
 }
 
 .bd-btn-outline {
   background: var(--bizzdeal-bg-surface);
   color: var(--bizzdeal-text-primary);
   border: 1px solid var(--bizzdeal-border-color);
-  border-radius: var(--bizzdeal-radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: var(--bizzdeal-shadow-xs);
+}
+
+.bd-btn-secondary {
+  background: var(--bizzdeal-bg-secondary, #f1f5f9);
+  color: var(--bizzdeal-text-primary);
+  border: 1px solid var(--bizzdeal-border-color);
+}
+
+.bd-btn-danger {
+  background: var(--ion-color-danger, #ef4444);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.retry-btn {
+  margin-top: var(--bizzdeal-spacing-md, 16px);
+  padding: 12px 28px;
+  min-width: 140px;
+  font-size: 15px;
 }
 
 .bd-icon-circle {

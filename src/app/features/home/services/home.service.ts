@@ -16,6 +16,7 @@ import { AuthSessionService } from '../../../core/services/auth-session.service'
 import { ProfileService } from '../../profile/services/profile.service';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { CustomerVouchersService } from '../../vouchers/services/customer-vouchers.service';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -191,7 +192,7 @@ export class HomeService {
           this._loading.set(false);
         },
         error: (err) => {
-          const errorMessage = err?.error?.message || err?.message || 'Failed to load customer home feed from server';
+          const errorMessage = extractFriendlyErrorMessage(err, 'Unable to load customer home feed. Please try again.');
           this._error.set(errorMessage);
           this._loading.set(false);
         },
@@ -254,7 +255,7 @@ export class HomeService {
         return newVoucher;
       }),
       catchError((err) => {
-        const errorMessage = err?.error?.message || err?.message || 'Failed to claim deal via server API';
+        const errorMessage = extractFriendlyErrorMessage(err, 'Failed to claim deal. Please try again.');
         this._error.set(errorMessage);
         return throwError(() => err);
       })

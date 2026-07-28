@@ -13,6 +13,7 @@ import { environment } from '../../../../environments/environment';
 import { NotificationDTO, NotificationType } from '../models/notification.model';
 import { StorageService } from '../../../core/storage/storage.service';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -113,7 +114,7 @@ export class NotificationService {
           this._loading.set(false);
         },
         error: (err) => {
-          const errMsg = err?.error?.message || err?.message || 'Failed to retrieve notifications from server';
+          const errMsg = extractFriendlyErrorMessage(err, 'Failed to retrieve notifications.');
           this._error.set(errMsg);
           this._loading.set(false);
         }
@@ -153,7 +154,7 @@ export class NotificationService {
         );
       }),
       catchError((err) => {
-        const errMsg = err?.error?.message || err?.message || 'Failed to mark notification as read via server API';
+        const errMsg = extractFriendlyErrorMessage(err, 'Failed to mark notification as read.');
         this._error.set(errMsg);
         return throwError(() => err);
       })
@@ -183,7 +184,7 @@ export class NotificationService {
         this._notifications.update(notes => notes.filter(n => n.id !== id));
       }),
       catchError((err) => {
-        const errMsg = err?.error?.message || err?.message || 'Failed to delete notification via server API';
+        const errMsg = extractFriendlyErrorMessage(err, 'Failed to delete notification.');
         this._error.set(errMsg);
         return throwError(() => err);
       })

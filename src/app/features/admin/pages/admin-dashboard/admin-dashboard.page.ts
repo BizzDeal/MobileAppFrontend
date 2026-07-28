@@ -100,11 +100,42 @@ export class AdminDashboardPage implements OnInit {
   }
 
   initChart(data: AdminAnalyticsDto) {
+    let dates = data.revenueHistory?.dates || [];
+    let amounts = data.revenueHistory?.amounts || [];
+
+    if (dates.length < 6) {
+      const lastDate = dates.length > 0 ? dates[dates.length - 1] : new Date().toISOString().slice(0, 7);
+      const parts = lastDate.split('-');
+      const year = parseInt(parts[0], 10) || new Date().getFullYear();
+      const month = (parseInt(parts[1], 10) || 1) - 1;
+
+      const paddedDates: string[] = [];
+      const paddedAmounts: number[] = [];
+
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(year, month - i, 1);
+        const yStr = d.getFullYear();
+        const mStr = String(d.getMonth() + 1).padStart(2, '0');
+        const key = `${yStr}-${mStr}`;
+        paddedDates.push(key);
+
+        const existingIdx = dates.indexOf(key);
+        if (existingIdx !== -1) {
+          paddedAmounts.push(amounts[existingIdx] ?? 0);
+        } else {
+          paddedAmounts.push(0);
+        }
+      }
+
+      dates = paddedDates;
+      amounts = paddedAmounts;
+    }
+
     this.chartOptions = {
       series: [
         {
           name: 'Revenue',
-          data: data.revenueHistory.amounts
+          data: amounts
         }
       ],
       chart: {
@@ -120,8 +151,11 @@ export class AdminDashboardPage implements OnInit {
         curve: 'smooth',
         width: 3
       },
+      markers: { size: 5, strokeWidth: 2, hover: { size: 7 } },
+      grid: { show: true, strokeDashArray: 4, borderColor: '#e2e8f0' },
+      tooltip: { shared: true, intersect: false },
       xaxis: {
-        categories: data.revenueHistory.dates,
+        categories: dates,
       },
       colors: ['#3880ff'],
       fill: {

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { VouchersService } from '../../services/vouchers.service';
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, caretDownOutline, checkmarkCircleOutline } from 'ionicons/icons';
 
@@ -82,7 +83,7 @@ export class IssueVoucherPage implements OnInit {
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.errorMessage = err?.error?.message || err?.message || 'Failed to issue voucher';
+        this.errorMessage = extractFriendlyErrorMessage(err, 'Failed to issue voucher.');
       }
     });
   }

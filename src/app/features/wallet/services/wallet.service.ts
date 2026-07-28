@@ -7,6 +7,7 @@ import { environment } from '../../../../environments/environment';
 import { WalletDTO, WalletTransactionDTO } from '../models/wallet.model';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { AppSocketService } from '../../../core/services/app-socket.service';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -127,7 +128,7 @@ export class WalletService {
           this._loading.set(false);
         },
         error: (err) => {
-          const errMsg = err?.error?.message || err?.message || 'Failed to retrieve wallet information from server';
+          const errMsg = extractFriendlyErrorMessage(err, 'Failed to retrieve wallet information.');
           this._error.set(errMsg);
           this._loading.set(false);
         },
@@ -185,7 +186,7 @@ export class WalletService {
           }
         },
         error: (err) => {
-          const errMsg = err?.error?.message || err?.message || 'Failed to load more transactions';
+          const errMsg = extractFriendlyErrorMessage(err, 'Failed to load more transactions.');
           this._error.set(errMsg);
         }
       }),

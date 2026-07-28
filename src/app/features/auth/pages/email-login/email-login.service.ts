@@ -8,6 +8,7 @@ import { AuthSessionService } from '../../../../core/services/auth-session.servi
 import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { UserRole } from '../../models/auth.model';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
 @Injectable()
 export class EmailLoginService {
@@ -121,7 +122,7 @@ export class EmailLoginService {
               error: (err) => {
                 console.error('sendOtp error:', err);
                 this._errorMessage.set(
-                  err?.error?.message || 'Failed to send OTP. Please try again.'
+                  extractFriendlyErrorMessage(err, 'Failed to send OTP. Please try again.')
                 );
                 this._isSubmitting.set(false);
               }
@@ -131,7 +132,7 @@ export class EmailLoginService {
         error: (err: any) => {
           console.error('checkUserExist error:', err);
           this._errorMessage.set(
-            err?.error?.message || 'Failed to check user account status. Try again.'
+            extractFriendlyErrorMessage(err, 'Failed to check user account status. Try again.')
           );
           this._isSubmitting.set(false);
         },
@@ -179,7 +180,7 @@ export class EmailLoginService {
             this.showStatusAlert('Approval Pending', 'Your account is pending admin approval. You will be able to log in once approved.');
           } else {
             this._errorMessage.set(
-              err?.error?.message || 'Invalid email or PIN. Please check and try again.'
+              extractFriendlyErrorMessage(err, 'Invalid email or PIN. Please check and try again.')
             );
           }
           this._isSubmitting.set(false);
@@ -224,14 +225,14 @@ export class EmailLoginService {
             error: (err: any) => {
               console.error('registerCustomer error:', err);
               this._errorMessage.set(
-                err?.error?.message || 'Failed to complete registration. Try again.'
+                extractFriendlyErrorMessage(err, 'Failed to complete registration. Try again.')
               );
               this._isSubmitting.set(false);
             },
           });
         } catch (err: any) {
           console.error('verifyOtp error:', err);
-          this._errorMessage.set(err?.message || 'Invalid or expired OTP code.');
+          this._errorMessage.set(extractFriendlyErrorMessage(err, 'Invalid or expired OTP code.'));
           this._isSubmitting.set(false);
         }
       })();

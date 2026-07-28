@@ -4,6 +4,7 @@ import { catchError, map } from 'rxjs/operators';
 import { HttpClient, HttpParams, HttpContext } from '@angular/common/http';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { environment } from '../../../../environments/environment';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 import { AdminBusiness, BusinessStatus, ApiResponse, AdminOffer, AdminVoucher, OfferStatus } from '../models/admin-business.model';
 
 @Injectable({
@@ -26,7 +27,7 @@ export class AdminBusinessesService {
     }
     return this.http.get<ApiResponse<AdminBusiness[]>>(`${this.apiUrl}/businesses`, { params }).pipe(
       catchError(err => {
-        throw new Error(err.error?.message || 'Failed to fetch businesses');
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to fetch businesses'));
       })
     );
   }
@@ -34,7 +35,7 @@ export class AdminBusinessesService {
   updateBusinessStatus(id: string, status: BusinessStatus): Observable<ApiResponse<AdminBusiness>> {
     return this.http.patch<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/${id}/status`, { status }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       catchError(err => {
-        throw new Error(err.error?.message || 'Failed to update business status');
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to update business status'));
       })
     );
   }
@@ -42,7 +43,7 @@ export class AdminBusinessesService {
   featureBusiness(id: string, isFeatured: boolean): Observable<ApiResponse<AdminBusiness>> {
     return this.http.put<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/feature`, { businessId: id, is_featured: isFeatured }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       catchError(err => {
-        throw new Error(err.error?.message || 'Failed to feature business');
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to feature business'));
       })
     );
   }
@@ -50,7 +51,7 @@ export class AdminBusinessesService {
   getBusinessById(id: string): Observable<ApiResponse<AdminBusiness>> {
     return this.http.get<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/${id}`).pipe(
       catchError(err => {
-        throw new Error(err.error?.message || 'Business not found');
+        throw new Error(extractFriendlyErrorMessage(err, 'Business not found'));
       })
     );
   }
@@ -79,7 +80,7 @@ export class AdminBusinessesService {
         };
       }),
       catchError(err => {
-        throw new Error(err.error?.message || 'Failed to fetch offers');
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to fetch offers'));
       })
     );
   }
@@ -100,7 +101,7 @@ export class AdminBusinessesService {
         };
       }),
       catchError(err => {
-        throw new Error(err.error?.message || 'Failed to fetch business offers');
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to fetch business offers'));
       })
     );
   }
@@ -122,7 +123,7 @@ export class AdminBusinessesService {
         };
       }),
       catchError(err => {
-        throw new Error(err.error?.message || 'Failed to fetch business vouchers');
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to fetch business vouchers'));
       })
     );
   }
@@ -136,7 +137,7 @@ export class AdminBusinessesService {
           data: res && res.success !== undefined ? res.data : res
         })),
         catchError(err => {
-          throw new Error(err.error?.message || 'Failed to approve offer');
+          throw new Error(extractFriendlyErrorMessage(err, 'Failed to approve offer'));
         })
       );
     } else if (status === OfferStatus.REJECTED) {
@@ -147,7 +148,7 @@ export class AdminBusinessesService {
           data: res && res.success !== undefined ? res.data : res
         })),
         catchError(err => {
-          throw new Error(err.error?.message || 'Failed to reject offer');
+          throw new Error(extractFriendlyErrorMessage(err, 'Failed to reject offer'));
         })
       );
     } else {

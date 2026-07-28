@@ -8,6 +8,7 @@ import { ImageCacheService } from '../../../core/platform/image-cache.service';
 import { ProfileDTO } from '../models/profile.model';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { LocationState, LocationDistrict } from '../../auth/services/member-onboarding.service';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -189,7 +190,7 @@ export class ProfileService {
           this._loading.set(false);
         },
         error: (err: any) => {
-          this._error.set(err?.error?.message || err?.message || 'Failed to retrieve profile details');
+          this._error.set(extractFriendlyErrorMessage(err, 'Failed to retrieve profile details.'));
           this._loading.set(false);
         },
       }),
@@ -263,7 +264,7 @@ export class ProfileService {
           this._updating.set(false);
         },
         error: (err: any) => {
-          const errMsg = err?.error?.message || err?.message || 'Failed to update profile details';
+          const errMsg = extractFriendlyErrorMessage(err, 'Failed to update profile details.');
           this._error.set(errMsg);
           this._updating.set(false);
         },

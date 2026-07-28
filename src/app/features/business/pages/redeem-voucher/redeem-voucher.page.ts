@@ -18,6 +18,7 @@ import {
 import { VouchersService } from '../../services/vouchers.service';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { PermissionsService } from '../../../../core/platform/permissions.service';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
 @Component({
   selector: 'app-redeem-voucher',
@@ -226,7 +227,7 @@ export class RedeemVoucherPage implements OnInit {
       },
       error: (err) => {
         this.isVerifying = false;
-        this.errorMessage = err?.error?.message || err?.message || 'Verification failed';
+        this.errorMessage = extractFriendlyErrorMessage(err, 'Verification failed.');
       }
     });
   }
@@ -332,7 +333,7 @@ export class RedeemVoucherPage implements OnInit {
       },
       error: (err) => {
         this.isRedeeming = false;
-        this.errorMessage = err?.error?.message || err?.message || 'Failed to redeem voucher';
+        this.errorMessage = extractFriendlyErrorMessage(err, 'Failed to redeem voucher.');
       }
     });
   }

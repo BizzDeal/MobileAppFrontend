@@ -4,6 +4,7 @@ import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.token
 import { Observable, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 import {
   AdminNotification,
   NotificationType,
@@ -69,8 +70,7 @@ export class AdminNotificationsService {
       catchError((err) => {
         console.error('Error fetching admin notifications:', err);
         this._loading.set(false);
-        const errMsg =
-          err?.error?.message || err?.message || 'Failed to fetch notifications';
+        const errMsg = extractFriendlyErrorMessage(err, 'Failed to fetch notifications.');
         this._error.set(errMsg);
         return throwError(() => err);
       })

@@ -5,6 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { MeetingWithAttendee, Meeting } from '../../meetings/services/meetings.service';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +34,7 @@ export class AdminMeetingsService {
           this._loading.set(false);
         },
         error: (err) => {
-          const errMsg = err?.error?.message || err?.message || 'Failed to load meetings';
+          const errMsg = extractFriendlyErrorMessage(err, 'Failed to load meetings.');
           this._error.set(errMsg);
           this._loading.set(false);
         }

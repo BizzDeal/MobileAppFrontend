@@ -5,6 +5,7 @@ import { Observable, forkJoin, of, throwError } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 export type MeetingStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
 export type AttendeeStatus = 'INVITED' | 'ACCEPTED' | 'REJECTED' | 'ATTENDED' | 'MISSED';
@@ -94,7 +95,7 @@ export class MeetingsService {
           this._loading.set(false);
         },
         error: (err) => {
-          const errMsg = err?.error?.message || err?.message || 'Failed to load meetings from server';
+          const errMsg = extractFriendlyErrorMessage(err, 'Failed to load meetings.');
           this._error.set(errMsg);
           this._loading.set(false);
         }
@@ -127,7 +128,7 @@ export class MeetingsService {
         );
       },
       error: (err) => {
-        const errMsg = err?.error?.message || err?.message || 'Failed to update RSVP status';
+        const errMsg = extractFriendlyErrorMessage(err, 'Failed to update RSVP status.');
         this._error.set(errMsg);
       }
     });

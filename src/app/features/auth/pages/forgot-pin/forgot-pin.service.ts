@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { AuthApiService } from '../../services/auth-api.service';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
 @Injectable()
 export class ForgotPinService implements OnDestroy {
@@ -91,7 +92,7 @@ export class ForgotPinService implements OnDestroy {
       error: (err: any) => {
         console.error('sendOtp error:', err);
         this._errorMessage.set(
-          err?.error?.message || 'Failed to trigger verification code. Account may not exist.'
+          extractFriendlyErrorMessage(err, 'Failed to trigger verification code. Account may not exist.')
         );
         this._isSubmitting.set(false);
       },
@@ -144,7 +145,7 @@ export class ForgotPinService implements OnDestroy {
         },
         error: (err: any) => {
           console.error('resetPin error:', err);
-          this._errorMessage.set(err?.error?.message || 'Failed to reset PIN. Try again.');
+          this._errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to reset PIN. Try again.'));
           this._isSubmitting.set(false);
         },
       });

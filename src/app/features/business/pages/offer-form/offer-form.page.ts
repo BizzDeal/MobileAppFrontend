@@ -14,6 +14,7 @@ import { validateFileSize } from '../../../../shared/utils/file-validator.util';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { environment } from '../../../../../environments/environment';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
 @Component({
   selector: 'app-offer-form',
@@ -239,7 +240,7 @@ export class OfferFormPage implements OnInit {
         error: (err) => {
           this.submitting.set(false);
           console.error('Update offer failed:', err);
-          this.errorMessage.set(err?.error?.message || 'Failed to update offer. Please try again.');
+          this.errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to update offer. Please try again.'));
         }
       });
     } else {
@@ -257,7 +258,7 @@ export class OfferFormPage implements OnInit {
           },
           error: (err) => {
             this.submitting.set(false);
-            this.errorMessage.set('Failed to verify business ID. Please try again.');
+            this.errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to verify business profile. Please try again.'));
           }
         });
         return;
@@ -278,7 +279,7 @@ export class OfferFormPage implements OnInit {
       error: (err) => {
         this.submitting.set(false);
         console.error('Create offer failed:', err);
-        this.errorMessage.set(err?.error?.message || 'Failed to create offer. Please check your inputs and try again.');
+        this.errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to create offer. Please check your inputs and try again.'));
       }
     });
   }
@@ -316,7 +317,7 @@ export class OfferFormPage implements OnInit {
       error: (err) => {
         this.submitting.set(false);
         console.error('Delete offer failed:', err);
-        this.errorMessage.set(err?.error?.message || 'Failed to delete offer. Please try again.');
+        this.errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to delete offer. Please try again.'));
       }
     });
   }

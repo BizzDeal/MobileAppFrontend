@@ -39,6 +39,7 @@ import {
   cardOutline
 } from 'ionicons/icons';
 import { ReferralsService } from '../../../referrals/services/referrals.service';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { ReferralDTO, ReferralType, AdminReferralSummary } from '../../../referrals/models/referral.model';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 import { Subject } from 'rxjs';
@@ -170,7 +171,7 @@ export class AdminReferralsPage implements OnInit {
       },
       error: (err) => {
         if (isInitial) {
-          this.error.set(err?.error?.message || err?.message || 'Failed to retrieve referral slips.');
+          this.error.set(extractFriendlyErrorMessage(err, 'Failed to retrieve referral slips.'));
         }
         this.loading.set(false);
         this.isLoadingMore = false;

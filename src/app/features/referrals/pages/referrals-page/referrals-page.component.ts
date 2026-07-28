@@ -47,6 +47,7 @@ import {
   chevronForwardOutline
 } from 'ionicons/icons';
 import { ReferralsService } from '../../services/referrals.service';
+import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ReferralDTO, ReferralType, CreateReferralSlipDto, MemberBusinessDTO } from '../../models/referral.model';
@@ -207,7 +208,7 @@ export class ReferralsPageComponent implements OnInit {
       },
       error: (err) => {
         if (isInitial) {
-          this.error.set(err?.message || 'Failed to retrieve referrals list');
+          this.error.set(extractFriendlyErrorMessage(err, 'Failed to retrieve referrals list.'));
         }
         this.loading.set(false);
         this.isLoadingMore = false;
@@ -383,7 +384,7 @@ export class ReferralsPageComponent implements OnInit {
         this.closeModal();
       },
       error: (err) => {
-        this.error.set(err?.message || 'Failed to create referral slip.');
+        this.error.set(extractFriendlyErrorMessage(err, 'Failed to create referral slip.'));
         this.submitting.set(false);
       }
     });

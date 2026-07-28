@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
 import { CustomerVoucher } from '../models/voucher.model';
 import { AppSocketService } from '../../../core/services/app-socket.service';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -119,7 +120,7 @@ export class CustomerVouchersService {
           this._loading.set(false);
         },
         error: (err) => {
-          const errMsg = err?.error?.message || err?.message || 'Failed to retrieve vouchers from server';
+          const errMsg = extractFriendlyErrorMessage(err, 'Failed to retrieve vouchers.');
           this._error.set(errMsg);
           this._loading.set(false);
         }

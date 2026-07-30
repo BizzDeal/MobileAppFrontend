@@ -213,10 +213,7 @@ export class PermissionsService {
         isDenied,
         customRationale
       },
-      cssClass: 'permission-modal-dialog',
-      breakpoints: [0, 1],
-      initialBreakpoint: 1,
-      handle: false
+      cssClass: 'permission-modal-dialog'
     });
 
     await modal.present();

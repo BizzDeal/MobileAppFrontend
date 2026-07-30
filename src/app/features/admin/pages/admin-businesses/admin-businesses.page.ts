@@ -1,7 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminBusinessesListComponent } from '../../components/admin-businesses-list/admin-businesses-list.component';
+import { AdminRegionFilterModalComponent } from '../../components/admin-region-filter-modal/admin-region-filter-modal.component';
+import { addIcons } from 'ionicons';
+import { filterOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-businesses',
@@ -9,7 +12,8 @@ import { AdminBusinessesListComponent } from '../../components/admin-businesses-
   imports: [
     CommonModule,
     IonicModule,
-    AdminBusinessesListComponent
+    AdminBusinessesListComponent,
+    AdminRegionFilterModalComponent
   ],
   templateUrl: './admin-businesses.page.html',
   styleUrls: ['./admin-businesses.page.scss']
@@ -19,8 +23,27 @@ export class AdminBusinessesPage {
 
   segmentValue: 'ALL' | 'PENDING' | 'ACTIVE' | 'SUSPENDED' = 'ALL';
   searchQuery = '';
+  stateId = '';
+  districtId = '';
 
-  constructor() {}
+  isFilterOpen = false;
+
+  constructor() {
+    addIcons({ filterOutline });
+  }
+
+  openFilter() {
+    this.isFilterOpen = true;
+  }
+
+  onFilterApplied(data: { stateId: string; districtId: string }) {
+    const changed = this.stateId !== data.stateId || this.districtId !== data.districtId;
+    this.stateId = data.stateId;
+    this.districtId = data.districtId;
+    if (!changed && this.listComponent) {
+      this.listComponent.refresh();
+    }
+  }
 
   ionViewWillEnter() {
     if (this.listComponent) {

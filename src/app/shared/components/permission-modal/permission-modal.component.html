@@ -1,14 +1,10 @@
-<ion-header class="ion-no-border permission-header">
-  <ion-toolbar>
-    <ion-buttons slot="end">
-      <ion-button (click)="dismiss('cancel')" aria-label="Close modal">
-        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<div class="permission-modal-container">
+  <div class="permission-modal-header">
+    <button type="button" class="close-btn" (click)="dismiss('cancel')" aria-label="Close modal">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
 
-<ion-content class="ion-padding permission-content" scroll-y="false">
   <div class="permission-body">
     <div class="icon-circle" [class.denied]="isDenied">
       <ion-icon [name]="isDenied ? 'alert-circle-outline' : icon"></ion-icon>
@@ -46,4 +42,4 @@
       </button>
     </div>
   </div>
-</ion-content>
+</div>

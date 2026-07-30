@@ -47,6 +47,9 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
   private filterSubject = new Subject<void>();
   private filterSubscription?: Subscription;
 
+  @Input() stateId: string = '';
+  @Input() districtId: string = '';
+
   businesses: AdminBusiness[] = [];
   filteredBusinesses: AdminBusiness[] = [];
   isLoading = true;
@@ -92,11 +95,15 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
   refresh() {
     this.page = 1;
     this.businesses = [];
+    this.filteredBusinesses = [];
+    this.isLoading = true;
     this.loadBusinesses();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // handled by setters
+    if ((changes['stateId'] && !changes['stateId'].firstChange) || (changes['districtId'] && !changes['districtId'].firstChange)) {
+      this.refresh();
+    }
   }
 
   loadBusinesses(event?: any) {
@@ -108,6 +115,8 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     };
     if (this.searchQuery) query.search = this.searchQuery;
     if (this.statusFilter !== 'ALL') query.status = this.statusFilter;
+    if (this.stateId) query.state = this.stateId;
+    if (this.districtId) query.district = this.districtId;
 
     this.adminBusinessesService.getBusinesses(query).subscribe({
       next: (response) => {

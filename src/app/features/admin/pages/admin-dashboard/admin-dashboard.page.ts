@@ -11,6 +11,7 @@ import {
 import { Observable } from 'rxjs';
 import { AdminMemberActionModalComponent } from '../../components/admin-member-action-modal/admin-member-action-modal.component';
 import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
+import { AdminRegionFilterModalComponent } from '../../components/admin-region-filter-modal/admin-region-filter-modal.component';
 import { DashboardSkeletonComponent } from '../../../../shared/components/skeletons/dashboard-skeleton/dashboard-skeleton.component';
 
 import { addIcons } from 'ionicons';
@@ -25,7 +26,8 @@ import {
   shieldCheckmarkOutline,
   barChartOutline,
   pulseOutline,
-  refreshOutline
+  refreshOutline,
+  filterOutline
 } from 'ionicons/icons';
 import ApexCharts from 'apexcharts';
 
@@ -34,7 +36,7 @@ import ApexCharts from 'apexcharts';
   templateUrl: './admin-dashboard.page.html',
   styleUrls: ['./admin-dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, NgApexchartsModule, DatePipe, DashboardSkeletonComponent]
+  imports: [CommonModule, IonicModule, NgApexchartsModule, DatePipe, DashboardSkeletonComponent, AdminRegionFilterModalComponent]
 })
 export class AdminDashboardPage implements OnInit {
   analytics$!: Observable<AdminAnalyticsDto>;
@@ -44,6 +46,9 @@ export class AdminDashboardPage implements OnInit {
   // Chart configuration
   public chartOptions: any;
   public chartType: 'area' | 'bar' = 'area';
+
+  stateId = '';
+  districtId = '';
 
   constructor(
     private dashboardService: AdminDashboardService,
@@ -60,7 +65,8 @@ export class AdminDashboardPage implements OnInit {
       shieldCheckmarkOutline,
       barChartOutline,
       pulseOutline,
-      refreshOutline
+      refreshOutline,
+      filterOutline
     });
   }
 
@@ -77,9 +83,9 @@ export class AdminDashboardPage implements OnInit {
   }
 
   refreshDashboard(event?: any) {
-    this.analytics$ = this.dashboardService.getPlatformAnalytics();
-    this.pendingMembers$ = this.dashboardService.getPendingMembers();
-    this.pendingOffers$ = this.dashboardService.getPendingOffers();
+    this.analytics$ = this.dashboardService.getPlatformAnalytics(this.stateId, this.districtId);
+    this.pendingMembers$ = this.dashboardService.getPendingMembers(this.stateId, this.districtId);
+    this.pendingOffers$ = this.dashboardService.getPendingOffers(this.stateId, this.districtId);
 
     // Subscribe to update the chart data whenever analytics refreshes
     this.analytics$.subscribe({
@@ -222,6 +228,18 @@ export class AdminDashboardPage implements OnInit {
         this.rejectOffer(data.offerId, true);
       }
     }
+  }
+
+  isFilterOpen = false;
+
+  openFilter() {
+    this.isFilterOpen = true;
+  }
+
+  onFilterApplied(data: { stateId: string; districtId: string }) {
+    this.stateId = data.stateId;
+    this.districtId = data.districtId;
+    this.refreshDashboard();
   }
 
   approveMember(id: string, fromModal: boolean = false, event?: Event) {

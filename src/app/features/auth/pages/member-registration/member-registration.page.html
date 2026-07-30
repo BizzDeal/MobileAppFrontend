@@ -127,7 +127,7 @@
 
       <!-- District -->
       <div class="form-group">
-        <label class="input-label">District</label>
+        <label class="input-label">District <span class="required-star">*</span></label>
         <div class="select-box" [class.input-error]="regService.regForm.controls.districtId.invalid && regService.regForm.controls.districtId.touched">
           <ion-select formControlName="districtId" placeholder="Select district" [disabled]="!regService.regForm.controls.stateId.value" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (district of regService.onboardingService.districts(); track district.id) {
@@ -135,7 +135,11 @@
             }
           </ion-select>
         </div>
-        <div class="error-container"></div>
+        <div class="error-container">
+          @if (regService.regForm.controls.districtId.invalid && regService.regForm.controls.districtId.touched) {
+            <span class="error-text">District is required</span>
+          }
+        </div>
       </div>
 
       <!-- Address -->
@@ -235,7 +239,7 @@
 
       <!-- Business District -->
       <div class="form-group">
-        <label class="input-label">Business District</label>
+        <label class="input-label">Business District <span class="required-star">*</span></label>
         <div class="select-box" [class.input-error]="regService.regForm.controls.businessDistrictId.invalid && regService.regForm.controls.businessDistrictId.touched">
           <ion-select formControlName="businessDistrictId" placeholder="Select district" [disabled]="!regService.regForm.controls.businessStateId.value" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (district of regService.onboardingService.businessDistricts(); track district.id) {
@@ -243,7 +247,11 @@
             }
           </ion-select>
         </div>
-        <div class="error-container"></div>
+        <div class="error-container">
+          @if (regService.regForm.controls.businessDistrictId.invalid && regService.regForm.controls.businessDistrictId.touched) {
+            <span class="error-text">Business District is required</span>
+          }
+        </div>
       </div>
 
       <!-- Business Address -->

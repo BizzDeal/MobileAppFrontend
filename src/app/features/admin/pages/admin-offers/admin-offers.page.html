@@ -1,7 +1,17 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
-  <ion-toolbar class="toolbar-no-padding pt-3">
-    <ion-searchbar [value]="searchQuery" (ionInput)="onSearch($event)" placeholder="Search offers or business..." mode="ios" animated="true" class="premium-searchbar"></ion-searchbar>
-  </ion-toolbar>
+  <div class="admin-search-filter-bar">
+    <ion-searchbar 
+      [value]="searchQuery" 
+      (ionInput)="onSearch($event)" 
+      placeholder="Search offers or business..." 
+      mode="md" 
+      class="premium-searchbar">
+    </ion-searchbar>
+    <button (click)="openFilter()" type="button" class="filter-icon-btn" aria-label="Filter by region">
+      <ion-icon name="filter-outline"></ion-icon>
+      <span *ngIf="stateId || districtId" class="filter-active-dot"></span>
+    </button>
+  </div>
   <ion-toolbar class="toolbar-no-padding pb-2">
     <ion-item lines="none" class="premium-select-item">
       <ion-icon name="filter-outline" slot="start" class="text-medium"></ion-icon>
@@ -65,3 +75,12 @@
     </div>
   </ion-list>
 </ion-content>
+
+<app-admin-region-filter-modal
+  [isOpen]="isFilterOpen"
+  [stateId]="stateId"
+  [districtId]="districtId"
+  (filterApplied)="onFilterApplied($event)"
+  (closed)="isFilterOpen = false"
+></app-admin-region-filter-modal>
+

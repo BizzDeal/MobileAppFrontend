@@ -1,6 +1,6 @@
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ModalController, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent } from '@ionic/angular/standalone';
+import { ModalController, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   cameraOutline,
@@ -18,7 +18,7 @@ import { PermissionType } from '../../../core/platform/permissions.service';
 @Component({
   selector: 'app-permission-modal',
   standalone: true,
-  imports: [CommonModule, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent],
+  imports: [CommonModule, IonIcon],
   templateUrl: './permission-modal.component.html',
   styleUrls: ['./permission-modal.component.scss']
 })

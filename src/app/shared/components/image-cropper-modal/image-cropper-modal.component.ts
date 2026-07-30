@@ -58,6 +58,7 @@ export class ImageCropperModalComponent implements AfterViewInit {
 
   // State Signals & Transformations
   readonly loading = signal<boolean>(true);
+  readonly cropping = signal<boolean>(false);
   readonly zoomScale = signal<number>(1.0);
   readonly rotationDeg = signal<number>(0);
   readonly flipH = signal<boolean>(false);
@@ -125,6 +126,7 @@ export class ImageCropperModalComponent implements AfterViewInit {
   }
 
   resetTransformations(): void {
+    if (this.cropping() || this.loading()) return;
     this.zoomScale.set(1.0);
     this.rotationDeg.set(0);
     this.flipH.set(false);
@@ -135,43 +137,51 @@ export class ImageCropperModalComponent implements AfterViewInit {
   }
 
   zoomIn(): void {
+    if (this.cropping() || this.loading()) return;
     this.zoomScale.update(z => Math.min(z + 0.15, 3.5));
     this.render();
   }
 
   zoomOut(): void {
+    if (this.cropping() || this.loading()) return;
     this.zoomScale.update(z => Math.max(z - 0.15, 0.5));
     this.render();
   }
 
   onZoomChange(event: any): void {
+    if (this.cropping() || this.loading()) return;
     const val = parseFloat(event.target?.value || event.detail?.value || '1');
     this.zoomScale.set(val);
     this.render();
   }
 
   rotateLeft(): void {
+    if (this.cropping() || this.loading()) return;
     this.rotationDeg.update(r => (r - 90) % 360);
     this.render();
   }
 
   rotateRight(): void {
+    if (this.cropping() || this.loading()) return;
     this.rotationDeg.update(r => (r + 90) % 360);
     this.render();
   }
 
   toggleFlipH(): void {
+    if (this.cropping() || this.loading()) return;
     this.flipH.update(f => !f);
     this.render();
   }
 
   toggleFlipV(): void {
+    if (this.cropping() || this.loading()) return;
     this.flipV.update(f => !f);
     this.render();
   }
 
   // Mouse & Touch Pan Dragging
   onMouseDown(event: MouseEvent | TouchEvent): void {
+    if (this.cropping() || this.loading()) return;
     this.isDragging = true;
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
@@ -182,7 +192,7 @@ export class ImageCropperModalComponent implements AfterViewInit {
   }
 
   onMouseMove(event: MouseEvent | TouchEvent): void {
-    if (!this.isDragging) return;
+    if (!this.isDragging || this.cropping() || this.loading()) return;
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
     const deltaX = clientX - this.startX;
@@ -239,43 +249,60 @@ export class ImageCropperModalComponent implements AfterViewInit {
   }
 
   cancel(): void {
+    if (this.cropping()) return;
     this.modalCtrl.dismiss(null, 'cancel');
   }
 
   applyCrop(): void {
+    if (this.cropping() || this.loading()) return;
+
     const canvas = this.canvasRef?.nativeElement;
     if (!canvas || !this.loadedImage) return;
 
-    // Create high-res offscreen output canvas
-    const outputCanvas = document.createElement('canvas');
-    outputCanvas.width = this.targetWidth;
-    outputCanvas.height = this.targetHeight;
-    const ctx = outputCanvas.getContext('2d');
+    this.cropping.set(true);
 
-    if (!ctx) return;
+    // Defer high-res offscreen rendering so Angular updates button loading state visually
+    setTimeout(() => {
+      try {
+        const outputCanvas = document.createElement('canvas');
+        outputCanvas.width = this.targetWidth;
+        outputCanvas.height = this.targetHeight;
+        const ctx = outputCanvas.getContext('2d');
 
-    if (this.roundCropper) {
-      ctx.beginPath();
-      ctx.arc(this.targetWidth / 2, this.targetHeight / 2, this.targetWidth / 2, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
-    }
+        if (!ctx) {
+          this.cropping.set(false);
+          return;
+        }
 
-    // Draw canvas state onto output canvas
-    ctx.drawImage(canvas, 0, 0, this.targetWidth, this.targetHeight);
+        if (this.roundCropper) {
+          ctx.beginPath();
+          ctx.arc(this.targetWidth / 2, this.targetHeight / 2, this.targetWidth / 2, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+        }
 
-    const base64 = outputCanvas.toDataURL('image/jpeg', 0.92);
+        // Draw canvas state onto output canvas
+        ctx.drawImage(canvas, 0, 0, this.targetWidth, this.targetHeight);
 
-    outputCanvas.toBlob((blob) => {
-      if (blob) {
-        const file = new File([blob], this.outputFileName, { type: 'image/jpeg' });
-        const result: ImageCropResult = {
-          base64,
-          blob,
-          file
-        };
-        this.modalCtrl.dismiss(result, 'confirm');
+        const base64 = outputCanvas.toDataURL('image/jpeg', 0.92);
+
+        outputCanvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], this.outputFileName, { type: 'image/jpeg' });
+            const result: ImageCropResult = {
+              base64,
+              blob,
+              file
+            };
+            this.modalCtrl.dismiss(result, 'confirm');
+          } else {
+            this.cropping.set(false);
+          }
+        }, 'image/jpeg', 0.92);
+      } catch (error) {
+        console.error('Error during image crop:', error);
+        this.cropping.set(false);
       }
-    }, 'image/jpeg', 0.92);
+    }, 50);
   }
 }

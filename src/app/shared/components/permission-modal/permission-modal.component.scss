@@ -1,15 +1,39 @@
-.permission-header {
-  ion-toolbar {
-    --background: transparent;
-    --border-width: 0;
-  }
+.permission-modal-container {
+  background: #ffffff;
+  border-radius: var(--bizzdeal-radius-xl, 26px);
+  padding: 16px 20px 24px 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
-.permission-content {
-  --background: #ffffff;
+.permission-modal-header {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: center;
+
+  .close-btn {
+    background: #f1f5f9;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #64748b;
+    transition: background-color 0.2s ease;
+
+    &:active {
+      background: #e2e8f0;
+    }
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
 }
 
 .permission-body {
@@ -17,22 +41,22 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 12px 16px 24px;
+  padding-top: 4px;
 }
 
 .icon-circle {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   background: var(--bizzdeal-gradient-primary, linear-gradient(135deg, #1565C0 0%, #2196F3 100%));
   box-shadow: var(--bizzdeal-shadow-primary, 0 6px 20px rgba(33, 150, 243, 0.35));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 
   ion-icon {
-    font-size: 38px;
+    font-size: 34px;
     color: #ffffff;
   }
 
@@ -47,7 +71,7 @@
   font-size: 20px;
   font-weight: 700;
   color: var(--bizzdeal-text-primary, #1e293b);
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
 }
 
 .permission-description {
@@ -56,7 +80,7 @@
   line-height: 1.5;
   color: var(--bizzdeal-text-secondary, #64748b);
   margin: 0 0 20px 0;
-  max-width: 320px;
+  max-width: 300px;
 }
 
 .denied-info-box {
@@ -67,11 +91,12 @@
   border: 1px solid #fecaca;
   border-radius: 12px;
   padding: 12px 14px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   text-align: left;
   font-size: 13px;
   color: #991b1b;
   line-height: 1.4;
+  width: 100%;
 
   .info-icon {
     font-size: 18px;
@@ -85,11 +110,11 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 
   .full-btn {
     width: 100%;
-    padding: 14px;
+    padding: 12px 16px;
     border-radius: var(--bizzdeal-button-radius, 14px);
     font-size: 15px;
     font-weight: 600;

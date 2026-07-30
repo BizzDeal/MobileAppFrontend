@@ -4,6 +4,7 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminOffer, OfferStatus } from '../../models/admin-business.model';
 import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
+import { AdminRegionFilterModalComponent } from '../../components/admin-region-filter-modal/admin-region-filter-modal.component';
 import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 
 import { addIcons } from 'ionicons';
@@ -12,7 +13,7 @@ import { pricetagOutline, timeOutline, flashOutline, businessOutline, filterOutl
 @Component({
   selector: 'app-admin-offers',
   standalone: true,
-  imports: [CommonModule, IonicModule, CardSkeletonComponent],
+  imports: [CommonModule, IonicModule, CardSkeletonComponent, AdminRegionFilterModalComponent],
   templateUrl: './admin-offers.page.html',
   styleUrls: ['./admin-offers.page.scss']
 })
@@ -21,6 +22,8 @@ export class AdminOffersPage implements OnInit {
   filteredOffers: AdminOffer[] = [];
   loading = true;
   selectedStatus: string = 'PENDING';
+  stateId = '';
+  districtId = '';
 
   constructor(
     private adminBusinessesService: AdminBusinessesService,
@@ -43,7 +46,11 @@ export class AdminOffersPage implements OnInit {
 
   loadOffers() {
     this.loading = true;
-    this.adminBusinessesService.getAllOffers().subscribe({
+    const query: any = {};
+    if (this.stateId) query.state = this.stateId;
+    if (this.districtId) query.district = this.districtId;
+
+    this.adminBusinessesService.getAllOffers(query).subscribe({
       next: (res: any) => {
         if (res) {
           if (Array.isArray(res)) {
@@ -61,6 +68,21 @@ export class AdminOffersPage implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  isFilterOpen = false;
+
+  openFilter() {
+    this.isFilterOpen = true;
+  }
+
+  onFilterApplied(data: { stateId: string; districtId: string }) {
+    this.stateId = data.stateId;
+    this.districtId = data.districtId;
+    this.offers = [];
+    this.filteredOffers = [];
+    this.loading = true;
+    this.loadOffers();
   }
 
   searchQuery: string = '';

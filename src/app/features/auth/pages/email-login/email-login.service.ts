@@ -7,6 +7,7 @@ import { AuthApiService } from '../../services/auth-api.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
 import { ProfileService } from '../../../profile/services/profile.service';
+import { MemberOnboardingService } from '../../services/member-onboarding.service';
 import { UserRole } from '../../models/auth.model';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
@@ -18,6 +19,7 @@ export class EmailLoginService {
   private readonly authSession = inject(AuthSessionService);
   private readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
   private readonly profileService = inject(ProfileService);
+  private readonly onboardingService = inject(MemberOnboardingService);
   private readonly alertController = inject(AlertController);
 
   private readonly _authStep = signal<'phone' | 'pin' | 'otp_register'>('phone');
@@ -39,6 +41,9 @@ export class EmailLoginService {
   readonly isOtpFocused = this._isOtpFocused.asReadonly();
   readonly errorMessage = this._errorMessage.asReadonly();
   readonly isJoinModalOpen = this._isJoinModalOpen.asReadonly();
+  
+  readonly paymentSettings = this.onboardingService.paymentSettings;
+  readonly isLoadingPaymentSettings = this.onboardingService.isLoadingPaymentSettings;
 
   readonly loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -253,6 +258,7 @@ export class EmailLoginService {
   }
 
   joinAsMember(): void {
+    this.onboardingService.fetchPaymentSettings().catch(console.error);
     this._isJoinModalOpen.set(true);
   }
 

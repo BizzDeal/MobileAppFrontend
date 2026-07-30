@@ -13,7 +13,8 @@ import {
   businessOutline, globeOutline, documentTextOutline, 
   starOutline, star, pricetagOutline, ticketOutline,
   personOutline, callOutline, pricetag, flashOutline, timeOutline, 
-  ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline
+  ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline,
+  mapOutline, navigateOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -42,7 +43,8 @@ export class AdminBusinessDetailsPage implements OnInit {
       businessOutline, globeOutline, documentTextOutline,
       starOutline, star, pricetagOutline, ticketOutline,
       personOutline, callOutline, pricetag, flashOutline, timeOutline,
-      ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline
+      ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline,
+      mapOutline, navigateOutline
     });
   }
 

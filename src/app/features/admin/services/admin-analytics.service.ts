@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -46,9 +46,13 @@ export class AdminAnalyticsService {
 
   constructor() {}
 
-  getDetailedAnalytics(): Observable<DetailedAnalyticsDto> {
+  getDetailedAnalytics(state?: string, district?: string): Observable<DetailedAnalyticsDto> {
+    let params = new HttpParams();
+    if (state) params = params.set('state', state);
+    if (district) params = params.set('district', district);
+    
     return this.http
-      .get<DetailedAnalyticsDto | { success: boolean; data: DetailedAnalyticsDto }>(`${this.apiUrl}/analytics/detailed`)
+      .get<DetailedAnalyticsDto | { success: boolean; data: DetailedAnalyticsDto }>(`${this.apiUrl}/analytics/detailed`, { params })
       .pipe(map((res: any) => res?.data || res));
   }
 

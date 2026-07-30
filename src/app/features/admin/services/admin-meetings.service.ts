@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -22,11 +22,15 @@ export class AdminMeetingsService {
   readonly error = this._error.asReadonly();
   readonly meetings = this._meetings.asReadonly();
 
-  loadMeetings(): Observable<MeetingWithAttendee[]> {
+  loadMeetings(state?: string, district?: string): Observable<MeetingWithAttendee[]> {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.http.get<any>(`${this.apiUrl}/meetings`).pipe(
+    let params = new HttpParams();
+    if (state) params = params.set('state', state);
+    if (district) params = params.set('district', district);
+
+    return this.http.get<any>(`${this.apiUrl}/meetings`, { params }).pipe(
       tap({
         next: (res) => {
           const meetingsList = Array.isArray(res) ? res : res?.data || res?.items || [];

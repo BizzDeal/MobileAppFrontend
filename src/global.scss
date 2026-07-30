@@ -559,12 +559,106 @@ ion-modal.permission-modal-dialog {
   --width: 90%;
   --max-width: 380px;
   --border-radius: var(--bizzdeal-radius-xl, 26px);
-  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  align-items: center;
+  justify-content: center;
 
   &::part(content) {
     border-radius: var(--bizzdeal-radius-xl, 26px);
     overflow: hidden;
     background: #ffffff;
+    position: relative;
+    contain: content;
+  }
+}
+
+/* Modern Admin Search & Filter Bar Styling */
+.admin-search-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  padding: 10px 16px 6px 16px;
+}
+
+.premium-searchbar {
+  --background: #f1f5f9;
+  --border-radius: 12px;
+  --box-shadow: none;
+  --color: #0f172a;
+  --placeholder-color: #94a3b8;
+  --icon-color: #64748b;
+  --clear-button-color: #94a3b8;
+  --height: 44px;
+  --min-height: 44px;
+  min-height: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  .searchbar-input-container {
+    height: 44px !important;
+    min-height: 44px !important;
+    border-radius: 12px !important;
+    background: #f1f5f9 !important;
+
+    input.searchbar-input {
+      height: 44px !important;
+      min-height: 44px !important;
+      font-size: 14px !important;
+      font-weight: 500 !important;
+      color: #0f172a !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      padding-left: 38px !important;
+    }
+
+    .searchbar-search-icon {
+      left: 12px !important;
+      width: 18px !important;
+      height: 18px !important;
+      color: #64748b !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+    }
+  }
+}
+
+.filter-icon-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+  outline: none;
+  cursor: pointer;
+
+  &:active {
+    background: #e2e8f0;
+    transform: scale(0.96);
+  }
+
+  ion-icon {
+    font-size: 20px;
+    color: #475569;
+  }
+
+  .filter-active-dot {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #2196f3;
+    border: 2px solid #ffffff;
   }
 }
 

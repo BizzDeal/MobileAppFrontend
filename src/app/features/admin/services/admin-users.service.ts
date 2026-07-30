@@ -19,15 +19,19 @@ export class AdminUsersService {
 
   constructor(private http: HttpClient) {}
 
-  getMembers(page = 1, limit = 20, search = ''): Observable<ApiResponse<AdminMember[]>> {
+  getMembers(page = 1, limit = 20, search = '', state?: string, district?: string): Observable<ApiResponse<AdminMember[]>> {
     let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
     if (search) params = params.set('search', search);
+    if (state) params = params.set('state', state);
+    if (district) params = params.set('district', district);
     return this.http.get<ApiResponse<AdminMember[]>>(`${this.apiUrl}/members`, { params });
   }
 
-  getCustomers(page = 1, limit = 20, search = ''): Observable<ApiResponse<AdminCustomer[]>> {
+  getCustomers(page = 1, limit = 20, search = '', state?: string, district?: string): Observable<ApiResponse<AdminCustomer[]>> {
     let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
     if (search) params = params.set('search', search);
+    if (state) params = params.set('state', state);
+    if (district) params = params.set('district', district);
     return this.http.get<ApiResponse<AdminCustomer[]>>(`${this.apiUrl}/customers`, { params });
   }
 

@@ -1,7 +1,8 @@
 <ion-header class="ion-no-border premium-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/auth/login" (click)="forgotService.backStep($event)" text="" color="dark"></ion-back-button>
+      <ion-back-button defaultHref="/auth/login" (click)="forgotService.backStep($event)" text=""
+        color="dark"></ion-back-button>
     </ion-buttons>
     <ion-title>Forgot PIN</ion-title>
   </ion-toolbar>
@@ -14,7 +15,7 @@
       <!-- Header Section -->
       <header class="logo-section">
         <div class="logo-box">
-          <img src="assets/icon-only.jpg" alt="BIZZ DEAL Logo" class="logo-image" />
+          <img src="assets/icon-only1.jpg" alt="BIZZ DEAL Logo" class="logo-image" />
         </div>
         <img src="assets/logo-text.png" alt="BizzDeal" class="app-title-image" />
         <p class="app-subtitle">
@@ -30,174 +31,119 @@
         <form [formGroup]="forgotService.forgotForm">
           <!-- Step 1: Phone Number -->
           @if (forgotService.step() === 'phone') {
-            <label class="input-label" for="emailInput">Email Address <span class="required-star">*</span></label>
-            <div
-              class="input-container"
-              [class.focused]="forgotService.isPhoneFocused()"
-              [class.error]="forgotService.forgotForm.controls.email.invalid && forgotService.forgotForm.controls.email.touched"
-            >
-              <ion-icon name="mail-outline" class="input-icon" />
-              <div class="input-divider"></div>
-              <input
-                id="emailInput"
-                type="email"
-                placeholder="name@example.com"
-                formControlName="email"
-                class="phone-input"
-                (focus)="forgotService.setPhoneFocused(true)"
-                (blur)="forgotService.setPhoneFocused(false)"
-              />
-            </div>
+          <label class="input-label" for="emailInput">Email Address <span class="required-star">*</span></label>
+          <div class="input-container" [class.focused]="forgotService.isPhoneFocused()"
+            [class.error]="forgotService.forgotForm.controls.email.invalid && forgotService.forgotForm.controls.email.touched">
+            <ion-icon name="mail-outline" class="input-icon" />
+            <div class="input-divider"></div>
+            <input id="emailInput" type="email" placeholder="name@example.com" formControlName="email"
+              class="phone-input" (focus)="forgotService.setPhoneFocused(true)"
+              (blur)="forgotService.setPhoneFocused(false)" />
+          </div>
 
-            <div class="error-container">
-              @if (forgotService.errorMessage()) {
-                <span class="error-text">{{ forgotService.errorMessage() }}</span>
-              } @else if (forgotService.forgotForm.controls.email.invalid && forgotService.forgotForm.controls.email.touched) {
-                <span class="error-text">Please enter a valid email address</span>
-              }
-            </div>
+          <div class="error-container">
+            @if (forgotService.errorMessage()) {
+            <span class="error-text">{{ forgotService.errorMessage() }}</span>
+            } @else if (forgotService.forgotForm.controls.email.invalid &&
+            forgotService.forgotForm.controls.email.touched) {
+            <span class="error-text">Please enter a valid email address</span>
+            }
+          </div>
 
-            <button
-              type="button"
-              class="submit-btn bd-btn-primary"
-              (click)="forgotService.sendOtp()"
-            >
-              <ion-icon name="keypad-outline" class="btn-icon" />
-              <span>Send OTP</span>
-            </button>
+          <button type="button" class="submit-btn bd-btn-primary" (click)="forgotService.sendOtp()">
+            <ion-icon name="keypad-outline" class="btn-icon" />
+            <span>Send OTP</span>
+          </button>
           }
 
           <!-- Step 2: OTP Verification -->
           @if (forgotService.step() === 'otp') {
-            <label class="input-label" for="emailReadonly">Email Address</label>
-            <div class="input-container readonly">
-              <ion-icon name="mail-outline" class="input-icon" />
-              <div class="input-divider"></div>
-              <input
-                id="emailReadonly"
-                type="email"
-                formControlName="email"
-                class="phone-input"
-                readonly
-              />
-            </div>
+          <label class="input-label" for="emailReadonly">Email Address</label>
+          <div class="input-container readonly">
+            <ion-icon name="mail-outline" class="input-icon" />
+            <div class="input-divider"></div>
+            <input id="emailReadonly" type="email" formControlName="email" class="phone-input" readonly />
+          </div>
 
-            <label class="input-label field-spacing" for="otpInput">Verification Code (OTP) <span class="required-star">*</span></label>
-            <div
-              class="input-container pin-container"
-              [class.focused]="forgotService.isOtpFocused()"
-              [class.error]="forgotService.forgotForm.controls.otp.invalid && forgotService.forgotForm.controls.otp.touched"
-            >
-              <div class="pin-badge">OTP</div>
-              <input
-                id="otpInput"
-                type="tel"
-                inputmode="numeric"
-                maxlength="6"
-                placeholder="Enter 4 or 6 digit OTP"
-                formControlName="otp"
-                class="phone-input"
-                (focus)="forgotService.setOtpFocused(true)"
-                (blur)="forgotService.setOtpFocused(false)"
-              />
-            </div>
+          <label class="input-label field-spacing" for="otpInput">Verification Code (OTP) <span
+              class="required-star">*</span></label>
+          <div class="input-container pin-container" [class.focused]="forgotService.isOtpFocused()"
+            [class.error]="forgotService.forgotForm.controls.otp.invalid && forgotService.forgotForm.controls.otp.touched">
+            <div class="pin-badge">OTP</div>
+            <input id="otpInput" type="tel" inputmode="numeric" maxlength="6" placeholder="Enter 4 or 6 digit OTP"
+              formControlName="otp" class="phone-input" (focus)="forgotService.setOtpFocused(true)"
+              (blur)="forgotService.setOtpFocused(false)" />
+          </div>
 
-            <div class="error-container">
-              @if (forgotService.errorMessage()) {
-                <span class="error-text">{{ forgotService.errorMessage() }}</span>
-              } @else if (forgotService.forgotForm.controls.otp.invalid && forgotService.forgotForm.controls.otp.touched) {
-                <span class="error-text">Please enter a valid verification code</span>
-              }
-            </div>
+          <div class="error-container">
+            @if (forgotService.errorMessage()) {
+            <span class="error-text">{{ forgotService.errorMessage() }}</span>
+            } @else if (forgotService.forgotForm.controls.otp.invalid && forgotService.forgotForm.controls.otp.touched)
+            {
+            <span class="error-text">Please enter a valid verification code</span>
+            }
+          </div>
 
-            <div class="resend-box">
-              @if (forgotService.canResend()) {
-                <a href="javascript:void(0)" (click)="forgotService.resendOtp()" class="resend-link">
-                  <ion-icon name="refresh-outline" class="resend-icon" />
-                  <span>Resend OTP</span>
-                </a>
-              } @else {
-                <span class="resend-timer">Resend OTP in {{ forgotService.resendTimer() }}s</span>
-              }
-            </div>
+          <div class="resend-box">
+            @if (forgotService.canResend()) {
+            <a href="javascript:void(0)" (click)="forgotService.resendOtp()" class="resend-link">
+              <ion-icon name="refresh-outline" class="resend-icon" />
+              <span>Resend OTP</span>
+            </a>
+            } @else {
+            <span class="resend-timer">Resend OTP in {{ forgotService.resendTimer() }}s</span>
+            }
+          </div>
 
-            <button
-              type="button"
-              class="submit-btn bd-btn-primary"
-              (click)="forgotService.verifyOtp()"
-            >
-              <ion-icon name="checkmark-circle-outline" class="btn-icon" />
-              <span>Verify OTP</span>
-            </button>
+          <button type="button" class="submit-btn bd-btn-primary" (click)="forgotService.verifyOtp()">
+            <ion-icon name="checkmark-circle-outline" class="btn-icon" />
+            <span>Verify OTP</span>
+          </button>
           }
 
           <!-- Step 3: Reset PIN -->
           @if (forgotService.step() === 'reset') {
-            <label class="input-label" for="newPinInput">New PIN <span class="required-star">*</span></label>
-            <div
-              class="input-container pin-container"
-              [class.focused]="forgotService.isNewPinFocused()"
-              [class.error]="forgotService.forgotForm.controls.newPin.invalid && forgotService.forgotForm.controls.newPin.touched"
-            >
-              <div class="pin-badge"><ion-icon name="lock-closed-outline" /></div>
-              <input
-                id="newPinInput"
-                type="password"
-                inputmode="numeric"
-                maxlength="6"
-                placeholder="Enter 4-digit new PIN"
-                formControlName="newPin"
-                class="phone-input"
-                (focus)="forgotService.setNewPinFocused(true)"
-                (blur)="forgotService.setNewPinFocused(false)"
-              />
-            </div>
+          <label class="input-label" for="newPinInput">New PIN <span class="required-star">*</span></label>
+          <div class="input-container pin-container" [class.focused]="forgotService.isNewPinFocused()"
+            [class.error]="forgotService.forgotForm.controls.newPin.invalid && forgotService.forgotForm.controls.newPin.touched">
+            <div class="pin-badge"><ion-icon name="lock-closed-outline" /></div>
+            <input id="newPinInput" type="password" inputmode="numeric" maxlength="6"
+              placeholder="Enter 4-digit new PIN" formControlName="newPin" class="phone-input"
+              (focus)="forgotService.setNewPinFocused(true)" (blur)="forgotService.setNewPinFocused(false)" />
+          </div>
 
-            <div class="error-container">
-              @if (forgotService.forgotForm.controls.newPin.invalid && forgotService.forgotForm.controls.newPin.touched) {
-                <span class="error-text">Please enter a valid 4 to 6 digit PIN</span>
-              }
-            </div>
+          <div class="error-container">
+            @if (forgotService.forgotForm.controls.newPin.invalid && forgotService.forgotForm.controls.newPin.touched) {
+            <span class="error-text">Please enter a valid 4 to 6 digit PIN</span>
+            }
+          </div>
 
-            <label class="input-label field-spacing" for="confirmPinInput">Confirm PIN <span class="required-star">*</span></label>
-            <div
-              class="input-container pin-container"
-              [class.focused]="forgotService.isConfirmPinFocused()"
-              [class.error]="(forgotService.forgotForm.controls.confirmPin.invalid && forgotService.forgotForm.controls.confirmPin.touched) || forgotService.pinMismatchError()"
-            >
-              <div class="pin-badge"><ion-icon name="checkmark-circle-outline" /></div>
-              <input
-                id="confirmPinInput"
-                type="password"
-                inputmode="numeric"
-                maxlength="6"
-                placeholder="Confirm new PIN"
-                formControlName="confirmPin"
-                class="phone-input"
-                (focus)="forgotService.setConfirmPinFocused(true)"
-                (blur)="forgotService.setConfirmPinFocused(false)"
-              />
-            </div>
+          <label class="input-label field-spacing" for="confirmPinInput">Confirm PIN <span
+              class="required-star">*</span></label>
+          <div class="input-container pin-container" [class.focused]="forgotService.isConfirmPinFocused()"
+            [class.error]="(forgotService.forgotForm.controls.confirmPin.invalid && forgotService.forgotForm.controls.confirmPin.touched) || forgotService.pinMismatchError()">
+            <div class="pin-badge"><ion-icon name="checkmark-circle-outline" /></div>
+            <input id="confirmPinInput" type="password" inputmode="numeric" maxlength="6" placeholder="Confirm new PIN"
+              formControlName="confirmPin" class="phone-input" (focus)="forgotService.setConfirmPinFocused(true)"
+              (blur)="forgotService.setConfirmPinFocused(false)" />
+          </div>
 
-            <div class="error-container">
-              @if (forgotService.errorMessage()) {
-                <span class="error-text">{{ forgotService.errorMessage() }}</span>
-              } @else if (forgotService.forgotForm.controls.confirmPin.invalid && forgotService.forgotForm.controls.confirmPin.touched) {
-                <span class="error-text">Please confirm your new PIN</span>
-              } @else if (forgotService.pinMismatchError()) {
-                <span class="error-text">PINs do not match. Please try again.</span>
-              }
-            </div>
+          <div class="error-container">
+            @if (forgotService.errorMessage()) {
+            <span class="error-text">{{ forgotService.errorMessage() }}</span>
+            } @else if (forgotService.forgotForm.controls.confirmPin.invalid &&
+            forgotService.forgotForm.controls.confirmPin.touched) {
+            <span class="error-text">Please confirm your new PIN</span>
+            } @else if (forgotService.pinMismatchError()) {
+            <span class="error-text">PINs do not match. Please try again.</span>
+            }
+          </div>
 
-            <button
-              type="button"
-              class="submit-btn bd-btn-primary"
-              [disabled]="forgotService.isSubmitting()"
-              (click)="forgotService.resetPin()"
-            >
-              <ion-icon name="lock-closed-outline" class="btn-icon" />
-              <span>{{ forgotService.isSubmitting() ? 'Resetting PIN...' : 'Reset PIN & Login' }}</span>
-            </button>
+          <button type="button" class="submit-btn bd-btn-primary" [disabled]="forgotService.isSubmitting()"
+            (click)="forgotService.resetPin()">
+            <ion-icon name="lock-closed-outline" class="btn-icon" />
+            <span>{{ forgotService.isSubmitting() ? 'Resetting PIN...' : 'Reset PIN & Login' }}</span>
+          </button>
           }
         </form>
       </section>

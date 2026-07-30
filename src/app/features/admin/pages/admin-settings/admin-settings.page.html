@@ -58,48 +58,6 @@
       </div>
     </div>
 
-    <div class="form-section" style="margin-bottom: 24px;">
-      <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px; padding: 0 8px;">Global Region Filter</h3>
-      <div class="form-content">
-        <ion-select
-          label="Filter by States"
-          labelPlacement="stacked"
-          fill="outline"
-          [multiple]="true"
-          [(ngModel)]="selectedStates"
-          (ionChange)="onStateChange($event)"
-          style="margin-bottom: 8px;"
-          [disabled]="isLoadingRegions"
-          placeholder="All States (No Filter)"
-        >
-          <ion-select-option *ngFor="let state of availableStates" [value]="state.id">
-            {{ state.name }}
-          </ion-select-option>
-        </ion-select>
-        <div class="ion-padding-start ion-padding-bottom ion-text-muted">
-          <small>Select one or more states to filter all admin data (dashboard, users, businesses, etc.). Leave empty for no filter.</small>
-        </div>
-
-        <ion-select
-          *ngIf="selectedStates.length === 1"
-          label="Filter by Districts"
-          labelPlacement="stacked"
-          fill="outline"
-          [multiple]="true"
-          [(ngModel)]="selectedDistricts"
-          style="margin-bottom: 8px;"
-          [disabled]="isLoadingRegions || availableDistricts.length === 0"
-          placeholder="All Districts in State (No Filter)"
-        >
-          <ion-select-option *ngFor="let district of availableDistricts" [value]="district.id">
-            {{ district.name }}
-          </ion-select-option>
-        </ion-select>
-        <div *ngIf="selectedStates.length === 1" class="ion-padding-start ion-padding-bottom ion-text-muted">
-          <small>Select one or more districts to further narrow down the filter.</small>
-        </div>
-      </div>
-    </div>
 
     <div class="ion-padding">
       <ion-button expand="block" (click)="saveSettings()" [disabled]="isSaving">

@@ -124,6 +124,26 @@
                 </ion-label>
               </ion-item>
 
+              <ion-item class="premium-item" *ngIf="business.state_name || business.state_id">
+                <div slot="start" class="icon-box">
+                  <ion-icon name="map-outline" color="medium"></ion-icon>
+                </div>
+                <ion-label class="ion-text-wrap">
+                  <h3 class="text-medium text-xs font-semibold uppercase">State</h3>
+                  <p class="text-dark font-medium mt-1">{{ business.state_name || business.state_id }}</p>
+                </ion-label>
+              </ion-item>
+
+              <ion-item class="premium-item" *ngIf="business.district_name || business.district_id">
+                <div slot="start" class="icon-box">
+                  <ion-icon name="navigate-outline" color="medium"></ion-icon>
+                </div>
+                <ion-label class="ion-text-wrap">
+                  <h3 class="text-medium text-xs font-semibold uppercase">District</h3>
+                  <p class="text-dark font-medium mt-1">{{ business.district_name || business.district_id }}</p>
+                </ion-label>
+              </ion-item>
+
             </ion-list>
           </ion-card-content>
         </ion-card>

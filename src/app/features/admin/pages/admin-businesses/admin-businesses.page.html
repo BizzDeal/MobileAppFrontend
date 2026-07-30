@@ -1,7 +1,17 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
-  <ion-toolbar class="px-2 pt-3">
-    <ion-searchbar [value]="searchQuery" (ionInput)="onSearch($event)" placeholder="Search by name, owner or category..." mode="ios" animated="true" class="premium-searchbar"></ion-searchbar>
-  </ion-toolbar>
+  <div class="admin-search-filter-bar">
+    <ion-searchbar 
+      [value]="searchQuery" 
+      (ionInput)="onSearch($event)" 
+      placeholder="Search by name, owner, category..." 
+      mode="md" 
+      class="premium-searchbar">
+    </ion-searchbar>
+    <button (click)="openFilter()" type="button" class="filter-icon-btn" aria-label="Filter by region">
+      <ion-icon name="filter-outline"></ion-icon>
+      <span *ngIf="stateId || districtId" class="filter-active-dot"></span>
+    </button>
+  </div>
   <ion-toolbar class="px-2 pb-2">
     <ion-segment [value]="segmentValue" (ionChange)="segmentChanged($event)" mode="ios" class="premium-segment">
       <ion-segment-button value="ALL">
@@ -21,5 +31,14 @@
 </ion-header>
 
 <ion-content style="--background: #fff;">
-  <app-admin-businesses-list [searchQuery]="searchQuery" [statusFilter]="segmentValue"></app-admin-businesses-list>
+  <app-admin-businesses-list [searchQuery]="searchQuery" [statusFilter]="segmentValue" [stateId]="stateId" [districtId]="districtId"></app-admin-businesses-list>
 </ion-content>
+
+<app-admin-region-filter-modal
+  [isOpen]="isFilterOpen"
+  [stateId]="stateId"
+  [districtId]="districtId"
+  (filterApplied)="onFilterApplied($event)"
+  (closed)="isFilterOpen = false"
+></app-admin-region-filter-modal>
+

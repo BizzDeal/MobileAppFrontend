@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonContent, IonIcon, IonModal } from '@ionic/angular/standalone';
+import { IonContent, IonIcon, IonModal, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   briefcaseOutline,
@@ -22,7 +22,7 @@ import { UserRole } from '../../models/auth.model';
 @Component({
   selector: 'app-email-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IonContent, IonIcon, IonModal],
+  imports: [CommonModule, ReactiveFormsModule, IonContent, IonIcon, IonModal, IonSpinner],
   providers: [EmailLoginService],
   templateUrl: './email-login.page.html',
   styleUrl: './email-login.page.scss',

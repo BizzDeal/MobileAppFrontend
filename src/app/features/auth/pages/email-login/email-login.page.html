@@ -187,7 +187,13 @@
         </p>
 
         <div class="fee-badge">
-          <span>Registration Fee: ₹10,000</span>
+          @if (authService.isLoadingPaymentSettings()) {
+            <ion-spinner name="crescent" size="small"></ion-spinner>
+          } @else if (authService.paymentSettings()) {
+            <span>Registration Fee: ₹{{ authService.paymentSettings()?.registration_fee | number }}</span>
+          } @else {
+            <span>Registration Fee: ₹10,000</span>
+          }
         </div>
 
         <button type="button" class="pay-now-btn bd-btn-primary" (click)="authService.proceedToRegistration()">

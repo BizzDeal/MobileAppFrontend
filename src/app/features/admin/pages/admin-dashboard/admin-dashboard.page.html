@@ -4,9 +4,15 @@
     <ion-refresher-content pullingText="Pull to refresh dashboard..." refreshingText="Refreshing analytics and queues..."></ion-refresher-content>
   </ion-refresher>
 
-  <div class="dashboard-header">
-    <h1>Platform Overview</h1>
-    <p class="subtitle">Real-time moderation and analytics</p>
+  <div class="dashboard-header mb-4" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h1>Platform Overview</h1>
+      <p class="subtitle">Real-time moderation and analytics</p>
+    </div>
+    <button (click)="openFilter()" type="button" class="filter-icon-btn" aria-label="Filter by region">
+      <ion-icon name="filter-outline"></ion-icon>
+      <span *ngIf="stateId || districtId" class="filter-active-dot"></span>
+    </button>
   </div>
 
   <ng-container *ngIf="analytics$ | async as analytics; else loadingAnalytics">
@@ -152,3 +158,11 @@
 
 
 </ion-content>
+
+<app-admin-region-filter-modal
+  [isOpen]="isFilterOpen"
+  [stateId]="stateId"
+  [districtId]="districtId"
+  (filterApplied)="onFilterApplied($event)"
+  (closed)="isFilterOpen = false"
+></app-admin-region-filter-modal>

@@ -1,6 +1,12 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar class="admin-toolbar">
+  <ion-toolbar class="admin-toolbar px-2 pt-2">
     <ion-title>Manage Meetings</ion-title>
+    <ion-buttons slot="end">
+      <button (click)="openFilter()" type="button" class="filter-icon-btn" aria-label="Filter by region">
+        <ion-icon name="filter-outline"></ion-icon>
+        <span *ngIf="stateId || districtId" class="filter-active-dot"></span>
+      </button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -48,3 +54,11 @@
   </ion-fab>
 
 </ion-content>
+
+<app-admin-region-filter-modal
+  [isOpen]="isFilterOpen"
+  [stateId]="stateId"
+  [districtId]="districtId"
+  (filterApplied)="onFilterApplied($event)"
+  (closed)="isFilterOpen = false"
+></app-admin-region-filter-modal>

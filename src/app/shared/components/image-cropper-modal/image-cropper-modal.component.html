@@ -2,7 +2,7 @@
   <ion-toolbar class="cropper-toolbar">
     <ion-title>{{ title }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="cancel()" aria-label="Close">
+      <ion-button [disabled]="loading() || cropping()" (click)="cancel()" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -54,7 +54,7 @@
     <div class="controls-panel">
       <!-- Zoom Slider -->
       <div class="control-row zoom-row">
-        <button type="button" class="ctrl-btn" (click)="zoomOut()" title="Zoom Out">
+        <button type="button" class="ctrl-btn" [disabled]="loading() || cropping()" (click)="zoomOut()" title="Zoom Out">
           <ion-icon name="remove-outline"></ion-icon>
         </button>
 
@@ -62,40 +62,41 @@
           min="0.5"
           max="3.5"
           step="0.05"
+          [disabled]="loading() || cropping()"
           [value]="zoomScale()"
           (ionInput)="onZoomChange($event)"
           aria-label="Zoom scale"
         >
         </ion-range>
 
-        <button type="button" class="ctrl-btn" (click)="zoomIn()" title="Zoom In">
+        <button type="button" class="ctrl-btn" [disabled]="loading() || cropping()" (click)="zoomIn()" title="Zoom In">
           <ion-icon name="add-outline"></ion-icon>
         </button>
       </div>
 
       <!-- Rotation & Flip Action Buttons -->
       <div class="control-row actions-row">
-        <button type="button" class="action-btn" (click)="rotateLeft()" title="Rotate Left 90°">
+        <button type="button" class="action-btn" [disabled]="loading() || cropping()" (click)="rotateLeft()" title="Rotate Left 90°">
           <ion-icon name="arrow-undo-outline"></ion-icon>
           <span>Rotate L</span>
         </button>
 
-        <button type="button" class="action-btn" (click)="rotateRight()" title="Rotate Right 90°">
+        <button type="button" class="action-btn" [disabled]="loading() || cropping()" (click)="rotateRight()" title="Rotate Right 90°">
           <ion-icon name="arrow-redo-outline"></ion-icon>
           <span>Rotate R</span>
         </button>
 
-        <button type="button" class="action-btn" [class.active]="flipH()" (click)="toggleFlipH()" title="Flip Horizontal">
+        <button type="button" class="action-btn" [class.active]="flipH()" [disabled]="loading() || cropping()" (click)="toggleFlipH()" title="Flip Horizontal">
           <ion-icon name="swap-horizontal-outline"></ion-icon>
           <span>Flip H</span>
         </button>
 
-        <button type="button" class="action-btn" [class.active]="flipV()" (click)="toggleFlipV()" title="Flip Vertical">
+        <button type="button" class="action-btn" [class.active]="flipV()" [disabled]="loading() || cropping()" (click)="toggleFlipV()" title="Flip Vertical">
           <ion-icon name="swap-vertical-outline"></ion-icon>
           <span>Flip V</span>
         </button>
 
-        <button type="button" class="action-btn reset-btn" (click)="resetTransformations()" title="Reset Adjustments">
+        <button type="button" class="action-btn reset-btn" [disabled]="loading() || cropping()" (click)="resetTransformations()" title="Reset Adjustments">
           <ion-icon name="refresh-outline"></ion-icon>
           <span>Reset</span>
         </button>
@@ -107,13 +108,18 @@
 
 <ion-footer class="ion-no-border">
   <div class="modal-footer-actions">
-    <button type="button" class="bd-btn-secondary cancel-btn" (click)="cancel()">
+    <button type="button" class="bd-btn-secondary cancel-btn" [disabled]="loading() || cropping()" (click)="cancel()">
       Cancel
     </button>
 
-    <button type="button" class="bd-btn-primary apply-btn" [disabled]="loading()" (click)="applyCrop()">
-      <ion-icon name="checkmark-outline"></ion-icon>
-      Crop & Save
+    <button type="button" class="bd-btn-primary apply-btn" [disabled]="loading() || cropping()" (click)="applyCrop()">
+      @if (cropping()) {
+        <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+        <span>Cropping...</span>
+      } @else {
+        <ion-icon name="checkmark-outline"></ion-icon>
+        <span>Crop & Save</span>
+      }
     </button>
   </div>
 </ion-footer>

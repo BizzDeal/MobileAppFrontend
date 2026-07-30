@@ -9,7 +9,8 @@ import {
   callOutline, logoWhatsapp, mailOutline, locationOutline, 
   personOutline, calendarOutline, checkmarkCircleOutline, 
   warningOutline, closeCircleOutline, trashOutline,
-  businessOutline, documentTextOutline, globeOutline, imageOutline
+  businessOutline, documentTextOutline, globeOutline, imageOutline,
+  mapOutline, navigateOutline
 } from 'ionicons/icons';
 import mediumZoom, { Zoom } from 'medium-zoom';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
@@ -39,7 +40,8 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
       callOutline, logoWhatsapp, mailOutline, locationOutline, 
       personOutline, calendarOutline, checkmarkCircleOutline, 
       warningOutline, closeCircleOutline, trashOutline,
-      businessOutline, documentTextOutline, globeOutline, imageOutline
+      businessOutline, documentTextOutline, globeOutline, imageOutline,
+      mapOutline, navigateOutline
     });
   }
 

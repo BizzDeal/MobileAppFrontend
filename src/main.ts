@@ -29,7 +29,6 @@ EventTarget.prototype.addEventListener = function (
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
-import { adminRegionFilterInterceptor } from './app/core/interceptors/admin-region-filter.interceptor';
 import { loadingInterceptor } from './app/core/interceptors/loading.interceptor';
 import { apiMessageInterceptor } from './app/core/interceptors/api-message.interceptor';
 import { splashScreenInterceptor } from './app/core/interceptors/splash-screen.interceptor';
@@ -40,7 +39,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
-    provideHttpClient(withInterceptors([apiMessageInterceptor, splashScreenInterceptor, authInterceptor, adminRegionFilterInterceptor, loadingInterceptor])),
+    provideHttpClient(withInterceptors([apiMessageInterceptor, splashScreenInterceptor, authInterceptor, loadingInterceptor])),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),

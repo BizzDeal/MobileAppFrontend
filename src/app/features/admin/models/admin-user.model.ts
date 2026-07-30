@@ -20,6 +20,10 @@ export interface AdminUser {
   whatsapp: string | null;
   email: string | null;
   address: string | null;
+  state_id?: string | null;
+  state_name?: string | null;
+  district_id?: string | null;
+  district_name?: string | null;
   role: UserRole;
   status: UserStatus;
   approved_by_id: string | null;

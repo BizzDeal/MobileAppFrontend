@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   templateUrl: './admin-customers-list.component.html',
   styleUrls: ['./admin-customers-list.component.scss']
 })
-export class AdminCustomersListComponent implements OnInit {
+export class AdminCustomersListComponent implements OnInit, OnChanges {
   @Input() set searchQuery(val: string) {
     this._searchQuery = val;
     this.searchSubject.next(val);
@@ -26,6 +26,9 @@ export class AdminCustomersListComponent implements OnInit {
   private _searchQuery = '';
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
+
+  @Input() stateId: string = '';
+  @Input() districtId: string = '';
 
   customers: AdminCustomer[] = [];
   loading = true;
@@ -60,15 +63,22 @@ export class AdminCustomersListComponent implements OnInit {
     this.searchSubscription?.unsubscribe();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if ((changes['stateId'] && !changes['stateId'].firstChange) || (changes['districtId'] && !changes['districtId'].firstChange)) {
+      this.refresh();
+    }
+  }
+
   refresh() {
     this.page = 1;
     this.customers = [];
+    this.loading = true;
     this.loadCustomers();
   }
 
   loadCustomers(event?: any) {
     this.loading = true;
-    this.adminUsersService.getCustomers(this.page, this.limit, this.searchQuery).subscribe((res) => {
+    this.adminUsersService.getCustomers(this.page, this.limit, this.searchQuery, this.stateId, this.districtId).subscribe((res) => {
       if (this.page === 1) {
         this.customers = res.data;
       } else {

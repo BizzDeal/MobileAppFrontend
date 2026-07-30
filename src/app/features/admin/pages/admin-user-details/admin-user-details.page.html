@@ -71,6 +71,26 @@
             </ion-label>
           </ion-item>
 
+          <ion-item *ngIf="user.state_name || user.state_id" class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="map-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label class="ion-text-wrap">
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">State</h3>
+              <p class="text-dark font-medium mt-1">{{ user.state_name || user.state_id }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="user.district_name || user.district_id" class="premium-item">
+            <div slot="start" class="icon-box">
+              <ion-icon name="navigate-outline" color="medium"></ion-icon>
+            </div>
+            <ion-label class="ion-text-wrap">
+              <h3 class="text-sm text-gray-500 uppercase font-semibold">District</h3>
+              <p class="text-dark font-medium mt-1">{{ user.district_name || user.district_id }}</p>
+            </ion-label>
+          </ion-item>
+
           <ion-item class="premium-item">
             <div slot="start" class="icon-box">
               <ion-icon name="person-outline" color="medium"></ion-icon>

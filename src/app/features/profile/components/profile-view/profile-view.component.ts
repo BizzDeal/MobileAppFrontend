@@ -117,7 +117,7 @@ export class ProfileViewComponent implements OnInit {
     whatsapp: ['', [Validators.minLength(10)]],
     email: ['', [Validators.email]],
     state_id: [''],
-    district_id: [''],
+    district_id: ['', [Validators.required]],
     address: [''],
     business_name: [''],
     business_description: [''],
@@ -125,7 +125,7 @@ export class ProfileViewComponent implements OnInit {
     gst_number: [''],
     category_id: [''],
     business_state_id: [''],
-    business_district_id: [''],
+    business_district_id: ['', [Validators.required]],
     business_address: ['']
   });
 

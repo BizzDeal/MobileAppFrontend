@@ -2,9 +2,10 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { calendarOutline, addOutline } from 'ionicons/icons';
+import { calendarOutline, addOutline, filterOutline } from 'ionicons/icons';
 import { MeetingCardComponent } from '../../../meetings/components/meeting-card/meeting-card.component';
 import { AdminMeetingsService } from '../../services/admin-meetings.service';
+import { AdminRegionFilterModalComponent } from '../../components/admin-region-filter-modal/admin-region-filter-modal.component';
 import { AdminMeetingActionModalComponent } from '../../components/admin-meeting-action-modal/admin-meeting-action-modal.component';
 import { AdminMeetingAttendeesModalComponent } from '../../components/admin-meeting-attendees-modal/admin-meeting-attendees-modal.component';
 import { MeetingWithAttendee } from '../../../meetings/services/meetings.service';
@@ -15,7 +16,7 @@ import { CardSkeletonComponent } from '../../../../shared/components/skeletons/c
   templateUrl: './admin-meetings.page.html',
   styleUrls: ['./admin-meetings.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, MeetingCardComponent, CardSkeletonComponent]
+  imports: [CommonModule, IonicModule, MeetingCardComponent, CardSkeletonComponent, AdminRegionFilterModalComponent]
 })
 export class AdminMeetingsPage implements OnInit {
   private readonly adminMeetingsService = inject(AdminMeetingsService);
@@ -23,6 +24,9 @@ export class AdminMeetingsPage implements OnInit {
 
   readonly selectedTab = signal<'upcoming' | 'past'>('upcoming');
   readonly loading = this.adminMeetingsService.loading;
+  
+  stateId = '';
+  districtId = '';
 
   readonly meetings = computed(() => {
     const all = this.adminMeetingsService.meetings();
@@ -36,11 +40,27 @@ export class AdminMeetingsPage implements OnInit {
   });
 
   constructor() {
-    addIcons({ calendarOutline, addOutline });
+    addIcons({ calendarOutline, addOutline, filterOutline });
   }
 
   ngOnInit() {
-    this.adminMeetingsService.loadMeetings().subscribe();
+    this.loadMeetings();
+  }
+
+  loadMeetings() {
+    this.adminMeetingsService.loadMeetings(this.stateId, this.districtId).subscribe();
+  }
+
+  isFilterOpen = false;
+
+  openFilter() {
+    this.isFilterOpen = true;
+  }
+
+  onFilterApplied(data: { stateId: string; districtId: string }) {
+    this.stateId = data.stateId;
+    this.districtId = data.districtId;
+    this.loadMeetings();
   }
 
   onTabChange(event: any) {

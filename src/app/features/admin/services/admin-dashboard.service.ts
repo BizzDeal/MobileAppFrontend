@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -47,6 +47,10 @@ export interface User {
   email?: string;
   whatsapp?: string;
   address?: string;
+  state_id?: string;
+  state_name?: string;
+  district_id?: string;
+  district_name?: string;
   profile_pic_url?: string;
   payment_receipt_url?: string;
   business_id?: string;
@@ -99,21 +103,30 @@ export class AdminDashboardService {
 
   constructor() {}
 
-  getPendingMembers(): Observable<User[]> {
+  getPendingMembers(state?: string, district?: string): Observable<User[]> {
+    let params = new HttpParams().set('status', 'PENDING');
+    if (state) params = params.set('state', state);
+    if (district) params = params.set('district', district);
     return this.http
-      .get<{ success: boolean; data: User[] }>(`${this.apiUrl}/users/members?status=PENDING`)
+      .get<{ success: boolean; data: User[] }>(`${this.apiUrl}/users/members`, { params })
       .pipe(map((res) => res?.data || []));
   }
 
-  getPendingOffers(): Observable<Offer[]> {
+  getPendingOffers(state?: string, district?: string): Observable<Offer[]> {
+    let params = new HttpParams().set('status', 'PENDING');
+    if (state) params = params.set('state', state);
+    if (district) params = params.set('district', district);
     return this.http
-      .get<Offer[] | { success: boolean; data: Offer[] }>(`${this.apiUrl}/offers?status=PENDING`)
+      .get<Offer[] | { success: boolean; data: Offer[] }>(`${this.apiUrl}/offers`, { params })
       .pipe(map((res: any) => (Array.isArray(res) ? res : res?.data || [])));
   }
 
-  getPlatformAnalytics(): Observable<AdminAnalyticsDto> {
+  getPlatformAnalytics(state?: string, district?: string): Observable<AdminAnalyticsDto> {
+    let params = new HttpParams();
+    if (state) params = params.set('state', state);
+    if (district) params = params.set('district', district);
     return this.http
-      .get<AdminAnalyticsDto | { success: boolean; data: AdminAnalyticsDto }>(`${this.apiUrl}/analytics/overview`)
+      .get<AdminAnalyticsDto | { success: boolean; data: AdminAnalyticsDto }>(`${this.apiUrl}/analytics/overview`, { params })
       .pipe(map((res: any) => res?.data || res));
   }
 

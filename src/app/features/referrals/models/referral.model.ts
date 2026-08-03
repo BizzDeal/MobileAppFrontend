@@ -13,6 +13,11 @@ export interface CreateReferralSlipDto {
   rating?: number;
 }
 
+export interface AppreciateReferralDto {
+  appreciation_message?: string;
+  cost_of_business: number;
+}
+
 export interface ReferralDTO {
   id: string;
   referrer_id: string;
@@ -26,6 +31,9 @@ export interface ReferralDTO {
   contact_address: string | null;
   comments: string | null;
   rating: number | null;
+  is_appreciated: boolean;
+  appreciation_message: string | null;
+  cost_of_business: number | null;
   created_at: string;
   updated_at: string;
   referrer: {

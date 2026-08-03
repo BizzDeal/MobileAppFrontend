@@ -29,16 +29,12 @@ export class AuthApiService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, dto);
   }
 
-  registerMember(formData: FormData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register-member`, formData);
+  registerMember(formData: FormData): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/auth/register-member`, formData);
   }
 
-  registerCustomer(formData: FormData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register-customer`, formData);
-  }
-
-  registerAdmin(formData: FormData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register-admin`, formData);
+  registerCustomer(formData: FormData): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/auth/register-customer`, formData);
   }
 
   forgotPin(email: string): Observable<{ success: boolean; message: string }> {

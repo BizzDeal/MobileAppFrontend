@@ -39,6 +39,12 @@ export interface ChatMessage {
   created_at: Date | string;
   updated_at: Date | string;
   status: MessageStatus;
+  sender?: {
+    id: string;
+    profile?: {
+      full_name: string;
+    };
+  };
 }
 
 export enum ConversationType {

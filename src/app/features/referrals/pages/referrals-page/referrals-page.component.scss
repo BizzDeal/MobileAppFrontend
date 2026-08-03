@@ -315,6 +315,38 @@
       }
     }
   }
+
+  .item-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    margin-top: 4px;
+    padding-top: 12px;
+    border-top: 1px dashed #e2e8f0;
+
+    .appreciate-btn {
+      --border-radius: 10px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .appreciated-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+
+      ion-icon {
+        font-size: 1.1rem;
+      }
+    }
+  }
 }
 
 /* ==========================================================
@@ -335,85 +367,7 @@
   overflow: hidden;
 
   .card-top {
-    .contact-profile {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-
-      .avatar-circle {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, rgba(30, 136, 229, 0.18) 0%, rgba(30, 136, 229, 0.05) 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        color: #1e88e5;
-        border: 1.5px solid rgba(30, 136, 229, 0.25);
-
-        ion-icon {
-          font-size: 1.5rem;
-        }
-      }
-
-      .contact-info {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        flex: 1;
-        min-width: 0;
-
-        .contact-name {
-          margin: 0;
-          font-size: 1.2rem;
-          font-weight: 700;
-          color: #0f172a;
-          line-height: 1.3;
-          letter-spacing: -0.01em;
-          word-break: break-word;
-        }
-
-        .badge-row {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          flex-wrap: wrap;
-
-          .type-badge {
-            font-size: 0.68rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-
-            &.inside {
-              background-color: rgba(30, 136, 229, 0.12);
-              color: #1e88e5;
-            }
-
-            &.outside {
-              background-color: rgba(139, 92, 246, 0.12);
-              color: #8b5cf6;
-            }
-          }
-
-          .date-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.78rem;
-            color: #64748b;
-            font-weight: 500;
-
-            ion-icon {
-              font-size: 0.9rem;
-            }
-          }
-        }
-      }
-    }
+    // .contact-profile styles extracted to root
   }
 
   .card-divider {
@@ -479,6 +433,11 @@
           &.comment-icon {
             background: rgba(100, 116, 139, 0.12);
             color: #64748b;
+          }
+
+          &.heart-icon {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
           }
         }
 
@@ -736,7 +695,8 @@
 }
 
 .footer-actions {
-  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  padding: 1rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 16px));
 }
 
 @keyframes fadeIn {
@@ -747,5 +707,95 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ==========================================================
+   SHARED CONTACT PROFILE
+   ========================================================== */
+.contact-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  .avatar-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(30, 136, 229, 0.18) 0%, rgba(30, 136, 229, 0.05) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #1e88e5;
+    border: 1.5px solid rgba(30, 136, 229, 0.25);
+    overflow: hidden;
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+
+    .contact-name {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      word-break: break-word;
+    }
+
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+
+      .type-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+
+        &.inside {
+          background-color: rgba(30, 136, 229, 0.12);
+          color: #1e88e5;
+        }
+
+        &.outside {
+          background-color: rgba(139, 92, 246, 0.12);
+          color: #8b5cf6;
+        }
+      }
+
+      .date-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 500;
+
+        ion-icon {
+          font-size: 0.9rem;
+        }
+      }
+    }
   }
 }

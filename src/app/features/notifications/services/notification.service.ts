@@ -469,6 +469,16 @@ export class NotificationService {
     let osVersion: string | null = null;
     let manufacturer: string | null = null;
     let isVirtual: boolean | null = null;
+    let deviceIdentifier: string | null = null;
+
+    try {
+      const idInfo = await Device.getId();
+      if (idInfo && idInfo.identifier) {
+        deviceIdentifier = idInfo.identifier;
+      }
+    } catch (e) {
+      console.warn('[Notifications] Could not fetch native device ID:', e);
+    }
 
     try {
       const info = await Device.getInfo();
@@ -490,7 +500,8 @@ export class NotificationService {
       operating_system: operatingSystem,
       os_version: osVersion,
       manufacturer: manufacturer,
-      is_virtual: isVirtual
+      is_virtual: isVirtual,
+      device_identifier: deviceIdentifier
     };
 
     this.http.get<any>(`${this.apiUrl}/notifications/devices`).pipe(
@@ -501,9 +512,14 @@ export class NotificationService {
     ).subscribe({
       next: (res) => {
         const rawDevices: any[] = Array.isArray(res) ? res : res?.data || res?.items || [];
-        const alreadyOnServer = rawDevices.some((d: any) => d.fcm_token === fcmToken || (typeof d === 'string' && d === fcmToken));
+        const deviceOnServer = rawDevices.find((d: any) => 
+          (deviceIdentifier && typeof d !== 'string' && d.device_identifier === deviceIdentifier) || 
+          (typeof d !== 'string' && d.fcm_token === fcmToken) || 
+          (typeof d === 'string' && d === fcmToken)
+        );
         
-        if (alreadyOnServer) {
+        const deviceTokenMatch = typeof deviceOnServer === 'string' ? deviceOnServer === fcmToken : deviceOnServer?.fcm_token === fcmToken;
+        if (deviceOnServer && deviceTokenMatch) {
           console.log('[Notifications] Device token is already registered on server. Ignoring.');
           this.storage.set('bizzdeal_device_registered_v1', 'true');
           return;

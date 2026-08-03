@@ -85,6 +85,16 @@
           </div>
         </div>
 
+        <div class="item-action-row" *ngIf="activeSegment() === 'RECEIVED'">
+          <ion-button *ngIf="!ref.is_appreciated" fill="outline" size="small" color="primary" class="appreciate-btn" (click)="openAppreciationModal(ref, $event)">
+            <ion-icon name="heart-outline" slot="start"></ion-icon>
+            Appreciate
+          </ion-button>
+          <span class="appreciated-badge" *ngIf="ref.is_appreciated">
+            <ion-icon name="heart"></ion-icon> Appreciated
+          </span>
+        </div>
+
       </div>
     </div>
 
@@ -229,6 +239,71 @@
     </ng-template>
   </ion-modal>
 
+  <!-- Appreciate Referral Modal -->
+  <ion-modal [isOpen]="isAppreciationModalOpen()" (didDismiss)="closeAppreciationModal()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>APPRECIATE REFERRAL</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeAppreciationModal()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding" color="light">
+        <div class="modal-body" *ngIf="selectedReferralForAppreciation() as ref">
+          <div class="form-section">
+            <div class="contact-profile ion-margin-bottom">
+              <div class="avatar-circle">
+                <img *ngIf="ref.referrer.profile_pic_url; else defaultAvatar" [src]="ref.referrer.profile_pic_url" [alt]="ref.referrer.full_name" />
+                <ng-template #defaultAvatar>
+                  <ion-icon name="person-outline"></ion-icon>
+                </ng-template>
+              </div>
+              <div class="contact-info">
+                <h2 class="contact-name">{{ ref.referrer.full_name }}</h2>
+                <div class="badge-row">
+                  <span class="date-chip">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    {{ ref.created_at | date:'MMM d, yyyy' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <p class="search-helper">Record the revenue generated from this referral and send a thank you message to <b>{{ ref.referrer.full_name }}</b>.</p>
+
+            <ion-item class="input-item">
+              <ion-input type="number" labelPlacement="stacked" placeholder="e.g. 5000" [value]="appreciationCost()" (ionInput)="onCostChange($event)">
+                <div slot="label">Revenue Generated (₹) <span class="required-star">*</span></div>
+              </ion-input>
+            </ion-item>
+
+            <ion-item class="input-item">
+              <ion-textarea rows="4" labelPlacement="stacked" placeholder="Thank you message..." [value]="appreciationMessage()" (ionInput)="appreciationMessage.set($any($event.target).value)">
+                <div slot="label">Appreciation Message <span class="required-star">*</span></div>
+              </ion-textarea>
+            </ion-item>
+          </div>
+        </div>
+      </ion-content>
+
+      <ion-footer class="ion-no-border">
+        <ion-toolbar>
+          <div class="footer-actions">
+            <ion-button expand="block" (click)="submitAppreciation()" [disabled]="submittingAppreciation() || appreciationCost() === null || !appreciationMessage().trim()">
+              <ion-spinner *ngIf="submittingAppreciation()" name="crescent"></ion-spinner>
+              <span *ngIf="!submittingAppreciation()">Send Appreciation</span>
+            </ion-button>
+          </div>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
   <!-- View Detailed Referral Slip Modal -->
   <ion-modal [isOpen]="isDetailModalOpen()" (didDismiss)="closeDetailModal()">
     <ng-template>
@@ -324,6 +399,18 @@
                   <div class="detail-content">
                     <span class="item-label">Comments</span>
                     <span class="item-value comment-text">"{{ ref.comments }}"</span>
+                  </div>
+                </div>
+
+                <!-- Appreciation Details -->
+                <div class="detail-item full-width appreciation-box" *ngIf="ref.is_appreciated">
+                  <div class="icon-wrap heart-icon">
+                    <ion-icon name="heart"></ion-icon>
+                  </div>
+                  <div class="detail-content">
+                    <span class="item-label">Appreciation Sent</span>
+                    <span class="item-value font-highlight">Revenue Generated: ₹{{ ref.cost_of_business }}</span>
+                    <span class="item-value comment-text ion-margin-top" *ngIf="ref.appreciation_message">"{{ ref.appreciation_message }}"</span>
                   </div>
                 </div>
               </div>

@@ -222,10 +222,9 @@ export class EmailLoginService {
 
           this.authApi.registerCustomer(formData).subscribe({
             next: async (res: any) => {
-              await this.authSession.setSession(res.accessToken, res.refreshToken, res.user);
-              this.profileService.loadProfile().subscribe();
               this._isSubmitting.set(false);
-              this.router.navigate(['/home'], { queryParams: { tab: 'profile' } });
+              this.showStatusAlert('Registration Successful', res.message || 'Customer registered successfully. Please login to continue.');
+              this.switchNumber();
             },
             error: (err: any) => {
               console.error('registerCustomer error:', err);

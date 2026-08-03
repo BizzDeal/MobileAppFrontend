@@ -59,6 +59,9 @@
     </section>
 
     <section class="analytics-section feed-section">
+      <div class="section-header">
+        <h2 class="section-title">My Performance</h2>
+      </div>
       <div class="stats-grid">
         <div class="stat-card">
           <span class="stat-label">Active Offers</span>
@@ -77,6 +80,30 @@
           <h2 class="stat-value">{{ data.analytics.successfulReferrals }}</h2>
         </div>
       </div>
+
+      @if (data.analytics.districtStats) {
+        <div class="section-header" style="margin-top: 24px;">
+          <h2 class="section-title">District Overview</h2>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Businesses</span>
+            <h2 class="stat-value">{{ data.analytics.districtStats.totalBusinesses }}</h2>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Members</span>
+            <h2 class="stat-value">{{ data.analytics.districtStats.totalMembers }}</h2>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Redeemed</span>
+            <h2 class="stat-value">{{ data.analytics.districtStats.totalVouchers }}</h2>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Volume</span>
+            <h2 class="stat-value">${{ data.analytics.districtStats.revenue | number:'1.0-0' }}</h2>
+          </div>
+        </div>
+      }
     </section>
 
     <!-- Top Deals (Percentage) Carousel -->

@@ -59,6 +59,7 @@
             <app-chat-bubble 
               [message]="msg"
               [isMe]="msg.sender_id === currentUserId()"
+              [isGroup]="conv.type === 'GROUP'"
               (edit)="onEditMessage($event)"
               (delete)="onDeleteMessage($event)" />
           }

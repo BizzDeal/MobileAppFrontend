@@ -4,7 +4,7 @@ import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.token
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { CreateReferralSlipDto, ReferralDTO, ReferralQueryDto, MemberBusinessDTO, AdminReferralQueryDto, AdminReferralResponse } from '../models/referral.model';
+import { CreateReferralSlipDto, ReferralDTO, ReferralQueryDto, MemberBusinessDTO, AdminReferralQueryDto, AdminReferralResponse, AppreciateReferralDto } from '../models/referral.model';
 
 @Injectable({
   providedIn: 'root',
@@ -59,6 +59,14 @@ export class ReferralsService {
     }
     return this.http.get<any>(`${this.apiUrl}/users/members`, { params }).pipe(
       map((res) => Array.isArray(res.data) ? res.data : (res.data?.data || []))
+    );
+  }
+
+  appreciateReferral(id: string, payload: AppreciateReferralDto): Observable<ReferralDTO> {
+    return this.http.post<any>(`${this.apiUrl}/referrals/${id}/appreciate`, payload, {
+      context: new HttpContext().set(SHOW_SUCCESS_TOAST, true)
+    }).pipe(
+      map((res) => res.data?.data || res.data || res)
     );
   }
 }

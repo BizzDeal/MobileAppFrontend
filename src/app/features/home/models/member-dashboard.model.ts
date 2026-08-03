@@ -4,6 +4,12 @@ export interface MemberDashboardAnalytics {
   vouchersRedeemedWeek: number;
   businessGrowth: number;
   successfulReferrals: number;
+  districtStats?: {
+    totalBusinesses: number;
+    totalMembers: number;
+    totalVouchers: number;
+    revenue: number;
+  };
 }
 
 export interface MemberAlert {

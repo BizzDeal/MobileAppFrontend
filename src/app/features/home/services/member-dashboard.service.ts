@@ -50,10 +50,10 @@ export class MemberDashboardService {
       analytics: this.http.get<any>(`${this.apiUrl}/analytics/member/summary`).pipe(catchError(() => of(null)))
     }).pipe(
       map((response: any) => {
-        const { offersRes, vouchersRes, referralsRes } = response;
+        const { myOffers: offersRes, vouchers: vouchersRes, analytics: analyticsRes } = response;
         const rawOffers: OfferDTO[] = Array.isArray(offersRes) ? offersRes : offersRes?.data || offersRes?.items || [];
         const rawVouchers: VoucherDTO[] = Array.isArray(vouchersRes) ? vouchersRes : vouchersRes?.data || vouchersRes?.items || [];
-        const rawReferrals: any[] = Array.isArray(referralsRes) ? referralsRes : referralsRes?.data || referralsRes?.items || [];
+        const backendAnalytics = analyticsRes?.data || {};
 
         const profile = this.profileService.profile();
         const bizIdFromVouchers = rawVouchers.length > 0 ? rawVouchers[0].business_id : null;
@@ -90,14 +90,21 @@ export class MemberDashboardService {
           ? Math.round(((vouchersRedeemedWeek - lastWeekCount) / lastWeekCount) * 100) 
           : (vouchersRedeemedWeek > 0 ? 100 : 0);
 
-        const successfulReferrals = rawReferrals.length;
+        const successfulReferrals = backendAnalytics.successfulReferrals || 0;
+        const districtStats = backendAnalytics.districtStats ? {
+          totalBusinesses: backendAnalytics.districtStats.totalBusinesses || 0,
+          totalMembers: backendAnalytics.districtStats.totalMembers || 0,
+          totalVouchers: backendAnalytics.districtStats.totalVouchers || 0,
+          revenue: backendAnalytics.districtStats.revenue || 0,
+        } : undefined;
 
         const analytics: MemberDashboardAnalytics = {
           activeOffersCount,
           vouchersRedeemedToday,
           vouchersRedeemedWeek,
           businessGrowth,
-          successfulReferrals
+          successfulReferrals,
+          districtStats
         };
 
         const dashboardData: MemberDashboardData = {

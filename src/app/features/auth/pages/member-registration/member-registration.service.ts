@@ -192,7 +192,7 @@ export class MemberRegistrationService {
       this.onboardingService.setRegistrationData(payload, this.photoFile, this.logoFile);
       await this.onboardingService.submitMemberRegistration();
       this.toastService.showSuccess('Welcome to BizzDeal! Your member registration has been submitted successfully. Please check your email to verify your account.');
-      this.router.navigate(['/home']).catch(() => {});
+      this.router.navigate(['/auth/login']).catch(() => {});
     } catch (err: any) {
       console.error('Failed to submit member registration:', err);
       this.toastService.showError(extractFriendlyErrorMessage(err, 'Registration submission failed. Please try again.'));

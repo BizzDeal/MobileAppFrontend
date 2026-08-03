@@ -5,6 +5,9 @@
     <!-- Bubble Content -->
     <div class="bubble-body" [ngClass]="{ 'deleted-bubble': message().is_deleted }">
       
+      @if (isGroup() && !message().is_deleted) {
+        <div class="sender-name">{{ message().sender?.profile?.full_name || 'Member' }}</div>
+      }
       @if (message().is_deleted) {
         <!-- Deleted State -->
         <span class="deleted-text"><ion-icon name="trash-outline" class="del-icon" /> This message was deleted</span>

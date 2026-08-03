@@ -12,6 +12,10 @@
       background: var(--bizzdeal-gradient-primary);
       color: var(--bizzdeal-text-on-primary);
       border-bottom-right-radius: 4px;
+
+      .sender-name {
+        color: var(--bizzdeal-text-on-primary, #ffffff);
+      }
     }
 
     .time-text, .edited-tag {
@@ -55,6 +59,15 @@
 
 .bubble-body {
   margin-bottom: 2px;
+}
+
+.sender-name {
+  font-family: var(--bizzdeal-font-family);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bizzdeal-color-primary, #1e88e5);
+  margin-bottom: 4px;
+  display: block;
 }
 
 .message-text {

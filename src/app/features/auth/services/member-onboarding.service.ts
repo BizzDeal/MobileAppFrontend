@@ -190,7 +190,7 @@ export class MemberOnboardingService {
     this.paymentReceiptFile.set(receipt);
   }
 
-  async submitMemberRegistration(paymentReceipt?: File): Promise<AuthResponse> {
+  async submitMemberRegistration(paymentReceipt?: File): Promise<{ success: boolean; message: string }> {
     const data = this.registrationData();
     if (!data) {
       throw new Error('Registration data is missing. Please complete the registration form.');
@@ -238,12 +238,9 @@ export class MemberOnboardingService {
       }
 
       const res: any = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.apiUrl}/auth/register-member`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) })
+        this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/auth/register-member`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) })
       );
 
-      if (res && res.accessToken) {
-        await this.authSession.setSession(res.accessToken, res.refreshToken, res.user);
-      }
       return res;
     } finally {
       this.isSubmitting.set(false);

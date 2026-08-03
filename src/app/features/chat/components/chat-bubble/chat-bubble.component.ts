@@ -52,6 +52,7 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 export class ChatBubbleComponent {
   readonly message = input.required<ChatMessage>();
   readonly isMe = input.required<boolean>();
+  readonly isGroup = input<boolean>(false);
 
   readonly edit = output<ChatMessage>();
   readonly delete = output<ChatMessage>();

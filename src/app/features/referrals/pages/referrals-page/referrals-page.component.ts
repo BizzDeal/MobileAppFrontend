@@ -44,7 +44,9 @@ import {
   chatbubbleEllipsesOutline,
   calendarOutline,
   cardOutline,
-  chevronForwardOutline
+  chevronForwardOutline,
+  heart,
+  heartOutline
 } from 'ionicons/icons';
 import { ReferralsService } from '../../services/referrals.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
@@ -101,6 +103,13 @@ export class ReferralsPageComponent implements OnInit {
   readonly isModalOpen = signal<boolean>(false);
   readonly selectedReferralForView = signal<ReferralDTO | null>(null);
   readonly isDetailModalOpen = signal<boolean>(false);
+
+  // Appreciation Modal State
+  readonly isAppreciationModalOpen = signal<boolean>(false);
+  readonly selectedReferralForAppreciation = signal<ReferralDTO | null>(null);
+  readonly appreciationCost = signal<number | null>(null);
+  readonly appreciationMessage = signal<string>('');
+  readonly submittingAppreciation = signal<boolean>(false);
 
   // Pagination state
   readonly hasMore = signal<boolean>(false);
@@ -166,7 +175,9 @@ export class ReferralsPageComponent implements OnInit {
       chatbubbleEllipsesOutline,
       calendarOutline,
       cardOutline,
-      chevronForwardOutline
+      chevronForwardOutline,
+      heart,
+      heartOutline
     });
 
     this.searchSubject.pipe(
@@ -386,6 +397,69 @@ export class ReferralsPageComponent implements OnInit {
       error: (err) => {
         this.error.set(extractFriendlyErrorMessage(err, 'Failed to create referral slip.'));
         this.submitting.set(false);
+      }
+    });
+  }
+
+  // --- Appreciation Logic ---
+
+  openAppreciationModal(ref: ReferralDTO, event: Event): void {
+    event.stopPropagation();
+    if (ref.is_appreciated) return;
+    this.selectedReferralForAppreciation.set(ref);
+    this.appreciationCost.set(null);
+    this.appreciationMessage.set(`Thank you for referring ${ref.contact_name}! We successfully completed business. I truly appreciate your support!`);
+    this.isAppreciationModalOpen.set(true);
+  }
+
+  closeAppreciationModal(): void {
+    this.isAppreciationModalOpen.set(false);
+    this.selectedReferralForAppreciation.set(null);
+    this.appreciationCost.set(null);
+    this.appreciationMessage.set('');
+  }
+
+  onCostChange(event: any): void {
+    const cost = event.detail.value;
+    this.appreciationCost.set(cost);
+    const ref = this.selectedReferralForAppreciation();
+    
+    if (ref && cost !== null && cost !== '') {
+      this.appreciationMessage.set(`Thank you for referring ${ref.contact_name}! We successfully completed business worth ₹${cost}. I truly appreciate your support!`);
+    } else if (ref) {
+      this.appreciationMessage.set(`Thank you for referring ${ref.contact_name}! We successfully completed business. I truly appreciate your support!`);
+    }
+  }
+
+  submitAppreciation(): void {
+    const ref = this.selectedReferralForAppreciation();
+    const cost = this.appreciationCost();
+    const msg = this.appreciationMessage();
+    
+    if (!ref) return;
+    if (cost === null || cost < 0 || isNaN(Number(cost)) || cost.toString().trim() === '') {
+      this.toastService.showError('Please enter a valid cost of business.');
+      return;
+    }
+    if (!msg.trim()) {
+      this.toastService.showError('Appreciation message is required.');
+      return;
+    }
+
+    this.submittingAppreciation.set(true);
+    this.referralsService.appreciateReferral(ref.id, {
+      cost_of_business: Number(cost),
+      appreciation_message: msg.trim()
+    }).subscribe({
+      next: () => {
+        // Optimistically update or fetch list
+        this.fetchReferrals();
+        this.submittingAppreciation.set(false);
+        this.closeAppreciationModal();
+      },
+      error: (err) => {
+        this.toastService.showError(extractFriendlyErrorMessage(err, 'Failed to send appreciation.'));
+        this.submittingAppreciation.set(false);
       }
     });
   }

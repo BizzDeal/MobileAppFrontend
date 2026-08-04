@@ -155,4 +155,36 @@ export class AdminBusinessesService {
       throw new Error(`Unsupported status update from admin panel: ${status}`);
     }
   }
+
+  getCategories(): Observable<ApiResponse<any[]>> {
+    return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/businesses/categories`).pipe(
+      catchError(err => {
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to fetch categories'));
+      })
+    );
+  }
+
+  createCategory(data: { name: string, description?: string | null, is_active?: boolean }): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/businesses/categories`, data, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
+      catchError(err => {
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to create category'));
+      })
+    );
+  }
+
+  updateCategory(id: string, data: { name?: string, description?: string | null, is_active?: boolean }): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/businesses/categories/${id}`, data, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
+      catchError(err => {
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to update category'));
+      })
+    );
+  }
+
+  deleteCategory(id: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/businesses/categories/${id}`, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
+      catchError(err => {
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to delete category'));
+      })
+    );
+  }
 }

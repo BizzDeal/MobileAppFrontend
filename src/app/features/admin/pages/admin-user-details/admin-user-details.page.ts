@@ -15,11 +15,13 @@ import {
 import mediumZoom, { Zoom } from 'medium-zoom';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { ProfileSkeletonComponent } from '../../../../shared/components/skeletons/profile-skeleton/profile-skeleton.component';
+import { AdminLogoutButtonComponent } from '../../components/admin-logout-button/admin-logout-button.component';
 
 @Component({
   selector: 'app-admin-user-details',
   standalone: true,
-  imports: [CommonModule, IonicModule, CachedImgDirective, ProfileSkeletonComponent],
+  imports: [CommonModule, IonicModule, CachedImgDirective, ProfileSkeletonComponent, AdminLogoutButtonComponent],
+  providers: [AdminUsersService],
   templateUrl: './admin-user-details.page.html',
   styleUrls: ['./admin-user-details.page.scss']
 })

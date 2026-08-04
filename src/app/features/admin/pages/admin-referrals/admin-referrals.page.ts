@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -36,7 +36,12 @@ import {
   arrowForwardOutline,
   briefcaseOutline,
   alertCircleOutline,
-  cardOutline
+  cardOutline,
+  heart,
+  heartOutline,
+  cashOutline,
+  trophyOutline,
+  personCircleOutline
 } from 'ionicons/icons';
 import { ReferralsService } from '../../../referrals/services/referrals.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
@@ -44,6 +49,9 @@ import { ReferralDTO, ReferralType, AdminReferralSummary } from '../../../referr
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { register } from 'swiper/element/bundle';
+
+register();
 
 @Component({
   selector: 'app-admin-referrals',
@@ -69,7 +77,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     ListSkeletonComponent
   ],
   templateUrl: './admin-referrals.page.html',
-  styleUrls: ['./admin-referrals.page.scss']
+  styleUrls: ['./admin-referrals.page.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AdminReferralsPage implements OnInit {
   private readonly referralsService = inject(ReferralsService);
@@ -77,11 +86,17 @@ export class AdminReferralsPage implements OnInit {
   readonly referrals = signal<ReferralDTO[]>([]);
   readonly loading = signal<boolean>(true);
   readonly error = signal<string | null>(null);
-  readonly summary = signal<AdminReferralSummary>({ totalCount: 0, insideCount: 0, outsideCount: 0 });
+  readonly summary = signal<AdminReferralSummary>({ 
+    totalCount: 0, 
+    inhouseCount: 0, 
+    outhouseCount: 0,
+    totalAppreciations: 0,
+    totalAppreciationRevenue: 0 
+  });
 
   // Filtering & Pagination State
   readonly searchQuery = signal<string>('');
-  readonly selectedType = signal<string>('ALL'); // ALL, INSIDE, OUTSIDE
+  readonly selectedType = signal<string>('ALL'); // ALL, INHOUSE, OUTHOUSE
   readonly hasMore = signal<boolean>(false);
   
   currentPage = 1;
@@ -110,7 +125,12 @@ export class AdminReferralsPage implements OnInit {
       arrowForwardOutline,
       briefcaseOutline,
       alertCircleOutline,
-      cardOutline
+      cardOutline,
+      heart,
+      heartOutline,
+      cashOutline,
+      trophyOutline,
+      personCircleOutline
     });
 
     this.searchSubject.pipe(

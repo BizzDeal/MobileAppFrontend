@@ -4,7 +4,7 @@
       <div class="business-card-body" (click)="viewBusiness(business)">
         <div class="business-logo">
           <img *ngIf="business.logo_url" [appCachedImg]="business.logo_url" [alt]="business.name" (error)="business.logo_url = ''" />
-          <div *ngIf="!business.logo_url" class="initials-avatar">
+          <div *ngIf="!business.logo_url" class="initials-avatar" [style.background]="getAvatarColor(business.name)">
             {{ getInitials(business.name) }}
           </div>
         </div>

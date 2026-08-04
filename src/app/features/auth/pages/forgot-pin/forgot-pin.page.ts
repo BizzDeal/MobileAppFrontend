@@ -21,6 +21,7 @@ import {
   mailOutline,
 } from 'ionicons/icons';
 import { ForgotPinService } from './forgot-pin.service';
+import { AnimatedBackgroundComponent } from '../../../../shared/components/animated-background/animated-background.component';
 
 @Component({
   selector: 'app-forgot-pin',
@@ -35,6 +36,7 @@ import { ForgotPinService } from './forgot-pin.service';
     IonButtons,
     IonBackButton,
     IonIcon,
+    AnimatedBackgroundComponent,
   ],
   providers: [ForgotPinService],
   templateUrl: './forgot-pin.page.html',

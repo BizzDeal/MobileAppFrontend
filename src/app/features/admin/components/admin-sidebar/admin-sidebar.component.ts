@@ -16,7 +16,8 @@ import {
   chevronForwardOutline,
   chatbubblesOutline,
   cardOutline,
-  shareSocialOutline
+  shareSocialOutline,
+  albumsOutline
 } from 'ionicons/icons';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 
@@ -58,6 +59,8 @@ import { AuthSessionService } from '../../../../core/services/auth-session.servi
       width: 100%;
       height: 100%;
       object-fit: contain;
+      background-color: #ffffff;
+      border-radius: 12px;
     }
     .title-wrap h2 {
       margin: 0;
@@ -155,6 +158,7 @@ export class AdminSidebarComponent {
     { title: 'Users', url: '/admin/users', icon: 'people' },
     { title: 'Businesses', url: '/admin/businesses', icon: 'business' },
     { title: 'Offers/Deals', url: '/admin/offers', icon: 'pricetags' },
+    { title: 'Categories', url: '/admin/categories', icon: 'albums' },
     { title: 'Referrals', url: '/admin/referrals', icon: 'share-social' },
     { title: 'Meetings', url: '/admin/meetings', icon: 'calendar' },
     { title: 'Chat', url: '/admin/chat', icon: 'chatbubbles' },
@@ -176,11 +180,11 @@ export class AdminSidebarComponent {
       barChartOutline,
       settingsOutline,
       notificationsOutline,
-      logOutOutline,
       chevronForwardOutline,
       chatbubblesOutline,
       cardOutline,
-      shareSocialOutline
+      shareSocialOutline,
+      albumsOutline
     });
   }
 

@@ -17,6 +17,7 @@ import {
   businessOutline
 } from 'ionicons/icons';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { getAvatarColor } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-admin-businesses-list',
@@ -252,5 +253,9 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     const parts = name.trim().split(' ');
     if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
     return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  }
+
+  getAvatarColor(name: string): string {
+    return getAvatarColor(name);
   }
 }

@@ -553,6 +553,19 @@ ion-searchbar {
   transition: background-color 0.3s ease;
 }
 
+/* ==========================================================================
+   Android Edge-to-Edge Safe Area Fix for Soft Navigation Buttons
+   ========================================================================== */
+ion-content {
+  /* Ensure all scrollable content can be scrolled past the soft navigation bar */
+  --padding-bottom: calc(env(safe-area-inset-bottom, 24px) + 40px);
+}
+
+/* Ensure lists themselves maintain a safe distance at the end */
+ion-list, .list-container {
+  padding-bottom: calc(env(safe-area-inset-bottom, 24px) + 20px);
+}
+
 /* Permission Modal Dialog Styling */
 ion-modal.permission-modal-dialog {
   --height: auto;

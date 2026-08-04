@@ -62,8 +62,8 @@
               @if (f['customer_phone'].errors?.['required']) {
                 Phone number is required
               }
-              @if (f['customer_phone'].errors?.['minlength']) {
-                Phone number must be at least 10 characters
+              @if (f['customer_phone'].errors?.['pattern']) {
+                Phone number must be exactly 10 digits
               }
             </span>
           }

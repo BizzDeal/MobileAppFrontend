@@ -22,7 +22,7 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 
@@ -35,38 +35,38 @@
     ion-card-content {
       display: flex;
       align-items: center;
-      padding: 20px;
+      padding: 12px 10px;
     }
 
     .stat-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
       background: rgba(var(--ion-color-primary-rgb), 0.1);
       color: var(--ion-color-primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 16px;
+      margin-right: 10px;
 
       ion-icon {
-        font-size: 24px;
+        font-size: 18px;
       }
     }
 
     .stat-info {
       h3 {
         margin: 0;
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 700;
         color: var(--ion-color-dark);
       }
       p {
-        margin: 4px 0 0 0;
-        font-size: 13px;
+        margin: 2px 0 0 0;
+        font-size: 11px;
         color: var(--ion-color-medium);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0;
       }
     }
 

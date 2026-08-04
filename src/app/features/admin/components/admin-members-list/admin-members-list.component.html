@@ -2,22 +2,34 @@
   <ion-list *ngIf="!loading; else skeleton" lines="none" class="p-0 m-0 bg-transparent">
     <div *ngFor="let member of filteredMembers" class="premium-user-card" (click)="viewUser(member)">
       <div class="user-card-body">
-        <div class="user-avatar">
-          <img *ngIf="member.profile_pic_url" [appCachedImg]="member.profile_pic_url" alt="avatar" (error)="member.profile_pic_url = ''">
-          <div *ngIf="!member.profile_pic_url" class="initials-avatar">
-            {{ getInitials(member.full_name) }}
+        <div class="user-card-main">
+          <div class="user-avatar">
+            <img *ngIf="member.profile_pic_url" [appCachedImg]="member.profile_pic_url" alt="avatar" (error)="member.profile_pic_url = ''">
+            <div *ngIf="!member.profile_pic_url" class="initials-avatar" [style.background]="getAvatarColor(member.full_name)">
+              {{ getInitials(member.full_name) }}
+            </div>
+          </div>
+          <div class="user-details-wrapper">
+            <h2 class="user-name">{{ member.full_name }}</h2>
+            <p class="user-business" *ngIf="member.businessProfile?.business_name">{{ member.businessProfile?.business_name }}</p>
+            <p class="user-phone">{{ member.phone }}</p>
+          </div>
+          <div class="user-status-wrapper">
+            <ion-badge [color]="getStatusColor(member.status)" class="status-badge">
+              {{ member.status }}
+            </ion-badge>
           </div>
         </div>
-        <div class="user-info">
-          <h2 class="font-bold text-dark">{{ member.full_name }}</h2>
-          <p class="text-medium mt-1">{{ member.phone }}</p>
-          <p class="text-sm text-gray-500 mt-1"><span class="role-badge">{{ member.role }}</span></p>
-        </div>
-        <div class="user-action">
-          <ion-badge [color]="getStatusColor(member.status)" class="status-badge">
-            {{ member.status }}
-          </ion-badge>
-          <ion-icon name="chevron-forward" class="text-medium ml-2"></ion-icon>
+        <div class="user-card-footer">
+          <button class="footer-action-btn" (click)="onCallClick($event, member)">
+            <ion-icon name="call-outline"></ion-icon>
+            <span>Call</span>
+          </button>
+          <div class="footer-divider"></div>
+          <button class="footer-action-btn" (click)="onChatClick($event, member)">
+            <ion-icon name="chatbubbles-outline"></ion-icon>
+            <span>Chat</span>
+          </button>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AdminUsersService } from '../../services/admin-users.service';
 import { AdminCustomer, UserStatus } from '../../models/admin-user.model';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { getAvatarColor } from '../../../../shared/utils/avatar.util';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -137,5 +138,9 @@ export class AdminCustomersListComponent implements OnInit, OnChanges {
     const parts = name.trim().split(' ');
     if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
     return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  }
+
+  getAvatarColor(name: string): string {
+    return getAvatarColor(name);
   }
 }

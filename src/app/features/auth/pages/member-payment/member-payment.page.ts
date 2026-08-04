@@ -19,6 +19,7 @@ import {
   alertCircleOutline,
 } from 'ionicons/icons';
 import { MemberPaymentService } from './member-payment.service';
+import { AnimatedBackgroundComponent } from '../../../../shared/components/animated-background/animated-background.component';
 @Component({
   selector: 'app-member-payment',
   standalone: true,
@@ -32,6 +33,7 @@ import { MemberPaymentService } from './member-payment.service';
     IonBackButton,
     IonIcon,
     IonSpinner,
+    AnimatedBackgroundComponent,
   ],
   providers: [MemberPaymentService],
   templateUrl: './member-payment.page.html',

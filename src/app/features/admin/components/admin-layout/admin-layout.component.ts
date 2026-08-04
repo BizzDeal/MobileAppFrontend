@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
+import { AdminLogoutButtonComponent } from '../admin-logout-button/admin-logout-button.component';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
@@ -13,7 +14,7 @@ import { menuOutline, closeOutline } from 'ionicons/icons';
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterModule, AdminSidebarComponent]
+  imports: [CommonModule, IonicModule, RouterModule, AdminSidebarComponent, AdminLogoutButtonComponent]
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {
   isMobileDrawerOpen = false;
@@ -53,6 +54,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     if (url.includes('/admin/referrals')) return 'Referrals';
     if (url.includes('/admin/meetings')) return 'Meetings';
     if (url.includes('/admin/settings')) return 'Platform Settings';
+    if (url.includes('/admin/categories')) return 'Business Categories';
     return 'Dashboard';
   }
 

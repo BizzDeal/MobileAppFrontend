@@ -127,7 +127,7 @@ export class ReferralsPageComponent implements OnInit {
   private searchSubject = new Subject<string>();
 
   // Form State
-  readonly referralType = signal<ReferralType>('INSIDE');
+  readonly referralType = signal<ReferralType>('INHOUSE');
   readonly contactName = signal<string>('');
   readonly contactPhone = signal<string>('');
   readonly contactEmail = signal<string>('');
@@ -271,7 +271,7 @@ export class ReferralsPageComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.referralType.set('INSIDE');
+    this.referralType.set('INHOUSE');
     this.searchInput.set('');
     this.selectedMember.set(null);
     this.membersList.set([]);
@@ -319,9 +319,9 @@ export class ReferralsPageComponent implements OnInit {
     let districtId: string | undefined = undefined;
     let excludeDistricts: string | undefined = undefined;
 
-    if (this.referralType() === 'INSIDE' && profile?.district_id) {
+    if (this.referralType() === 'INHOUSE' && profile?.district_id) {
       districtId = profile.district_id;
-    } else if (this.referralType() === 'OUTSIDE' && profile?.district_id) {
+    } else if (this.referralType() === 'OUTHOUSE' && profile?.district_id) {
       excludeDistricts = profile.district_id;
     }
     
@@ -330,9 +330,9 @@ export class ReferralsPageComponent implements OnInit {
         // filter out self
         const filtered = data.filter(m => m.id !== profile?.id);
         
-        // Filter additionally on FE for INSIDE type (must be in same district)
+        // Filter additionally on FE for INHOUSE type (must be in same district)
         let finalData = filtered;
-        if (this.referralType() === 'INSIDE' && profile?.district_id) {
+        if (this.referralType() === 'INHOUSE' && profile?.district_id) {
           finalData = filtered.filter(m => m.profile?.district_id === profile.district_id || m.profile?.district_id === profile.business_district_id);
         }
 
@@ -365,6 +365,11 @@ export class ReferralsPageComponent implements OnInit {
 
     if (!this.contactName().trim() || !this.contactPhone().trim()) {
       this.toastService.showError('Contact name and phone are required.');
+      return;
+    }
+
+    if (!/^\d{10}$/.test(this.contactPhone().trim())) {
+      this.toastService.showError('Valid 10-digit phone number is required.');
       return;
     }
 

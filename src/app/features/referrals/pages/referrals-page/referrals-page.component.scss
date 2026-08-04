@@ -225,12 +225,12 @@
         letter-spacing: 0.05em;
         flex-shrink: 0;
 
-        &.inside {
+        &.inhouse {
           background-color: rgba(30, 136, 229, 0.12);
           color: #1e88e5;
         }
 
-        &.outside {
+        &.outhouse {
           background-color: rgba(139, 92, 246, 0.12);
           color: #8b5cf6;
         }
@@ -773,12 +773,12 @@
         text-transform: uppercase;
         letter-spacing: 0.05em;
 
-        &.inside {
+        &.inhouse {
           background-color: rgba(30, 136, 229, 0.12);
           color: #1e88e5;
         }
 
-        &.outside {
+        &.outhouse {
           background-color: rgba(139, 92, 246, 0.12);
           color: #8b5cf6;
         }

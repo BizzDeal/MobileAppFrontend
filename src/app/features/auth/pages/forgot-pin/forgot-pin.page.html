@@ -9,19 +9,20 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <app-animated-background></app-animated-background>
   <div class="login-wrapper">
     <!-- Main Content (Vertically Centered) -->
     <div class="main-content">
       <!-- Header Section -->
       <header class="logo-section">
         <div class="logo-box">
-          <img src="assets/icon-only1.jpg" alt="BIZZ DEAL Logo" class="logo-image" />
+          <img src="assets/icon-only1.png" alt="BIZZ DEAL Logo" class="logo-image" />
         </div>
         <img src="assets/logo-text.png" alt="BizzDeal" class="app-title-image" />
         <p class="app-subtitle">
-          @if (forgotService.step() === 'phone') { Reset your PIN }
-          @if (forgotService.step() === 'otp') { Enter verification code }
-          @if (forgotService.step() === 'reset') { Create new PIN }
+          @if (forgotService.step() === 'phone') { }
+          @if (forgotService.step() === 'otp') { }
+          @if (forgotService.step() === 'reset') { }
         </p>
       </header>
 

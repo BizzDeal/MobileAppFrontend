@@ -1,4 +1,4 @@
-export type ReferralType = 'INSIDE' | 'OUTSIDE';
+export type ReferralType = 'INHOUSE' | 'OUTHOUSE';
 
 export interface CreateReferralSlipDto {
   to_member_id: string;
@@ -90,8 +90,17 @@ export interface AdminReferralQueryDto {
 
 export interface AdminReferralSummary {
   totalCount: number;
-  insideCount: number;
-  outsideCount: number;
+  inhouseCount: number;
+  outhouseCount: number;
+  totalAppreciations: number;
+  totalAppreciationRevenue: number;
+  highestBusiness?: {
+    contact_name: string;
+    revenue: number;
+    referrer_name: string;
+    to_member_name: string;
+    date: string;
+  } | null;
 }
 
 export interface AdminReferralResponse {

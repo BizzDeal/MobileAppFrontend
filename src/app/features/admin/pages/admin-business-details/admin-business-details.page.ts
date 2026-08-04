@@ -7,6 +7,7 @@ import { AdminBusiness, AdminOffer, AdminVoucher, BusinessStatus, OfferStatus } 
 import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
+import { AdminLogoutButtonComponent } from '../../components/admin-logout-button/admin-logout-button.component';
 
 import { addIcons } from 'ionicons';
 import { 
@@ -20,7 +21,8 @@ import {
 @Component({
   selector: 'app-admin-business-details',
   standalone: true,
-  imports: [CommonModule, IonicModule, CachedImgDirective, CardSkeletonComponent],
+  imports: [CommonModule, IonicModule, CachedImgDirective, CardSkeletonComponent, AdminLogoutButtonComponent],
+  providers: [AdminBusinessesService],
   templateUrl: './admin-business-details.page.html',
   styleUrls: ['./admin-business-details.page.scss']
 })

@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.bizzdeal.bizzdeal',
-  appName: 'BizzDeal',
+  appName: 'Bizz Deal',
   webDir: 'www',
   plugins: {
     Keyboard: {

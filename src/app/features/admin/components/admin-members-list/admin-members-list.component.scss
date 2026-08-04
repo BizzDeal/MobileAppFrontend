@@ -40,6 +40,13 @@
 
   .user-card-body {
     display: flex;
+    flex-direction: column;
+    padding: 0;
+    width: 100%;
+  }
+
+  .user-card-main {
+    display: flex;
     align-items: center;
     padding: 12px 16px;
     width: 100%;
@@ -72,30 +79,92 @@
     }
   }
 
-  .user-info {
+  .user-details-wrapper {
     flex-grow: 1;
     min-width: 0;
-    
-    h2 {
-      margin: 0 0 2px 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .user-name {
+    margin: 0 0 2px 0;
+    font-weight: 600;
+    font-size: 16px;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-business {
+    margin: 0 0 2px 0;
+    font-size: 13px;
+    color: #444;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-phone {
+    margin: 0;
+    color: #666;
+    font-size: 13px;
+  }
+
+  .user-status-wrapper {
+    flex-shrink: 0;
+    margin-left: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .status-badge {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .user-card-footer {
+    display: flex;
+    border-top: 1px solid #f0f0f0;
+    background: #fafafa;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+
+  .footer-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    padding: 12px 0;
+    color: var(--ion-color-primary, #3880ff);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover, &:active {
+      background-color: rgba(var(--ion-color-primary-rgb), 0.08);
     }
-    
-    p {
-      margin: 0 0 4px 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+    ion-icon {
+      font-size: 18px;
     }
   }
 
-  .user-action {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    margin-left: 12px;
+  .footer-divider {
+    width: 1px;
+    background: #f0f0f0;
+    margin: 8px 0;
   }
 }
 

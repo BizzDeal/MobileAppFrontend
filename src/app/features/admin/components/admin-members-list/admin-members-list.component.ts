@@ -1,10 +1,14 @@
 import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AdminUsersService } from '../../services/admin-users.service';
 import { AdminMember, UserStatus } from '../../models/admin-user.model';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { getAvatarColor } from '../../../../shared/utils/avatar.util';
+import { ChatService } from '../../../chat/services/chat.service';
+import { addIcons } from 'ionicons';
+import { callOutline, chatbubblesOutline } from 'ionicons/icons';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -43,8 +47,12 @@ export class AdminMembersListComponent implements OnInit, OnChanges {
 
   constructor(
     private adminUsersService: AdminUsersService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private alertCtrl: AlertController,
+    private chatService: ChatService
+  ) {
+    addIcons({ callOutline, chatbubblesOutline });
+  }
 
   ngOnInit() {
     this.loadMembers();
@@ -135,6 +143,55 @@ export class AdminMembersListComponent implements OnInit, OnChanges {
     const parts = name.trim().split(' ');
     if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
     return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  }
+
+  getAvatarColor(name: string): string {
+    return getAvatarColor(name);
+  }
+
+  async onCallClick(event: Event, member: AdminMember) {
+    event.stopPropagation();
+    
+    const personalPhone = member.phone;
+    const businessPhone = member.whatsapp;
+
+    if (personalPhone && businessPhone && personalPhone !== businessPhone) {
+      const alert = await this.alertCtrl.create({
+        header: 'Select Number to Call',
+        buttons: [
+          {
+            text: `Personal: ${personalPhone}`,
+            handler: () => {
+              window.location.href = 'tel:' + personalPhone;
+            }
+          },
+          {
+            text: `Business: ${businessPhone}`,
+            handler: () => {
+              window.location.href = 'tel:' + businessPhone;
+            }
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          }
+        ]
+      });
+      await alert.present();
+    } else {
+      const phoneToCall = personalPhone || businessPhone;
+      if (phoneToCall) {
+        window.location.href = 'tel:' + phoneToCall;
+      }
+    }
+  }
+
+  onChatClick(event: Event, member: AdminMember) {
+    event.stopPropagation();
+    this.chatService.createOrGetConversation(member.id).subscribe((conv) => {
+      this.chatService.setActiveConversation(conv.id);
+      this.router.navigate(['/admin/chat']);
+    });
   }
 }
 

@@ -50,14 +50,14 @@
     <div *ngIf="!loading() && !error() && filteredReferrals().length > 0" class="referrals-list">
       <div *ngFor="let ref of filteredReferrals()" 
            class="referral-item-card" 
-           [class.inside-card]="ref.referral_type === 'INSIDE'" 
-           [class.outside-card]="ref.referral_type === 'OUTSIDE'"
+           [class.inhouse-card]="ref.referral_type === 'INHOUSE'" 
+           [class.outhouse-card]="ref.referral_type === 'OUTHOUSE'"
            (click)="openDetailModal(ref)">
         
         <div class="item-header">
           <div class="contact-title-group">
             <h3 class="contact-name">{{ ref.contact_name }}</h3>
-            <span class="type-badge" [class.inside]="ref.referral_type === 'INSIDE'" [class.outside]="ref.referral_type === 'OUTSIDE'">
+            <span class="type-badge" [class.inhouse]="ref.referral_type === 'INHOUSE'" [class.outhouse]="ref.referral_type === 'OUTHOUSE'">
               {{ ref.referral_type }}
             </span>
           </div>
@@ -85,8 +85,8 @@
           </div>
         </div>
 
-        <div class="item-action-row" *ngIf="activeSegment() === 'RECEIVED'">
-          <ion-button *ngIf="!ref.is_appreciated" fill="outline" size="small" color="primary" class="appreciate-btn" (click)="openAppreciationModal(ref, $event)">
+        <div class="item-action-row" *ngIf="activeSegment() === 'RECEIVED' || ref.is_appreciated">
+          <ion-button *ngIf="activeSegment() === 'RECEIVED' && !ref.is_appreciated" fill="outline" size="small" color="primary" class="appreciate-btn" (click)="openAppreciationModal(ref, $event)">
             <ion-icon name="heart-outline" slot="start"></ion-icon>
             Appreciate
           </ion-button>
@@ -128,16 +128,16 @@
           <!-- Member Search Section -->
           <div class="form-section">
             <ion-segment [value]="referralType()" (ionChange)="referralTypeChanged($event)" mode="ios" class="type-segment">
-              <ion-segment-button value="INSIDE">
-                <ion-label>Inside</ion-label>
+              <ion-segment-button value="INHOUSE">
+                <ion-label>Inhouse</ion-label>
               </ion-segment-button>
-              <ion-segment-button value="OUTSIDE">
-                <ion-label>Outside</ion-label>
+              <ion-segment-button value="OUTHOUSE">
+                <ion-label>Outhouse</ion-label>
               </ion-segment-button>
             </ion-segment>
             
             <p class="search-helper">
-              {{ referralType() === 'INSIDE' ? 'Search for a member in your current district.' : 'Search for a member outside your district.' }}
+              {{ referralType() === 'INHOUSE' ? 'Search for a member in your current district.' : 'Search for a member outside your district.' }}
             </p>
 
             <div class="search-container">
@@ -320,7 +320,7 @@
 
       <ion-content class="ion-padding" color="light" *ngIf="selectedReferralForView() as ref">
         <div class="modal-detail-wrapper">
-          <div class="referral-card" [class.inside-card]="ref.referral_type === 'INSIDE'" [class.outside-card]="ref.referral_type === 'OUTSIDE'">
+          <div class="referral-card" [class.inhouse-card]="ref.referral_type === 'INHOUSE'" [class.outhouse-card]="ref.referral_type === 'OUTHOUSE'">
             <!-- Top Banner Header -->
             <div class="card-top">
               <div class="contact-profile">
@@ -330,7 +330,7 @@
                 <div class="contact-info">
                   <h2 class="contact-name">{{ ref.contact_name }}</h2>
                   <div class="badge-row">
-                    <span class="type-badge" [class.inside]="ref.referral_type === 'INSIDE'" [class.outside]="ref.referral_type === 'OUTSIDE'">
+                    <span class="type-badge" [class.inhouse]="ref.referral_type === 'INHOUSE'" [class.outhouse]="ref.referral_type === 'OUTHOUSE'">
                       {{ ref.referral_type }}
                     </span>
                     <span class="date-chip">

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MemberOnboardingService } from '../../services/member-onboarding.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
+import { AnimatedBackgroundComponent } from '../../../../shared/components/animated-background/animated-background.component';
 
 @Component({
   selector: 'app-verify-email',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, AnimatedBackgroundComponent],
   templateUrl: './verify-email.component.html',
   styleUrls: ['./verify-email.component.scss']
 })

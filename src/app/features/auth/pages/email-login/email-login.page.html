@@ -1,20 +1,21 @@
 <ion-content [fullscreen]="true">
+  <app-animated-background></app-animated-background>
   <div class="login-wrapper">
     <!-- Main Content (Vertically Centered) -->
     <div class="main-content">
       <!-- Header Section -->
       <header class="logo-section">
         <div class="logo-box">
-          <img src="assets/icon-only1.jpg" alt="BIZZ DEAL Logo" class="logo-image" />
+          <img src="assets/icon-only1.png" alt="BIZZ DEAL Logo" class="logo-image" />
         </div>
         <img src="assets/logo-text.png" alt="BizzDeal" class="app-title-image" />
         <p class="app-subtitle">
           @if (authService.authStep() === 'phone') {
-          Enter your email address to login
+
           } @else if (authService.authStep() === 'pin') {
-          Enter your PIN to continue
+
           } @else {
-          Verify OTP to create your account
+
           }
         </p>
       </header>
@@ -188,11 +189,11 @@
 
         <div class="fee-badge">
           @if (authService.isLoadingPaymentSettings()) {
-            <ion-spinner name="crescent" size="small"></ion-spinner>
+          <ion-spinner name="crescent" size="small"></ion-spinner>
           } @else if (authService.paymentSettings()) {
-            <span>Registration Fee: ₹{{ authService.paymentSettings()?.registration_fee | number }}</span>
+          <span>Registration Fee: ₹{{ authService.paymentSettings()?.registration_fee | number }}</span>
           } @else {
-            <span>Registration Fee: ₹10,000</span>
+          <span>Registration Fee: ₹10,000</span>
           }
         </div>
 

@@ -111,7 +111,7 @@
         <div class="detail-row">
           <span class="detail-label">Available Wallet</span>
           <span class="detail-val wallet-val">
-            <ion-icon name="wallet-outline"></ion-icon> ${{ voucherDetails.wallet_balance.toFixed(2) }}
+            <ion-icon name="wallet-outline"></ion-icon> &#8377;{{ voucherDetails.wallet_balance.toFixed(2) }}
           </span>
         </div>
       </div>
@@ -120,7 +120,7 @@
         <form [formGroup]="redemptionForm" (ngSubmit)="onSubmitRedeem()" class="premium-form">
           <div class="form-group">
             <label class="form-label">
-              Total Bill Amount ($) 
+              Total Bill Amount (&#8377;) 
               @if (voucherDetails.offer?.discount_type === 'PERCENTAGE') {
                 <span class="required-star">*</span>
               }
@@ -150,7 +150,7 @@
 
           <div class="form-group">
             <label class="form-label">
-              Wallet Amount to Use ($)
+              Wallet Amount to Use (&#8377;)
             </label>
             <ion-item class="premium-input-item" lines="none">
               <ion-input
@@ -168,10 +168,10 @@
                     Wallet amount cannot be negative
                   }
                   @if (rf['wallet_amount_to_use'].errors?.['exceedBalance']) {
-                    Cannot exceed available wallet balance (${{ voucherDetails.wallet_balance.toFixed(2) }})
+                    Cannot exceed available wallet balance (&#8377;{{ voucherDetails.wallet_balance.toFixed(2) }})
                   }
                   @if (rf['wallet_amount_to_use'].errors?.['exceedBill']) {
-                    Cannot exceed remaining bill amount (${{ remainingBill.toFixed(2) }})
+                    Cannot exceed remaining bill amount (&#8377;{{ remainingBill.toFixed(2) }})
                   }
                 </span>
               }
@@ -187,33 +187,33 @@
               </div>
               <div class="receipt-row">
                 <span>Original Bill</span>
-                <span>${{ redemptionForm.value.bill_amount | number:'1.2-2' }}</span>
+                <span>&#8377;{{ redemptionForm.value.bill_amount | number:'1.2-2' }}</span>
               </div>
               @if (discountAmount > 0) {
                 <div class="receipt-row discount">
                   <span>Voucher Discount ({{ voucherDetails.discountText }})</span>
-                  <span>-${{ discountAmount | number:'1.2-2' }}</span>
+                  <span>-&#8377;{{ discountAmount | number:'1.2-2' }}</span>
                 </div>
               }
               @if (cashbackAmount > 0) {
                 <div class="receipt-row cashback" style="color: var(--ion-color-success);">
                   <span>Cashback Earned ({{ voucherDetails.discountText }})</span>
-                  <span>+${{ cashbackAmount | number:'1.2-2' }}</span>
+                  <span>+&#8377;{{ cashbackAmount | number:'1.2-2' }}</span>
                 </div>
               }
               @if (redemptionForm.value.wallet_amount_to_use > 0 && !rf['wallet_amount_to_use'].invalid) {
                 <div class="receipt-row wallet">
                   <span>Wallet Balance Used</span>
-                  <span>-${{ redemptionForm.value.wallet_amount_to_use | number:'1.2-2' }}</span>
+                  <span>-&#8377;{{ redemptionForm.value.wallet_amount_to_use | number:'1.2-2' }}</span>
                 </div>
               }
               <div class="receipt-divider"></div>
               <div class="receipt-row total">
                 <span>Final Amount to Pay</span>
-                <span>${{ finalPayment | number:'1.2-2' }}</span>
+                <span>&#8377;{{ finalPayment | number:'1.2-2' }}</span>
               </div>
               <div class="receipt-footer">
-                <span>New Customer Wallet Balance: ${{ newWalletBalance | number:'1.2-2' }}</span>
+                <span>New Customer Wallet Balance: &#8377;{{ newWalletBalance | number:'1.2-2' }}</span>
               </div>
             </div>
           }
@@ -258,28 +258,28 @@
           @if (redemptionResult.discount_amount > 0) {
             <div class="success-row">
               <span class="label">Discount Applied</span>
-              <span class="val highlight">${{ redemptionResult.discount_amount.toFixed(2) }}</span>
+              <span class="val highlight">&#8377;{{ redemptionResult.discount_amount.toFixed(2) }}</span>
             </div>
           }
           @if (redemptionResult.cashback_earned > 0) {
             <div class="success-row">
               <span class="label">Cashback Earned</span>
-              <span class="val highlight" style="color: var(--ion-color-success);">+${{ redemptionResult.cashback_earned.toFixed(2) }}</span>
+              <span class="val highlight" style="color: var(--ion-color-success);">+&#8377;{{ redemptionResult.cashback_earned.toFixed(2) }}</span>
             </div>
           }
           @if (redemptionResult.wallet_amount_used > 0) {
             <div class="success-row">
               <span class="label">Wallet Balance Used</span>
-              <span class="val highlight">${{ redemptionResult.wallet_amount_used.toFixed(2) }}</span>
+              <span class="val highlight">&#8377;{{ redemptionResult.wallet_amount_used.toFixed(2) }}</span>
             </div>
           }
           <div class="success-row total">
             <span class="label">Customer Paid</span>
-            <span class="val">${{ redemptionResult.final_bill_amount.toFixed(2) }}</span>
+            <span class="val">&#8377;{{ redemptionResult.final_bill_amount.toFixed(2) }}</span>
           </div>
           <div class="success-row wallet">
             <span class="label">New Wallet Balance</span>
-            <span class="val">${{ redemptionResult.new_wallet_balance.toFixed(2) }}</span>
+            <span class="val">&#8377;{{ redemptionResult.new_wallet_balance.toFixed(2) }}</span>
           </div>
         </div>
 

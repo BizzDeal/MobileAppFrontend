@@ -113,7 +113,7 @@ export class ProfileViewComponent implements OnInit {
 
   readonly profileForm: FormGroup = this.fb.group({
     full_name: ['', [Validators.minLength(2)]],
-    phone: ['', [Validators.required, Validators.minLength(10)]],
+    phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     whatsapp: ['', [Validators.minLength(10)]],
     email: ['', [Validators.email]],
     state_id: [''],

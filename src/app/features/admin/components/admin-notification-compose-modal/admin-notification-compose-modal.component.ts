@@ -19,8 +19,6 @@ export class AdminNotificationComposeModalComponent implements OnInit {
   isSubmitting = false;
 
   audienceOptions = [
-    { value: NotificationAudience.SINGLE_USER, label: 'Single User', icon: 'person-outline' },
-    { value: NotificationAudience.BULK_USERS, label: 'Bulk Users', icon: 'people-outline' },
     { value: NotificationAudience.ALL_MEMBERS, label: 'All Members', icon: 'megaphone-outline' },
     { value: NotificationAudience.ALL_CUSTOMERS, label: 'All Customers', icon: 'megaphone-outline' }
   ];
@@ -39,23 +37,13 @@ export class AdminNotificationComposeModalComponent implements OnInit {
     this.composeForm = this.fb.group({
       audience: [NotificationAudience.ALL_MEMBERS, Validators.required],
       type: [NotificationType.GENERAL, Validators.required],
-      target_phones: [''], // Only required if SINGLE_USER or BULK_USERS
       title: ['', [Validators.required, Validators.maxLength(100)]],
       message: ['', [Validators.required, Validators.maxLength(500)]]
     });
   }
 
   ngOnInit() {
-    // Dynamic validation based on audience
-    this.composeForm.get('audience')?.valueChanges.subscribe(audience => {
-      const targetPhonesControl = this.composeForm.get('target_phones');
-      if (audience === NotificationAudience.SINGLE_USER || audience === NotificationAudience.BULK_USERS) {
-        targetPhonesControl?.setValidators([Validators.required]);
-      } else {
-        targetPhonesControl?.clearValidators();
-      }
-      targetPhonesControl?.updateValueAndValidity();
-    });
+    // Dynamic validation not needed for broadcast
   }
 
   dismiss(data?: any) {
@@ -71,12 +59,6 @@ export class AdminNotificationComposeModalComponent implements OnInit {
     this.isSubmitting = true;
     const formValue = this.composeForm.value;
     
-    // Parse target_phones for SINGLE_USER or BULK_USERS
-    let phones: string[] = [];
-    if (formValue.target_phones) {
-      phones = formValue.target_phones.split(',').map((id: string) => id.trim()).filter((id: string) => id);
-    }
-
     const payload = {
       title: formValue.title,
       message: formValue.message,
@@ -86,12 +68,6 @@ export class AdminNotificationComposeModalComponent implements OnInit {
     let request$;
 
     switch (formValue.audience) {
-      case NotificationAudience.SINGLE_USER:
-        request$ = this.notificationsService.sendToUser(phones[0], payload);
-        break;
-      case NotificationAudience.BULK_USERS:
-        request$ = this.notificationsService.sendBulk(phones, payload);
-        break;
       case NotificationAudience.ALL_MEMBERS:
         request$ = this.notificationsService.broadcastToMembers(payload);
         break;

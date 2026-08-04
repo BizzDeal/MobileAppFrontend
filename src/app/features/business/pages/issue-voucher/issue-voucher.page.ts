@@ -43,7 +43,7 @@ export class IssueVoucherPage implements OnInit {
   ngOnInit() {
     this.issueForm = this.fb.group({
       offer_id: ['', [Validators.required]],
-      customer_phone: ['', [Validators.required, Validators.minLength(10)]]
+      customer_phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]]
     });
     if (!this.dashboardData()?.myOffers?.length) {
       this.dashboardService.loadDashboardData().subscribe();

@@ -43,10 +43,19 @@ export interface AdminMember extends AdminUser {
   website?: string | null;
   gst_number?: string | null;
   business_logo_url?: string | null;
+  businessProfile?: {
+    business_name: string;
+    description: string;
+    category_id: string;
+  };
 }
 
 export interface AdminCustomer extends AdminUser {
   role: UserRole.CUSTOMER;
+  primary_business_store?: {
+    business_name: string;
+    category_id?: string;
+  } | null;
 }
 
 export interface ApiResponse<T> {

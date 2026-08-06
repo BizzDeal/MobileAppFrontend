@@ -48,6 +48,7 @@ import { ProfileSkeletonComponent } from '../../../../shared/components/skeleton
 import { compressImageClientSide } from '../../../../shared/utils/image-compressor.util';
 import { validateFileSize } from '../../../../shared/utils/file-validator.util';
 import { ImageCropperModalComponent, ImageCropResult } from '../../../../shared/components/image-cropper-modal/image-cropper-modal.component';
+import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-profile-view',
@@ -81,6 +82,8 @@ export class ProfileViewComponent implements OnInit {
   private readonly alertController = inject(AlertController);
   private readonly modalCtrl = inject(ModalController);
 
+
+  readonly getAvatarColor = getAvatarColor;
 
   readonly profile = this.profileService.profile;
   readonly userRole = this.profileService.userRole;

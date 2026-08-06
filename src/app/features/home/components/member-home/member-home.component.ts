@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline } from 'ionicons/icons';
+import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../services/member-dashboard.service';
 
 import { ProfileService } from '../../../profile/services/profile.service';
@@ -25,7 +25,10 @@ import { DashboardSkeletonComponent } from '../../../../shared/components/skelet
   styleUrls: ['./member-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MemberHomeComponent implements OnInit {
+export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('analyticsCarousel') analyticsCarousel!: ElementRef;
+  private autoScrollInterval: any;
+
   @Output() notificationClick = new EventEmitter<void>();
   @Output() referralsClick = new EventEmitter<void>();
 
@@ -43,9 +46,53 @@ export class MemberHomeComponent implements OnInit {
   readonly meetingsError = this.meetingsService.error;
   readonly unreadCount = this.notificationService.unreadCount;
 
+  readonly isActionsMenuOpen = signal(false);
+
   ngOnInit() {
     this.dashboardService.loadDashboardData().subscribe();
     this.meetingsService.loadMeetings().subscribe();
+  }
+
+  ngAfterViewInit() {
+    this.startAutoScroll();
+  }
+
+  ngOnDestroy() {
+    if (this.autoScrollInterval) {
+      clearInterval(this.autoScrollInterval);
+    }
+  }
+
+  startAutoScroll() {
+    this.autoScrollInterval = setInterval(() => {
+      const el = this.analyticsCarousel?.nativeElement;
+      if (!el) return;
+
+      const slideWidth = el.clientWidth;
+      if (!slideWidth) return;
+
+      const maxScroll = el.scrollWidth - slideWidth;
+      if (maxScroll <= 0) return;
+
+      if (el.scrollLeft >= maxScroll - 15) {
+        // At the cloned slide end: instantly reset to 0 without backward animation
+        el.scrollTo({ left: 0, behavior: 'instant' });
+        // Then scroll left-to-right to next slide
+        setTimeout(() => {
+          el.scrollBy({ left: slideWidth, behavior: 'smooth' });
+        }, 50);
+      } else {
+        // Scroll left-to-right
+        el.scrollBy({ left: slideWidth, behavior: 'smooth' });
+
+        // If landed on the cloned slide, reset position to 0 silently after transition
+        setTimeout(() => {
+          if (el.scrollLeft >= maxScroll - 15) {
+            el.scrollTo({ left: 0, behavior: 'instant' });
+          }
+        }, 600);
+      }
+    }, 3000);
   }
 
 
@@ -57,6 +104,10 @@ export class MemberHomeComponent implements OnInit {
   readonly percentageDeals = computed(() => this.approvedOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'PERCENTAGE'));
   readonly flatOffers = computed(() => this.approvedOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'FIXED_AMOUNT'));
   readonly cashbackOffers = computed(() => this.approvedOffers().filter(o => o.offer_type === 'CASHBACK'));
+
+  readonly bizzCoinOffer = computed(() =>
+    this.dashboardData()?.myOffers.find(o => o.offer_type === 'BIZZ_COINS') || null
+  );
 
   readonly pendingOffers = computed(() =>
     this.dashboardData()?.myOffers.filter(o => o.status === 'PENDING') || []
@@ -72,7 +123,15 @@ export class MemberHomeComponent implements OnInit {
   readonly logoLoadError = signal(false);
 
   constructor() {
-    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline });
+    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline });
+  }
+
+  toggleActionsMenu() {
+    this.isActionsMenuOpen.update(v => !v);
+  }
+
+  closeActionsMenu() {
+    this.isActionsMenuOpen.set(false);
   }
 
   getFirstName(name?: string): string {
@@ -94,6 +153,14 @@ export class MemberHomeComponent implements OnInit {
     this.router.navigate(['/offers/new']);
   }
 
+  onBizzCoinsOffer() {
+    if (this.profile()?.status === 'PENDING') {
+      this.toastService.showError('Pending members cannot create offers');
+      return;
+    }
+    this.router.navigate(['/offers/bizz-coins']);
+  }
+
   onDealClick(offer: OfferDTO) {
     this.router.navigate(['/offers', offer.id, 'edit']);
   }
@@ -102,8 +169,16 @@ export class MemberHomeComponent implements OnInit {
     this.router.navigate(['/vouchers/issue']);
   }
 
+  onIssueBizzCoins() {
+    this.router.navigate(['/vouchers/issue-bizz-coins']);
+  }
+
   onRedeemVoucher() {
     this.router.navigate(['/vouchers/redeem']);
+  }
+
+  onRedeemBizzCoins() {
+    this.router.navigate(['/vouchers/redeem-bizz-coins']);
   }
 
   onViewAnalytics() {

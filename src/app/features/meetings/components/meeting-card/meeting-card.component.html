@@ -1,88 +1,83 @@
 <div class="meeting-card" [class.cancelled]="meeting().status === 'CANCELLED'" [class.past]="!isUpcoming()">
-  <!-- Side accent bar indicating status -->
-  <div class="status-accent" [class]="meeting().status | lowercase"></div>
+  <!-- Accent bar -->
+  <div class="accent-bar" [class]="meeting().status | lowercase"></div>
 
-  <div class="card-content">
-    <div class="card-header">
-      <div class="title-section">
-        <h3 class="meeting-title">{{ meeting().title }}</h3>
-        @if (meeting().status === 'CANCELLED') {
-          <span class="status-badge cancelled">Cancelled</span>
-        } @else if (!isUpcoming()) {
-          <span class="status-badge past">Past</span>
-        }
-      </div>
-      
-      <!-- RSVP status badge at the top right -->
+  <div class="card-body">
+    <!-- Row 1: Title + Status Badge -->
+    <div class="card-top">
+      <h3 class="title">{{ meeting().title }}</h3>
       @if (!isAdmin()) {
-        <span class="user-status-badge" [class]="(meeting().myAttendeeRecord?.status || 'PENDING') | lowercase">
+        <span class="status-pill" [class]="(meeting().myAttendeeRecord?.status || 'PENDING') | lowercase">
           {{ meeting().myAttendeeRecord?.status || 'PENDING' }}
         </span>
       } @else {
-        <span class="user-status-badge" [class]="meeting().status | lowercase">
+        <span class="status-pill" [class]="meeting().status | lowercase">
           {{ meeting().status }}
         </span>
       }
     </div>
 
+    <!-- Row 2: Meeting Type + Cancelled/Past badge -->
+    <div class="meta-row">
+      <span class="type-tag" [class.spotlight]="meeting().meeting_type === 'SPOTLIGHT'">
+        @if (meeting().meeting_type === 'SPOTLIGHT') {
+          <ion-icon name="star-outline"></ion-icon>
+        }
+        {{ meeting().meeting_type === 'SPOTLIGHT' ? 'Spotlight' : 'Regular' }}
+      </span>
+      @if (meeting().status === 'CANCELLED') {
+        <span class="state-badge cancelled">Cancelled</span>
+      } @else if (!isUpcoming()) {
+        <span class="state-badge past">Past</span>
+      }
+    </div>
+
+    <!-- Description (if any) -->
     @if (meeting().description) {
-      <p class="meeting-desc">{{ meeting().description }}</p>
+      <p class="desc">{{ meeting().description }}</p>
     }
 
-    <div class="meeting-details-grid">
-      <div class="detail-item">
-        <div class="icon-wrapper">
-          <ion-icon name="calendar-outline"></ion-icon>
-        </div>
-        <div class="detail-text">
-          <span class="detail-label">Date & Time</span>
-          <span class="detail-value">{{ meeting().meeting_date | date:'medium' }}</span>
-        </div>
+    <!-- Compact details -->
+    <div class="details">
+      <div class="detail-row">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <span>{{ meeting().meeting_date | date:'MMM d, y • h:mm a' }}</span>
       </div>
-      
       @if (meeting().location) {
-        <div class="detail-item">
-          <div class="icon-wrapper">
-            <ion-icon name="location-outline"></ion-icon>
-          </div>
-          <div class="detail-text">
-            <span class="detail-label">Location</span>
-            <span class="detail-value">{{ meeting().location }}</span>
-          </div>
+        <div class="detail-row">
+          <ion-icon name="location-outline"></ion-icon>
+          <span>{{ meeting().location }}</span>
         </div>
       }
-      
       @if (meeting().meeting_link) {
-        <div class="detail-item link-item">
-          <div class="icon-wrapper">
-            <ion-icon name="link-outline"></ion-icon>
-          </div>
-          <div class="detail-text">
-            <span class="detail-label">Online Link</span>
-            <a [href]="meeting().meeting_link" target="_blank" class="detail-value link-action">Join Meeting</a>
-          </div>
+        <div class="detail-row link">
+          <ion-icon name="link-outline"></ion-icon>
+          <a [href]="meeting().meeting_link" target="_blank">Join Meeting</a>
         </div>
       }
     </div>
 
-    @if (isAdmin()) {
-      <div class="action-section admin-actions">
-        <button type="button" class="view-attendees-btn" (click)="onViewAttendees()">
+    <!-- Actions -->
+    @if (isAdmin() || isHost()) {
+      <div class="actions admin-actions">
+        <button type="button" class="action-btn" (click)="onViewAttendees()">
           <ion-icon name="people-outline"></ion-icon>
           Attendees
         </button>
-        <button type="button" class="edit-action-btn" (click)="onEdit()">
-          <ion-icon name="create-outline"></ion-icon>
-          Edit
-        </button>
+        @if (isHost() || (isAdmin() && meeting().meeting_type !== 'SPOTLIGHT')) {
+          <button type="button" class="action-btn primary" (click)="onEdit()">
+            <ion-icon name="create-outline"></ion-icon>
+            Edit
+          </button>
+        }
       </div>
     } @else if (isUpcoming() && meeting().status !== 'CANCELLED') {
-      <div class="action-section">
-        <span class="action-prompt">Are you attending?</span>
-        <div class="action-buttons">
+      <div class="actions rsvp-actions">
+        <span class="rsvp-label">Attending?</span>
+        <div class="rsvp-btns">
           <button 
             type="button" 
-            class="rsvp-action-btn reject-btn" 
+            class="rsvp-btn reject" 
             [class.active]="meeting().myAttendeeRecord?.status === 'REJECTED'"
             (click)="onRsvp('REJECTED')">
             <ion-icon name="close-circle-outline"></ion-icon>
@@ -90,7 +85,7 @@
           </button>
           <button 
             type="button" 
-            class="rsvp-action-btn accept-btn" 
+            class="rsvp-btn accept" 
             [class.active]="meeting().myAttendeeRecord?.status === 'ACCEPTED'"
             (click)="onRsvp('ACCEPTED')">
             <ion-icon name="checkmark-circle-outline"></ion-icon>

@@ -265,15 +265,5 @@ export class MemberOnboardingService {
     }
   }
 
-  async verifyEmail(token: string): Promise<{ success: boolean; message: string }> {
-    try {
-      const res = await firstValueFrom(
-        this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/auth/verify-email`, { token }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) })
-      );
-      return res;
-    } catch (err: any) {
-      console.error('Failed to verify email:', err);
-      throw new Error(extractFriendlyErrorMessage(err, 'Email verification failed.'));
-    }
-  }
+
 }

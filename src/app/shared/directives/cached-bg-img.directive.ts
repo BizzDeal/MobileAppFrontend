@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { ImageCacheService } from '../../core/platform/image-cache.service';
 
@@ -19,47 +20,77 @@ export class CachedBgImgDirective {
 
   readonly appCachedBgImg = input<string | null | undefined>('');
   readonly fallbackBgImg = input<string>('');
+  readonly bgImgError = output<void>();
+
+  private currentTestImg: HTMLImageElement | null = null;
 
   constructor() {
     effect(() => {
       const url = this.appCachedBgImg();
       if (!url) {
-        if (this.fallbackBgImg()) {
-          this.setBgImage(this.fallbackBgImg());
-        } else {
-          this.clearBgImage();
-        }
+        this.clearBgImage();
         return;
-      }
-
-      if (!this.el.nativeElement.style.backgroundImage && this.fallbackBgImg()) {
-        this.setBgImage(this.fallbackBgImg());
       }
 
       this.imageCacheService
         .getCachedImage(url)
         .then((cachedSrc) => {
-          this.setBgImage(cachedSrc || url);
+          this.loadAndSetBgImage(cachedSrc || url);
         })
         .catch(() => {
           if (this.fallbackBgImg()) {
-            this.setBgImage(this.fallbackBgImg());
+            this.loadAndSetBgImage(this.fallbackBgImg());
           } else {
-            this.setBgImage(url);
+            this.loadAndSetBgImage(url);
           }
         });
     });
   }
 
-  private setBgImage(src: string): void {
+  private loadAndSetBgImage(src: string): void {
     if (!src) {
       this.clearBgImage();
       return;
     }
-    this.renderer.setStyle(this.el.nativeElement, 'background-image', `url("${src}")`);
+
+    if (this.currentTestImg) {
+      this.currentTestImg.onload = null;
+      this.currentTestImg.onerror = null;
+    }
+
+    const testImg = new Image();
+    this.currentTestImg = testImg;
+
+    testImg.onload = () => {
+      if (this.currentTestImg !== testImg) return;
+      this.renderer.setStyle(this.el.nativeElement, 'background-image', `url("${src}")`);
+      this.renderer.addClass(this.el.nativeElement, 'has-bg-img');
+      this.renderer.removeClass(this.el.nativeElement, 'bg-img-broken');
+    };
+
+    testImg.onerror = () => {
+      if (this.currentTestImg !== testImg) return;
+      if (this.fallbackBgImg() && src !== this.fallbackBgImg()) {
+        this.loadAndSetBgImage(this.fallbackBgImg());
+      } else {
+        this.clearBgImage();
+        this.renderer.addClass(this.el.nativeElement, 'bg-img-broken');
+        this.bgImgError.emit();
+        this.el.nativeElement.dispatchEvent(new CustomEvent('bgImgError', { bubbles: true }));
+      }
+    };
+
+    testImg.src = src;
   }
 
   private clearBgImage(): void {
+    if (this.currentTestImg) {
+      this.currentTestImg.onload = null;
+      this.currentTestImg.onerror = null;
+      this.currentTestImg = null;
+    }
     this.renderer.removeStyle(this.el.nativeElement, 'background-image');
+    this.renderer.removeClass(this.el.nativeElement, 'has-bg-img');
   }
 }
+

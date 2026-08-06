@@ -1,0 +1,139 @@
+<ion-header class="ion-no-border premium-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" color="dark">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Issue Bizz Coin</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding auth-content">
+  <div class="auth-container">
+    <div class="auth-header">
+      <h2>Reward with Bizz Coins</h2>
+      <p>Enter the number of Bizz Coins and customer phone number to issue coins directly.</p>
+    </div>
+
+    @if (successMessage) {
+      <div class="success-alert">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <span>{{ successMessage }}</span>
+      </div>
+    }
+
+    <form [formGroup]="issueForm" (ngSubmit)="onSubmit()" class="premium-form">
+      <!-- Number of Bizz Coins -->
+      <div class="form-group">
+        <label class="form-label">
+          Number of Bizz Coins <span class="required-star">*</span>
+        </label>
+        <ion-item class="premium-input-item" lines="none">
+          <ion-input
+            type="number"
+            formControlName="coins"
+            placeholder="e.g. 50"
+            min="1"
+            class="premium-input">
+          </ion-input>
+        </ion-item>
+        <div class="error-container">
+          @if (f['coins'].invalid && (f['coins'].dirty || f['coins'].touched)) {
+            <span class="error-message">
+              @if (f['coins'].errors?.['required']) {
+                Number of Bizz Coins is required
+              }
+              @if (f['coins'].errors?.['min']) {
+                Must be at least 1 Bizz Coin
+              }
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Customer Phone -->
+      <div class="form-group">
+        <label class="form-label">
+          Customer Phone <span class="required-star">*</span>
+        </label>
+        <ion-item class="premium-input-item" lines="none">
+          <ion-input
+            type="tel"
+            formControlName="customer_phone"
+            placeholder="e.g. 9876543210"
+            class="premium-input">
+          </ion-input>
+        </ion-item>
+        <div class="error-container">
+          @if (f['customer_phone'].invalid && (f['customer_phone'].dirty || f['customer_phone'].touched)) {
+            <span class="error-message">
+              @if (f['customer_phone'].errors?.['required']) {
+                Phone number is required
+              }
+              @if (f['customer_phone'].errors?.['pattern']) {
+                Phone number must be exactly 10 digits
+              }
+            </span>
+          }
+        </div>
+
+        <!-- Customer Lookup Preview Card -->
+        @if (isSearchingCustomer) {
+          <div class="customer-preview-card loading">
+            <ion-spinner name="crescent"></ion-spinner>
+            <span>Searching customer details...</span>
+          </div>
+        } @else if (searchedCustomer) {
+          <div class="customer-preview-card found">
+            <div class="customer-avatar-box">
+              @if (searchedCustomer.profile_pic_url && !avatarLoadError) {
+                <img [appCachedImg]="searchedCustomer.profile_pic_url" (error)="avatarLoadError = true" alt="Customer Avatar" class="customer-avatar-img" />
+              } @else {
+                <div class="customer-avatar-initials" [style.background]="getAvatarColor(searchedCustomer.name)">
+                  {{ getInitials(searchedCustomer.name) }}
+                </div>
+              }
+            </div>
+
+            <div class="customer-info-box">
+              <div class="customer-name-row">
+                <h4 class="customer-name">{{ searchedCustomer.name }}</h4>
+                <span class="customer-badge">
+                  <ion-icon name="checkmark-circle-outline" class="badge-icon"></ion-icon> Verified
+                </span>
+              </div>
+              <p class="customer-detail-text">
+                <ion-icon name="mail-outline"></ion-icon> {{ searchedCustomer.email || 'No email registered' }}
+              </p>
+              <p class="customer-detail-text">
+                <ion-icon name="call-outline"></ion-icon> +91 {{ searchedCustomer.phone }}
+              </p>
+            </div>
+          </div>
+        } @else if (customerNotFound && f['customer_phone'].valid) {
+          <div class="customer-preview-card not-found">
+            <ion-icon name="alert-circle-outline" class="not-found-icon"></ion-icon>
+            <span>No registered customer found with this phone number.</span>
+          </div>
+        }
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-alert">
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <div class="actions">
+        <button type="submit" class="bd-btn-primary action-btn full-width" [disabled]="issueForm.invalid || isSubmitting">
+          @if (isSubmitting) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <span>Issue Bizz Coin</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</ion-content>

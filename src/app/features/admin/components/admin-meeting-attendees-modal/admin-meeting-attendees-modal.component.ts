@@ -11,6 +11,7 @@ import {
 } from 'ng-apexcharts';
 import { AdminMeetingsService, AttendeeReportItem } from '../../services/admin-meetings.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { getAvatarColor } from '../../../../shared/utils/avatar.util';
 
 export type ChartOptions = {
   series: ApexNonAxisChartSeries;
@@ -45,6 +46,13 @@ export class AdminMeetingAttendeesModalComponent implements OnInit {
     const filter = this.selectedFilter();
     if (filter === 'ALL') return this.attendees();
     return this.attendees().filter(a => a.status === filter);
+  });
+
+  readonly page = signal<number>(1);
+  readonly limit = 20;
+
+  readonly displayedAttendees = computed(() => {
+    return this.filteredAttendees().slice(0, this.page() * this.limit);
   });
 
   public chartOptions!: ChartOptions;
@@ -117,6 +125,14 @@ export class AdminMeetingAttendeesModalComponent implements OnInit {
 
   onFilterChange(event: any) {
     this.selectedFilter.set(event.detail.value);
+    this.page.set(1);
+  }
+
+  loadMore(event: any) {
+    if (this.displayedAttendees().length < this.filteredAttendees().length) {
+      this.page.update(p => p + 1);
+    }
+    event.target.complete();
   }
 
   dismiss() {
@@ -130,5 +146,9 @@ export class AdminMeetingAttendeesModalComponent implements OnInit {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     }
     return name.substring(0, 2).toUpperCase();
+  }
+
+  getAvatarColor(name?: string): string {
+    return getAvatarColor(name || '');
   }
 }

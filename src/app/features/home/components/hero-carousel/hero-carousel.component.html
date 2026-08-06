@@ -14,7 +14,12 @@
     <!-- Spotlight Businesses Banners -->
     @for (biz of featuredBusinesses(); track biz.id) {
       <div class="banner-card biz-banner" (click)="businessClick.emit(biz)">
-        <div class="banner-bg" [appCachedBgImg]="biz.bannerUrl || biz.logoUrl || null"></div>
+        <div class="banner-bg" [style.background]="getAvatarColor(biz.name)">
+          <span class="initials-text">{{ getInitials(biz.name) }}</span>
+          @if (biz.bannerUrl || biz.logoUrl) {
+            <img [appCachedImg]="biz.bannerUrl || biz.logoUrl" [alt]="biz.name" class="banner-img" />
+          }
+        </div>
         <div class="banner-overlay biz-overlay"></div>
         <div class="badge-row top-tags">
           <span class="pill-badge biz-badge">
@@ -37,7 +42,12 @@
     <!-- Mega Deals Banners -->
     @for (deal of megaDeals(); track deal.id) {
       <div class="banner-card deal-banner" (click)="dealClick.emit(deal)">
-        <div class="banner-bg" [appCachedBgImg]="deal.imageUrl"></div>
+        <div class="banner-bg" [style.background]="getAvatarColor(deal.businessName || deal.title)">
+          <span class="initials-text">{{ getInitials(deal.businessName || deal.title) }}</span>
+          @if (deal.imageUrl) {
+            <img [appCachedImg]="deal.imageUrl" [alt]="deal.title" class="banner-img" />
+          }
+        </div>
         <div class="banner-overlay"></div>
         <div class="badge-row top-tags">
           <span class="pill-badge mega-badge">

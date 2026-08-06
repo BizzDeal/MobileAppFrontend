@@ -9,6 +9,16 @@ import { AuthSessionService } from '../../../core/services/auth-session.service'
 import { AppSocketService } from '../../../core/services/app-socket.service';
 import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
+export interface BizzCoinTransactionItem {
+  id: string;
+  type: 'CREDIT' | 'DEBIT';
+  amount: number;
+  description: string;
+  business_name?: string;
+  created_at: string;
+  isBizzCoin: true;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -20,6 +30,8 @@ export class WalletService {
 
   private readonly _wallet = signal<WalletDTO | null>(null);
   private readonly _transactions = signal<WalletTransactionDTO[]>([]);
+  private readonly _bizzCoinsBalance = signal<number>(0);
+  private readonly _bizzCoinsTransactions = signal<BizzCoinTransactionItem[]>([]);
   private readonly _loading = signal<boolean>(true);
   private readonly _error = signal<string | null>(null);
   
@@ -30,6 +42,8 @@ export class WalletService {
 
   readonly wallet = this._wallet.asReadonly();
   readonly transactions = this._transactions.asReadonly();
+  readonly bizzCoinsBalance = this._bizzCoinsBalance.asReadonly();
+  readonly bizzCoinsTransactions = this._bizzCoinsTransactions.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
   readonly page = this._page.asReadonly();
@@ -50,6 +64,8 @@ export class WalletService {
         untracked(() => {
           this._wallet.set(null);
           this._transactions.set([]);
+          this._bizzCoinsBalance.set(0);
+          this._bizzCoinsTransactions.set([]);
         });
       }
     });
@@ -58,6 +74,22 @@ export class WalletService {
       if (this.authSession.isAuthenticated()) {
         this.refreshWallet().subscribe({
           error: (err) => console.error('Failed to refresh wallet on voucher redemption:', err)
+        });
+      }
+    });
+
+    this.appSocket.onEvent('BIZZ_COINS_ISSUED').subscribe(() => {
+      if (this.authSession.isAuthenticated()) {
+        this.refreshWallet().subscribe({
+          error: (err) => console.error('Failed to refresh wallet on Bizz Coins issue:', err)
+        });
+      }
+    });
+
+    this.appSocket.onEvent('app_event').subscribe((evt: any) => {
+      if (this.authSession.isAuthenticated() && (evt?.type === 'BIZZ_COINS_ISSUED' || evt?.type === 'VOUCHER_REDEEMED')) {
+        this.refreshWallet().subscribe({
+          error: (err) => console.error('Failed to refresh wallet on app event:', err)
         });
       }
     });
@@ -83,9 +115,12 @@ export class WalletService {
       balanceRes: this.http.get<any>(`${this.apiUrl}/wallet/balance`),
       historyRes: this.http.get<any>(`${this.apiUrl}/wallet/history`, {
         params: new HttpParams().set('page', '1').set('limit', this._limit().toString())
-      })
+      }),
+      bizzCoinsRes: this.http.get<any>(`${this.apiUrl}/bizz-coins/my-wallet`).pipe(
+        catchError(() => of({ coins_balance: 0, transactions: [] }))
+      )
     }).pipe(
-      map(({ balanceRes, historyRes }) => {
+      map(({ balanceRes, historyRes, bizzCoinsRes }) => {
         const w = balanceRes?.data || balanceRes || {};
         const wallet: WalletDTO = {
           id: w.id || 'wallet',
@@ -110,12 +145,26 @@ export class WalletService {
           updated_at: t.updated_at || new Date().toISOString()
         }));
 
-        return { wallet, transactions, meta: historyRes?.meta };
+        const rawCoinsBalance = Number(bizzCoinsRes?.coins_balance || 0);
+        const rawCoinsTx: any[] = bizzCoinsRes?.transactions || [];
+        const bizzCoinsTransactions: BizzCoinTransactionItem[] = rawCoinsTx.map((t) => ({
+          id: t.id,
+          type: t.type || 'CREDIT',
+          amount: Number(t.amount || 0),
+          description: t.description || `Received ${t.amount} Bizz Coins`,
+          business_name: t.business_name || 'BizzDeal Partner',
+          created_at: t.created_at || new Date().toISOString(),
+          isBizzCoin: true
+        }));
+
+        return { wallet, transactions, bizzCoinsBalance: rawCoinsBalance, bizzCoinsTransactions, meta: historyRes?.meta };
       }),
       tap({
         next: (data) => {
           this._wallet.set(data.wallet);
           this._transactions.set(data.transactions);
+          this._bizzCoinsBalance.set(data.bizzCoinsBalance);
+          this._bizzCoinsTransactions.set(data.bizzCoinsTransactions);
           
           if (data.meta) {
             this._page.set(data.meta.currentPage);

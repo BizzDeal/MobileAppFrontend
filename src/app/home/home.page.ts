@@ -1,8 +1,10 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass, TitleCasePipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import {
   IonButton,
   IonButtons,
@@ -19,6 +21,7 @@ import {
 import { addIcons } from 'ionicons';
 import {
   alertCircleOutline,
+  calendarOutline,
   chatbubbleOutline,
   checkmarkCircleOutline,
   closeOutline,
@@ -27,6 +30,7 @@ import {
   locationOutline,
   personOutline,
   pricetagOutline,
+  ribbonOutline,
   shareSocialOutline,
   sparklesOutline,
   ticketOutline,
@@ -59,7 +63,6 @@ import { VouchersViewComponent } from '../features/vouchers/components/vouchers-
 import { CustomerVouchersService } from '../features/vouchers/services/customer-vouchers.service';
 import { AuthSessionService } from '../core/services/auth-session.service';
 import { CachedImgDirective } from '../shared/directives/cached-img.directive';
-import { CachedBgImgDirective } from '../shared/directives/cached-bg-img.directive';
 import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
 
 @Component({
@@ -67,8 +70,8 @@ import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
   standalone: true,
   imports: [
     DatePipe,
+    TitleCasePipe,
     CachedImgDirective,
-    CachedBgImgDirective,
     IonContent,
     IonRefresher,
     IonRefresherContent,
@@ -100,6 +103,7 @@ import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePage {
+  private readonly http = inject(HttpClient);
   private readonly homeService = inject(HomeService);
   private readonly memberDashboardService = inject(MemberDashboardService);
   private readonly meetingsService = inject(MeetingsService);
@@ -160,6 +164,8 @@ export class HomePage {
   readonly isNotificationsModalOpen = signal<boolean>(false);
   readonly selectedDealModal = signal<OfferDTO | null>(null);
   readonly selectedBizModal = signal<BusinessDTO | null>(null);
+  readonly selectedBizCoinsOffer = signal<OfferDTO | null>(null);
+  readonly loadingBizCoinsOffer = signal<boolean>(false);
   readonly searchQuery = signal<string>('');
 
   private filterOffers = (offers: OfferDTO[]) => {
@@ -215,7 +221,9 @@ export class HomePage {
       pricetagOutline,
       chatbubbleOutline,
       personOutline,
-      walletOutline
+      walletOutline,
+      ribbonOutline,
+      calendarOutline
     });
 
     // Handle tab query parameter for switching active nav tab
@@ -332,6 +340,24 @@ export class HomePage {
 
   onBusinessClick(biz: BusinessDTO): void {
     this.selectedBizModal.set(biz);
+    this.fetchBizzCoinsOfferForBusiness(biz.id);
+  }
+
+  private fetchBizzCoinsOfferForBusiness(businessId: string): void {
+    this.selectedBizCoinsOffer.set(null);
+    this.loadingBizCoinsOffer.set(true);
+    this.http.get<any>(`${environment.apiUrl}/offers?business_id=${businessId}&offer_type=BIZZ_COINS`).subscribe({
+      next: (res) => {
+        this.loadingBizCoinsOffer.set(false);
+        const offers: OfferDTO[] = Array.isArray(res) ? res : res?.data || res?.items || [];
+        const activeOffer = offers.find(o => o.offer_type === 'BIZZ_COINS' && o.status === 'APPROVED');
+        this.selectedBizCoinsOffer.set(activeOffer || null);
+      },
+      error: (err) => {
+        this.loadingBizCoinsOffer.set(false);
+        this.selectedBizCoinsOffer.set(null);
+      }
+    });
   }
 
   onTabSelect(tab: NavTab): void {

@@ -6,8 +6,11 @@ import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { HomePage } from './home/home.page';
 import { BusinessDirectoryPage } from './features/business/pages/business-directory/business-directory.page';
 import { OfferFormPage } from './features/business/pages/offer-form/offer-form.page';
+import { BizzCoinsOfferPage } from './features/business/pages/bizz-coins-offer/bizz-coins-offer.page';
 import { IssueVoucherPage } from './features/business/pages/issue-voucher/issue-voucher.page';
+import { IssueBizzCoinsPage } from './features/business/pages/issue-bizz-coins/issue-bizz-coins.page';
 import { RedeemVoucherPage } from './features/business/pages/redeem-voucher/redeem-voucher.page';
+import { RedeemBizzCoinsPage } from './features/business/pages/redeem-bizz-coins/redeem-bizz-coins.page';
 import { AnalyticsDashboardPage } from './features/analytics/pages/analytics-dashboard/analytics-dashboard.page';
 import { ADMIN_ROUTES } from './features/admin/admin.routes';
 import { authGuard } from './core/guards/auth.guard';
@@ -29,6 +32,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'offers/bizz-coins',
+    component: BizzCoinsOfferPage,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
+  },
+  {
     path: 'offers/new',
     component: OfferFormPage,
     canActivate: [authGuard],
@@ -47,8 +56,20 @@ export const routes: Routes = [
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
+    path: 'vouchers/issue-bizz-coins',
+    component: IssueBizzCoinsPage,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
+  },
+  {
     path: 'vouchers/redeem',
     component: RedeemVoucherPage,
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
+  },
+  {
+    path: 'vouchers/redeem-bizz-coins',
+    component: RedeemBizzCoinsPage,
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },

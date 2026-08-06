@@ -1,27 +1,41 @@
 <header class="home-header">
   <div class="top-row">
     <div class="user-greeting">
-      <h1 class="greeting-title" [title]="customer().name"><span class="truncate-name">Hi, {{
-          getFirstName(customer().name)
-          }}</span></h1>
+      <h1 class="greeting-title" [title]="customer().name">
+        <span class="truncate-name">Hi, {{ getFirstName(customer().name) }}</span>
+      </h1>
     </div>
 
-    <!-- Quick Wallet Balance & Notification Bell -->
+    <!-- Quick Wallet Balance (3D Flipped) & Notification Bell -->
     <div class="header-actions">
-      <!-- Wallet Balance Pill -->
-      <button class="wallet-pill bd-btn-primary" (click)="onWalletClick()" type="button" aria-label="View Wallet">
-        <ion-icon name="wallet-outline" class="wallet-icon" />
-        <div class="wallet-info">
-          <span class="wallet-label">Wallet</span>
-          <span class="wallet-amount">₹{{ (wallet().balance || 0) | number:'1.0-0' }}</span>
+      <!-- 3D Flipping Wallet Balance Pill -->
+      <div class="wallet-flip-container" (click)="onWalletClick()" role="button" aria-label="View Wallet">
+        <div class="wallet-flip-card" [class.flipped]="isFlipped()">
+          <!-- Front Face: Cash Wallet Balance -->
+          <div class="flip-face flip-front">
+            <ion-icon name="wallet-outline" class="wallet-icon" />
+            <div class="wallet-info">
+              <span class="wallet-label">Wallet</span>
+              <span class="wallet-amount">₹{{ (wallet().balance || 0) | number:'1.0-0' }}</span>
+            </div>
+          </div>
+
+          <!-- Back Face: Bizz Coins Balance -->
+          <div class="flip-face flip-back">
+            <span class="coin-emoji-icon">🪙</span>
+            <div class="wallet-info">
+              <span class="wallet-label coin-label">Coins</span>
+              <span class="wallet-amount coin-amount">{{ (bizzCoinsBalance() || 0) | number:'1.0-0' }}</span>
+            </div>
+          </div>
         </div>
-      </button>
+      </div>
 
       <!-- Notification Bell -->
       <button class="notif-btn bd-btn-outline" (click)="onNotificationClick()" type="button" aria-label="Notifications">
         <ion-icon name="notifications-outline" class="notif-icon" />
         @if ((unreadCount() || 0) > 0) {
-        <span class="notif-badge">{{ unreadCount() }}</span>
+          <span class="notif-badge">{{ unreadCount() }}</span>
         }
       </button>
     </div>

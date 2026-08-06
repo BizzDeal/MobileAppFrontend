@@ -4,12 +4,12 @@ import { addIcons } from 'ionicons';
 import { locationOutline, pricetagOutline, sparklesOutline, timeOutline } from 'ionicons/icons';
 import { OfferDTO } from '../../models/home.model';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
-import { CachedBgImgDirective } from '../../../../shared/directives/cached-bg-img.directive';
+import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-offer-card',
   standalone: true,
-  imports: [IonIcon, CachedImgDirective, CachedBgImgDirective],
+  imports: [IonIcon, CachedImgDirective],
   templateUrl: './offer-card.component.html',
   styleUrl: './offer-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,5 +32,13 @@ export class OfferCardComponent {
     if (diffDays <= 0) return 'Expires today';
     if (diffDays === 1) return '1 day left';
     return `${diffDays} days left`;
+  }
+
+  getInitials(name?: string | null): string {
+    return getInitials(name);
+  }
+
+  getAvatarColor(name?: string | null): string {
+    return getAvatarColor(name);
   }
 }

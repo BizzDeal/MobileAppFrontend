@@ -138,18 +138,14 @@
     </ion-header>
     <div class="auto-height-content">
       <div class="deal-detail-view">
-        @if (deal.imageUrl) {
-        <div class="detail-hero" [appCachedBgImg]="deal.imageUrl">
-          <span class="detail-discount">{{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' +
-            deal.discount_value + ' OFF' }}</span>
-        </div>
-        } @else {
-        <div class="detail-hero fallback-hero" [style.background]="getAvatarColor(deal.businessName)">
+        <div class="detail-hero" [style.background]="getAvatarColor(deal.businessName)">
           <span class="fallback-hero-text">{{ getInitials(deal.businessName) }}</span>
+          @if (deal.imageUrl) {
+            <img [appCachedImg]="deal.imageUrl" [alt]="deal.title" class="hero-img" />
+          }
           <span class="detail-discount">{{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' +
             deal.discount_value + ' OFF' }}</span>
         </div>
-        }
         <div class="detail-body">
           <span class="detail-biz">{{ deal.businessName }}</span>
           <h2 class="detail-title">{{ deal.title }}</h2>
@@ -227,13 +223,12 @@
     </ion-header>
     <div class="auto-height-content">
       <div class="biz-detail-view">
-        @if (biz.bannerUrl) {
-        <div class="detail-hero" [appCachedBgImg]="biz.bannerUrl"></div>
-        } @else {
-        <div class="detail-hero fallback-hero" [style.background]="getAvatarColor(biz.name)">
+        <div class="detail-hero" [style.background]="getAvatarColor(biz.name)">
           <span class="fallback-hero-text">{{ getInitials(biz.name) }}</span>
+          @if (biz.bannerUrl) {
+            <img [appCachedImg]="biz.bannerUrl" [alt]="biz.name" class="hero-img" />
+          }
         </div>
-        }
         <div class="detail-body">
           <div class="biz-header-row">
             @if (biz.logoUrl) {
@@ -257,6 +252,31 @@
             <span>🏢 GST: {{ biz.gst_number }}</span>
             }
           </div>
+
+          @if (loadingBizCoinsOffer()) {
+            <div class="bizz-coins-offer-loading">
+              <ion-spinner name="crescent"></ion-spinner>
+              <span>Loading Bizz Coin Offer details...</span>
+            </div>
+          } @else if (selectedBizCoinsOffer(); as offer) {
+            <div class="bizz-coins-detail-card">
+              <div class="card-badge-row">
+                <span class="offer-type-badge">
+                  <ion-icon name="ribbon-outline" class="badge-icon"></ion-icon>
+                  Bizz Coin Offer
+                </span>
+                <span class="offer-status-badge" [class.active]="offer.status === 'APPROVED'">
+                  {{ offer.status === 'APPROVED' ? 'Active' : (offer.status | titlecase) }}
+                </span>
+              </div>
+              <h3 class="offer-title">{{ offer.title }}</h3>
+              <p class="offer-description">{{ offer.description }}</p>
+              <div class="offer-validity-row">
+                <ion-icon name="calendar-outline" class="validity-icon"></ion-icon>
+                <span>Valid: {{ offer.start_date | date:'mediumDate' }} - {{ offer.end_date | date:'mediumDate' }}</span>
+              </div>
+            </div>
+          }
           @if (userRole() !== 'CUSTOMER') {
           <button type="button" class="bd-btn-primary full-btn"
             style="margin-top: var(--bizzdeal-spacing-md); display: flex; align-items: center; justify-content: center;"

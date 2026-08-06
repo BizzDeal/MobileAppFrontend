@@ -8,6 +8,7 @@ import { AuthSessionService } from '../../../core/services/auth-session.service'
 import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 export type MeetingStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
+export type MeetingType = 'REGULAR' | 'SPOTLIGHT';
 export type AttendeeStatus = 'INVITED' | 'ACCEPTED' | 'REJECTED' | 'ATTENDED' | 'MISSED';
 
 export interface Meeting {
@@ -20,6 +21,7 @@ export interface Meeting {
   location: string | null;
   meeting_link: string | null;
   status: MeetingStatus;
+  meeting_type: MeetingType;
   created_at: string;
   updated_at: string;
 }
@@ -132,6 +134,28 @@ export class MeetingsService {
         this._error.set(errMsg);
       }
     });
+  }
+
+  createMeeting(data: Partial<Meeting>): Observable<Meeting> {
+    return this.http.post<any>(`${this.apiUrl}/meetings`, data).pipe(
+      map(res => res?.data || res)
+    );
+  }
+
+  updateMeeting(id: string, data: Partial<Meeting>): Observable<Meeting> {
+    return this.http.put<any>(`${this.apiUrl}/meetings/${id}`, data).pipe(
+      map(res => res?.data || res)
+    );
+  }
+
+  deleteMeeting(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/meetings/${id}`);
+  }
+
+  getAttendeeReport(meetingId: string): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/meetings/${meetingId}/attendee-report`).pipe(
+      map(res => res?.data || res || [])
+    );
   }
 }
 

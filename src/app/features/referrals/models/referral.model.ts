@@ -86,6 +86,11 @@ export interface AdminReferralQueryDto {
   limit?: number;
   search?: string;
   referral_type?: ReferralType;
+  start_date?: string;
+  end_date?: string;
+  dates?: string;
+  state_id?: string;
+  district_id?: string;
 }
 
 export interface AdminReferralSummary {

@@ -6,8 +6,9 @@ import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 
 export interface IssueVoucherRequest {
-  offer_id: string;
+  offer_id?: string;
   customer_phone: string;
+  coins?: number;
 }
 
 export interface MockVoucher {

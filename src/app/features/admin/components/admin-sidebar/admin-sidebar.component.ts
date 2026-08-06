@@ -59,7 +59,6 @@ import { AuthSessionService } from '../../../../core/services/auth-session.servi
       width: 100%;
       height: 100%;
       object-fit: contain;
-      background-color: #ffffff;
       border-radius: 12px;
     }
     .title-wrap h2 {

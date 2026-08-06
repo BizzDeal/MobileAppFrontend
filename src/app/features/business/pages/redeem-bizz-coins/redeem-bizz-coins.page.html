@@ -1,0 +1,306 @@
+<ion-header class="ion-no-border navbar-header">
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn" aria-label="Go Back">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="header-title">Redeem Bizz Coins</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="redeem-bizz-coins-content ion-padding">
+  <div class="page-container">
+
+    <!-- Active Offer Status Warning Banner (if member has no active offer) -->
+    @if (!isCheckingActiveOffer && !hasActiveOffer) {
+      <div class="active-offer-warning-card">
+        <div class="warning-header">
+          <ion-icon name="warning-outline" class="warning-icon"></ion-icon>
+          <div class="warning-title-wrap">
+            <h3 class="warning-title">No Active Bizz Coins Offer</h3>
+            <p class="warning-subtitle">
+              You must have an active Bizz Coins offer to redeem Bizz Coins for customers.
+            </p>
+          </div>
+        </div>
+        <button type="button" class="create-offer-btn" (click)="goToCreateBizzCoinOffer()">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          <span>Create / Manage Bizz Coins Offer</span>
+        </button>
+      </div>
+    }
+
+    <!-- STEP 1: VERIFY CUSTOMER -->
+    @if (step === 'VERIFY') {
+      <div class="step-card fade-in">
+        <div class="card-header-box">
+          <div class="step-badge">Step 1 of 2</div>
+          <h2 class="step-title">Verify Customer</h2>
+          <p class="step-subtitle">Enter customer 10-digit registered phone number to look up their Bizz Coin balance.</p>
+        </div>
+
+        @if (errorMessage) {
+          <div class="alert alert-error" role="alert">
+            <ion-icon name="alert-circle-outline" class="alert-icon"></ion-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+
+        <form [formGroup]="verificationForm" (ngSubmit)="onVerifySubmit()">
+          <div class="form-group">
+            <label for="customer_phone" class="form-label">
+              Customer Phone Number <span class="required-star">*</span>
+            </label>
+
+            <div class="input-field-wrapper">
+              <ion-icon name="call-outline" class="input-icon"></ion-icon>
+              <input
+                id="customer_phone"
+                type="tel"
+                formControlName="customer_phone"
+                placeholder="Enter 10-digit phone number"
+                maxlength="10"
+                class="custom-input"
+                [class.is-invalid]="vf['customer_phone'].touched && vf['customer_phone'].invalid"
+              />
+              @if (isSearchingCustomer) {
+                <ion-spinner name="crescent" class="input-spinner"></ion-spinner>
+              }
+            </div>
+
+            <!-- Reserve fixed height to prevent layout shift -->
+            <div class="error-container">
+              @if (vf['customer_phone'].touched && vf['customer_phone'].errors?.['required']) {
+                <span class="error-text">Customer phone number is required.</span>
+              } @else if (vf['customer_phone'].touched && vf['customer_phone'].errors?.['pattern']) {
+                <span class="error-text">Please enter a valid 10-digit phone number.</span>
+              } @else if (customerNotFound) {
+                <span class="error-text">No customer account found with this phone number.</span>
+              }
+            </div>
+          </div>
+
+          <!-- Customer Found Card Preview -->
+          @if (searchedCustomer) {
+            <div class="customer-preview-card">
+              <div class="avatar-wrap">
+                @if (searchedCustomer.profile_pic_url && !avatarLoadError) {
+                  <img
+                    [appCachedImg]="searchedCustomer.profile_pic_url"
+                    [alt]="searchedCustomer.name"
+                    class="avatar-img"
+                    (error)="avatarLoadError = true"
+                  />
+                } @else {
+                  <div
+                    class="avatar-fallback"
+                    [style.background]="getAvatarColor(searchedCustomer.name)"
+                  >
+                    {{ getInitials(searchedCustomer.name) }}
+                  </div>
+                }
+              </div>
+
+              <div class="customer-info">
+                <h4 class="customer-name">{{ searchedCustomer.name }}</h4>
+                <p class="customer-phone">{{ searchedCustomer.phone }}</p>
+                <div class="coin-balance-pill">
+                  <ion-icon name="wallet-outline" class="coin-icon"></ion-icon>
+                  <span>Available Coins: <strong>{{ searchedCustomer.coins_balance }}</strong></span>
+                </div>
+              </div>
+
+              <ion-icon name="checkmark-circle-outline" class="verified-icon"></ion-icon>
+            </div>
+          }
+
+          <div class="action-btn-wrapper">
+            <button
+              type="submit"
+              class="primary-submit-btn"
+              [disabled]="verificationForm.invalid || !searchedCustomer || isSearchingCustomer || !hasActiveOffer"
+            >
+              <span>Continue to Redeem</span>
+              <ion-icon name="sparkles-outline"></ion-icon>
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    <!-- STEP 2: REDEEM FORM -->
+    @if (step === 'REDEEM' && searchedCustomer) {
+      <div class="step-card fade-in">
+        <div class="card-header-box">
+          <div class="step-badge">Step 2 of 2</div>
+          <h2 class="step-title">Redeem Bizz Coins</h2>
+          <p class="step-subtitle">Specify how many Bizz Coins to redeem from customer's wallet.</p>
+        </div>
+
+        <!-- Customer Summary Header -->
+        <div class="customer-summary-bar">
+          <div class="summary-left">
+            <span class="summary-label">Customer</span>
+            <span class="summary-val">{{ searchedCustomer.name }} ({{ searchedCustomer.phone }})</span>
+          </div>
+          <div class="summary-right">
+            <span class="summary-label">Available Balance</span>
+            <span class="summary-balance">🪙 {{ searchedCustomer.coins_balance }}</span>
+          </div>
+        </div>
+
+        @if (errorMessage) {
+          <div class="alert alert-error" role="alert">
+            <ion-icon name="alert-circle-outline" class="alert-icon"></ion-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+
+        <form [formGroup]="redemptionForm" (ngSubmit)="onSubmitRedeem()">
+          <!-- Coins to Redeem -->
+          <div class="form-group">
+            <label for="coins" class="form-label">
+              Coins to Redeem <span class="required-star">*</span>
+            </label>
+
+            <div class="input-field-wrapper">
+              <ion-icon name="sparkles-outline" class="input-icon"></ion-icon>
+              <input
+                id="coins"
+                type="number"
+                formControlName="coins"
+                placeholder="e.g. 50"
+                min="1"
+                [max]="searchedCustomer.coins_balance"
+                class="custom-input"
+                [class.is-invalid]="rf['coins'].touched && rf['coins'].invalid"
+              />
+            </div>
+
+            <!-- Reserve fixed height to prevent layout shift -->
+            <div class="error-container">
+              @if (rf['coins'].touched && rf['coins'].errors?.['required']) {
+                <span class="error-text">Please enter coins amount to redeem.</span>
+              } @else if (rf['coins'].touched && rf['coins'].errors?.['min']) {
+                <span class="error-text">Must redeem at least 1 Bizz Coin.</span>
+              } @else if (rf['coins'].touched && rf['coins'].errors?.['max']) {
+                <span class="error-text">Cannot exceed customer available balance of {{ searchedCustomer.coins_balance }}.</span>
+              }
+            </div>
+          </div>
+
+          <!-- Total Bill Amount -->
+          <div class="form-group">
+            <label for="bill_amount" class="form-label">
+              Total Bill Amount <span class="required-star">*</span>
+            </label>
+
+            <div class="input-field-wrapper">
+              <ion-icon name="receipt-outline" class="input-icon"></ion-icon>
+              <input
+                id="bill_amount"
+                type="number"
+                formControlName="bill_amount"
+                placeholder="e.g. 500"
+                min="1"
+                class="custom-input"
+                [class.is-invalid]="rf['bill_amount'].touched && rf['bill_amount'].invalid"
+              />
+            </div>
+            
+            <div class="error-container">
+              @if (rf['bill_amount'].touched && rf['bill_amount'].errors?.['required']) {
+                <span class="error-text">Please enter the total bill amount.</span>
+              } @else if (rf['bill_amount'].touched && rf['bill_amount'].errors?.['min']) {
+                <span class="error-text">Bill amount must be at least ₹1.</span>
+              }
+            </div>
+          </div>
+
+
+
+          <!-- Live Breakdown Calculation -->
+          <div class="calculation-summary-card">
+            <div class="calc-row">
+              <span class="calc-label">Total Bill Amount:</span>
+              <span class="calc-val">₹ {{ rf['bill_amount'].value || 0 }}</span>
+            </div>
+            <div class="calc-row highlight-row">
+              <span class="calc-label">Bizz Coins Redeemed:</span>
+              <span class="calc-val text-debit">- ₹ {{ rf['coins'].value || 0 }}</span>
+            </div>
+            <div class="calc-divider"></div>
+            <div class="calc-row total-row">
+              <span class="calc-label">Amount to Pay:</span>
+              <span class="calc-val text-primary">₹ {{ remainingBillToPay }}</span>
+            </div>
+          </div>
+          
+          <div class="remaining-coins-indicator">
+            <span>Customer's Remaining Coin Balance:</span>
+            <strong>🪙 {{ remainingCoins }}</strong>
+          </div>
+
+          <div class="action-btn-group">
+            <button type="button" class="secondary-btn" (click)="resetPage()" [disabled]="isRedeeming">
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="primary-submit-btn"
+              [disabled]="redemptionForm.invalid || isRedeeming"
+            >
+              @if (isRedeeming) {
+                <ion-spinner name="crescent"></ion-spinner>
+                <span>Redeeming...</span>
+              } @else {
+                <span>Confirm & Redeem</span>
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    <!-- STEP 3: SUCCESS STATE -->
+    @if (step === 'SUCCESS' && redemptionResult) {
+      <div class="success-card fade-in">
+        <div class="success-icon-badge">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+
+        <h2 class="success-title">Redemption Successful!</h2>
+        <p class="success-message">{{ redemptionResult.message }}</p>
+
+        <div class="success-details-box">
+          <div class="detail-item">
+            <span class="detail-label">Customer</span>
+            <span class="detail-value">{{ redemptionResult.customer_name }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Coins Redeemed</span>
+            <span class="detail-value text-debit">- 🪙 {{ redemptionResult.coins_redeemed }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">New Customer Balance</span>
+            <span class="detail-value text-primary">🪙 {{ redemptionResult.new_balance }}</span>
+          </div>
+        </div>
+
+        <div class="success-actions">
+          <button type="button" class="primary-submit-btn" (click)="goBack()">
+            <span>Return to Dashboard</span>
+          </button>
+
+          <button type="button" class="secondary-btn" (click)="resetPage()">
+            <span>Redeem Another</span>
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+</ion-content>

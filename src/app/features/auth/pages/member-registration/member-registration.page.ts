@@ -18,7 +18,7 @@ import { addIcons } from 'ionicons';
 import { cameraOutline, caretDownOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { MemberRegistrationService } from './member-registration.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
-import { AnimatedBackgroundComponent } from '../../../../shared/components/animated-background/animated-background.component';
+
 
 @Component({
   selector: 'app-member-registration',
@@ -38,7 +38,6 @@ import { AnimatedBackgroundComponent } from '../../../../shared/components/anima
     IonSelectOption,
     IonTextarea,
     CachedImgDirective,
-    AnimatedBackgroundComponent,
   ],
   providers: [MemberRegistrationService],
   templateUrl: './member-registration.page.html',

@@ -1,5 +1,5 @@
 export type BusinessStatus = 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED';
-export type OfferType = 'DISCOUNT' | 'CASHBACK';
+export type OfferType = 'DISCOUNT' | 'CASHBACK' | 'BIZZ_COINS';
 export type DiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
 export type OfferStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED' | 'INACTIVE';
 export type VoucherStatus = 'ISSUED' | 'REDEEMED' | 'CANCELLED';
@@ -37,6 +37,8 @@ export interface BusinessDTO {
   categoryName?: string;
   logoUrl?: string;
   bannerUrl?: string;
+  hasBizzCoinOffer?: boolean;
+  has_bizz_coin_offer?: boolean;
 }
 
 export interface OfferDTO {

@@ -62,9 +62,10 @@ ion-content {
 }
 
 .app-title-image {
-  height: 50px;
+  height: 32px;
   width: auto;
-  margin-bottom: 4px;
+  margin-top: -10px;
+  margin-bottom: 20px;
   object-fit: contain;
 
   // Hero transition from splash screen

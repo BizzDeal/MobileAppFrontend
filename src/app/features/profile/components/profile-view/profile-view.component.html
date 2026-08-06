@@ -64,7 +64,8 @@
       <img [appCachedImg]="selectedPhotoUrl()" (error)="picLoadError.set(true)" alt="Avatar Preview"
         class="profile-avatar" />
       } @else {
-      <div class="initials-avatar profile-avatar">{{ getInitials(profileForm.value.full_name || profile()?.full_name) }}
+      <div class="initials-avatar profile-avatar" [style.background]="getAvatarColor(profileForm.value.full_name || profile()?.full_name)">
+        {{ getInitials(profileForm.value.full_name || profile()?.full_name) }}
       </div>
       }
 
@@ -224,7 +225,8 @@
           style="width: 100%; height: 100%; object-fit: cover;" />
         } @else {
         <div class="initials-avatar business-logo-preview"
-          style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--bizzdeal-primary), #3a86ff); color: white; font-size: 3rem; font-weight: 700;">
+          [style.background]="getAvatarColor(profileForm.value.business_name || profile()?.business_name || 'My Business')"
+          style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; font-weight: 700;">
           {{ getInitials(profileForm.value.business_name || profile()?.business_name || 'My Business') }}
         </div>
         }

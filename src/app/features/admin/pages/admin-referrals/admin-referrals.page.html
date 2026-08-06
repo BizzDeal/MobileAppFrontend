@@ -130,6 +130,29 @@
       </div>
     </div>
 
+    <!-- Active Filter Chips -->
+    <div class="active-filters" *ngIf="filterState.startDate || filterState.dates || filterState.stateId || filterState.districtId">
+      <div class="filter-chip">
+        <ion-icon name="filter-outline"></ion-icon>
+        <span class="chip-text">
+          <ng-container *ngIf="filterState.dates">
+            Multiple Dates Selected
+          </ng-container>
+          <ng-container *ngIf="!filterState.dates && filterState.startDate">
+            {{ filterState.startDate | date:'mediumDate' }} 
+            <ng-container *ngIf="filterState.endDate && filterState.endDate !== filterState.startDate">
+              - {{ filterState.endDate | date:'mediumDate' }}
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="(filterState.startDate || filterState.dates) && (filterState.stateId || filterState.districtId)"> • </ng-container>
+          <ng-container *ngIf="filterState.stateId || filterState.districtId">Region Filtered</ng-container>
+        </span>
+        <ion-button fill="clear" size="small" class="chip-clear-btn" (click)="clearDateFilter()">
+          <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
     <!-- Content State Container -->
     <div class="content-body">
       <!-- Loading State -->

@@ -24,8 +24,30 @@
   position: relative;
   width: 100%;
   height: 130px;
-  background-size: cover;
-  background-position: center;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .initials-text {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 2rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    z-index: 1;
+    font-family: var(--bizzdeal-font-family);
+  }
+
+  .card-banner-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2;
+  }
 }
 
 .image-overlay {
@@ -49,6 +71,29 @@
   padding: 4px 10px;
   border-radius: var(--bizzdeal-radius-full);
   z-index: 2;
+}
+
+.bizz-coin-tag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  color: #0f172a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: var(--bizzdeal-radius-full);
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  letter-spacing: 0.2px;
+
+  .tag-icon {
+    font-size: 0.82rem;
+    color: #0f172a;
+  }
 }
 
 .discount-pill {

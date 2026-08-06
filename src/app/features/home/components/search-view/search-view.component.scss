@@ -121,23 +121,33 @@
     width: 80px;
     height: 80px;
     border-radius: var(--bizzdeal-radius-lg, 12px);
-    background-size: cover;
-    background-position: center;
     flex-shrink: 0;
     position: relative;
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
-    &.initials-fallback {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .initials-text {
       color: #ffffff;
       font-weight: 800;
       font-size: 1.35rem;
       letter-spacing: 0.5px;
       text-transform: uppercase;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       font-family: var(--bizzdeal-font-family);
+      z-index: 1;
+    }
+
+    .thumbnail-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      z-index: 2;
     }
   }
   

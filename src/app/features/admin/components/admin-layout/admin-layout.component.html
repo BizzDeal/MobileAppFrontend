@@ -16,6 +16,9 @@
         </ion-buttons>
         <ion-title class="font-bold">{{ currentTitle }}</ion-title>
         <ion-buttons slot="end">
+          <ion-button *ngIf="currentTitle === 'Referrals'" fill="clear" (click)="isFilterOpen = true" aria-label="Open Filter">
+            <ion-icon name="filter-outline" slot="icon-only"></ion-icon>
+          </ion-button>
           <app-admin-logout-button></app-admin-logout-button>
         </ion-buttons>
       </ion-toolbar>
@@ -36,3 +39,5 @@
     <app-admin-sidebar (closeSidebar)="closeMobileDrawer()"></app-admin-sidebar>
   </div>
 </div>
+
+<app-admin-referrals-filter-modal [isOpen]="isFilterOpen" [initialFilter]="currentFilterState" (closed)="isFilterOpen = false" (filterApplied)="onFilterApplied($event)"></app-admin-referrals-filter-modal>

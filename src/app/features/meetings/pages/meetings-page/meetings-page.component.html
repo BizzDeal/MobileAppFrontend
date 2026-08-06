@@ -20,19 +20,33 @@
     </ion-segment-button>
   </ion-segment>
 
-  <div class="meetings-list">
-    @for (meeting of meetings(); track meeting.id) {
-      <app-meeting-card 
-        [meeting]="meeting" 
-        (rsvpChange)="handleRsvp($event)" />
-    } @empty {
-      <div class="empty-state">
-        <div class="empty-icon-wrapper">
-          <ion-icon name="calendar-outline"></ion-icon>
+  @if (loading()) {
+    <div style="padding: 16px 0;">
+      <app-card-skeleton [count]="2"></app-card-skeleton>
+    </div>
+  } @else {
+    <div class="meetings-list">
+      @for (meeting of meetings(); track meeting.id) {
+        <app-meeting-card 
+          [meeting]="meeting" 
+          (rsvpChange)="handleRsvp($event)"
+          (editClick)="handleEditMeeting($event)"
+          (viewAttendeesClick)="handleViewAttendees($event)" />
+      } @empty {
+        <div class="empty-state">
+          <div class="empty-icon-wrapper">
+            <ion-icon name="calendar-outline"></ion-icon>
+          </div>
+          <h3>No {{ selectedTab() }} meetings</h3>
+          <p>You don't have any {{ selectedTab() }} meetings scheduled at the moment.</p>
         </div>
-        <h3>No {{ selectedTab() }} meetings</h3>
-        <p>You don't have any {{ selectedTab() }} meetings scheduled at the moment.</p>
-      </div>
-    }
-  </div>
+      }
+    </div>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="meetings-fab">
+    <ion-fab-button (click)="openCreateModal()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </div>

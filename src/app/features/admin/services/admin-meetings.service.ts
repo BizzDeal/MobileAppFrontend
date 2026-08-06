@@ -83,5 +83,6 @@ export interface AttendeeReportItem {
   full_name: string;
   phone: string;
   profile_pic?: string;
+  business_name?: string;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'ATTENDED' | 'MISSED' | 'INVITED';
 }

@@ -1,31 +1,23 @@
 .meeting-card {
   display: flex;
   background: var(--bizzdeal-bg-surface);
-  border-radius: var(--bizzdeal-radius-xl);
-  box-shadow: var(--bizzdeal-shadow-md);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   border: 1px solid var(--bizzdeal-border-color);
   overflow: hidden;
-  position: relative;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-  animation: cardFadeIn 0.5s ease-out;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--bizzdeal-shadow-lg);
-  }
+  animation: cardSlideIn 0.35s ease-out;
 
   &.cancelled {
-    opacity: 0.75;
-    background: var(--bizzdeal-bg-surface-secondary);
+    opacity: 0.65;
   }
 
   &.past {
-    background: var(--bizzdeal-bg-surface-secondary);
+    opacity: 0.8;
   }
 
-  // Left side accent bar
-  .status-accent {
-    width: 6px;
+  // Left accent bar
+  .accent-bar {
+    width: 4px;
     flex-shrink: 0;
 
     &.invited { background: var(--ion-color-warning); }
@@ -33,309 +25,281 @@
     &.rejected { background: var(--ion-color-danger); }
     &.attended { background: var(--ion-color-primary); }
     &.missed { background: var(--bizzdeal-text-tertiary); }
-    
-    /* Admin Meeting Statuses */
     &.scheduled { background: var(--ion-color-primary); }
     &.completed { background: var(--ion-color-success); }
     &.cancelled { background: var(--ion-color-danger); }
   }
 
-  .card-content {
+  .card-body {
     flex: 1;
-    padding: var(--bizzdeal-spacing-lg);
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
-    gap: var(--bizzdeal-spacing-md);
+    gap: 8px;
   }
 
-  .card-header {
+  // Header row: title + status pill
+  .card-top {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--bizzdeal-spacing-md);
+    align-items: center;
+    gap: 8px;
 
-    .title-section {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--bizzdeal-text-primary);
+      line-height: 1.3;
       flex: 1;
-
-      .meeting-title {
-        margin: 0;
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--bizzdeal-text-primary);
-        line-height: 1.4;
-        letter-spacing: -0.01em;
-      }
-
-      .status-badge {
-        align-self: flex-start;
-        font-size: 0.7rem;
-        padding: 2px 8px;
-        border-radius: var(--bizzdeal-radius-sm);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-
-        &.cancelled {
-          background: rgba(239, 68, 68, 0.1);
-          color: var(--ion-color-danger);
-        }
-
-        &.past {
-          background: var(--bizzdeal-bg-surface-tertiary);
-          color: var(--bizzdeal-text-secondary);
-        }
-      }
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .user-status-badge {
-      font-size: 0.72rem;
+    .status-pill {
+      flex-shrink: 0;
+      font-size: 0.65rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 4px 10px;
-      border-radius: var(--bizzdeal-radius-lg);
-      background: var(--bizzdeal-bg-surface-secondary);
-      border: 1px solid var(--bizzdeal-border-color);
+      letter-spacing: 0.4px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      border: 1px solid transparent;
 
+      &.pending {
+        color: var(--bizzdeal-text-secondary);
+        background: rgba(100, 116, 139, 0.08);
+        border-color: rgba(100, 116, 139, 0.15);
+      }
       &.invited {
         color: var(--ion-color-warning);
         background: rgba(245, 158, 11, 0.08);
-        border-color: rgba(245, 158, 11, 0.2);
+        border-color: rgba(245, 158, 11, 0.15);
       }
       &.accepted {
         color: var(--ion-color-success);
         background: rgba(16, 185, 129, 0.08);
-        border-color: rgba(16, 185, 129, 0.2);
+        border-color: rgba(16, 185, 129, 0.15);
       }
       &.rejected {
         color: var(--ion-color-danger);
         background: rgba(239, 68, 68, 0.08);
-        border-color: rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.15);
       }
       &.attended {
         color: var(--ion-color-primary);
         background: rgba(30, 136, 229, 0.08);
-        border-color: rgba(30, 136, 229, 0.2);
+        border-color: rgba(30, 136, 229, 0.15);
       }
       &.missed {
         color: var(--bizzdeal-text-secondary);
         background: rgba(100, 116, 139, 0.08);
-        border-color: rgba(100, 116, 139, 0.2);
+        border-color: rgba(100, 116, 139, 0.15);
       }
-      &.pending {
-        color: var(--bizzdeal-text-secondary);
-        background: rgba(100, 116, 139, 0.08);
-        border-color: rgba(100, 116, 139, 0.2);
-      }
-
-      /* Admin Meeting Statuses */
       &.scheduled {
         color: var(--ion-color-primary);
-        background: rgba(30, 136, 229, 0.1);
-        border-color: rgba(30, 136, 229, 0.3);
+        background: rgba(30, 136, 229, 0.08);
+        border-color: rgba(30, 136, 229, 0.15);
       }
       &.completed {
         color: var(--ion-color-success);
-        background: rgba(16, 185, 129, 0.1);
-        border-color: rgba(16, 185, 129, 0.3);
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.15);
       }
       &.cancelled {
         color: var(--ion-color-danger);
-        background: rgba(239, 68, 68, 0.1);
-        border-color: rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.15);
       }
     }
   }
 
-  .meeting-desc {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--bizzdeal-text-secondary);
-    line-height: 1.5;
+  // Meeting type + state badge row
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .type-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(100, 116, 139, 0.08);
+      color: var(--bizzdeal-text-secondary);
+
+      ion-icon {
+        font-size: 0.75rem;
+      }
+
+      &.spotlight {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+      }
+    }
+
+    .state-badge {
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 2px 6px;
+      border-radius: 4px;
+
+      &.cancelled {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--ion-color-danger);
+      }
+
+      &.past {
+        background: rgba(100, 116, 139, 0.08);
+        color: var(--bizzdeal-text-tertiary);
+      }
+    }
   }
 
-  // Modern Details Grid Layout
-  .meeting-details-grid {
+  // Description
+  .desc {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--bizzdeal-text-secondary);
+    line-height: 1.4;
+  }
+
+  // Compact detail rows
+  .details {
     display: flex;
     flex-direction: column;
-    gap: var(--bizzdeal-spacing-md);
-    padding: var(--bizzdeal-spacing-md) 0;
+    gap: 4px;
+    padding-top: 6px;
     border-top: 1px solid var(--bizzdeal-border-color);
-    border-bottom: 1px solid var(--bizzdeal-border-color);
 
-    .detail-item {
+    .detail-row {
       display: flex;
       align-items: center;
-      gap: var(--bizzdeal-spacing-md);
+      gap: 6px;
 
-      .icon-wrapper {
-        width: 36px;
-        height: 36px;
-        border-radius: var(--bizzdeal-radius-md);
-        background: rgba(30, 136, 229, 0.06); // very soft primary overlay
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      ion-icon {
+        font-size: 0.85rem;
         color: var(--ion-color-primary);
-
-        ion-icon {
-          font-size: 1.15rem;
-        }
+        flex-shrink: 0;
       }
 
-      .detail-text {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-
-        .detail-label {
-          font-size: 0.72rem;
-          color: var(--bizzdeal-text-tertiary);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .detail-value {
-          font-size: 0.88rem;
-          font-weight: 500;
-          color: var(--bizzdeal-text-primary);
-        }
+      span {
+        font-size: 0.8rem;
+        color: var(--bizzdeal-text-primary);
+        font-weight: 500;
       }
 
-      &.link-item {
-        .icon-wrapper {
-          background: rgba(14, 165, 233, 0.08);
-          color: var(--ion-color-secondary);
-        }
-
-        .link-action {
+      &.link {
+        a {
+          font-size: 0.8rem;
           color: var(--ion-color-primary);
           text-decoration: none;
           font-weight: 600;
-          transition: color 0.2s ease;
-
-          &:hover {
-            color: var(--bizzdeal-text-link);
-            text-decoration: underline;
-          }
         }
       }
     }
   }
 
-  // RSVP Action Panel Styling
-  .action-section {
+  // Actions
+  .actions {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: var(--bizzdeal-spacing-md);
-    margin-top: 4px;
-
-    .action-prompt {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--bizzdeal-text-primary);
-    }
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--bizzdeal-border-color);
 
     &.admin-actions {
       justify-content: flex-end;
-      flex-wrap: nowrap;
-      
-      .edit-action-btn, .view-attendees-btn {
-        display: flex;
+
+      .action-btn {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
-        height: 38px;
-        padding: 0 16px;
-        border-radius: var(--bizzdeal-radius-lg);
-        font-size: 0.88rem;
+        gap: 4px;
+        height: 32px;
+        padding: 0 12px;
+        border-radius: 8px;
+        font-size: 0.78rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        background: var(--bizzdeal-bg-surface-secondary);
         border: 1px solid var(--bizzdeal-border-color);
-        color: var(--bizzdeal-text-primary);
+        background: var(--bizzdeal-bg-surface);
+        color: var(--bizzdeal-text-secondary);
+        transition: all 0.2s ease;
 
         ion-icon {
-          font-size: 1.2rem;
-          color: var(--ion-color-primary);
-        }
-
-        &:hover {
-          background: rgba(30, 136, 229, 0.08);
-          border-color: rgba(30, 136, 229, 0.2);
-          color: var(--ion-color-primary);
+          font-size: 0.95rem;
         }
 
         &:active {
           transform: scale(0.96);
         }
-      }
 
-      .view-attendees-btn {
-        color: var(--bizzdeal-text-secondary);
-        ion-icon {
-          color: var(--bizzdeal-text-secondary);
+        &.primary {
+          color: var(--ion-color-primary);
+          border-color: rgba(30, 136, 229, 0.2);
+          background: rgba(30, 136, 229, 0.04);
         }
       }
     }
 
-    .action-buttons {
-      display: flex;
-      gap: 12px;
-      flex: 1;
-      justify-content: flex-end;
-      min-width: 220px;
+    &.rsvp-actions {
+      justify-content: space-between;
 
-      .rsvp-action-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        height: 38px;
-        padding: 0 16px;
-        border-radius: var(--bizzdeal-radius-lg);
-        font-size: 0.88rem;
+      .rsvp-label {
+        font-size: 0.8rem;
         font-weight: 600;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid transparent;
+        color: var(--bizzdeal-text-primary);
+      }
 
-        ion-icon {
-          font-size: 1.2rem;
-        }
+      .rsvp-btns {
+        display: flex;
+        gap: 8px;
 
-        &:active {
-          transform: scale(0.96);
-        }
-
-        &.reject-btn {
-          background: var(--bizzdeal-bg-surface-secondary);
-          border-color: var(--bizzdeal-border-color);
+        .rsvp-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          height: 32px;
+          padding: 0 12px;
+          border-radius: 8px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          cursor: pointer;
+          border: 1px solid var(--bizzdeal-border-color);
+          background: var(--bizzdeal-bg-surface);
           color: var(--bizzdeal-text-secondary);
+          transition: all 0.2s ease;
 
-          &:hover, &.active {
-            background: rgba(239, 68, 68, 0.08);
-            border-color: rgba(239, 68, 68, 0.2);
-            color: var(--ion-color-danger);
+          ion-icon {
+            font-size: 0.95rem;
           }
-        }
 
-        &.accept-btn {
-          background: var(--bizzdeal-bg-surface-secondary);
-          border-color: var(--bizzdeal-border-color);
-          color: var(--bizzdeal-text-secondary);
+          &:active {
+            transform: scale(0.96);
+          }
 
-          &:hover, &.active {
-            background: var(--bizzdeal-gradient-primary);
-            color: var(--bizzdeal-text-on-primary);
-            box-shadow: var(--bizzdeal-shadow-primary);
-            border-color: transparent;
+          &.reject {
+            &.active, &:hover {
+              background: rgba(239, 68, 68, 0.06);
+              border-color: rgba(239, 68, 68, 0.2);
+              color: var(--ion-color-danger);
+            }
+          }
+
+          &.accept {
+            &.active, &:hover {
+              background: rgba(30, 136, 229, 0.08);
+              border-color: rgba(30, 136, 229, 0.25);
+              color: var(--ion-color-primary);
+            }
           }
         }
       }
@@ -343,10 +307,10 @@
   }
 }
 
-@keyframes cardFadeIn {
+@keyframes cardSlideIn {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;

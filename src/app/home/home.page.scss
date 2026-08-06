@@ -307,21 +307,29 @@
 .detail-hero {
   width: 100%;
   height: 220px;
-  background-size: cover;
-  background-position: center;
   position: relative;
-}
-
-.fallback-hero {
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   .fallback-hero-text {
     font-size: 4rem;
     font-weight: 800;
     color: rgba(255, 255, 255, 0.4);
     letter-spacing: 2px;
+    z-index: 1;
+    font-family: var(--bizzdeal-font-family);
+  }
+
+  .hero-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2;
   }
 }
 
@@ -383,6 +391,97 @@
     display: flex;
     align-items: center;
     gap: 8px;
+  }
+}
+
+.bizz-coins-offer-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  color: var(--bizzdeal-text-secondary);
+  background: var(--bizzdeal-bg-surface-secondary);
+  border-radius: var(--bizzdeal-radius-md);
+  margin-bottom: var(--bizzdeal-spacing-md);
+}
+
+.bizz-coins-detail-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(254, 240, 138, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--bizzdeal-radius-lg);
+  padding: 14px 16px;
+  margin-bottom: var(--bizzdeal-spacing-md);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.08);
+
+  .card-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .offer-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #d97706;
+
+      .badge-icon {
+        font-size: 0.95rem;
+        color: #f59e0b;
+      }
+    }
+
+    .offer-status-badge {
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--bizzdeal-text-secondary);
+
+      &.active {
+        background: rgba(34, 197, 94, 0.18);
+        color: #16a34a;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+    }
+  }
+
+  .offer-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--bizzdeal-text-primary);
+    margin: 2px 0 0;
+    line-height: 1.3;
+  }
+
+  .offer-description {
+    font-size: 0.88rem;
+    color: var(--bizzdeal-text-secondary);
+    margin: 0;
+    line-height: 1.45;
+  }
+
+  .offer-validity-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--bizzdeal-text-tertiary);
+    margin-top: 4px;
+
+    .validity-icon {
+      font-size: 0.9rem;
+      color: var(--bizzdeal-text-tertiary);
+    }
   }
 }
 

@@ -1,6 +1,10 @@
 <div class="offer-card" (click)="cardClick.emit(offer())">
   <!-- Image Header & Discount Badge -->
-  <div class="card-image-box" [appCachedBgImg]="offer().imageUrl">
+  <div class="card-image-box" [style.background]="getAvatarColor(offer().businessName || offer().title)">
+    <span class="initials-text">{{ getInitials(offer().businessName || offer().title) }}</span>
+    @if (offer().imageUrl) {
+      <img [appCachedImg]="offer().imageUrl" [alt]="offer().title" class="card-img" />
+    }
     <div class="image-overlay"></div>
     <span class="discount-badge">
       {{ offer().discount_type === 'PERCENTAGE' ? offer().discount_value + '% OFF' : '₹' + offer().discount_value + ' OFF' }}

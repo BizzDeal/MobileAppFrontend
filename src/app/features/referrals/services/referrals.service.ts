@@ -34,9 +34,16 @@ export class ReferralsService {
     if (query.referral_type) params = params.set('referral_type', query.referral_type);
     if (query.page) params = params.set('page', query.page);
     if (query.limit) params = params.set('limit', query.limit);
+    if (query.start_date) params = params.set('start_date', query.start_date);
+    if (query.end_date) params = params.set('end_date', query.end_date);
+    if (query.dates) params = params.set('dates', query.dates);
+    if (query.state_id) params = params.set('state_id', query.state_id);
+    if (query.district_id) params = params.set('district_id', query.district_id);
 
     return this.http.get<AdminReferralResponse>(`${this.apiUrl}/referrals/admin`, { params });
   }
+
+
 
   createReferralSlip(dto: CreateReferralSlipDto): Observable<ReferralDTO> {
     return this.http.post<any>(`${this.apiUrl}/referrals`, dto, {

@@ -17,13 +17,13 @@ import {
 import { IonSkeletonText, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/standalone';
 import { BusinessDTO, OfferDTO } from '../../models/home.model';
 import { HomeService } from '../../services/home.service';
-import { CachedBgImgDirective } from '../../../../shared/directives/cached-bg-img.directive';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-search-view',
   standalone: true,
-  imports: [IonIcon, IonSearchbar, DatePipe, CachedBgImgDirective, IonSkeletonText, IonInfiniteScroll, IonInfiniteScrollContent],
+  imports: [IonIcon, IonSearchbar, DatePipe, CachedImgDirective, IonSkeletonText, IonInfiniteScroll, IonInfiniteScrollContent],
   templateUrl: './search-view.component.html',
   styleUrl: './search-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

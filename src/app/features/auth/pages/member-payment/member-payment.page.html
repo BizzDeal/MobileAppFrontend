@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content class="ion-padding" [scrollY]="true">
-  <app-animated-background></app-animated-background>
+
   @if (payService.onboardingService.isLoadingPaymentSettings()) {
     <div class="loading-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80%; min-height: 350px;">
       <ion-spinner name="crescent" color="primary"></ion-spinner>

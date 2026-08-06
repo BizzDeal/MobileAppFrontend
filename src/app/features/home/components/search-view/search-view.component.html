@@ -55,13 +55,12 @@
         <div class="results-list">
           @for (biz of displayedBusinesses(); track biz.id) {
             <div class="result-card business-item" (click)="businessClick.emit(biz)">
-              @if (biz.logoUrl) {
-                <div class="card-thumbnail" [appCachedBgImg]="biz.logoUrl"></div>
-              } @else {
-                <div class="card-thumbnail initials-fallback" [style.background]="getAvatarColor(biz.name)">
-                  <span>{{ getInitials(biz.name) }}</span>
-                </div>
-              }
+              <div class="card-thumbnail" [style.background]="getAvatarColor(biz.name)">
+                <span class="initials-text">{{ getInitials(biz.name) }}</span>
+                @if (biz.logoUrl) {
+                  <img [appCachedImg]="biz.logoUrl" [alt]="biz.name" class="thumbnail-img" />
+                }
+              </div>
               
               <div class="card-info">
                 <div class="card-header">
@@ -117,20 +116,15 @@
         <div class="results-list">
           @for (offer of displayedOffers(); track offer.id) {
             <div class="result-card offer-item" (click)="offerClick.emit(offer)">
-              @if (offer.imageUrl) {
-                <div class="card-thumbnail" [appCachedBgImg]="offer.imageUrl">
-                  <span class="discount-banner">
-                    {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '% OFF' : '₹' + offer.discount_value + ' OFF' }}
-                  </span>
-                </div>
-              } @else {
-                <div class="card-thumbnail initials-fallback" [style.background]="getAvatarColor(offer.businessName || offer.title)">
-                  <span>{{ getInitials(offer.businessName || offer.title) }}</span>
-                  <span class="discount-banner">
-                    {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '% OFF' : '₹' + offer.discount_value + ' OFF' }}
-                  </span>
-                </div>
-              }
+              <div class="card-thumbnail" [style.background]="getAvatarColor(offer.businessName || offer.title)">
+                <span class="initials-text">{{ getInitials(offer.businessName || offer.title) }}</span>
+                @if (offer.imageUrl) {
+                  <img [appCachedImg]="offer.imageUrl" [alt]="offer.title" class="thumbnail-img" />
+                }
+                <span class="discount-banner">
+                  {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '% OFF' : '₹' + offer.discount_value + ' OFF' }}
+                </span>
+              </div>
               
               <div class="card-info">
                 <div class="card-header">

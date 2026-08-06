@@ -42,18 +42,105 @@
   }
 }
 
-// 2. Balance Card (Premium Gradient Glassmorphism)
+// 2. Auto Horizontal Scroll Loop Carousel
+.carousel-container {
+  position: relative;
+  margin-bottom: var(--bizzdeal-spacing-md);
+}
+
+.carousel-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border-radius: var(--bizzdeal-radius-xl);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 .balance-card {
   position: relative;
   overflow: hidden;
   border-radius: var(--bizzdeal-radius-xl);
-  box-shadow: var(--bizzdeal-shadow-primary-glow);
-  margin-bottom: var(--bizzdeal-spacing-lg);
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  margin-bottom: 0;
+
+  &.cash-card {
+    box-shadow: var(--bizzdeal-shadow-primary-glow);
+
+    .balance-card-inner {
+      background: var(--bizzdeal-gradient-primary-diagonal);
+    }
+  }
+
+  &.bizz-coin-card {
+    box-shadow: 0 10px 25px rgba(217, 119, 6, 0.25);
+
+    .balance-card-inner {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 60%, #78350f 100%);
+      color: #fff;
+    }
+
+    .coin-glow {
+      background: radial-gradient(circle, rgba(254, 240, 138, 0.35) 0%, rgba(255, 255, 255, 0) 70%);
+    }
+
+    .coin-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .coin-ribbon-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(6px);
+      padding: 3px 10px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #fef08a;
+
+      ion-icon {
+        font-size: 13px;
+      }
+    }
+
+    .coin-amount-text {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ffffff;
+
+      .coin-emoji {
+        font-size: 32px;
+      }
+
+      .coin-unit {
+        font-size: 18px;
+        font-weight: 600;
+        color: #fef08a;
+      }
+    }
+
+    .coin-gift-icon {
+      font-size: 20px;
+      color: #fef08a;
+    }
+  }
   
   .balance-card-inner {
     position: relative;
     z-index: 2;
-    background: var(--bizzdeal-gradient-primary-diagonal);
     padding: var(--bizzdeal-spacing-lg);
     color: var(--bizzdeal-text-on-primary);
   }
@@ -135,6 +222,34 @@
   }
 }
 
+/* Carousel Indicator Dots */
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    outline: none;
+    border-radius: 50%;
+    background-color: rgba(148, 163, 184, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+
+    &.active {
+      width: 22px;
+      border-radius: 12px;
+      background-color: var(--ion-color-primary, #3b82f6);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+    }
+  }
+}
+
 // 3. Section Header
 .list-header {
   display: flex;
@@ -197,6 +312,15 @@
   }
 }
 
+.coin-chip {
+  &.active {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    color: #fff !important;
+    border-color: #d97706 !important;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35) !important;
+  }
+}
+
 // 5. Transactions List
 .tx-list {
   display: flex;
@@ -221,6 +345,10 @@
     transform: scale(0.98);
   }
 
+  &.is-coin-item {
+    border-left: 3px solid #f59e0b !important;
+  }
+
   .tx-icon-wrapper {
     display: flex;
     align-items: center;
@@ -243,6 +371,11 @@
     &.saving {
       background-color: rgba(245, 158, 11, 0.1);
       color: var(--ion-color-warning);
+    }
+
+    &.coin-icon-bg {
+      background-color: rgba(245, 158, 11, 0.15) !important;
+      color: #d97706 !important;
     }
   }
 
@@ -272,6 +405,10 @@
         font-weight: 700;
         text-transform: uppercase;
         color: var(--ion-color-primary);
+
+        &.coin-tag {
+          color: #d97706 !important;
+        }
       }
 
       .bullet {
@@ -296,6 +433,18 @@
 
       &.debit {
         color: var(--bizzdeal-text-primary);
+      }
+
+      &.coin-tx-amount {
+        color: #d97706 !important;
+        font-weight: 800 !important;
+
+        .coin-sub-label {
+          font-size: 11px;
+          font-weight: 600;
+          color: #b45309;
+          margin-left: 2px;
+        }
       }
     }
 
@@ -392,6 +541,11 @@
         background-color: rgba(245, 158, 11, 0.1);
         color: var(--ion-color-warning);
       }
+
+      &.coin-icon-bg {
+        background-color: rgba(245, 158, 11, 0.15) !important;
+        color: #d97706 !important;
+      }
     }
 
     .receipt-type {
@@ -415,6 +569,10 @@
 
       &.debit {
         color: var(--bizzdeal-text-primary);
+      }
+
+      &.coin-tx-amount {
+        color: #d97706 !important;
       }
     }
 
@@ -469,6 +627,11 @@
           border-radius: var(--bizzdeal-radius-full);
           font-size: 10px;
           text-transform: uppercase;
+        }
+
+        &.coin-tag {
+          color: #d97706;
+          font-weight: 700;
         }
       }
     }

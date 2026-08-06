@@ -547,7 +547,7 @@ ion-searchbar {
   left: 0;
   right: 0;
   height: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
-  background: var(--bizzdeal-bg-surface, #ffffff);
+  background: transparent;
   z-index: 999999;
   pointer-events: none;
   transition: background-color 0.3s ease;
@@ -674,6 +674,15 @@ ion-modal.permission-modal-dialog {
     border: 2px solid #ffffff;
   }
 }
+
+/* Hide fallback initials text when background image is successfully loaded */
+.has-bg-img {
+  > .initials-text,
+  > span:not(.discount-banner):not(.discount-badge):not(.timer-badge):not(.category-badge):not(.featured-badge) {
+    display: none !important;
+  }
+}
+
 
 
 

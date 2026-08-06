@@ -4,26 +4,33 @@ import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 import { AdminLogoutButtonComponent } from '../admin-logout-button/admin-logout-button.component';
+import { AdminReferralsFilterModalComponent } from '../admin-referrals-filter-modal/admin-referrals-filter-modal.component';
+import { AdminReferralsStateService, AdminReferralsFilter } from '../../services/admin-referrals-state.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
-import { menuOutline, closeOutline } from 'ionicons/icons';
+import { menuOutline, closeOutline, filterOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-layout',
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterModule, AdminSidebarComponent, AdminLogoutButtonComponent]
+  imports: [CommonModule, IonicModule, RouterModule, AdminSidebarComponent, AdminLogoutButtonComponent, AdminReferralsFilterModalComponent]
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {
   isMobileDrawerOpen = false;
   currentTitle = 'Dashboard';
   isDetailPage = false;
+  isFilterOpen = false;
+  currentFilterState: AdminReferralsFilter = { startDate: null, endDate: null, stateId: null, districtId: null };
   private routerSub!: Subscription;
 
-  constructor(private router: Router) {
-    addIcons({ menuOutline, closeOutline });
+  constructor(
+    private router: Router,
+    private adminReferralsStateService: AdminReferralsStateService
+  ) {
+    addIcons({ menuOutline, closeOutline, filterOutline });
     this.updateRouteState(this.router.url);
   }
 
@@ -34,6 +41,10 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
         this.isMobileDrawerOpen = false;
         this.updateRouteState(event.urlAfterRedirects || event.url);
       });
+
+    this.adminReferralsStateService.filter$.subscribe(filter => {
+      this.currentFilterState = filter;
+    });
   }
 
   private updateRouteState(url: string): void {
@@ -56,6 +67,10 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     if (url.includes('/admin/settings')) return 'Platform Settings';
     if (url.includes('/admin/categories')) return 'Business Categories';
     return 'Dashboard';
+  }
+
+  onFilterApplied(event: AdminReferralsFilter): void {
+    this.adminReferralsStateService.setFilter(event);
   }
 
   toggleMobileDrawer(): void {

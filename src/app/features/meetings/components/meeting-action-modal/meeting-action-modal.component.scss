@@ -1,0 +1,152 @@
+.modal-header {
+  background: var(--bizzdeal-bg-surface);
+  padding-top: var(--ion-safe-area-top, env(safe-area-inset-top));
+  
+  ion-toolbar {
+    --background: transparent;
+    --border-color: transparent;
+    padding: 8px;
+  }
+  ion-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--bizzdeal-text-primary);
+  }
+  .close-btn {
+    --color: var(--bizzdeal-text-secondary);
+    font-size: 1.5rem;
+    margin-right: 8px;
+  }
+}
+
+.modal-content {
+  --background: var(--bizzdeal-bg-main);
+}
+
+.meeting-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  ion-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--bizzdeal-text-secondary);
+    
+    .required-star {
+      color: var(--ion-color-danger);
+    }
+  }
+
+  .input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--bizzdeal-bg-surface);
+    border: 1px solid var(--bizzdeal-border-color);
+    border-radius: var(--bizzdeal-radius-lg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+
+    &:focus-within {
+      border-color: var(--ion-color-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      font-size: 18px;
+      color: var(--bizzdeal-text-tertiary);
+      pointer-events: none;
+      transition: color 0.2s ease;
+      z-index: 2;
+    }
+
+    .form-input {
+      width: 100%;
+      min-height: 48px;
+      --padding-start: 40px;
+      --padding-end: 12px;
+      --background: transparent;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--bizzdeal-text-primary);
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    &.textarea-container {
+      align-items: flex-start;
+      
+      .input-icon {
+        top: 12px;
+      }
+
+      .custom-textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+    }
+  }
+
+  .error-container {
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+
+    .error-text {
+      font-size: 0.8rem;
+      color: var(--ion-color-danger);
+    }
+  }
+}
+
+.modal-footer {
+  background: var(--bizzdeal-bg-surface);
+  border-top: 1px solid var(--bizzdeal-border-color);
+
+  .footer-actions {
+    padding: 16px;
+    padding-bottom: calc(16px + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0px)));
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+
+    ion-button {
+      margin: 0;
+      --border-radius: var(--bizzdeal-radius-lg);
+      font-weight: 600;
+      height: 44px;
+
+      &.cancel-btn {
+        --color: var(--bizzdeal-text-secondary);
+      }
+
+      &.save-btn {
+        --background: var(--ion-color-primary);
+        --color: white;
+        min-width: 140px;
+
+        .btn-spinner {
+          width: 18px;
+          height: 18px;
+          margin-right: 6px;
+          --color: white;
+        }
+      }
+    }
+  }
+}

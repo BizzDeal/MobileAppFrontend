@@ -1,13 +1,23 @@
 <div class="business-card" (click)="businessClick.emit(business())">
-  <div class="card-image-box" [appCachedBgImg]="business().bannerUrl">
+  <div class="card-image-box" [style.background]="getAvatarColor(business().name)">
+    <span class="initials-text">{{ getInitials(business().name) }}</span>
+    @if (business().bannerUrl) {
+      <img [appCachedImg]="business().bannerUrl" [alt]="business().name" class="card-banner-img" />
+    }
     <div class="image-overlay"></div>
     <span class="category-badge">{{ business().categoryName || 'Partner' }}</span>
+    @if (business().hasBizzCoinOffer || business().has_bizz_coin_offer) {
+      <span class="bizz-coin-tag">
+        <ion-icon name="ribbon-outline" class="tag-icon"></ion-icon>
+        Bizz Coin Offer
+      </span>
+    }
   </div>
 
   <div class="card-content">
     <div class="biz-header">
-      @if (business().logoUrl) {
-        <img [appCachedImg]="business().logoUrl" alt="logo" class="biz-logo" />
+      @if (business().logoUrl && !logoLoadError()) {
+        <img [appCachedImg]="business().logoUrl" alt="logo" class="biz-logo" (error)="logoLoadError.set(true)" />
       } @else {
         <div class="biz-logo initials-fallback" [style.background]="getAvatarColor(business().name)">
           <span>{{ getInitials(business().name) }}</span>

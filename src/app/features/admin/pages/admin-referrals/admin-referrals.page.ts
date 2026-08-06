@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -41,14 +41,16 @@ import {
   heartOutline,
   cashOutline,
   trophyOutline,
-  personCircleOutline
+  personCircleOutline,
+  calendarOutline
 } from 'ionicons/icons';
 import { ReferralsService } from '../../../referrals/services/referrals.service';
+import { AdminReferralsStateService } from '../../services/admin-referrals-state.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { ReferralDTO, ReferralType, AdminReferralSummary } from '../../../referrals/models/referral.model';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { register } from 'swiper/element/bundle';
 
 register();
@@ -80,8 +82,9 @@ register();
   styleUrls: ['./admin-referrals.page.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class AdminReferralsPage implements OnInit {
+export class AdminReferralsPage implements OnInit, OnDestroy {
   private readonly referralsService = inject(ReferralsService);
+  private readonly adminReferralsStateService = inject(AdminReferralsStateService);
 
   readonly referrals = signal<ReferralDTO[]>([]);
   readonly loading = signal<boolean>(true);
@@ -103,7 +106,10 @@ export class AdminReferralsPage implements OnInit {
   readonly pageSize = 15;
   private isLoadingMore = false;
 
+  filterState: { startDate: string | null, endDate: string | null, dates?: string | null, stateId: string | null, districtId: string | null } = { startDate: null, endDate: null, dates: null, stateId: null, districtId: null };
+
   private readonly searchSubject = new Subject<string>();
+  private readonly destroy$ = new Subject<void>();
 
   // Modal State
   readonly selectedReferral = signal<ReferralDTO | null>(null);
@@ -130,12 +136,14 @@ export class AdminReferralsPage implements OnInit {
       heartOutline,
       cashOutline,
       trophyOutline,
-      personCircleOutline
+      personCircleOutline,
+      calendarOutline
     });
 
     this.searchSubject.pipe(
       debounceTime(400),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
     ).subscribe(query => {
       this.searchQuery.set(query);
       this.reloadReferrals();
@@ -143,7 +151,15 @@ export class AdminReferralsPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchReferrals();
+    this.adminReferralsStateService.filter$.pipe(takeUntil(this.destroy$)).subscribe(filter => {
+      this.filterState = filter;
+      this.reloadReferrals();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   reloadReferrals(): void {
@@ -152,6 +168,10 @@ export class AdminReferralsPage implements OnInit {
     this.isLoadingMore = false;
     this.referrals.set([]);
     this.fetchReferrals();
+  }
+
+  clearDateFilter(): void {
+    this.adminReferralsStateService.setFilter({ startDate: null, endDate: null, dates: null, stateId: null, districtId: null });
   }
 
   fetchReferrals(event?: any): void {
@@ -172,6 +192,11 @@ export class AdminReferralsPage implements OnInit {
     this.referralsService.getAdminReferralSlips({
       search: this.searchQuery(),
       referral_type: referralTypeFilter,
+      start_date: this.filterState.startDate || undefined,
+      end_date: this.filterState.endDate || undefined,
+      dates: this.filterState.dates || undefined,
+      state_id: this.filterState.stateId || undefined,
+      district_id: this.filterState.districtId || undefined,
       page: this.currentPage,
       limit: this.pageSize
     }).subscribe({

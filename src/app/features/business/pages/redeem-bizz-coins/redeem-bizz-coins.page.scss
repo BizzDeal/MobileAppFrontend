@@ -375,13 +375,22 @@
 
   .calc-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
 
     .calc-label {
       font-size: 0.85rem;
       font-weight: 600;
       color: #64748b;
+      display: flex;
+      flex-direction: column;
+
+      .calc-subtext {
+        font-size: 0.78rem;
+        font-weight: 400;
+        color: #64748b;
+        margin-top: 2px;
+      }
     }
 
     .calc-val {

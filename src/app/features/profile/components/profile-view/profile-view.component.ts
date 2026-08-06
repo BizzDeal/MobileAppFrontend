@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass, TitleCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, untracked, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -56,6 +56,7 @@ import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.uti
   standalone: true,
   imports: [
     DatePipe,
+    TitleCasePipe,
     NgClass,
     ReactiveFormsModule,
     IonIcon,

@@ -37,7 +37,7 @@
           <p>Please complete the following mandatory fields:</p>
           <div class="tags-container">
             @for (field of missingFields(); track field) {
-              <span class="missing-tag">{{ field.replace('_id', '').replace('_', ' ') }}</span>
+              <span class="missing-tag">{{ field.replace('_id', '').replace('_', ' ') | titlecase }}</span>
             }
           </div>
         </div>

@@ -56,6 +56,25 @@
         </div>
       </div>
       <div class="form-section" style="margin-bottom: 24px;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px; padding: 0 8px;">Bizz Coin Configuration</h3>
+        <div class="form-content">
+          <ion-input
+            type="number"
+            step="0.01"
+            min="0.01"
+            labelPlacement="stacked"
+            fill="outline"
+            [(ngModel)]="settings.bizz_coin_value"
+            placeholder="e.g., 1"
+            style="margin-bottom: 8px;">
+            <div slot="label">Bizz Coin Value (₹) <span class="required-star">*</span></div>
+          </ion-input>
+          <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+            <small>Set the platform monetary value of 1 Bizz Coin in Rupees (₹).</small>
+          </div>
+        </div>
+      </div>
+      <div class="form-section" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px; padding: 0 8px;">System Cache</h3>
         <div class="form-content">
           <div class="ion-padding-start ion-padding-bottom ion-text-muted">

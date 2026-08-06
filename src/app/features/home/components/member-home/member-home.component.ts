@@ -17,6 +17,10 @@ import { ToastService } from '../../../../core/services/toast.service';
 import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
 import { DashboardSkeletonComponent } from '../../../../shared/components/skeletons/dashboard-skeleton/dashboard-skeleton.component';
 
+import { AppSocketService } from '../../../../core/services/app-socket.service';
+import { DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 @Component({
   selector: 'app-member-home',
   standalone: true,
@@ -38,6 +42,8 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
+  private readonly appSocket = inject(AppSocketService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly dashboardData = this.dashboardService.dashboardData;
   readonly profile = this.profileService.profile;
@@ -51,6 +57,24 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.dashboardService.loadDashboardData().subscribe();
     this.meetingsService.loadMeetings().subscribe();
+    this.appSocket.connect();
+
+    this.appSocket.onEvent('OFFER_STATUS_UPDATED')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((evt: any) => {
+        const payload = evt?.payload;
+        if (payload) {
+          this.dashboardService.loadDashboardData().subscribe();
+          this.profileService.loadProfile().subscribe();
+          this.notificationService.getNotifications().subscribe();
+
+          if (payload.status === 'APPROVED') {
+            this.toastService.showSuccess(`🎉 Your ${payload.offer_type === 'BIZZ_COINS' ? 'Bizz Coin offer' : 'offer'} "${payload.title || ''}" was approved by Admin!`);
+          } else if (payload.status === 'REJECTED') {
+            this.toastService.showError(`Your ${payload.offer_type === 'BIZZ_COINS' ? 'Bizz Coin offer' : 'offer'} request was rejected by Admin.`);
+          }
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -108,6 +132,23 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly bizzCoinOffer = computed(() =>
     this.dashboardData()?.myOffers.find(o => o.offer_type === 'BIZZ_COINS') || null
   );
+
+  readonly isBusinessFeatured = computed(() => {
+    return !!this.profile()?.is_featured;
+  });
+
+  readonly hasActiveBizzCoinOffer = computed(() => {
+    const offer = this.bizzCoinOffer();
+    if (!offer || offer.status !== 'APPROVED') return false;
+    const now = new Date();
+    const start = new Date(offer.start_date);
+    const end = new Date(offer.end_date);
+    return start <= now && end >= now;
+  });
+
+  readonly canRedeemBizzCoins = computed(() => {
+    return this.isBusinessFeatured() || this.hasActiveBizzCoinOffer();
+  });
 
   readonly pendingOffers = computed(() =>
     this.dashboardData()?.myOffers.filter(o => o.status === 'PENDING') || []

@@ -15,6 +15,23 @@
       </div>
     }
 
+    @if (offerStatus() === 'PENDING') {
+      <div style="background-color: #fffbeb; border: 1px solid #fef3c7; color: #92400e; padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 0.9rem;">
+        <strong style="display: block; margin-bottom: 4px; font-weight: 600;">⏳ Pending Admin Approval</strong>
+        Your Bizz Coins offer plan has been submitted and is currently waiting for Admin approval. Once approved by Admin, your business will be automatically marked as a <strong>Featured Business</strong>.
+      </div>
+    } @else if (offerStatus() === 'APPROVED') {
+      <div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 0.9rem;">
+        <strong style="display: block; margin-bottom: 4px; font-weight: 600;">✅ Active & Approved</strong>
+        Your Bizz Coins offer plan is active and approved by Admin. Your business is highlighted as a <strong>Featured Business</strong>!
+      </div>
+    } @else if (offerStatus() === 'REJECTED') {
+      <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 0.9rem;">
+        <strong style="display: block; margin-bottom: 4px; font-weight: 600;">❌ Offer Rejected</strong>
+        Your Bizz Coins offer request was rejected by Admin. You can update the details below and re-submit for approval.
+      </div>
+    }
+
     <form [formGroup]="bizzCoinsForm" (ngSubmit)="onApplyOffer()" class="offer-form">
       <!-- Offer Title -->
       <div class="form-group">

@@ -23,6 +23,7 @@ import { environment } from '../../../../../environments/environment';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { PlatformSettingsService } from '../../../../core/services/platform-settings.service';
 
 export interface CustomerCoinDetails {
   id: string;
@@ -34,10 +35,12 @@ export interface CustomerCoinDetails {
   has_active_bizz_coin_offer: boolean;
 }
 
+import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-redeem-bizz-coins',
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule, CachedImgDirective],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, CachedImgDirective],
   templateUrl: './redeem-bizz-coins.page.html',
   styleUrls: ['./redeem-bizz-coins.page.scss']
 })
@@ -46,6 +49,7 @@ export class RedeemBizzCoinsPage implements OnInit {
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly platformSettingsService = inject(PlatformSettingsService);
 
   readonly getInitials = getInitials;
   readonly getAvatarColor = getAvatarColor;
@@ -77,6 +81,11 @@ export class RedeemBizzCoinsPage implements OnInit {
   // Real-time calculation state
   remainingCoins = 0;
   remainingBillToPay = 0;
+  coinDiscountRupees = 0;
+
+  get bizzCoinValue(): number {
+    return this.platformSettingsService.platformSettings()?.bizz_coin_value ?? 1;
+  }
 
   constructor() {
     addIcons({
@@ -95,6 +104,8 @@ export class RedeemBizzCoinsPage implements OnInit {
   }
 
   ngOnInit() {
+    this.platformSettingsService.loadSettings().subscribe();
+
     this.verificationForm = this.fb.group({
       customer_phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]]
     });
@@ -155,10 +166,10 @@ export class RedeemBizzCoinsPage implements OnInit {
 
   private checkActiveOfferStatus() {
     this.isCheckingActiveOffer = true;
-    this.http.get<{ has_active_offer: boolean }>(`${environment.apiUrl}/bizz-coins/active-offer-status`).subscribe({
+    this.http.get<{ has_active_offer?: boolean; is_featured?: boolean; can_redeem?: boolean }>(`${environment.apiUrl}/bizz-coins/active-offer-status`).subscribe({
       next: (res) => {
         this.isCheckingActiveOffer = false;
-        this.hasActiveOffer = res?.has_active_offer ?? true;
+        this.hasActiveOffer = res?.can_redeem ?? res?.has_active_offer ?? res?.is_featured ?? true;
       },
       error: () => {
         this.isCheckingActiveOffer = false;
@@ -209,7 +220,7 @@ export class RedeemBizzCoinsPage implements OnInit {
     }
 
     if (!this.hasActiveOffer) {
-      this.errorMessage = 'You must have an active Bizz Coins offer to redeem Bizz Coins.';
+      this.errorMessage = 'You must have a featured business or an active Bizz Coins offer to redeem Bizz Coins.';
       return;
     }
 
@@ -241,9 +252,29 @@ export class RedeemBizzCoinsPage implements OnInit {
     const coinsToRedeem = Number(this.redemptionForm.getRawValue().coins || 0);
     const billAmount = Number(this.redemptionForm.getRawValue().bill_amount || 0);
     const balance = this.searchedCustomer.coins_balance;
-    
+    const coinValue = this.bizzCoinValue;
+
+    this.coinDiscountRupees = coinsToRedeem * coinValue;
     this.remainingCoins = Math.max(0, balance - coinsToRedeem);
-    this.remainingBillToPay = Math.max(0, billAmount - coinsToRedeem);
+    this.remainingBillToPay = Math.max(0, billAmount - this.coinDiscountRupees);
+
+    // Validate that coin discount value does not exceed total bill amount
+    const coinsControl = this.redemptionForm.get('coins');
+    if (coinsToRedeem > 0 && billAmount > 0 && this.coinDiscountRupees > billAmount) {
+      const maxAllowedCoins = Math.floor(billAmount / coinValue);
+      coinsControl?.setErrors({
+        ...(coinsControl.errors || {}),
+        exceedsBill: {
+          maxCoins: maxAllowedCoins,
+          billAmount,
+          discountValue: this.coinDiscountRupees
+        }
+      });
+    } else if (coinsControl?.hasError('exceedsBill')) {
+      const errors = { ...coinsControl.errors };
+      delete errors['exceedsBill'];
+      coinsControl.setErrors(Object.keys(errors).length ? errors : null);
+    }
   }
 
   onSubmitRedeem() {
@@ -255,8 +286,17 @@ export class RedeemBizzCoinsPage implements OnInit {
     if (!this.searchedCustomer) return;
 
     const coinsToRedeem = Number(this.redemptionForm.value.coins);
+    const billAmount = Number(this.redemptionForm.value.bill_amount);
+    const discountAmount = coinsToRedeem * this.bizzCoinValue;
+
     if (coinsToRedeem > this.searchedCustomer.coins_balance) {
       this.errorMessage = `Cannot redeem ${coinsToRedeem} coins. Customer only has ${this.searchedCustomer.coins_balance} coins.`;
+      return;
+    }
+
+    if (discountAmount > billAmount) {
+      const maxCoins = Math.floor(billAmount / this.bizzCoinValue);
+      this.errorMessage = `Coins discount (₹${discountAmount}) cannot exceed total bill amount of ₹${billAmount}. Maximum allowed: ${maxCoins} coins.`;
       return;
     }
 

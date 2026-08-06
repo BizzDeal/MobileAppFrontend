@@ -42,6 +42,7 @@ export class BizzCoinsOfferPage implements OnInit {
   readonly submitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly existingOfferId = signal<string | null>(null);
+  readonly offerStatus = signal<string | null>(null);
   readonly isEditMode = signal(false);
 
   bizzCoinsForm: FormGroup;
@@ -89,6 +90,7 @@ export class BizzCoinsOfferPage implements OnInit {
 
   private patchFormWithOffer(offer: any) {
     this.existingOfferId.set(offer.id);
+    this.offerStatus.set(offer.status || null);
     this.isEditMode.set(true);
     this.bizzCoinsForm.patchValue({
       title: offer.title || '',
@@ -130,6 +132,7 @@ export class BizzCoinsOfferPage implements OnInit {
         next: () => {
           this.submitting.set(false);
           this.existingOfferId.set(null);
+          this.offerStatus.set(null);
           this.isEditMode.set(false);
           this.resetFormFields();
           this.dashboardService.loadDashboardData().subscribe();
@@ -157,6 +160,7 @@ export class BizzCoinsOfferPage implements OnInit {
       start_date: this.formatDateForInput(now.toISOString()),
       end_date: this.formatDateForInput(nextMonth.toISOString())
     });
+    this.offerStatus.set(null);
     this.errorMessage.set(null);
   }
 
@@ -179,10 +183,12 @@ export class BizzCoinsOfferPage implements OnInit {
 
     if (this.isEditMode() && this.existingOfferId()) {
       this.http.put<any>(`${environment.apiUrl}/offers/${this.existingOfferId()}`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).subscribe({
-        next: () => {
+        next: (res) => {
           this.submitting.set(false);
+          const updatedOffer = res?.data || res;
+          this.offerStatus.set(updatedOffer?.status || 'PENDING');
           this.dashboardService.loadDashboardData().subscribe();
-          this.toastService.showSuccess('Bizz Coins offer plan saved and activated successfully');
+          this.toastService.showSuccess('Bizz Coins offer plan submitted for admin approval');
           this.router.navigate(['/home']);
         },
         error: (err) => {
@@ -220,10 +226,12 @@ export class BizzCoinsOfferPage implements OnInit {
 
   private sendCreateRequest(formData: FormData) {
     this.http.post<any>(`${environment.apiUrl}/offers`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).subscribe({
-      next: () => {
+      next: (res) => {
         this.submitting.set(false);
+        const newOffer = res?.data || res;
+        this.offerStatus.set(newOffer?.status || 'PENDING');
         this.dashboardService.loadDashboardData().subscribe();
-        this.toastService.showSuccess('Bizz Coins offer plan saved and activated successfully');
+        this.toastService.showSuccess('Bizz Coins offer plan submitted for admin approval');
         this.router.navigate(['/home']);
       },
       error: (err) => {

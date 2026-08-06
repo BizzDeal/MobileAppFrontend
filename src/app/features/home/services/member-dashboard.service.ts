@@ -1,4 +1,5 @@
-import { Injectable, inject, signal, effect, untracked } from '@angular/core';
+import { Injectable, inject, signal, effect, untracked, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, throwError, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -7,6 +8,7 @@ import { MemberDashboardData, MemberDashboardAnalytics } from '../models/member-
 import { OfferDTO, VoucherDTO } from '../models/home.model';
 import { ProfileService } from '../../profile/services/profile.service';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { AppSocketService } from '../../../core/services/app-socket.service';
 import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
 
 @Injectable({
@@ -16,6 +18,8 @@ export class MemberDashboardService {
   private readonly http = inject(HttpClient);
   private readonly profileService = inject(ProfileService);
   private readonly authSession = inject(AuthSessionService);
+  private readonly appSocket = inject(AppSocketService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly apiUrl = environment.apiUrl;
 
   private readonly _dashboardData = signal<MemberDashboardData | null>(null);
@@ -27,6 +31,15 @@ export class MemberDashboardService {
   readonly error = this._error.asReadonly();
 
   constructor() {
+    this.appSocket.connect();
+    this.appSocket.onEvent('PLATFORM_SETTINGS_UPDATED')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.authSession.userRole() === 'MEMBER') {
+          this.loadDashboardData().subscribe();
+        }
+      });
+
     effect(() => {
       const role = this.authSession.userRole();
       if (role === 'MEMBER') {

@@ -171,6 +171,10 @@
                 <span class="error-text">Must redeem at least 1 Bizz Coin.</span>
               } @else if (rf['coins'].touched && rf['coins'].errors?.['max']) {
                 <span class="error-text">Cannot exceed customer available balance of {{ searchedCustomer.coins_balance }}.</span>
+              } @else if (rf['coins'].errors?.['exceedsBill']) {
+                <span class="error-text">
+                  Discount (₹{{ coinDiscountRupees | number:'1.0-2' }}) cannot exceed bill of ₹{{ rf['bill_amount'].value }}. Max allowed: {{ rf['coins'].errors?.['exceedsBill'].maxCoins }} coins.
+                </span>
               }
             </div>
           </div>
@@ -209,16 +213,21 @@
           <div class="calculation-summary-card">
             <div class="calc-row">
               <span class="calc-label">Total Bill Amount:</span>
-              <span class="calc-val">₹ {{ rf['bill_amount'].value || 0 }}</span>
+              <span class="calc-val">₹ {{ (rf['bill_amount'].value || 0) | number:'1.0-2' }}</span>
             </div>
             <div class="calc-row highlight-row">
-              <span class="calc-label">Bizz Coins Redeemed:</span>
-              <span class="calc-val text-debit">- ₹ {{ rf['coins'].value || 0 }}</span>
+              <div class="calc-label">
+                <span>Bizz Coins Discount:</span>
+                @if (bizzCoinValue !== 1) {
+                  <small class="calc-subtext">({{ rf['coins'].value || 0 }} coins @ ₹{{ bizzCoinValue }}/coin)</small>
+                }
+              </div>
+              <span class="calc-val text-debit">- ₹ {{ coinDiscountRupees | number:'1.0-2' }}</span>
             </div>
             <div class="calc-divider"></div>
             <div class="calc-row total-row">
               <span class="calc-label">Amount to Pay:</span>
-              <span class="calc-val text-primary">₹ {{ remainingBillToPay }}</span>
+              <span class="calc-val text-primary">₹ {{ remainingBillToPay | number:'1.0-2' }}</span>
             </div>
           </div>
           

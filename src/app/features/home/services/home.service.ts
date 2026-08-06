@@ -1,5 +1,6 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { computed, inject, Injectable, signal, effect, untracked } from '@angular/core';
+import { computed, inject, Injectable, signal, effect, untracked, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -14,6 +15,7 @@ import {
 } from '../models/home.model';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { ProfileService } from '../../profile/services/profile.service';
+import { AppSocketService } from '../../../core/services/app-socket.service';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { CustomerVouchersService } from '../../vouchers/services/customer-vouchers.service';
 import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
@@ -26,6 +28,8 @@ export class HomeService {
   private readonly authSession = inject(AuthSessionService);
   private readonly profileService = inject(ProfileService);
   private readonly customerVouchersService = inject(CustomerVouchersService);
+  private readonly appSocket = inject(AppSocketService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly apiUrl = environment.apiUrl;
 
   private readonly _homeFeed = signal<CustomerHomeFeedDTO | null>(null);
@@ -39,6 +43,15 @@ export class HomeService {
   readonly selectedCategory = this._selectedCategory.asReadonly();
 
   constructor() {
+    this.appSocket.connect();
+    this.appSocket.onEvent('PLATFORM_SETTINGS_UPDATED')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.authSession.userRole() === 'CUSTOMER') {
+          this.loadHomeFeed(this._selectedCategory()).subscribe();
+        }
+      });
+
     effect(() => {
       const role = this.authSession.userRole();
       if (role === 'CUSTOMER') {

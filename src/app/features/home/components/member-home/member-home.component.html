@@ -51,8 +51,12 @@
             <div class="bizz-coin-offer-pill" (click)="onBizzCoinsOffer()">
               <ion-icon name="ribbon-outline" class="pill-icon"></ion-icon>
               <span class="pill-title">Bizz Coin Offer</span>
-              <span class="pill-status" [class.active]="coinOffer.status === 'APPROVED'" [class.inactive]="coinOffer.status === 'INACTIVE'">
-                {{ coinOffer.status === 'APPROVED' ? 'Active' : (coinOffer.status | titlecase) }}
+              <span class="pill-status" 
+                [class.active]="coinOffer.status === 'APPROVED'" 
+                [class.pending]="coinOffer.status === 'PENDING'"
+                [class.rejected]="coinOffer.status === 'REJECTED'"
+                [class.inactive]="coinOffer.status === 'INACTIVE'">
+                {{ coinOffer.status === 'APPROVED' ? 'Active' : (coinOffer.status === 'PENDING' ? 'Pending Approval' : (coinOffer.status | titlecase)) }}
               </span>
             </div>
           }
@@ -209,12 +213,14 @@
             <span class="item-label">Redeem Voucher</span>
           </button>
 
-          <button type="button" class="fab-slide-item bizz-coins-redeem-item" (click)="onRedeemBizzCoins(); closeActionsMenu()">
-            <div class="icon-bubble">
-              <ion-icon name="wallet-outline"></ion-icon>
-            </div>
-            <span class="item-label">Redeem Bizz Coins</span>
-          </button>
+          @if (canRedeemBizzCoins()) {
+            <button type="button" class="fab-slide-item bizz-coins-redeem-item" (click)="onRedeemBizzCoins(); closeActionsMenu()">
+              <div class="icon-bubble">
+                <ion-icon name="wallet-outline"></ion-icon>
+              </div>
+              <span class="item-label">Redeem Bizz Coins</span>
+            </button>
+          }
           
           <button type="button" class="fab-slide-item" (click)="onViewAnalytics(); closeActionsMenu()">
             <div class="icon-bubble">

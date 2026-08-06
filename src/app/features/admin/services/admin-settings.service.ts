@@ -9,6 +9,7 @@ export interface PlatformSettings {
   mega_deals_percent_threshold: number;
   mega_deals_fixed_threshold: number;
   home_feed_limit: number;
+  bizz_coin_value: number;
 }
 
 export interface PlatformSettingsResponse {

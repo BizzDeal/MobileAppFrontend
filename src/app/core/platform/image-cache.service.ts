@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -15,16 +16,43 @@ export class ImageCacheService {
   private readonly sessionCheckedUrls = new Set<string>();
 
   /**
+   * Normalizes image URLs for cross-platform reliability (handling relative paths & replacing localhost IPs on Android/iOS native).
+   */
+  normalizeUrl(rawUrl: string | null | undefined): string {
+    if (!rawUrl || typeof rawUrl !== 'string') {
+      return '';
+    }
+
+    let url = rawUrl.trim();
+
+    if (url.startsWith('/')) {
+      try {
+        const apiOrigin = new URL(environment.apiUrl).origin;
+        url = `${apiOrigin}${url}`;
+      } catch {
+        // Fallback
+      }
+    }
+
+    try {
+      const envOrigin = new URL(environment.apiUrl).origin;
+      if (!envOrigin.includes('localhost') && !envOrigin.includes('127.0.0.1')) {
+        url = url.replace(/http:\/\/(localhost|127\.0\.0\.1):3000/g, envOrigin);
+      }
+    } catch {
+      // Fallback
+    }
+
+    return url;
+  }
+
+  /**
    * Returns a local device file URI if cached on disk, downloads and caches the image
    * if not yet cached, or falls back to the original URL if running on Web or on error.
-   *
-   * Uses the "Stale-While-Revalidate" (SWR) Universal Pattern:
-   * 1. If cached on disk -> returns local disk URI instantly (0ms network delay).
-   * 2. If the cached file is older than the revalidation interval (or modified on server),
-   *    it silently re-downloads and overwrites the disk file in the background so the next view is updated!
    */
-  async getCachedImage(url: string | null | undefined): Promise<string> {
-    if (!url || typeof url !== 'string') {
+  async getCachedImage(rawUrl: string | null | undefined): Promise<string> {
+    const url = this.normalizeUrl(rawUrl);
+    if (!url) {
       return '';
     }
 

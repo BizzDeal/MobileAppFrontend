@@ -33,7 +33,8 @@ export class CachedImgDirective {
 
   constructor() {
     effect(() => {
-      const url = this.appCachedImg();
+      const rawUrl = this.appCachedImg();
+      const url = this.imageCacheService.normalizeUrl(rawUrl);
       const fallback = this.getFallbackUrl();
 
       if (!url) {

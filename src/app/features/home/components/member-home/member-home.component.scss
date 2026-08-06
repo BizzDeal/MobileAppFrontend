@@ -280,6 +280,16 @@
         color: #ffffff;
       }
 
+      &.pending {
+        background: #f59e0b;
+        color: #ffffff;
+      }
+
+      &.rejected {
+        background: #ef4444;
+        color: #ffffff;
+      }
+
       &.inactive {
         background: rgba(148, 163, 184, 0.5);
         color: #f1f5f9;

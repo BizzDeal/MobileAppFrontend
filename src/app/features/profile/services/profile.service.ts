@@ -264,8 +264,6 @@ export class ProfileService {
           this._updating.set(false);
         },
         error: (err: any) => {
-          const errMsg = extractFriendlyErrorMessage(err, 'Failed to update profile details.');
-          this._error.set(errMsg);
           this._updating.set(false);
         },
       }),

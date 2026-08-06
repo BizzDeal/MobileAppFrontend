@@ -31,7 +31,8 @@ export class AdminSettingsPage implements OnInit {
   settings: PlatformSettings = {
     mega_deals_percent_threshold: 30,
     mega_deals_fixed_threshold: 500,
-    home_feed_limit: 20
+    home_feed_limit: 20,
+    bizz_coin_value: 1
   };
 
   isLoading = true;

@@ -1,8 +1,10 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, DestroyRef } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../environments/environment';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { AppSocketService } from '../../../core/services/app-socket.service';
 import { AuthResponse } from '../models/auth.model';
 import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.tokens';
 import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
@@ -65,7 +67,22 @@ export interface MemberRegistrationPayload {
 export class MemberOnboardingService {
   private readonly http = inject(HttpClient);
   private readonly authSession = inject(AuthSessionService);
+  private readonly appSocket = inject(AppSocketService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly apiUrl = environment.apiUrl;
+
+  constructor() {
+    this.appSocket.connect();
+    this.appSocket.onEvent('PAYMENT_SETTINGS_UPDATED')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((evt: any) => {
+        const updated = evt?.payload;
+        if (updated) {
+          console.log('Real-time payment settings update received:', updated);
+          this.paymentSettings.set(updated);
+        }
+      });
+  }
 
   readonly categories = signal<BusinessCategory[]>([]);
   readonly isLoadingCategories = signal<boolean>(false);

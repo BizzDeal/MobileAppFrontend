@@ -21,6 +21,7 @@ export interface ProfileDTO {
   business_address?: string | null;
   business_state_id?: string | null;
   business_district_id: string;
+  is_featured?: boolean;
   primary_business_name?: string | null;
   primary_business_id?: string | null;
   primary_business_category_name?: string | null;

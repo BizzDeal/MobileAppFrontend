@@ -1,15 +1,17 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
   <div class="admin-search-filter-bar">
-    <ion-searchbar 
-      [value]="searchQuery" 
-      (ionInput)="onSearch($event)" 
-      placeholder="Search offers or business..." 
-      mode="md" 
+    <ion-searchbar
+      [value]="searchQuery"
+      (ionInput)="onSearch($event)"
+      placeholder="Search offers or business..."
+      mode="md"
       class="premium-searchbar">
     </ion-searchbar>
     <button (click)="openFilter()" type="button" class="filter-icon-btn" aria-label="Filter by region">
       <ion-icon name="filter-outline"></ion-icon>
-      <span *ngIf="stateId || districtId" class="filter-active-dot"></span>
+      @if (stateId || districtId) {
+        <span class="filter-active-dot"></span>
+      }
     </button>
   </div>
   <ion-toolbar class="toolbar-no-padding pb-2">
@@ -26,54 +28,63 @@
 </ion-header>
 
 <ion-content style="--background: #fff;">
-  <div *ngIf="loading" style="padding: 16px;">
-    <app-card-skeleton [count]="3"></app-card-skeleton>
-  </div>
+  @if (loading) {
+    <div style="padding: 16px;">
+      <app-card-skeleton [count]="3"></app-card-skeleton>
+    </div>
+  }
 
-  <div *ngIf="!loading && filteredOffers.length === 0" class="ion-padding ion-text-center mt-4">
-    <ion-icon name="pricetag-outline" class="text-4xl text-medium"></ion-icon>
-    <p class="text-medium mt-2">No offers found for the selected status.</p>
-  </div>
+  @if (!loading && filteredOffers.length === 0) {
+    <div class="ion-padding ion-text-center mt-4">
+      <ion-icon name="pricetag-outline" class="text-4xl text-medium"></ion-icon>
+      <p class="text-medium mt-2">No offers found for the selected status.</p>
+    </div>
+  }
 
-  <ion-list *ngIf="!loading && filteredOffers.length > 0" class="bg-transparent p-0 pt-4 m-0" lines="none">
-    <div *ngFor="let offer of filteredOffers" class="premium-offer-card" (click)="openOfferModal(offer)" style="cursor: pointer;">
-      <div class="card-body">
-        <!-- Content -->
-        <div class="offer-details">
-          <div class="offer-header">
-            <h3 class="offer-title">{{ offer.title }}</h3>
-            <span class="custom-badge shrink-0" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
-              {{ offer.status }}
-            </span>
+  @if (!loading && filteredOffers.length> 0) {
+    <ion-list class="bg-transparent p-0 pt-4 m-0" lines="none">
+      @for (offer of filteredOffers; track offer) {
+        <div class="premium-offer-card" (click)="openOfferModal(offer)" style="cursor: pointer;">
+          <div class="card-body">
+            <!-- Content -->
+            <div class="offer-details">
+              <div class="offer-header">
+                <h3 class="offer-title">{{ offer.title }}</h3>
+                <span class="custom-badge shrink-0" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
+                  {{ offer.status }}
+                </span>
+              </div>
+              <div class="offer-business">
+                <ion-icon name="business-outline" class="icon-primary"></ion-icon>
+                <span>{{ offer.business_name || 'Unknown Business' }}</span>
+              </div>
+              <div class="offer-badges">
+                @if (offer.offer_type) {
+                  <span class="type-badge">
+                    <ion-icon name="pricetag-outline"></ion-icon>
+                    {{ offer.offer_type }}
+                  </span>
+                }
+                @if (offer.discount_value) {
+                  <span class="value-badge">
+                    {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }} OFF
+                  </span>
+                }
+              </div>
+            </div>
           </div>
-          
-          <div class="offer-business">
-            <ion-icon name="business-outline" class="icon-primary"></ion-icon>
-            <span>{{ offer.business_name || 'Unknown Business' }}</span>
-          </div>
-
-          <div class="offer-badges">
-            <span class="type-badge" *ngIf="offer.offer_type">
-              <ion-icon name="pricetag-outline"></ion-icon>
-              {{ offer.offer_type }}
-            </span>
-            <span *ngIf="offer.discount_value" class="value-badge">
-              {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }} OFF
-            </span>
+          <!-- Footer / Extra info -->
+          <div class="card-footer">
+            <div class="footer-time">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>Ends: {{ offer.end_date | date:'mediumDate' }}</span>
+            </div>
+            <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
           </div>
         </div>
-      </div>
-      
-      <!-- Footer / Extra info -->
-      <div class="card-footer">
-         <div class="footer-time">
-           <ion-icon name="time-outline"></ion-icon>
-           <span>Ends: {{ offer.end_date | date:'mediumDate' }}</span>
-         </div>
-         <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
-      </div>
-    </div>
-  </ion-list>
+      }
+    </ion-list>
+  }
 </ion-content>
 
 <app-admin-region-filter-modal
@@ -81,6 +92,5 @@
   [stateId]="stateId"
   [districtId]="districtId"
   (filterApplied)="onFilterApplied($event)"
-  (closed)="isFilterOpen = false"
-></app-admin-region-filter-modal>
+  (closed)="isFilterOpen = false"></app-admin-region-filter-modal>
 

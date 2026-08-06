@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AdminSettingsService } from '../../services/admin-settings.service';
@@ -14,7 +14,7 @@ type DateFilterMode = 'particular' | 'dateRange' | 'monthRange' | 'none';
   templateUrl: './admin-referrals-filter-modal.component.html',
   styleUrls: ['./admin-referrals-filter-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [FormsModule, IonicModule]
 })
 export class AdminReferralsFilterModalComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;

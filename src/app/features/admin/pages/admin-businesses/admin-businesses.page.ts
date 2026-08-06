@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminBusinessesListComponent } from '../../components/admin-businesses-list/admin-businesses-list.component';
 import { AdminRegionFilterModalComponent } from '../../components/admin-region-filter-modal/admin-region-filter-modal.component';
@@ -10,11 +10,10 @@ import { filterOutline } from 'ionicons/icons';
   selector: 'app-admin-businesses',
   standalone: true,
   imports: [
-    CommonModule,
     IonicModule,
     AdminBusinessesListComponent,
     AdminRegionFilterModalComponent
-  ],
+],
   templateUrl: './admin-businesses.page.html',
   styleUrls: ['./admin-businesses.page.scss']
 })

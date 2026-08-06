@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
@@ -12,7 +12,7 @@ import { arrowBackOutline, caretDownOutline, checkmarkCircleOutline } from 'ioni
 @Component({
   selector: 'app-issue-voucher',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [IonicModule, ReactiveFormsModule],
   templateUrl: './issue-voucher.page.html',
   styleUrls: ['./issue-voucher.page.scss']
 })

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
@@ -27,7 +27,6 @@ import { AnimatedBackgroundComponent } from '../../../../shared/components/anima
   selector: 'app-forgot-pin',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     IonContent,
     IonHeader,
@@ -36,8 +35,8 @@ import { AnimatedBackgroundComponent } from '../../../../shared/components/anima
     IonButtons,
     IonBackButton,
     IonIcon,
-    AnimatedBackgroundComponent,
-  ],
+    AnimatedBackgroundComponent
+],
   providers: [ForgotPinService],
   templateUrl: './forgot-pin.page.html',
   styleUrl: './forgot-pin.page.scss',

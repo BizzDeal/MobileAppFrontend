@@ -1,200 +1,207 @@
 
 
 <ion-content style="--background: #fff;" class="ion-padding">
-  <div *ngIf="isLoading()" style="padding: 16px 0;">
-    <app-card-skeleton [count]="2"></app-card-skeleton>
-  </div>
-
-  <div *ngIf="!isLoading()" class="payment-config-container"
-    style="max-width: 600px; margin: 0 auto; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));">
-    <!-- Alert Messages -->
-    <div *ngIf="errorMessage()" class="alert-box error-alert"
-      style="background-color: #fee2e2; border-left: 4px solid #ef4444; color: #b91c1c; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
-      <p style="margin: 0; font-weight: 500;">{{ errorMessage() }}</p>
+  @if (isLoading()) {
+    <div style="padding: 16px 0;">
+      <app-card-skeleton [count]="2"></app-card-skeleton>
     </div>
-    <div *ngIf="successMessage()" class="alert-box success-alert"
-      style="background-color: #dcfce7; border-left: 4px solid #22c55e; color: #15803d; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
-      <p style="margin: 0; font-weight: 500;">{{ successMessage() }}</p>
-    </div>
+  }
 
-    <!-- Configuration Form -->
-    <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" class="bizz-form">
-
-      <!-- Card Information Section -->
-      <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px;">Onboarding
+  @if (!isLoading()) {
+    <div class="payment-config-container"
+      style="max-width: 600px; margin: 0 auto; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));">
+      <!-- Alert Messages -->
+      @if (errorMessage()) {
+        <div class="alert-box error-alert"
+          style="background-color: #fee2e2; border-left: 4px solid #ef4444; color: #b91c1c; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
+          <p style="margin: 0; font-weight: 500;">{{ errorMessage() }}</p>
+        </div>
+      }
+      @if (successMessage()) {
+        <div class="alert-box success-alert"
+          style="background-color: #dcfce7; border-left: 4px solid #22c55e; color: #15803d; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
+          <p style="margin: 0; font-weight: 500;">{{ successMessage() }}</p>
+        </div>
+      }
+      <!-- Configuration Form -->
+      <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" class="bizz-form">
+        <!-- Card Information Section -->
+        <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px;">Onboarding
         Hero Card</h3>
-      <div class="form-section-content" style="margin-bottom: 24px;">
-        <!-- Card Subtitle / Badge -->
-        <div class="form-group" style="margin-bottom: 12px;">
-          <ion-input
-            formControlName="card_subtitle"
-            placeholder="e.g. MEMBER ONBOARDING"
-            fill="outline"
-            labelPlacement="stacked"
-            style="--background: #f9fafb; --border-radius: 10px;"
-          >
-            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
-              Card Subtitle / Badge <span class="required-star" style="color: #ef4444;">*</span>
+        <div class="form-section-content" style="margin-bottom: 24px;">
+          <!-- Card Subtitle / Badge -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <ion-input
+              formControlName="card_subtitle"
+              placeholder="e.g. MEMBER ONBOARDING"
+              fill="outline"
+              labelPlacement="stacked"
+              style="--background: #f9fafb; --border-radius: 10px;">
+              <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+                Card Subtitle / Badge <span class="required-star" style="color: #ef4444;">*</span>
+              </div>
+            </ion-input>
+            <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
+              @if (paymentForm.get('card_subtitle')?.touched && paymentForm.get('card_subtitle')?.hasError('required')) {
+                <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;">
+                  Card subtitle is required.
+                </span>
+              }
             </div>
-          </ion-input>
-          <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
-            <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
-              *ngIf="paymentForm.get('card_subtitle')?.touched && paymentForm.get('card_subtitle')?.hasError('required')">
-              Card subtitle is required.
-            </span>
+          </div>
+          <!-- Card Title -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <ion-input
+              formControlName="card_title"
+              placeholder="e.g. Join BIZZ DEAL as Member"
+              fill="outline"
+              labelPlacement="stacked"
+              style="--background: #f9fafb; --border-radius: 10px;">
+              <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+                Card Title <span class="required-star" style="color: #ef4444;">*</span>
+              </div>
+            </ion-input>
+            <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
+              @if (paymentForm.get('card_title')?.touched && paymentForm.get('card_title')?.hasError('required')) {
+                <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;">
+                  Card title is required.
+                </span>
+              }
+            </div>
+          </div>
+          <!-- Card Benefits Description -->
+          <div class="form-group" style="margin-bottom: 0;">
+            <ion-textarea
+              formControlName="benefits"
+              placeholder="List member benefits..."
+              fill="outline"
+              labelPlacement="stacked"
+              [autoGrow]="true"
+              rows="4"
+              style="--background: #f9fafb; --border-radius: 10px;">
+              <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+                Card Benefits / Description <span class="required-star" style="color: #ef4444;">*</span>
+              </div>
+            </ion-textarea>
+            <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
+              @if (paymentForm.get('benefits')?.touched && paymentForm.get('benefits')?.hasError('required')) {
+                <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;">
+                  Benefits text is required.
+                </span>
+              }
+            </div>
           </div>
         </div>
-
-        <!-- Card Title -->
-        <div class="form-group" style="margin-bottom: 12px;">
-          <ion-input
-            formControlName="card_title"
-            placeholder="e.g. Join BIZZ DEAL as Member"
-            fill="outline"
-            labelPlacement="stacked"
-            style="--background: #f9fafb; --border-radius: 10px;"
-          >
-            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
-              Card Title <span class="required-star" style="color: #ef4444;">*</span>
+        <!-- Payment Configuration Section -->
+        <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-bottom: 12px;">Payment Details</h3>
+        <div class="form-section-content" style="margin-bottom: 24px;">
+          <!-- UPI ID -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <ion-input
+              formControlName="upi_id"
+              placeholder="e.g. bizzdeal@upi"
+              fill="outline"
+              labelPlacement="stacked"
+              style="--background: #f9fafb; --border-radius: 10px;">
+              <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+                UPI ID <span class="required-star" style="color: #ef4444;">*</span>
+              </div>
+            </ion-input>
+            <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
+              @if (paymentForm.get('upi_id')?.touched && paymentForm.get('upi_id')?.hasError('required')) {
+                <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;">
+                  UPI ID is required.
+                </span>
+              }
             </div>
-          </ion-input>
-          <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
-            <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
-              *ngIf="paymentForm.get('card_title')?.touched && paymentForm.get('card_title')?.hasError('required')">
-              Card title is required.
-            </span>
+          </div>
+          <!-- Account Name -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <ion-input
+              formControlName="account_name"
+              placeholder="e.g. BIZZ DEAL Pvt Ltd"
+              fill="outline"
+              labelPlacement="stacked"
+              style="--background: #f9fafb; --border-radius: 10px;">
+              <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+                Account Name <span class="required-star" style="color: #ef4444;">*</span>
+              </div>
+            </ion-input>
+            <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
+              @if (paymentForm.get('account_name')?.touched && paymentForm.get('account_name')?.hasError('required')) {
+                <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;">
+                  Account Name is required.
+                </span>
+              }
+            </div>
+          </div>
+          <!-- Registration Fee -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <ion-input
+              type="number"
+              formControlName="registration_fee"
+              placeholder="e.g. 10000"
+              fill="outline"
+              labelPlacement="stacked"
+              style="--background: #f9fafb; --border-radius: 10px;">
+              <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+                Registration Fee Amount <span class="required-star" style="color: #ef4444;">*</span>
+              </div>
+            </ion-input>
+            <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
+              @if (paymentForm.get('registration_fee')?.touched && paymentForm.get('registration_fee')?.hasError('required')) {
+                <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;">
+                  Registration fee is required.
+                </span>
+              }
+              @if (paymentForm.get('registration_fee')?.touched && paymentForm.get('registration_fee')?.hasError('min')) {
+                <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;">
+                  Registration fee must be a positive number.
+                </span>
+              }
+            </div>
+          </div>
+          <!-- Currency -->
+          <div class="form-group" style="margin-bottom: 0;">
+            <ion-input
+              formControlName="currency"
+              placeholder="e.g. INR"
+              fill="outline"
+              labelPlacement="stacked"
+              style="--background: #f9fafb; --border-radius: 10px;">
+              <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
+                Currency <span class="required-star" style="color: #ef4444;">*</span>
+              </div>
+            </ion-input>
+            <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
+              @if (paymentForm.get('currency')?.touched && paymentForm.get('currency')?.hasError('required')) {
+                <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;">
+                  Currency is required.
+                </span>
+              }
+            </div>
           </div>
         </div>
-
-        <!-- Card Benefits Description -->
-        <div class="form-group" style="margin-bottom: 0;">
-          <ion-textarea
-            formControlName="benefits"
-            placeholder="List member benefits..."
-            fill="outline"
-            labelPlacement="stacked"
-            [autoGrow]="true"
-            rows="4"
-            style="--background: #f9fafb; --border-radius: 10px;"
-          >
-            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
-              Card Benefits / Description <span class="required-star" style="color: #ef4444;">*</span>
-            </div>
-          </ion-textarea>
-          <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
-            <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
-              *ngIf="paymentForm.get('benefits')?.touched && paymentForm.get('benefits')?.hasError('required')">
-              Benefits text is required.
-            </span>
-          </div>
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 16px; margin-top: 24px;">
+          <ion-button type="submit" expand="block"
+            style="flex: 1; --height: 85px; --border-radius: 14px; --background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%); --box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);"
+            [disabled]="paymentForm.invalid || isSaving()">
+            @if (isSaving()) {
+              <ion-spinner name="crescent"></ion-spinner>
+            }
+            @if (!isSaving()) {
+              <ion-icon name="save-outline" slot="start"></ion-icon>
+            }
+            @if (!isSaving()) {
+              <span>Save Details</span>
+            }
+            @if (isSaving()) {
+              <span>Saving...</span>
+            }
+          </ion-button>
         </div>
-      </div>
-
-      <!-- Payment Configuration Section -->
-      <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-bottom: 12px;">Payment Details</h3>
-      <div class="form-section-content" style="margin-bottom: 24px;">
-        <!-- UPI ID -->
-        <div class="form-group" style="margin-bottom: 12px;">
-          <ion-input
-            formControlName="upi_id"
-            placeholder="e.g. bizzdeal@upi"
-            fill="outline"
-            labelPlacement="stacked"
-            style="--background: #f9fafb; --border-radius: 10px;"
-          >
-            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
-              UPI ID <span class="required-star" style="color: #ef4444;">*</span>
-            </div>
-          </ion-input>
-          <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
-            <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
-              *ngIf="paymentForm.get('upi_id')?.touched && paymentForm.get('upi_id')?.hasError('required')">
-              UPI ID is required.
-            </span>
-          </div>
-        </div>
-
-        <!-- Account Name -->
-        <div class="form-group" style="margin-bottom: 12px;">
-          <ion-input
-            formControlName="account_name"
-            placeholder="e.g. BIZZ DEAL Pvt Ltd"
-            fill="outline"
-            labelPlacement="stacked"
-            style="--background: #f9fafb; --border-radius: 10px;"
-          >
-            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
-              Account Name <span class="required-star" style="color: #ef4444;">*</span>
-            </div>
-          </ion-input>
-          <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
-            <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
-              *ngIf="paymentForm.get('account_name')?.touched && paymentForm.get('account_name')?.hasError('required')">
-              Account Name is required.
-            </span>
-          </div>
-        </div>
-
-        <!-- Registration Fee -->
-        <div class="form-group" style="margin-bottom: 12px;">
-          <ion-input
-            type="number"
-            formControlName="registration_fee"
-            placeholder="e.g. 10000"
-            fill="outline"
-            labelPlacement="stacked"
-            style="--background: #f9fafb; --border-radius: 10px;"
-          >
-            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
-              Registration Fee Amount <span class="required-star" style="color: #ef4444;">*</span>
-            </div>
-          </ion-input>
-          <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
-            <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
-              *ngIf="paymentForm.get('registration_fee')?.touched && paymentForm.get('registration_fee')?.hasError('required')">
-              Registration fee is required.
-            </span>
-            <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
-              *ngIf="paymentForm.get('registration_fee')?.touched && paymentForm.get('registration_fee')?.hasError('min')">
-              Registration fee must be a positive number.
-            </span>
-          </div>
-        </div>
-
-        <!-- Currency -->
-        <div class="form-group" style="margin-bottom: 0;">
-          <ion-input
-            formControlName="currency"
-            placeholder="e.g. INR"
-            fill="outline"
-            labelPlacement="stacked"
-            style="--background: #f9fafb; --border-radius: 10px;"
-          >
-            <div slot="label" style="font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 6px;">
-              Currency <span class="required-star" style="color: #ef4444;">*</span>
-            </div>
-          </ion-input>
-          <div class="error-container" style="min-height: 20px; display: flex; align-items: center; margin-top: 2px;">
-            <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.8rem;"
-              *ngIf="paymentForm.get('currency')?.touched && paymentForm.get('currency')?.hasError('required')">
-              Currency is required.
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div style="display: flex; gap: 16px; margin-top: 24px;">
-        <ion-button type="submit" expand="block"
-          style="flex: 1; --height: 85px; --border-radius: 14px; --background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%); --box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);"
-          [disabled]="paymentForm.invalid || isSaving()">
-          <ion-spinner name="crescent" *ngIf="isSaving()"></ion-spinner>
-          <ion-icon name="save-outline" slot="start" *ngIf="!isSaving()"></ion-icon>
-          <span *ngIf="!isSaving()">Save Details</span>
-          <span *ngIf="isSaving()">Saving...</span>
-        </ion-button>
-      </div>
-
-    </form>
-  </div>
+      </form>
+    </div>
+  }
 </ion-content>

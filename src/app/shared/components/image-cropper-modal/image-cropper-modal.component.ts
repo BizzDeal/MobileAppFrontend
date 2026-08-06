@@ -1,5 +1,5 @@
 import { Component, Input, ElementRef, ViewChild, AfterViewInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ModalController, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonSpinner, IonRange, IonFooter } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -27,7 +27,6 @@ export interface ImageCropResult {
   selector: 'app-image-cropper-modal',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     IonHeader,
     IonToolbar,
@@ -39,7 +38,7 @@ export interface ImageCropResult {
     IonSpinner,
     IonRange,
     IonFooter
-  ],
+],
   templateUrl: './image-cropper-modal.component.html',
   styleUrls: ['./image-cropper-modal.component.scss']
 })

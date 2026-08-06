@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterModule, NavigationEnd, NavigationStart } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
@@ -17,12 +17,10 @@ import { SplashScreenService } from './core/services/splash-screen.service';
   templateUrl: 'app.component.html',
   standalone: true,
   imports: [
-    CommonModule,
     IonicModule,
     RouterModule,
-    SplashScreenComponent,
-    // SmartLoadingScreenComponent
-  ],
+    SplashScreenComponent
+],
 })
 export class AppComponent implements OnInit, OnDestroy {
   isAdminRoute = false;

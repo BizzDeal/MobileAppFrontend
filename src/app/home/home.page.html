@@ -84,7 +84,7 @@
     </ion-header>
     <ion-content class="modal-content-pad">
       @if (activeVouchers(); as vouchers) {
-      @if (vouchers.length > 0) {
+      @if (vouchers.length> 0) {
       <div class="vouchers-list">
         @for (v of vouchers; track v.id) {
         <div class="voucher-card bd-card">
@@ -95,7 +95,7 @@
           <h4 class="v-title">{{ v.offerTitle }}</h4>
           @if (v.status === 'ISSUED') {
           <div class="qr-box">
-            <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=1565c0&data=' + getQrData(v)"
+            <img loading="lazy" [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=1565c0&data=' + getQrData(v)"
               alt="Voucher QR Code" class="voucher-qr" />
           </div>
           <div class="code-box" (click)="copyVoucherCode(v.voucher_code)">
@@ -141,7 +141,7 @@
         <div class="detail-hero" [style.background]="getAvatarColor(deal.businessName)">
           <span class="fallback-hero-text">{{ getInitials(deal.businessName) }}</span>
           @if (deal.imageUrl) {
-            <img [appCachedImg]="deal.imageUrl" [alt]="deal.title" class="hero-img" />
+            <img loading="lazy" [appCachedImg]="deal.imageUrl" [alt]="deal.title" class="hero-img" />
           }
           <span class="detail-discount">{{ deal.discount_type === 'PERCENTAGE' ? deal.discount_value + '% OFF' : '₹' +
             deal.discount_value + ' OFF' }}</span>
@@ -189,7 +189,7 @@
         <h4 class="v-title">{{ v.offerTitle }}</h4>
         @if (v.status === 'ISSUED') {
         <div class="qr-box">
-          <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=1565c0&data=' + getQrData(v)"
+          <img loading="lazy" [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=1565c0&data=' + getQrData(v)"
             alt="Voucher QR Code" class="voucher-qr" />
         </div>
         <div class="code-box" (click)="copyVoucherCode(v.voucher_code)">
@@ -226,13 +226,13 @@
         <div class="detail-hero" [style.background]="getAvatarColor(biz.name)">
           <span class="fallback-hero-text">{{ getInitials(biz.name) }}</span>
           @if (biz.bannerUrl) {
-            <img [appCachedImg]="biz.bannerUrl" [alt]="biz.name" class="hero-img" />
+            <img loading="lazy" [appCachedImg]="biz.bannerUrl" [alt]="biz.name" class="hero-img" />
           }
         </div>
         <div class="detail-body">
           <div class="biz-header-row">
             @if (biz.logoUrl) {
-            <img [appCachedImg]="biz.logoUrl" alt="logo" class="detail-logo" />
+            <img loading="lazy" [appCachedImg]="biz.logoUrl" alt="logo" class="detail-logo" />
             } @else {
             <div class="detail-logo fallback-logo" [style.background]="getAvatarColor(biz.name)">
               {{ getInitials(biz.name) }}

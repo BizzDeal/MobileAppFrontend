@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonContent } from '@ionic/angular/standalone';
 import { ConversationListComponent } from '../../../chat/components/conversation-list/conversation-list.component';
 import { ChatRoomComponent } from '../../../chat/components/chat-room/chat-room.component';
@@ -9,11 +9,10 @@ import { ChatService } from '../../../chat/services/chat.service';
   selector: 'app-admin-chat',
   standalone: true,
   imports: [
-    CommonModule,
     IonContent,
     ConversationListComponent,
     ChatRoomComponent
-  ],
+],
   templateUrl: './admin-chat.page.html',
   styleUrl: './admin-chat.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

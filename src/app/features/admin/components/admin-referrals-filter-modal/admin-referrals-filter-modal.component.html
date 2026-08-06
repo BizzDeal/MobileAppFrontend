@@ -1,89 +1,96 @@
-<div class="custom-modal-backdrop" *ngIf="isOpen" (click)="cancel()">
-  <div class="custom-modal-card" (click)="$event.stopPropagation()">
-    <div class="custom-modal-header">
-      <h3 class="modal-title">Filter Referrals</h3>
-      <button type="button" class="modal-close-btn" (click)="cancel()" aria-label="Close modal">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-
-    <div class="custom-modal-body filter-content">
-      <div class="filter-section">
-        <h3>Date Filter</h3>
-        <div class="premium-select-wrapper">
-          <ion-item class="styled-dropdown-item" lines="none">
-            <ion-icon name="filter-outline" slot="start" class="dropdown-icon"></ion-icon>
-            <ion-select [(ngModel)]="dateFilterMode" interface="action-sheet" toggleIcon="caret-down-sharp">
-              <ion-select-option value="none">All Time</ion-select-option>
-              <ion-select-option value="particular">Particular Date</ion-select-option>
-              <ion-select-option value="dateRange">Date Range</ion-select-option>
-              <ion-select-option value="monthRange">Month & Year</ion-select-option>
-            </ion-select>
-          </ion-item>
+@if (isOpen) {
+  <div class="custom-modal-backdrop" (click)="cancel()">
+    <div class="custom-modal-card" (click)="$event.stopPropagation()">
+      <div class="custom-modal-header">
+        <h3 class="modal-title">Filter Referrals</h3>
+        <button type="button" class="modal-close-btn" (click)="cancel()" aria-label="Close modal">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="custom-modal-body filter-content">
+        <div class="filter-section">
+          <h3>Date Filter</h3>
+          <div class="premium-select-wrapper">
+            <ion-item class="styled-dropdown-item" lines="none">
+              <ion-icon name="filter-outline" slot="start" class="dropdown-icon"></ion-icon>
+              <ion-select [(ngModel)]="dateFilterMode" interface="action-sheet" toggleIcon="caret-down-sharp">
+                <ion-select-option value="none">All Time</ion-select-option>
+                <ion-select-option value="particular">Particular Date</ion-select-option>
+                <ion-select-option value="dateRange">Date Range</ion-select-option>
+                <ion-select-option value="monthRange">Month & Year</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+          <!-- Particular Date Picker -->
+          @if (dateFilterMode === 'particular') {
+            <div class="date-picker-container animate-fade-in">
+              <h4 class="section-title">Select Dates</h4>
+              <ion-datetime presentation="date" [(ngModel)]="particularDate" [multiple]="true" size="cover" class="premium-calendar"></ion-datetime>
+            </div>
+          }
+          <!-- Date Range Picker -->
+          @if (dateFilterMode === 'dateRange') {
+            <div class="date-picker-container animate-fade-in">
+              <h4 class="section-title">Start Date</h4>
+              <ion-datetime presentation="date" [(ngModel)]="startDate" size="cover" class="premium-calendar"></ion-datetime>
+              <h4 class="section-title mt-4">End Date</h4>
+              <ion-datetime presentation="date" [(ngModel)]="endDate" size="cover" class="premium-calendar"></ion-datetime>
+            </div>
+          }
+          <!-- Month Picker -->
+          @if (dateFilterMode === 'monthRange') {
+            <div class="date-picker-container animate-fade-in">
+              <h4 class="section-title">Select Month</h4>
+              <ion-datetime presentation="month-year" [(ngModel)]="selectedMonth" size="cover" class="premium-calendar"></ion-datetime>
+            </div>
+          }
         </div>
-
-        <!-- Particular Date Picker -->
-        <div class="date-picker-container animate-fade-in" *ngIf="dateFilterMode === 'particular'">
-          <h4 class="section-title">Select Dates</h4>
-          <ion-datetime presentation="date" [(ngModel)]="particularDate" [multiple]="true" size="cover" class="premium-calendar"></ion-datetime>
-        </div>
-
-        <!-- Date Range Picker -->
-        <div class="date-picker-container animate-fade-in" *ngIf="dateFilterMode === 'dateRange'">
-          <h4 class="section-title">Start Date</h4>
-          <ion-datetime presentation="date" [(ngModel)]="startDate" size="cover" class="premium-calendar"></ion-datetime>
-          <h4 class="section-title mt-4">End Date</h4>
-          <ion-datetime presentation="date" [(ngModel)]="endDate" size="cover" class="premium-calendar"></ion-datetime>
-        </div>
-
-        <!-- Month Picker -->
-        <div class="date-picker-container animate-fade-in" *ngIf="dateFilterMode === 'monthRange'">
-          <h4 class="section-title">Select Month</h4>
-          <ion-datetime presentation="month-year" [(ngModel)]="selectedMonth" size="cover" class="premium-calendar"></ion-datetime>
+        <div class="divider"></div>
+        <div class="filter-section">
+          <h3>Region Filter</h3>
+          <div class="premium-select-wrapper" [class.loading]="isLoadingStates">
+            <ion-item class="styled-dropdown-item" lines="none">
+              <ion-icon name="location-outline" slot="start" class="dropdown-icon"></ion-icon>
+              <ion-select [(ngModel)]="selectedState" (ionChange)="onStateChange()" interface="action-sheet" placeholder="Select State" toggleIcon="caret-down-sharp">
+                <ion-select-option value="">All States</ion-select-option>
+                @for (state of availableStates; track state) {
+                  <ion-select-option [value]="state.id">
+                    {{ state.name }}
+                  </ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            @if (isLoadingStates) {
+              <ion-spinner name="crescent" class="field-spinner"></ion-spinner>
+            }
+          </div>
+          <div class="premium-select-wrapper" [class.loading]="isLoadingDistricts" [class.disabled]="!selectedState">
+            <ion-item class="styled-dropdown-item" lines="none">
+              <ion-icon name="location-outline" slot="start" class="dropdown-icon"></ion-icon>
+              <ion-select [(ngModel)]="selectedDistrict" interface="action-sheet" placeholder="Select District" [disabled]="!selectedState" toggleIcon="caret-down-sharp">
+                <ion-select-option value="">All Districts</ion-select-option>
+                @for (district of availableDistricts; track district) {
+                  <ion-select-option [value]="district.id">
+                    {{ district.name }}
+                  </ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            @if (isLoadingDistricts) {
+              <ion-spinner name="crescent" class="field-spinner"></ion-spinner>
+            }
+          </div>
         </div>
       </div>
-
-      <div class="divider"></div>
-
-      <div class="filter-section">
-        <h3>Region Filter</h3>
-        
-        <div class="premium-select-wrapper" [class.loading]="isLoadingStates">
-          <ion-item class="styled-dropdown-item" lines="none">
-            <ion-icon name="location-outline" slot="start" class="dropdown-icon"></ion-icon>
-            <ion-select [(ngModel)]="selectedState" (ionChange)="onStateChange()" interface="action-sheet" placeholder="Select State" toggleIcon="caret-down-sharp">
-              <ion-select-option value="">All States</ion-select-option>
-              <ion-select-option *ngFor="let state of availableStates" [value]="state.id">
-                {{ state.name }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-spinner *ngIf="isLoadingStates" name="crescent" class="field-spinner"></ion-spinner>
-        </div>
-
-        <div class="premium-select-wrapper" [class.loading]="isLoadingDistricts" [class.disabled]="!selectedState">
-          <ion-item class="styled-dropdown-item" lines="none">
-            <ion-icon name="location-outline" slot="start" class="dropdown-icon"></ion-icon>
-            <ion-select [(ngModel)]="selectedDistrict" interface="action-sheet" placeholder="Select District" [disabled]="!selectedState" toggleIcon="caret-down-sharp">
-              <ion-select-option value="">All Districts</ion-select-option>
-              <ion-select-option *ngFor="let district of availableDistricts" [value]="district.id">
-                {{ district.name }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-spinner *ngIf="isLoadingDistricts" name="crescent" class="field-spinner"></ion-spinner>
-        </div>
+      <div class="custom-modal-footer">
+        <ion-button color="medium" fill="clear" (click)="clearFilter()">
+          Clear
+        </ion-button>
+        <ion-button color="primary" fill="solid" class="apply-btn" (click)="apply()">
+          <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+          Apply Filters
+        </ion-button>
       </div>
-    </div>
-
-    <div class="custom-modal-footer">
-      <ion-button color="medium" fill="clear" (click)="clearFilter()">
-        Clear
-      </ion-button>
-      <ion-button color="primary" fill="solid" class="apply-btn" (click)="apply()">
-        <ion-icon name="checkmark-outline" slot="start"></ion-icon>
-        Apply Filters
-      </ion-button>
     </div>
   </div>
-</div>
+}

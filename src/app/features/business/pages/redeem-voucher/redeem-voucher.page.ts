@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -32,6 +33,7 @@ export class RedeemVoucherPage implements OnInit {
   private readonly router = inject(Router);
   private readonly vouchersService = inject(VouchersService);
   private readonly permissionsService = inject(PermissionsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   step: 'VERIFY' | 'REDEEM' | 'SUCCESS' = 'VERIFY';
   isScannerOpen = false;
@@ -80,7 +82,7 @@ export class RedeemVoucherPage implements OnInit {
     });
 
     // Watch values on redemption form for real-time calculations
-    this.redemptionForm.valueChanges.subscribe(() => {
+    this.redemptionForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.calculateLiveValues();
     });
   }

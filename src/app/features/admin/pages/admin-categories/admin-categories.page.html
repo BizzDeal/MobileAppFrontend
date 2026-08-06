@@ -1,54 +1,60 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
   <div class="admin-search-filter-bar">
-    <ion-searchbar 
-      [value]="searchQuery" 
-      (ionInput)="onSearch($event)" 
-      placeholder="Search categories..." 
-      mode="md" 
+    <ion-searchbar
+      [value]="searchQuery"
+      (ionInput)="onSearch($event)"
+      placeholder="Search categories..."
+      mode="md"
       class="premium-searchbar">
     </ion-searchbar>
   </div>
 </ion-header>
 
 <ion-content style="--background: #fff;">
-  <div *ngIf="loading" style="padding: 16px;">
-    <app-card-skeleton [count]="4"></app-card-skeleton>
-  </div>
+  @if (loading) {
+    <div style="padding: 16px;">
+      <app-card-skeleton [count]="4"></app-card-skeleton>
+    </div>
+  }
 
-  <div *ngIf="!loading && displayedCategories.length === 0" class="ion-padding ion-text-center mt-4">
-    <ion-icon name="albums-outline" class="text-4xl text-medium"></ion-icon>
-    <p class="text-medium mt-2">No categories found.</p>
-  </div>
+  @if (!loading && displayedCategories.length === 0) {
+    <div class="ion-padding ion-text-center mt-4">
+      <ion-icon name="albums-outline" class="text-4xl text-medium"></ion-icon>
+      <p class="text-medium mt-2">No categories found.</p>
+    </div>
+  }
 
-  <ion-list *ngIf="!loading && displayedCategories.length > 0" class="bg-transparent p-0 pt-4 m-0" lines="none">
-    <div *ngFor="let category of displayedCategories" class="premium-category-card" (click)="openEditCategoryModal(category)" style="cursor: pointer;">
-      <div class="card-body">
-        <div class="category-details">
-          <div class="category-header">
-            <h3 class="category-title">{{ category.name }}</h3>
-            <span class="custom-badge shrink-0" [ngClass]="category.is_active ? 'badge-success' : 'badge-warning'">
-              {{ category.is_active ? 'Active' : 'Inactive' }}
-            </span>
+  @if (!loading && displayedCategories.length> 0) {
+    <ion-list class="bg-transparent p-0 pt-4 m-0" lines="none">
+      @for (category of displayedCategories; track category) {
+        <div class="premium-category-card" (click)="openEditCategoryModal(category)" style="cursor: pointer;">
+          <div class="card-body">
+            <div class="category-details">
+              <div class="category-header">
+                <h3 class="category-title">{{ category.name }}</h3>
+                <span class="custom-badge shrink-0" [ngClass]="category.is_active ? 'badge-success' : 'badge-warning'">
+                  {{ category.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+              <div class="category-desc mt-2 text-sm text-medium line-clamp-2">
+                {{ category.description || 'No description provided.' }}
+              </div>
+            </div>
           </div>
-          
-          <div class="category-desc mt-2 text-sm text-medium line-clamp-2">
-            {{ category.description || 'No description provided.' }}
+          <!-- Footer / Extra info -->
+          <div class="card-footer">
+            <div class="footer-action">
+              <ion-icon name="create-outline"></ion-icon>
+              <span>Tap to edit</span>
+            </div>
+            <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
           </div>
         </div>
-      </div>
-      
-      <!-- Footer / Extra info -->
-      <div class="card-footer">
-         <div class="footer-action">
-           <ion-icon name="create-outline"></ion-icon>
-           <span>Tap to edit</span>
-         </div>
-         <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
-      </div>
-    </div>
-  </ion-list>
+      }
+    </ion-list>
+  }
 
-  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="displayedCategories.length >= filteredCategories.length">
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="displayedCategories.length>= filteredCategories.length">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more categories..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 

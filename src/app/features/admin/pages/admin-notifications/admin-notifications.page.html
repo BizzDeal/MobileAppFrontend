@@ -16,54 +16,60 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div *ngIf="loading" style="padding: 16px;">
-    <app-list-skeleton [count]="4"></app-list-skeleton>
-  </div>
+  @if (loading) {
+    <div style="padding: 16px;">
+      <app-list-skeleton [count]="4"></app-list-skeleton>
+    </div>
+  }
 
-  <div *ngIf="!loading && filteredNotifications.length === 0" class="ion-padding ion-text-center mt-4">
-    <ion-icon name="notifications-outline" class="text-4xl text-medium"></ion-icon>
-    <p class="text-medium mt-2">No notifications found.</p>
-  </div>
+  @if (!loading && filteredNotifications.length === 0) {
+    <div class="ion-padding ion-text-center mt-4">
+      <ion-icon name="notifications-outline" class="text-4xl text-medium"></ion-icon>
+      <p class="text-medium mt-2">No notifications found.</p>
+    </div>
+  }
 
-  <ion-list *ngIf="!loading && filteredNotifications.length > 0" class="bg-transparent p-0 pt-4 m-0" lines="none">
-    <div *ngFor="let notification of filteredNotifications" class="premium-offer-card">
-      <div class="card-body">
-        <div class="offer-details">
-          <div class="offer-header">
-            <h3 class="offer-title">{{ notification.title }}</h3>
-            <span class="custom-badge shrink-0" [ngClass]="'badge-' + getTypeBadgeColor(notification.type)">
-              {{ notification.type }}
-            </span>
+  @if (!loading && filteredNotifications.length> 0) {
+    <ion-list class="bg-transparent p-0 pt-4 m-0" lines="none">
+      @for (notification of filteredNotifications; track notification) {
+        <div class="premium-offer-card">
+          <div class="card-body">
+            <div class="offer-details">
+              <div class="offer-header">
+                <h3 class="offer-title">{{ notification.title }}</h3>
+                <span class="custom-badge shrink-0" [ngClass]="'badge-' + getTypeBadgeColor(notification.type)">
+                  {{ notification.type }}
+                </span>
+              </div>
+              <div class="notification-message">
+                {{ notification.message }}
+              </div>
+              <div class="offer-badges">
+                <span class="type-badge">
+                  <ion-icon [name]="getAudienceIcon(notification.audience)"></ion-icon>
+                  {{ getAudienceLabel(notification.audience) }}
+                </span>
+                @if (notification.target_phones?.length || notification.target_ids?.length) {
+                  <span class="value-badge">
+                    {{ (notification.target_phones?.length || notification.target_ids?.length) }} selected
+                  </span>
+                }
+              </div>
+            </div>
           </div>
-          
-          <div class="notification-message">
-            {{ notification.message }}
-          </div>
-
-          <div class="offer-badges">
-            <span class="type-badge">
-              <ion-icon [name]="getAudienceIcon(notification.audience)"></ion-icon>
-              {{ getAudienceLabel(notification.audience) }}
-            </span>
-            <span *ngIf="notification.target_phones?.length || notification.target_ids?.length" class="value-badge">
-              {{ (notification.target_phones?.length || notification.target_ids?.length) }} selected
-            </span>
+          <div class="card-footer">
+            <div class="footer-time">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>Sent: {{ notification.created_at | date:'medium' }}</span>
+            </div>
+            <ion-button fill="clear" color="danger" size="small" class="delete-btn" (click)="deleteNotification(notification.id)">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
           </div>
         </div>
-      </div>
-      
-      <div class="card-footer">
-         <div class="footer-time">
-           <ion-icon name="time-outline"></ion-icon>
-           <span>Sent: {{ notification.created_at | date:'medium' }}</span>
-         </div>
-         
-         <ion-button fill="clear" color="danger" size="small" class="delete-btn" (click)="deleteNotification(notification.id)">
-           <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-         </ion-button>
-      </div>
-    </div>
-  </ion-list>
+      }
+    </ion-list>
+  }
 
   <!-- Compose FAB -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

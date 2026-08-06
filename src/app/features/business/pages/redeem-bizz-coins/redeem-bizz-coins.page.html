@@ -85,21 +85,7 @@
           @if (searchedCustomer) {
             <div class="customer-preview-card">
               <div class="avatar-wrap">
-                @if (searchedCustomer.profile_pic_url && !avatarLoadError) {
-                  <img
-                    [appCachedImg]="searchedCustomer.profile_pic_url"
-                    [alt]="searchedCustomer.name"
-                    class="avatar-img"
-                    (error)="avatarLoadError = true"
-                  />
-                } @else {
-                  <div
-                    class="avatar-fallback"
-                    [style.background]="getAvatarColor(searchedCustomer.name)"
-                  >
-                    {{ getInitials(searchedCustomer.name) }}
-                  </div>
-                }
+                  <img loading="lazy" [appCachedImg]="searchedCustomer.profile_pic_url" [fallbackName]="searchedCustomer.name" [alt]="searchedCustomer.name" class="avatar-img" />
               </div>
 
               <div class="customer-info">
@@ -119,8 +105,7 @@
             <button
               type="submit"
               class="primary-submit-btn"
-              [disabled]="verificationForm.invalid || !searchedCustomer || isSearchingCustomer || !hasActiveOffer"
-            >
+              [disabled]="verificationForm.invalid || !searchedCustomer || isSearchingCustomer || !hasActiveOffer">
               <span>Continue to Redeem</span>
               <ion-icon name="sparkles-outline"></ion-icon>
             </button>
@@ -250,8 +235,7 @@
             <button
               type="submit"
               class="primary-submit-btn"
-              [disabled]="redemptionForm.invalid || isRedeeming"
-            >
+              [disabled]="redemptionForm.invalid || isRedeeming">
               @if (isRedeeming) {
                 <ion-spinner name="crescent"></ion-spinner>
                 <span>Redeeming...</span>

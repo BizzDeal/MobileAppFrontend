@@ -25,78 +25,91 @@
   <!-- Content Container -->
   <div class="referrals-content">
     <!-- Loading State -->
-    <app-list-skeleton *ngIf="loading()"></app-list-skeleton>
+    @if (loading()) {
+      <app-list-skeleton></app-list-skeleton>
+    }
 
     <!-- Error State -->
-    <div *ngIf="error() && !loading()" class="empty-state">
-      <div class="empty-icon-wrapper danger">
-        <ion-icon name="alert-circle-outline"></ion-icon>
+    @if (error() && !loading()) {
+      <div class="empty-state">
+        <div class="empty-icon-wrapper danger">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+        </div>
+        <h3>Oops!</h3>
+        <p>{{ error() }}</p>
+        <ion-button fill="clear" (click)="fetchReferrals()">Try Again</ion-button>
       </div>
-      <h3>Oops!</h3>
-      <p>{{ error() }}</p>
-      <ion-button fill="clear" (click)="fetchReferrals()">Try Again</ion-button>
-    </div>
+    }
 
     <!-- Empty State -->
-    <div *ngIf="!loading() && !error() && filteredReferrals().length === 0" class="empty-state">
-      <div class="empty-icon-wrapper">
-        <ion-icon name="gift-outline"></ion-icon>
+    @if (!loading() && !error() && filteredReferrals().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon-wrapper">
+          <ion-icon name="gift-outline"></ion-icon>
+        </div>
+        <h3>No Referrals Found</h3>
+        <p>You haven't {{ activeSegment() === 'GIVEN' ? 'given' : 'received' }} any referrals yet.</p>
       </div>
-      <h3>No Referrals Found</h3>
-      <p>You haven't {{ activeSegment() === 'GIVEN' ? 'given' : 'received' }} any referrals yet.</p>
-    </div>
+    }
 
     <!-- Referrals Cards List (Compact Items) -->
-    <div *ngIf="!loading() && !error() && filteredReferrals().length > 0" class="referrals-list">
-      <div *ngFor="let ref of filteredReferrals()" 
-           class="referral-item-card" 
-           [class.inhouse-card]="ref.referral_type === 'INHOUSE'" 
-           [class.outhouse-card]="ref.referral_type === 'OUTHOUSE'"
-           (click)="openDetailModal(ref)">
-        
-        <div class="item-header">
-          <div class="contact-title-group">
-            <h3 class="contact-name">{{ ref.contact_name }}</h3>
-            <span class="type-badge" [class.inhouse]="ref.referral_type === 'INHOUSE'" [class.outhouse]="ref.referral_type === 'OUTHOUSE'">
-              {{ ref.referral_type }}
-            </span>
-          </div>
-          <span class="item-date">{{ ref.created_at | date:'MMM d, yyyy' }}</span>
-        </div>
-
-        <div class="item-summary-row">
-          <div class="summary-info">
-            <div class="info-pill">
-              <ion-icon name="call-outline"></ion-icon>
-              <span>{{ ref.contact_phone }}</span>
+    @if (!loading() && !error() && filteredReferrals().length> 0) {
+      <div class="referrals-list">
+        @for (ref of filteredReferrals(); track ref) {
+          <div
+            class="referral-item-card"
+            [class.inhouse-card]="ref.referral_type === 'INHOUSE'"
+            [class.outhouse-card]="ref.referral_type === 'OUTHOUSE'"
+            (click)="openDetailModal(ref)">
+            <div class="item-header">
+              <div class="contact-title-group">
+                <h3 class="contact-name">{{ ref.contact_name }}</h3>
+                <span class="type-badge" [class.inhouse]="ref.referral_type === 'INHOUSE'" [class.outhouse]="ref.referral_type === 'OUTHOUSE'">
+                  {{ ref.referral_type }}
+                </span>
+              </div>
+              <span class="item-date">{{ ref.created_at | date:'MMM d, yyyy' }}</span>
             </div>
-            <div class="info-pill member-pill">
-              <ion-icon name="people-outline"></ion-icon>
-              <span>{{ activeSegment() === 'GIVEN' ? ref.to_member.full_name : ref.referrer.full_name }}</span>
+            <div class="item-summary-row">
+              <div class="summary-info">
+                <div class="info-pill">
+                  <ion-icon name="call-outline"></ion-icon>
+                  <span>{{ ref.contact_phone }}</span>
+                </div>
+                <div class="info-pill member-pill">
+                  <ion-icon name="people-outline"></ion-icon>
+                  <span>{{ activeSegment() === 'GIVEN' ? ref.to_member.full_name : ref.referrer.full_name }}</span>
+                </div>
+              </div>
+              <div class="action-arrow">
+                @if (ref.rating) {
+                  <div class="stars-mini">
+                    <ion-icon name="star" class="star-mini-icon"></ion-icon>
+                    <span class="rating-num">{{ ref.rating }}</span>
+                  </div>
+                }
+                <ion-icon name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+              </div>
             </div>
+            @if (activeSegment() === 'RECEIVED' || ref.is_appreciated) {
+              <div class="item-action-row">
+                @if (activeSegment() === 'RECEIVED' && !ref.is_appreciated) {
+                  <ion-button fill="outline" size="small" color="primary" class="appreciate-btn" (click)="openAppreciationModal(ref, $event)">
+                    <ion-icon name="heart-outline" slot="start"></ion-icon>
+                    Appreciate
+                  </ion-button>
+                }
+                @if (ref.is_appreciated) {
+                  <span class="appreciated-badge">
+                    <ion-icon name="heart"></ion-icon> Appreciated
+                  </span>
+                }
+              </div>
+            }
           </div>
-          
-          <div class="action-arrow">
-            <div class="stars-mini" *ngIf="ref.rating">
-              <ion-icon name="star" class="star-mini-icon"></ion-icon>
-              <span class="rating-num">{{ ref.rating }}</span>
-            </div>
-            <ion-icon name="chevron-forward-outline" class="chevron-icon"></ion-icon>
-          </div>
-        </div>
-
-        <div class="item-action-row" *ngIf="activeSegment() === 'RECEIVED' || ref.is_appreciated">
-          <ion-button *ngIf="activeSegment() === 'RECEIVED' && !ref.is_appreciated" fill="outline" size="small" color="primary" class="appreciate-btn" (click)="openAppreciationModal(ref, $event)">
-            <ion-icon name="heart-outline" slot="start"></ion-icon>
-            Appreciate
-          </ion-button>
-          <span class="appreciated-badge" *ngIf="ref.is_appreciated">
-            <ion-icon name="heart"></ion-icon> Appreciated
-          </span>
-        </div>
-
+        }
       </div>
-    </div>
+    }
 
     <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)" [disabled]="!hasMore()">
       <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more referrals..."></ion-infinite-scroll-content>
@@ -124,7 +137,7 @@
 
       <ion-content class="ion-padding" color="light">
         <div class="modal-body">
-          
+
           <!-- Member Search Section -->
           <div class="form-section">
             <ion-segment [value]="referralType()" (ionChange)="referralTypeChanged($event)" mode="ios" class="type-segment">
@@ -135,45 +148,51 @@
                 <ion-label>Outhouse</ion-label>
               </ion-segment-button>
             </ion-segment>
-            
+
             <p class="search-helper">
               {{ referralType() === 'INHOUSE' ? 'Search for a member in your current district.' : 'Search for a member outside your district.' }}
             </p>
 
             <div class="search-container">
-              <ion-searchbar 
-                [value]="searchInput()" 
-                (ionInput)="onSearchChange($event)" 
+              <ion-searchbar
+                [value]="searchInput()"
+                (ionInput)="onSearchChange($event)"
                 (ionFocus)="onSearchFocus()"
                 (click)="onSearchFocus()"
                 placeholder="Search member by name or business..."
                 debounce="300">
               </ion-searchbar>
-              
-              <div class="search-results" *ngIf="isSearchFocused() && membersList().length > 0 && !selectedMember()">
-                <ion-list lines="full">
-                  <ion-item *ngFor="let member of membersList()" button (click)="selectMember(member)">
-                    <ion-label>
-                      <h2>{{ member.full_name }}</h2>
-                      <p class="business-title">{{ member.businessProfile?.business_name || 'No Business' }}</p>
-                      <p class="member-contact">{{ member.email }} • {{ member.phone }}</p>
-                    </ion-label>
+
+              @if (isSearchFocused() && membersList().length> 0 && !selectedMember()) {
+                <div class="search-results">
+                  <ion-list lines="full">
+                    @for (member of membersList(); track member) {
+                      <ion-item button (click)="selectMember(member)">
+                        <ion-label>
+                          <h2>{{ member.full_name }}</h2>
+                          <p class="business-title">{{ member.businessProfile?.business_name || 'No Business' }}</p>
+                          <p class="member-contact">{{ member.email }} • {{ member.phone }}</p>
+                        </ion-label>
+                      </ion-item>
+                    }
+                  </ion-list>
+                </div>
+              }
+              @if (isSearchFocused() && isMembersLoading()) {
+                <div class="search-results">
+                  <ion-item lines="none">
+                    <ion-spinner name="crescent"></ion-spinner>
+                    <ion-label class="ion-margin-start">Searching...</ion-label>
                   </ion-item>
-                </ion-list>
-              </div>
-              <div class="search-results" *ngIf="isSearchFocused() && isMembersLoading()">
-                <ion-item lines="none">
-                  <ion-spinner name="crescent"></ion-spinner>
-                  <ion-label class="ion-margin-start">Searching...</ion-label>
-                </ion-item>
-              </div>
+                </div>
+              }
             </div>
           </div>
 
           <!-- Referral Form Details -->
           <div class="form-section" [class.disabled]="!selectedMember()" (click)="isSearchFocused.set(false)">
             <h3>Referral Details</h3>
-            
+
             <div class="checkbox-row">
               <ion-item lines="none" class="checkbox-item">
                 <ion-checkbox [checked]="toldToCall()" (ionChange)="toldToCall.set($event.detail.checked)">
@@ -210,28 +229,33 @@
             <ion-item class="input-item">
               <ion-textarea label="Comments" labelPlacement="stacked" placeholder="Any comments..." [value]="comments()" (ionInput)="comments.set($any($event.target).value)"></ion-textarea>
             </ion-item>
-            
+
             <div class="rating-section">
               <p>How hot is this referral?</p>
               <div class="stars-container">
-                <ion-icon 
-                  *ngFor="let i of [1,2,3,4,5]" 
-                  [name]="i <= rating() ? 'star' : 'star-outline'" 
-                  (click)="setRating(i)"
-                  class="interactive-star">
-                </ion-icon>
+                @for (i of [1,2,3,4,5]; track i) {
+                  <ion-icon
+                    [name]="i <= rating() ? 'star' : 'star-outline'"
+                    (click)="setRating(i)"
+                    class="interactive-star">
+                  </ion-icon>
+                }
               </div>
             </div>
           </div>
-          
+
         </div>
       </ion-content>
       <ion-footer class="ion-no-border">
         <ion-toolbar>
           <div class="footer-actions">
             <ion-button expand="block" (click)="submitReferral()" [disabled]="submitting() || !selectedMember() || !contactName().trim() || !contactPhone().trim()">
-              <ion-spinner *ngIf="submitting()" name="crescent"></ion-spinner>
-              <span *ngIf="!submitting()">Submit Slip</span>
+              @if (submitting()) {
+                <ion-spinner name="crescent"></ion-spinner>
+              }
+              @if (!submitting()) {
+                <span>Submit Slip</span>
+              }
             </ion-button>
           </div>
         </ion-toolbar>
@@ -254,49 +278,53 @@
       </ion-header>
 
       <ion-content class="ion-padding" color="light">
-        <div class="modal-body" *ngIf="selectedReferralForAppreciation() as ref">
-          <div class="form-section">
-            <div class="contact-profile ion-margin-bottom">
-              <div class="avatar-circle">
-                <img *ngIf="ref.referrer.profile_pic_url; else defaultAvatar" [src]="ref.referrer.profile_pic_url" [alt]="ref.referrer.full_name" />
-                <ng-template #defaultAvatar>
-                  <ion-icon name="person-outline"></ion-icon>
-                </ng-template>
-              </div>
-              <div class="contact-info">
-                <h2 class="contact-name">{{ ref.referrer.full_name }}</h2>
-                <div class="badge-row">
-                  <span class="date-chip">
-                    <ion-icon name="calendar-outline"></ion-icon>
-                    {{ ref.created_at | date:'MMM d, yyyy' }}
-                  </span>
+        @if (selectedReferralForAppreciation(); as ref) {
+          <div class="modal-body">
+            <div class="form-section">
+              <div class="contact-profile ion-margin-bottom">
+                <div class="avatar-circle">
+                  @if (ref.referrer.profile_pic_url) {
+                    <img loading="lazy" [src]="ref.referrer.profile_pic_url" [alt]="ref.referrer.full_name" />
+                  } @else {
+                    <ion-icon name="person-outline"></ion-icon>
+                  }
+                </div>
+                <div class="contact-info">
+                  <h2 class="contact-name">{{ ref.referrer.full_name }}</h2>
+                  <div class="badge-row">
+                    <span class="date-chip">
+                      <ion-icon name="calendar-outline"></ion-icon>
+                      {{ ref.created_at | date:'MMM d, yyyy' }}
+                    </span>
+                  </div>
                 </div>
               </div>
+              <p class="search-helper">Record the revenue generated from this referral and send a thank you message to <b>{{ ref.referrer.full_name }}</b>.</p>
+              <ion-item class="input-item">
+                <ion-input type="number" labelPlacement="stacked" placeholder="e.g. 5000" [value]="appreciationCost()" (ionInput)="onCostChange($event)">
+                  <div slot="label">Revenue Generated (₹) <span class="required-star">*</span></div>
+                </ion-input>
+              </ion-item>
+              <ion-item class="input-item">
+                <ion-textarea rows="4" labelPlacement="stacked" placeholder="Thank you message..." [value]="appreciationMessage()" (ionInput)="appreciationMessage.set($any($event.target).value)">
+                  <div slot="label">Appreciation Message <span class="required-star">*</span></div>
+                </ion-textarea>
+              </ion-item>
             </div>
-
-            <p class="search-helper">Record the revenue generated from this referral and send a thank you message to <b>{{ ref.referrer.full_name }}</b>.</p>
-
-            <ion-item class="input-item">
-              <ion-input type="number" labelPlacement="stacked" placeholder="e.g. 5000" [value]="appreciationCost()" (ionInput)="onCostChange($event)">
-                <div slot="label">Revenue Generated (₹) <span class="required-star">*</span></div>
-              </ion-input>
-            </ion-item>
-
-            <ion-item class="input-item">
-              <ion-textarea rows="4" labelPlacement="stacked" placeholder="Thank you message..." [value]="appreciationMessage()" (ionInput)="appreciationMessage.set($any($event.target).value)">
-                <div slot="label">Appreciation Message <span class="required-star">*</span></div>
-              </ion-textarea>
-            </ion-item>
           </div>
-        </div>
+        }
       </ion-content>
 
       <ion-footer class="ion-no-border">
         <ion-toolbar>
           <div class="footer-actions">
             <ion-button expand="block" (click)="submitAppreciation()" [disabled]="submittingAppreciation() || appreciationCost() === null || !appreciationMessage().trim()">
-              <ion-spinner *ngIf="submittingAppreciation()" name="crescent"></ion-spinner>
-              <span *ngIf="!submittingAppreciation()">Send Appreciation</span>
+              @if (submittingAppreciation()) {
+                <ion-spinner name="crescent"></ion-spinner>
+              }
+              @if (!submittingAppreciation()) {
+                <span>Send Appreciation</span>
+              }
             </ion-button>
           </div>
         </ion-toolbar>
@@ -318,127 +346,142 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-content class="ion-padding" color="light" *ngIf="selectedReferralForView() as ref">
-        <div class="modal-detail-wrapper">
-          <div class="referral-card" [class.inhouse-card]="ref.referral_type === 'INHOUSE'" [class.outhouse-card]="ref.referral_type === 'OUTHOUSE'">
-            <!-- Top Banner Header -->
-            <div class="card-top">
-              <div class="contact-profile">
-                <div class="avatar-circle">
-                  <ion-icon name="person-outline"></ion-icon>
-                </div>
-                <div class="contact-info">
-                  <h2 class="contact-name">{{ ref.contact_name }}</h2>
-                  <div class="badge-row">
-                    <span class="type-badge" [class.inhouse]="ref.referral_type === 'INHOUSE'" [class.outhouse]="ref.referral_type === 'OUTHOUSE'">
-                      {{ ref.referral_type }}
-                    </span>
-                    <span class="date-chip">
-                      <ion-icon name="calendar-outline"></ion-icon>
-                      {{ ref.created_at | date:'MMM d, yyyy' }}
-                    </span>
+      @if (selectedReferralForView(); as ref) {
+        <ion-content class="ion-padding" color="light">
+          <div class="modal-detail-wrapper">
+            <div class="referral-card" [class.inhouse-card]="ref.referral_type === 'INHOUSE'" [class.outhouse-card]="ref.referral_type === 'OUTHOUSE'">
+              <!-- Top Banner Header -->
+              <div class="card-top">
+                <div class="contact-profile">
+                  <div class="avatar-circle">
+                    <ion-icon name="person-outline"></ion-icon>
+                  </div>
+                  <div class="contact-info">
+                    <h2 class="contact-name">{{ ref.contact_name }}</h2>
+                    <div class="badge-row">
+                      <span class="type-badge" [class.inhouse]="ref.referral_type === 'INHOUSE'" [class.outhouse]="ref.referral_type === 'OUTHOUSE'">
+                        {{ ref.referral_type }}
+                      </span>
+                      <span class="date-chip">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        {{ ref.created_at | date:'MMM d, yyyy' }}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="card-divider"></div>
-
-            <!-- Detail List -->
-            <div class="card-body">
-              <div class="detail-grid">
-                <!-- Phone -->
-                <div class="detail-item">
-                  <div class="icon-wrap phone-icon">
-                    <ion-icon name="call-outline"></ion-icon>
+              <div class="card-divider"></div>
+              <!-- Detail List -->
+              <div class="card-body">
+                <div class="detail-grid">
+                  <!-- Phone -->
+                  <div class="detail-item">
+                    <div class="icon-wrap phone-icon">
+                      <ion-icon name="call-outline"></ion-icon>
+                    </div>
+                    <div class="detail-content">
+                      <span class="item-label">Phone</span>
+                      <a [href]="'tel:' + ref.contact_phone" class="item-value phone-link">{{ ref.contact_phone }}</a>
+                    </div>
                   </div>
-                  <div class="detail-content">
-                    <span class="item-label">Phone</span>
-                    <a [href]="'tel:' + ref.contact_phone" class="item-value phone-link">{{ ref.contact_phone }}</a>
+                  <!-- Email -->
+                  @if (ref.contact_email) {
+                    <div class="detail-item">
+                      <div class="icon-wrap mail-icon">
+                        <ion-icon name="mail-outline"></ion-icon>
+                      </div>
+                      <div class="detail-content">
+                        <span class="item-label">Email</span>
+                        <a [href]="'mailto:' + ref.contact_email" class="item-value mail-link" title="{{ ref.contact_email }}">{{ ref.contact_email }}</a>
+                      </div>
+                    </div>
+                  }
+                  <!-- Member -->
+                  <div class="detail-item">
+                    <div class="icon-wrap member-icon">
+                      <ion-icon name="people-outline"></ion-icon>
+                    </div>
+                    <div class="detail-content">
+                      <span class="item-label">{{ activeSegment() === 'GIVEN' ? 'To Member' : 'From Member' }}</span>
+                      <span class="item-value font-highlight">{{ activeSegment() === 'GIVEN' ? ref.to_member.full_name : ref.referrer.full_name }}</span>
+                    </div>
                   </div>
+                  <!-- Address (if present) -->
+                  @if (ref.contact_address) {
+                    <div class="detail-item">
+                      <div class="icon-wrap location-icon">
+                        <ion-icon name="location-outline"></ion-icon>
+                      </div>
+                      <div class="detail-content">
+                        <span class="item-label">Address</span>
+                        <span class="item-value">{{ ref.contact_address }}</span>
+                      </div>
+                    </div>
+                  }
+                  <!-- Comments (if present) -->
+                  @if (ref.comments) {
+                    <div class="detail-item full-width">
+                      <div class="icon-wrap comment-icon">
+                        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                      </div>
+                      <div class="detail-content">
+                        <span class="item-label">Comments</span>
+                        <span class="item-value comment-text">"{{ ref.comments }}"</span>
+                      </div>
+                    </div>
+                  }
+                  <!-- Appreciation Details -->
+                  @if (ref.is_appreciated) {
+                    <div class="detail-item full-width appreciation-box">
+                      <div class="icon-wrap heart-icon">
+                        <ion-icon name="heart"></ion-icon>
+                      </div>
+                      <div class="detail-content">
+                        <span class="item-label">Appreciation Sent</span>
+                        <span class="item-value font-highlight">Revenue Generated: ₹{{ ref.cost_of_business }}</span>
+                        @if (ref.appreciation_message) {
+                          <span class="item-value comment-text ion-margin-top">"{{ ref.appreciation_message }}"</span>
+                        }
+                      </div>
+                    </div>
+                  }
                 </div>
-
-                <!-- Email -->
-                <div class="detail-item" *ngIf="ref.contact_email">
-                  <div class="icon-wrap mail-icon">
-                    <ion-icon name="mail-outline"></ion-icon>
+                <!-- Bottom Footer Bar: Badges & Rating -->
+                @if (ref.told_to_call || ref.card_given || ref.rating) {
+                  <div class="card-footer">
+                    @if (ref.told_to_call || ref.card_given) {
+                      <div class="status-tags">
+                        @if (ref.told_to_call) {
+                          <span class="status-tag tag-call">
+                            <ion-icon name="checkmark-circle-outline"></ion-icon>
+                            Told to call
+                          </span>
+                        }
+                        @if (ref.card_given) {
+                          <span class="status-tag tag-card">
+                            <ion-icon name="card-outline"></ion-icon>
+                            Card given
+                          </span>
+                        }
+                      </div>
+                    }
+                    @if (ref.rating) {
+                      <div class="rating-badge">
+                        <div class="stars">
+                          @for (i of [1,2,3,4,5]; track i) {
+                            <ion-icon [name]="i <= ref.rating ? 'star' : 'star-outline'" class="star-icon"></ion-icon>
+                          }
+                        </div>
+                        <span class="rating-val">{{ ref.rating }}/5</span>
+                      </div>
+                    }
                   </div>
-                  <div class="detail-content">
-                    <span class="item-label">Email</span>
-                    <a [href]="'mailto:' + ref.contact_email" class="item-value mail-link" title="{{ ref.contact_email }}">{{ ref.contact_email }}</a>
-                  </div>
-                </div>
-
-                <!-- Member -->
-                <div class="detail-item">
-                  <div class="icon-wrap member-icon">
-                    <ion-icon name="people-outline"></ion-icon>
-                  </div>
-                  <div class="detail-content">
-                    <span class="item-label">{{ activeSegment() === 'GIVEN' ? 'To Member' : 'From Member' }}</span>
-                    <span class="item-value font-highlight">{{ activeSegment() === 'GIVEN' ? ref.to_member.full_name : ref.referrer.full_name }}</span>
-                  </div>
-                </div>
-
-                <!-- Address (if present) -->
-                <div class="detail-item" *ngIf="ref.contact_address">
-                  <div class="icon-wrap location-icon">
-                    <ion-icon name="location-outline"></ion-icon>
-                  </div>
-                  <div class="detail-content">
-                    <span class="item-label">Address</span>
-                    <span class="item-value">{{ ref.contact_address }}</span>
-                  </div>
-                </div>
-
-                <!-- Comments (if present) -->
-                <div class="detail-item full-width" *ngIf="ref.comments">
-                  <div class="icon-wrap comment-icon">
-                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                  </div>
-                  <div class="detail-content">
-                    <span class="item-label">Comments</span>
-                    <span class="item-value comment-text">"{{ ref.comments }}"</span>
-                  </div>
-                </div>
-
-                <!-- Appreciation Details -->
-                <div class="detail-item full-width appreciation-box" *ngIf="ref.is_appreciated">
-                  <div class="icon-wrap heart-icon">
-                    <ion-icon name="heart"></ion-icon>
-                  </div>
-                  <div class="detail-content">
-                    <span class="item-label">Appreciation Sent</span>
-                    <span class="item-value font-highlight">Revenue Generated: ₹{{ ref.cost_of_business }}</span>
-                    <span class="item-value comment-text ion-margin-top" *ngIf="ref.appreciation_message">"{{ ref.appreciation_message }}"</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Bottom Footer Bar: Badges & Rating -->
-              <div class="card-footer" *ngIf="ref.told_to_call || ref.card_given || ref.rating">
-                <div class="status-tags" *ngIf="ref.told_to_call || ref.card_given">
-                  <span class="status-tag tag-call" *ngIf="ref.told_to_call">
-                    <ion-icon name="checkmark-circle-outline"></ion-icon>
-                    Told to call
-                  </span>
-                  <span class="status-tag tag-card" *ngIf="ref.card_given">
-                    <ion-icon name="card-outline"></ion-icon>
-                    Card given
-                  </span>
-                </div>
-                
-                <div class="rating-badge" *ngIf="ref.rating">
-                  <div class="stars">
-                    <ion-icon *ngFor="let i of [1,2,3,4,5]" [name]="i <= ref.rating ? 'star' : 'star-outline'" class="star-icon"></ion-icon>
-                  </div>
-                  <span class="rating-val">{{ ref.rating }}/5</span>
-                </div>
+                }
               </div>
             </div>
           </div>
-        </div>
-      </ion-content>
+        </ion-content>
+      }
     </ng-template>
   </ion-modal>
 </div>

@@ -13,7 +13,7 @@
   <div class="member-details">
     <div class="header-profile">
       <ion-avatar class="member-avatar">
-        <img [appCachedImg]="member.profile_pic_url || 'assets/default-avatar.png'" (error)="member.profile_pic_url = 'assets/default-avatar.png'" alt="Member Photo">
+        <img loading="lazy" [appCachedImg]="member.profile_pic_url " defaultFallback="assets/default-avatar.png"  alt="Member Photo">
       </ion-avatar>
       <div class="profile-meta">
         <h2 class="font-bold text-dark text-lg">{{ member.full_name }}</h2>
@@ -31,77 +31,96 @@
         <span class="label">Phone</span>
         <span class="value">{{ member.phone }}</span>
       </div>
-      <div class="detail-item" *ngIf="member.whatsapp">
-        <span class="label">WhatsApp</span>
-        <span class="value">{{ member.whatsapp }}</span>
-      </div>
-      <div class="detail-item" *ngIf="member.email">
-        <span class="label">Email</span>
-        <span class="value">{{ member.email }}</span>
-      </div>
-      <div class="detail-item" *ngIf="member.address">
-        <span class="label">Address</span>
-        <span class="value">{{ member.address }}</span>
-      </div>
-      <div class="detail-item" *ngIf="member.state_name || member.state_id">
-        <span class="label">State</span>
-        <span class="value">{{ member.state_name || member.state_id }}</span>
-      </div>
-      <div class="detail-item" *ngIf="member.district_name || member.district_id">
-        <span class="label">District</span>
-        <span class="value">{{ member.district_name || member.district_id }}</span>
-      </div>
+      @if (member.whatsapp) {
+        <div class="detail-item">
+          <span class="label">WhatsApp</span>
+          <span class="value">{{ member.whatsapp }}</span>
+        </div>
+      }
+      @if (member.email) {
+        <div class="detail-item">
+          <span class="label">Email</span>
+          <span class="value">{{ member.email }}</span>
+        </div>
+      }
+      @if (member.address) {
+        <div class="detail-item">
+          <span class="label">Address</span>
+          <span class="value">{{ member.address }}</span>
+        </div>
+      }
+      @if (member.state_name || member.state_id) {
+        <div class="detail-item">
+          <span class="label">State</span>
+          <span class="value">{{ member.state_name || member.state_id }}</span>
+        </div>
+      }
+      @if (member.district_name || member.district_id) {
+        <div class="detail-item">
+          <span class="label">District</span>
+          <span class="value">{{ member.district_name || member.district_id }}</span>
+        </div>
+      }
       <div class="detail-item">
         <span class="label">Applied On</span>
         <span class="value">{{ member.created_at | date:'mediumDate' }}</span>
       </div>
     </div>
 
-    <h3 class="font-bold text-dark mt-6 mb-3" style="font-size: 1.1rem;" *ngIf="member.business_name || member.business_description">Business Profile</h3>
-    <div class="details-grid premium-info-card" *ngIf="member.business_name || member.business_description">
-      <div class="detail-item w-full" *ngIf="member.business_name">
-        <span class="label">Business Name</span>
-        <span class="value font-semibold">{{ member.business_name }}</span>
+    @if (member.business_name || member.business_description) {
+      <h3 class="font-bold text-dark mt-6 mb-3" style="font-size: 1.1rem;">Business Profile</h3>
+    }
+    @if (member.business_name || member.business_description) {
+      <div class="details-grid premium-info-card">
+        @if (member.business_name) {
+          <div class="detail-item w-full">
+            <span class="label">Business Name</span>
+            <span class="value font-semibold">{{ member.business_name }}</span>
+          </div>
+        }
+        @if (member.business_description) {
+          <div class="detail-item w-full">
+            <span class="label">Description</span>
+            <span class="value">{{ member.business_description }}</span>
+          </div>
+        }
       </div>
-      <div class="detail-item w-full" *ngIf="member.business_description">
-        <span class="label">Description</span>
-        <span class="value">{{ member.business_description }}</span>
-      </div>
-    </div>
+    }
   </div>
 
-  <div class="action-section mt-6" *ngIf="member.status === UserStatus.PENDING">
-    <ng-container *ngIf="!showRejectInput">
-      <ion-button expand="block" color="success" (click)="approve()" class="mb-3">
-        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-        Approve Member
-      </ion-button>
-      <ion-button expand="block" color="danger" fill="outline" (click)="toggleRejectInput()">
-        <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-        Reject Member
-      </ion-button>
-    </ng-container>
-
-    <div class="reject-input-container" *ngIf="showRejectInput">
-      <ion-item lines="none" class="premium-input-item mb-3">
-        <ion-label position="stacked">
-          Rejection Reason <span class="required-star">*</span>
-        </ion-label>
-        <ion-textarea 
-          [(ngModel)]="rejectionReason" 
-          placeholder="Please provide a reason for rejecting this member..."
-          rows="3"
-        ></ion-textarea>
-      </ion-item>
-
-      <div class="flex justify-end gap-2">
-        <ion-button color="medium" fill="clear" (click)="cancelReject()">
-          Cancel
+  @if (member.status === UserStatus.PENDING) {
+    <div class="action-section mt-6">
+      @if (!showRejectInput) {
+        <ion-button expand="block" color="success" (click)="approve()" class="mb-3">
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          Approve Member
         </ion-button>
-        <ion-button color="danger" [disabled]="!rejectionReason.trim()" (click)="reject()">
-          Confirm Rejection
+        <ion-button expand="block" color="danger" fill="outline" (click)="toggleRejectInput()">
+          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+          Reject Member
         </ion-button>
-      </div>
+      }
+      @if (showRejectInput) {
+        <div class="reject-input-container">
+          <ion-item lines="none" class="premium-input-item mb-3">
+            <ion-label position="stacked">
+              Rejection Reason <span class="required-star">*</span>
+            </ion-label>
+            <ion-textarea
+              [(ngModel)]="rejectionReason"
+              placeholder="Please provide a reason for rejecting this member..."
+              rows="3"></ion-textarea>
+          </ion-item>
+          <div class="flex justify-end gap-2">
+            <ion-button color="medium" fill="clear" (click)="cancelReject()">
+              Cancel
+            </ion-button>
+            <ion-button color="danger" [disabled]="!rejectionReason.trim()" (click)="reject()">
+              Confirm Rejection
+            </ion-button>
+          </div>
+        </div>
+      }
     </div>
-  </div>
+  }
 </ion-content>

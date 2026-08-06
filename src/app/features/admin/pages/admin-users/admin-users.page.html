@@ -1,15 +1,17 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
   <div class="admin-search-filter-bar">
-    <ion-searchbar 
-      [value]="searchQuery" 
-      (ionInput)="onSearch($event)" 
-      placeholder="Search users..." 
-      mode="md" 
+    <ion-searchbar
+      [value]="searchQuery"
+      (ionInput)="onSearch($event)"
+      placeholder="Search users..."
+      mode="md"
       class="premium-searchbar">
     </ion-searchbar>
     <button (click)="openFilter()" type="button" class="filter-icon-btn" aria-label="Filter by region">
       <ion-icon name="filter-outline"></ion-icon>
-      <span *ngIf="stateId || districtId" class="filter-active-dot"></span>
+      @if (stateId || districtId) {
+        <span class="filter-active-dot"></span>
+      }
     </button>
   </div>
   <ion-toolbar class="px-2 pb-2">
@@ -25,9 +27,15 @@
 </ion-header>
 
 <ion-content style="--background: #fff;">
-  <div [ngSwitch]="segmentValue">
-    <app-admin-members-list *ngSwitchCase="'members'" [searchQuery]="searchQuery" [stateId]="stateId" [districtId]="districtId"></app-admin-members-list>
-    <app-admin-customers-list *ngSwitchCase="'customers'" [searchQuery]="searchQuery" [stateId]="stateId" [districtId]="districtId"></app-admin-customers-list>
+  <div>
+    @switch (segmentValue) {
+      @case ('members') {
+        <app-admin-members-list [searchQuery]="searchQuery" [stateId]="stateId" [districtId]="districtId"></app-admin-members-list>
+      }
+      @case ('customers') {
+        <app-admin-customers-list [searchQuery]="searchQuery" [stateId]="stateId" [districtId]="districtId"></app-admin-customers-list>
+      }
+    }
   </div>
 </ion-content>
 
@@ -36,6 +44,5 @@
   [stateId]="stateId"
   [districtId]="districtId"
   (filterApplied)="onFilterApplied($event)"
-  (closed)="isFilterOpen = false"
-></app-admin-region-filter-modal>
+  (closed)="isFilterOpen = false"></app-admin-region-filter-modal>
 

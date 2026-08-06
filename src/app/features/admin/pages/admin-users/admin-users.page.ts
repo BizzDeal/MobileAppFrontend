@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminMembersListComponent } from '../../components/admin-members-list/admin-members-list.component';
 import { AdminCustomersListComponent } from '../../components/admin-customers-list/admin-customers-list.component';
@@ -11,12 +11,11 @@ import { filterOutline } from 'ionicons/icons';
   selector: 'app-admin-users',
   standalone: true,
   imports: [
-    CommonModule,
     IonicModule,
     AdminMembersListComponent,
     AdminCustomersListComponent,
     AdminRegionFilterModalComponent
-  ],
+],
   templateUrl: './admin-users.page.html',
   styleUrls: ['./admin-users.page.scss']
 })

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { MeetingWithAttendee } from '../../../meetings/services/meetings.service';
@@ -11,7 +11,7 @@ import { closeOutline, calendarOutline, documentTextOutline, locationOutline, li
   templateUrl: './admin-meeting-action-modal.component.html',
   styleUrls: ['./admin-meeting-action-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule]
+  imports: [IonicModule, ReactiveFormsModule]
 })
 export class AdminMeetingActionModalComponent implements OnInit {
   @Input() meeting?: MeetingWithAttendee;

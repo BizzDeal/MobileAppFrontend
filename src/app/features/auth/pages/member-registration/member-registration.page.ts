@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
@@ -24,7 +24,6 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
   selector: 'app-member-registration',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     IonContent,
     IonHeader,
@@ -37,8 +36,8 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
     IonSelect,
     IonSelectOption,
     IonTextarea,
-    CachedImgDirective,
-  ],
+    CachedImgDirective
+],
   providers: [MemberRegistrationService],
   templateUrl: './member-registration.page.html',
   styleUrl: './member-registration.page.scss',

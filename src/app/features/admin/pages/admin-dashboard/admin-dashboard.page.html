@@ -11,11 +11,13 @@
     </div>
     <button (click)="openFilter()" type="button" class="filter-icon-btn" aria-label="Filter by region">
       <ion-icon name="filter-outline"></ion-icon>
-      <span *ngIf="stateId || districtId" class="filter-active-dot"></span>
+      @if (stateId || districtId) {
+        <span class="filter-active-dot"></span>
+      }
     </button>
   </div>
 
-  <ng-container *ngIf="analytics$ | async as analytics; else loadingAnalytics">
+  @if (analytics$ | async; as analytics) {
     <!-- Platform Health Stats -->
     <div class="stats-grid">
       <ion-card class="stat-card primary-card">
@@ -27,7 +29,6 @@
           </div>
         </ion-card-content>
       </ion-card>
-
       <ion-card class="stat-card">
         <ion-card-content>
           <div class="stat-icon"><ion-icon name="people-outline"></ion-icon></div>
@@ -37,7 +38,6 @@
           </div>
         </ion-card-content>
       </ion-card>
-
       <ion-card class="stat-card">
         <ion-card-content>
           <div class="stat-icon"><ion-icon name="pricetags-outline"></ion-icon></div>
@@ -47,7 +47,6 @@
           </div>
         </ion-card-content>
       </ion-card>
-
       <ion-card class="stat-card success-card">
         <ion-card-content>
           <div class="stat-icon"><ion-icon name="cash-outline"></ion-icon></div>
@@ -58,7 +57,6 @@
         </ion-card-content>
       </ion-card>
     </div>
-
     <!-- Revenue Analytics Chart -->
     <ion-card class="chart-card">
       <ion-card-header class="chart-header-with-actions">
@@ -74,30 +72,29 @@
         </div>
       </ion-card-header>
       <ion-card-content>
-        <apx-chart
-          *ngIf="chartOptions"
-          [series]="chartOptions.series"
-          [chart]="chartOptions.chart"
-          [xaxis]="chartOptions.xaxis"
-          [stroke]="chartOptions.stroke"
-          [dataLabels]="chartOptions.dataLabels"
-          [colors]="chartOptions.colors"
-          [fill]="chartOptions.fill"
-        ></apx-chart>
+        @if (chartOptions) {
+          <apx-chart
+            [series]="chartOptions.series"
+            [chart]="chartOptions.chart"
+            [xaxis]="chartOptions.xaxis"
+            [stroke]="chartOptions.stroke"
+            [dataLabels]="chartOptions.dataLabels"
+            [colors]="chartOptions.colors"
+            [fill]="chartOptions.fill"></apx-chart>
+        }
       </ion-card-content>
     </ion-card>
-  </ng-container>
-
-  <ng-template #loadingAnalytics>
+  } @else {
     <div style="padding: 16px 0;">
       <app-dashboard-skeleton></app-dashboard-skeleton>
     </div>
-  </ng-template>
+  }
+
 
   <!-- Action Required Section -->
   <div class="action-required-section">
     <h2>Action Required Queue</h2>
-    
+
     <div class="queues-container">
       <!-- Pending Members -->
       <ion-card class="queue-card">
@@ -105,24 +102,26 @@
           <ion-card-title>Pending Members</ion-card-title>
         </ion-card-header>
         <ion-card-content class="ion-no-padding">
-          <ng-container *ngIf="pendingMembers$ | async as members; else loadingMembers">
-            <ion-list *ngIf="members.length > 0; else emptyMembers" lines="full">
-              <ion-item *ngFor="let member of members" class="queue-item" button="true" detail="true" (click)="openMemberModal(member)">
-                <ion-label>
-                  <h3>{{ member.full_name || 'Unnamed Member' }}</h3>
-                  <p>{{ member.phone }} &bull; Applied: {{ member.created_at | date:'shortDate' }}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-            <ng-template #emptyMembers>
+          @if (pendingMembers$ | async; as members) {
+            @if (members.length> 0) {
+              <ion-list lines="full">
+                @for (member of members; track member) {
+                  <ion-item class="queue-item" button="true" detail="true" (click)="openMemberModal(member)">
+                    <ion-label>
+                      <h3>{{ member.full_name || 'Unnamed Member' }}</h3>
+                      <p>{{ member.phone }} &bull; Applied: {{ member.created_at | date:'shortDate' }}</p>
+                    </ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+            } @else {
               <div class="empty-state">
                 <p>No pending members at this time.</p>
               </div>
-            </ng-template>
-          </ng-container>
-          <ng-template #loadingMembers>
-             <ion-progress-bar type="indeterminate"></ion-progress-bar>
-          </ng-template>
+            }
+          } @else {
+            <ion-progress-bar type="indeterminate"></ion-progress-bar>
+          }
         </ion-card-content>
       </ion-card>
 
@@ -132,24 +131,26 @@
           <ion-card-title>Pending Offers</ion-card-title>
         </ion-card-header>
         <ion-card-content class="ion-no-padding">
-          <ng-container *ngIf="pendingOffers$ | async as offers; else loadingOffers">
-            <ion-list *ngIf="offers.length > 0; else emptyOffers" lines="full">
-              <ion-item *ngFor="let offer of offers" class="queue-item" button="true" detail="true" (click)="openOfferModal(offer)">
-                <ion-label>
-                  <h3>{{ offer.title || 'Untitled Offer' }}</h3>
-                  <p>{{ offer.business?.name || offer.business_name || offer.businessName || 'Unknown Business' }} &bull; Submitted: {{ offer.created_at | date:'shortDate' }}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-            <ng-template #emptyOffers>
+          @if (pendingOffers$ | async; as offers) {
+            @if (offers.length> 0) {
+              <ion-list lines="full">
+                @for (offer of offers; track offer) {
+                  <ion-item class="queue-item" button="true" detail="true" (click)="openOfferModal(offer)">
+                    <ion-label>
+                      <h3>{{ offer.title || 'Untitled Offer' }}</h3>
+                      <p>{{ offer.business?.name || offer.business_name || offer.businessName || 'Unknown Business' }} &bull; Submitted: {{ offer.created_at | date:'shortDate' }}</p>
+                    </ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+            } @else {
               <div class="empty-state">
                 <p>No pending offers at this time.</p>
               </div>
-            </ng-template>
-          </ng-container>
-          <ng-template #loadingOffers>
+            }
+          } @else {
             <ion-progress-bar type="indeterminate"></ion-progress-bar>
-          </ng-template>
+          }
         </ion-card-content>
       </ion-card>
     </div>
@@ -164,5 +165,4 @@
   [stateId]="stateId"
   [districtId]="districtId"
   (filterApplied)="onFilterApplied($event)"
-  (closed)="isFilterOpen = false"
-></app-admin-region-filter-modal>
+  (closed)="isFilterOpen = false"></app-admin-region-filter-modal>

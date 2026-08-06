@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal, effect, untracked } from '@angular/core';
+import { inject, Injectable, signal, effect, untracked, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap, shareReplay, finalize } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
@@ -27,6 +28,7 @@ export class WalletService {
   private readonly authSession = inject(AuthSessionService);
   private readonly appSocket = inject(AppSocketService);
   private readonly apiUrl = environment.apiUrl;
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly _wallet = signal<WalletDTO | null>(null);
   private readonly _transactions = signal<WalletTransactionDTO[]>([]);
@@ -70,7 +72,7 @@ export class WalletService {
       }
     });
 
-    this.appSocket.onEvent('VOUCHER_REDEEMED').subscribe(() => {
+    this.appSocket.onEvent('VOUCHER_REDEEMED').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       if (this.authSession.isAuthenticated()) {
         this.refreshWallet().subscribe({
           error: (err) => console.error('Failed to refresh wallet on voucher redemption:', err)
@@ -78,7 +80,7 @@ export class WalletService {
       }
     });
 
-    this.appSocket.onEvent('BIZZ_COINS_ISSUED').subscribe(() => {
+    this.appSocket.onEvent('BIZZ_COINS_ISSUED').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       if (this.authSession.isAuthenticated()) {
         this.refreshWallet().subscribe({
           error: (err) => console.error('Failed to refresh wallet on Bizz Coins issue:', err)
@@ -86,7 +88,7 @@ export class WalletService {
       }
     });
 
-    this.appSocket.onEvent('app_event').subscribe((evt: any) => {
+    this.appSocket.onEvent('app_event').pipe(takeUntilDestroyed(this.destroyRef)).subscribe((evt: any) => {
       if (this.authSession.isAuthenticated() && (evt?.type === 'BIZZ_COINS_ISSUED' || evt?.type === 'VOUCHER_REDEEMED')) {
         this.refreshWallet().subscribe({
           error: (err) => console.error('Failed to refresh wallet on app event:', err)

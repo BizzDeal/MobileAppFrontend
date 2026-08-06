@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -36,7 +36,6 @@ import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils'
   selector: 'app-analytics-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -49,7 +48,7 @@ import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils'
     IonLabel,
     IonSpinner,
     NgApexchartsModule
-  ],
+],
   templateUrl: './analytics-dashboard.page.html',
   styleUrls: ['./analytics-dashboard.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

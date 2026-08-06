@@ -1,38 +1,40 @@
-<div class="loading-overlay" *ngIf="isLoading$ | async">
+@if (isLoading$ | async) {
+  <div class="loading-overlay">
     <div class="logo-container">
-        <div class="svg-wrapper">
-            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="globe-gradient-loader" x1="10" y1="10" x2="190" y2="190" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stop-color="#4ea6f2" />
-                        <stop offset="100%" stop-color="#1651a1" />
-                    </linearGradient>
-                    <clipPath id="globe-clip-loader">
-                        <circle cx="100" cy="100" r="90" />
-                    </clipPath>
-                    <clipPath id="arrow-clip-loader">
-                        <rect x="0" y="0" width="200" height="200" id="arrow-reveal-rect-loader" />
-                    </clipPath>
-                </defs>
-                <g id="globe-loader">
-                    <circle cx="100" cy="100" r="90" class="globe-line" />
-                    <line x1="100" y1="10" x2="100" y2="190" class="globe-line" />
-                    <ellipse cx="100" cy="100" rx="45" ry="90" class="globe-line" />
-                    <line x1="22" y1="55" x2="178" y2="55" class="globe-line" />
-                    <line x1="10" y1="100" x2="190" y2="100" class="globe-line" />
-                    <line x1="22" y1="145" x2="178" y2="145" class="globe-line" />
-                </g>
-                <g id="bars-loader" clip-path="url(#globe-clip-loader)">
-                    <rect x="51" y="115" width="40" height="90" class="bar bar-1" />
-                    <rect x="89" y="95" width="40" height="110" class="bar bar-2" />
-                    <rect x="127" y="65" width="40" height="140" class="bar bar-3" />
-                </g>
-                <g id="arrow-group-loader" clip-path="url(#arrow-clip-loader)">
-                    <path d="M 25 120 Q 84 130 170 56 L 180 67 L 195 24 L 150 34 L 160 45 Q 82 112 25 120 Z"
-                        class="arrow" />
-                </g>
-            </svg>
-        </div>
-        <p class="loading-text">Loading please wait...</p>
+      <div class="svg-wrapper">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="globe-gradient-loader" x1="10" y1="10" x2="190" y2="190" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4ea6f2" />
+              <stop offset="100%" stop-color="#1651a1" />
+            </linearGradient>
+            <clipPath id="globe-clip-loader">
+              <circle cx="100" cy="100" r="90" />
+            </clipPath>
+            <clipPath id="arrow-clip-loader">
+              <rect x="0" y="0" width="200" height="200" id="arrow-reveal-rect-loader" />
+            </clipPath>
+          </defs>
+          <g id="globe-loader">
+            <circle cx="100" cy="100" r="90" class="globe-line" />
+            <line x1="100" y1="10" x2="100" y2="190" class="globe-line" />
+            <ellipse cx="100" cy="100" rx="45" ry="90" class="globe-line" />
+            <line x1="22" y1="55" x2="178" y2="55" class="globe-line" />
+            <line x1="10" y1="100" x2="190" y2="100" class="globe-line" />
+            <line x1="22" y1="145" x2="178" y2="145" class="globe-line" />
+          </g>
+          <g id="bars-loader" clip-path="url(#globe-clip-loader)">
+            <rect x="51" y="115" width="40" height="90" class="bar bar-1" />
+            <rect x="89" y="95" width="40" height="110" class="bar bar-2" />
+            <rect x="127" y="65" width="40" height="140" class="bar bar-3" />
+          </g>
+          <g id="arrow-group-loader" clip-path="url(#arrow-clip-loader)">
+            <path d="M 25 120 Q 84 130 170 56 L 180 67 L 195 24 L 150 34 L 160 45 Q 82 112 25 120 Z"
+              class="arrow" />
+          </g>
+        </svg>
+      </div>
+      <p class="loading-text">Loading please wait...</p>
     </div>
-</div>
+  </div>
+}

@@ -30,8 +30,7 @@
       (mouseleave)="onMouseUp()"
       (touchstart)="onMouseDown($event)"
       (touchmove)="onMouseMove($event)"
-      (touchend)="onMouseUp()"
-    >
+      (touchend)="onMouseUp()">
       <canvas #canvasElement width="320" height="320" class="cropper-canvas"></canvas>
 
       <!-- Mask Overlay Guide -->
@@ -65,8 +64,7 @@
           [disabled]="loading() || cropping()"
           [value]="zoomScale()"
           (ionInput)="onZoomChange($event)"
-          aria-label="Zoom scale"
-        >
+          aria-label="Zoom scale">
         </ion-range>
 
         <button type="button" class="ctrl-btn" [disabled]="loading() || cropping()" (click)="zoomIn()" title="Zoom In">

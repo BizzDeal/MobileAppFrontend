@@ -1,5 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -36,7 +37,7 @@ export interface CustomerCoinDetails {
 @Component({
   selector: 'app-redeem-bizz-coins',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, CachedImgDirective],
+  imports: [IonicModule, ReactiveFormsModule, CachedImgDirective],
   templateUrl: './redeem-bizz-coins.page.html',
   styleUrls: ['./redeem-bizz-coins.page.scss']
 })
@@ -44,6 +45,7 @@ export class RedeemBizzCoinsPage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly getInitials = getInitials;
   readonly getAvatarColor = getAvatarColor;
@@ -56,7 +58,7 @@ export class RedeemBizzCoinsPage implements OnInit {
   isSearchingCustomer = false;
   customerNotFound = false;
   searchedCustomer: CustomerCoinDetails | null = null;
-  avatarLoadError = false;
+  
 
   hasActiveOffer = true;
   isCheckingActiveOffer = true;
@@ -106,7 +108,7 @@ export class RedeemBizzCoinsPage implements OnInit {
     this.checkActiveOfferStatus();
 
     // Listen to phone number changes for auto customer lookup
-    this.verificationForm.get('customer_phone')?.valueChanges.subscribe((val) => {
+    this.verificationForm.get('customer_phone')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((val) => {
       const cleanPhone = (val || '').toString().trim().replace(/\D/g, '');
       if (cleanPhone.length === 10) {
         this.lookupCustomer(cleanPhone);
@@ -118,7 +120,7 @@ export class RedeemBizzCoinsPage implements OnInit {
     });
 
     // Listen to form value changes for live calculation
-    this.redemptionForm.valueChanges.subscribe(() => {
+    this.redemptionForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.calculateLiveValues();
     });
   }
@@ -169,7 +171,6 @@ export class RedeemBizzCoinsPage implements OnInit {
     this.isSearchingCustomer = true;
     this.customerNotFound = false;
     this.searchedCustomer = null;
-    this.avatarLoadError = false;
     this.errorMessage = null;
 
     this.http.get<CustomerCoinDetails>(`${environment.apiUrl}/bizz-coins/customer-by-phone/${phone}`).subscribe({

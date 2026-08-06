@@ -7,22 +7,26 @@
   <!-- Main Content Area -->
   <main class="main-content">
     <!-- Mobile Header Bar (Only visible on mobile < 992px, handles safe-area top cleanly) -->
-    <ion-header class="ion-no-border lg:hidden" *ngIf="!isDetailPage">
-      <ion-toolbar color="primary" class="mobile-top-toolbar">
-        <ion-buttons slot="start">
-          <ion-button fill="clear" (click)="toggleMobileDrawer()" aria-label="Open Admin Navigation Menu" class="mobile-menu-toggle-btn">
-            <ion-icon name="menu-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <ion-title class="font-bold">{{ currentTitle }}</ion-title>
-        <ion-buttons slot="end">
-          <ion-button *ngIf="currentTitle === 'Referrals'" fill="clear" (click)="isFilterOpen = true" aria-label="Open Filter">
-            <ion-icon name="filter-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <app-admin-logout-button></app-admin-logout-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    @if (!isDetailPage) {
+      <ion-header class="ion-no-border lg:hidden">
+        <ion-toolbar color="primary" class="mobile-top-toolbar">
+          <ion-buttons slot="start">
+            <ion-button fill="clear" (click)="toggleMobileDrawer()" aria-label="Open Admin Navigation Menu" class="mobile-menu-toggle-btn">
+              <ion-icon name="menu-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title class="font-bold">{{ currentTitle }}</ion-title>
+          <ion-buttons slot="end">
+            @if (currentTitle === 'Referrals') {
+              <ion-button fill="clear" (click)="isFilterOpen = true" aria-label="Open Filter">
+                <ion-icon name="filter-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            }
+            <app-admin-logout-button></app-admin-logout-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+    }
 
     <!-- Child Routes Render Here -->
     <div class="page-container" [class.has-parent-header]="!isDetailPage">
@@ -31,7 +35,9 @@
   </main>
 
   <!-- Mobile Slide-out Drawer Overlay (< 992px) -->
-  <div class="mobile-drawer-backdrop" *ngIf="isMobileDrawerOpen" (click)="closeMobileDrawer()"></div>
+  @if (isMobileDrawerOpen) {
+    <div class="mobile-drawer-backdrop" (click)="closeMobileDrawer()"></div>
+  }
   <div class="mobile-drawer-panel" [class.open]="isMobileDrawerOpen">
     <button class="drawer-close-btn" (click)="closeMobileDrawer()" aria-label="Close Navigation Menu">
       <ion-icon name="close-outline"></ion-icon>

@@ -87,13 +87,7 @@
         } @else if (searchedCustomer) {
           <div class="customer-preview-card found">
             <div class="customer-avatar-box">
-              @if (searchedCustomer.profile_pic_url && !avatarLoadError) {
-                <img [appCachedImg]="searchedCustomer.profile_pic_url" (error)="avatarLoadError = true" alt="Customer Avatar" class="customer-avatar-img" />
-              } @else {
-                <div class="customer-avatar-initials" [style.background]="getAvatarColor(searchedCustomer.name)">
-                  {{ getInitials(searchedCustomer.name) }}
-                </div>
-              }
+                <img loading="lazy" [appCachedImg]="searchedCustomer.profile_pic_url" [fallbackName]="searchedCustomer.name" alt="Customer Avatar" class="customer-avatar-img" />
             </div>
 
             <div class="customer-info-box">

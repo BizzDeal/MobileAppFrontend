@@ -1,57 +1,60 @@
-<div class="custom-modal-backdrop" *ngIf="isOpen" (click)="cancel()">
-  <div class="custom-modal-card" (click)="$event.stopPropagation()">
-    <div class="custom-modal-header">
-      <h3 class="modal-title">Region Filter</h3>
-      <button type="button" class="modal-close-btn" (click)="cancel()" aria-label="Close modal">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-
-    <div class="custom-modal-body">
-      <div class="filter-section">
-        <h4 class="section-title">Select State</h4>
-        <ion-select
-          label="State"
-          labelPlacement="stacked"
-          fill="outline"
-          [(ngModel)]="selectedState"
-          (ionChange)="onStateChange()"
-          [disabled]="isLoadingStates"
-          placeholder="All States (No Filter)"
-        >
-          <ion-select-option value="">All States (No Filter)</ion-select-option>
-          <ion-select-option *ngFor="let state of availableStates" [value]="state.id">
-            {{ state.name }}
-          </ion-select-option>
-        </ion-select>
+@if (isOpen) {
+  <div class="custom-modal-backdrop" (click)="cancel()">
+    <div class="custom-modal-card" (click)="$event.stopPropagation()">
+      <div class="custom-modal-header">
+        <h3 class="modal-title">Region Filter</h3>
+        <button type="button" class="modal-close-btn" (click)="cancel()" aria-label="Close modal">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
       </div>
-
-      <div class="filter-section mt-4" *ngIf="selectedState">
-        <h4 class="section-title">Select District</h4>
-        <ion-select
-          label="District"
-          labelPlacement="stacked"
-          fill="outline"
-          [(ngModel)]="selectedDistrict"
-          [disabled]="isLoadingDistricts || availableDistricts.length === 0"
-          placeholder="All Districts in State (No Filter)"
-        >
-          <ion-select-option value="">All Districts in State (No Filter)</ion-select-option>
-          <ion-select-option *ngFor="let district of availableDistricts" [value]="district.id">
-            {{ district.name }}
-          </ion-select-option>
-        </ion-select>
+      <div class="custom-modal-body">
+        <div class="filter-section">
+          <h4 class="section-title">Select State</h4>
+          <ion-select
+            label="State"
+            labelPlacement="stacked"
+            fill="outline"
+            [(ngModel)]="selectedState"
+            (ionChange)="onStateChange()"
+            [disabled]="isLoadingStates"
+            placeholder="All States (No Filter)">
+            <ion-select-option value="">All States (No Filter)</ion-select-option>
+            @for (state of availableStates; track state) {
+              <ion-select-option [value]="state.id">
+                {{ state.name }}
+              </ion-select-option>
+            }
+          </ion-select>
+        </div>
+        @if (selectedState) {
+          <div class="filter-section mt-4">
+            <h4 class="section-title">Select District</h4>
+            <ion-select
+              label="District"
+              labelPlacement="stacked"
+              fill="outline"
+              [(ngModel)]="selectedDistrict"
+              [disabled]="isLoadingDistricts || availableDistricts.length === 0"
+              placeholder="All Districts in State (No Filter)">
+              <ion-select-option value="">All Districts in State (No Filter)</ion-select-option>
+              @for (district of availableDistricts; track district) {
+                <ion-select-option [value]="district.id">
+                  {{ district.name }}
+                </ion-select-option>
+              }
+            </ion-select>
+          </div>
+        }
       </div>
-    </div>
-
-    <div class="custom-modal-footer">
-      <ion-button color="medium" fill="clear" (click)="clearFilter()">
-        Clear
-      </ion-button>
-      <ion-button color="primary" fill="solid" class="apply-btn" (click)="apply()">
-        <ion-icon name="checkmark-outline" slot="start"></ion-icon>
-        Apply Filter
-      </ion-button>
+      <div class="custom-modal-footer">
+        <ion-button color="medium" fill="clear" (click)="clearFilter()">
+          Clear
+        </ion-button>
+        <ion-button color="primary" fill="solid" class="apply-btn" (click)="apply()">
+          <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+          Apply Filter
+        </ion-button>
+      </div>
     </div>
   </div>
-</div>
+}

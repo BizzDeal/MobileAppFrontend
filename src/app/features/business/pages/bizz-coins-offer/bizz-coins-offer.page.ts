@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpContext } from '@angular/common/http';
@@ -17,10 +17,16 @@ import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils'
   selector: 'app-bizz-coins-offer',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonIcon, IonSpinner
-  ],
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonButtons,
+    IonBackButton,
+    IonIcon,
+    IonSpinner
+],
   templateUrl: './bizz-coins-offer.page.html',
   styleUrls: ['./bizz-coins-offer.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

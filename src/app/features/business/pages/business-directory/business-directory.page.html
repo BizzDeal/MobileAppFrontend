@@ -46,7 +46,7 @@
           <div class="biz-header-row">
             <div class="initials-avatar" [style.background]="getCategoryTheme(biz.categoryName).gradient">
               @if (biz.logoUrl) {
-                <img [appCachedImg]="biz.logoUrl" alt="{{ biz.name }}" class="avatar-img" />
+                <img [appCachedImg]="biz.logoUrl" [fallbackName]="biz.name" alt="{{ biz.name }}" class="avatar-img" />
               } @else {
                 <span class="initials-text">{{ biz.initials }}</span>
               }

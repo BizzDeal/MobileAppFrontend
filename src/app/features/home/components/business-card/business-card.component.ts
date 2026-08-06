@@ -17,8 +17,7 @@ import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.uti
 export class BusinessCardComponent {
   readonly business = input.required<BusinessDTO>();
   readonly businessClick = output<BusinessDTO>();
-  readonly logoLoadError = signal(false);
-
+  
   constructor() {
     addIcons({ starOutline, locationOutline, arrowForwardOutline, ribbonOutline });
   }

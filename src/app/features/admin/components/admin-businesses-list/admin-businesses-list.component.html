@@ -1,82 +1,96 @@
 <div class="list-container m-0 mt-4 mx-4">
-  <ion-list *ngIf="!isLoading; else skeleton" lines="none" class="p-0 m-0 bg-transparent">
-    <div *ngFor="let business of filteredBusinesses" class="premium-business-card">
-      <div class="business-card-body" (click)="viewBusiness(business)">
-        <div class="business-logo">
-          <img *ngIf="business.logo_url" [appCachedImg]="business.logo_url" [alt]="business.name" (error)="business.logo_url = ''" />
-          <div *ngIf="!business.logo_url" class="initials-avatar" [style.background]="getAvatarColor(business.name)">
-            {{ getInitials(business.name) }}
+  @if (!isLoading) {
+    <ion-list lines="none" class="p-0 m-0 bg-transparent">
+      @for (business of filteredBusinesses; track business) {
+        <div class="premium-business-card">
+          <div class="business-card-body" (click)="viewBusiness(business)">
+            <div class="business-logo">
+              <img loading="lazy" [appCachedImg]="business.logo_url" [fallbackName]="business.name" [alt]="business.name" />
+            </div>
+            <div class="business-info">
+              <h2 class="font-bold text-dark flex items-center">
+                {{ business.name }}
+                @if (business.is_featured) {
+                  <ion-icon name="star" color="warning" class="ml-1 text-base"></ion-icon>
+                }
+              </h2>
+              <p class="text-medium mt-1">Owner: {{ business.owner_name }}</p>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="category-badge">{{ business.category_name }}</span>
+                <span class="status-badge" [ngClass]="'status-' + business.status.toLowerCase()">
+                  {{ business.status }}
+                </span>
+              </div>
+            </div>
+            <div class="business-action">
+              <ion-icon name="chevron-forward" class="text-medium"></ion-icon>
+            </div>
+          </div>
+          <div class="business-card-footer">
+            <!-- Options for PENDING status -->
+            @if (business.status === BusinessStatus.PENDING) {
+              <ion-button fill="clear" color="success" size="small" (click)="updateStatus(business, BusinessStatus.ACTIVE)">
+                <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon> Approve
+              </ion-button>
+            }
+            @if (business.status === BusinessStatus.PENDING) {
+              <ion-button fill="clear" color="danger" size="small" (click)="updateStatus(business, BusinessStatus.REJECTED)">
+                <ion-icon slot="start" name="close-circle-outline"></ion-icon> Reject
+              </ion-button>
+            }
+            <!-- Options for ACTIVE status -->
+            @if (business.status === BusinessStatus.ACTIVE) {
+              <ion-button fill="clear" color="danger" size="small" (click)="updateStatus(business, BusinessStatus.SUSPENDED)">
+                <ion-icon slot="start" name="ban-outline"></ion-icon> Suspend
+              </ion-button>
+            }
+            @if (business.status === BusinessStatus.ACTIVE) {
+              <ion-button fill="clear" color="warning" size="small" (click)="toggleFeature(business)">
+                <ion-icon slot="start" [name]="business.is_featured ? 'star-outline' : 'star'"></ion-icon> Feature
+              </ion-button>
+            }
+            <!-- Options for SUSPENDED / REJECTED status -->
+            @if (business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED) {
+              <ion-button fill="clear" color="success" size="small" (click)="updateStatus(business, BusinessStatus.ACTIVE)">
+                <ion-icon slot="start" name="refresh-outline"></ion-icon> Reactivate
+              </ion-button>
+            }
           </div>
         </div>
-        <div class="business-info">
-          <h2 class="font-bold text-dark flex items-center">
-            {{ business.name }}
-            <ion-icon *ngIf="business.is_featured" name="star" color="warning" class="ml-1 text-base"></ion-icon>
-          </h2>
-          <p class="text-medium mt-1">Owner: {{ business.owner_name }}</p>
-          <div class="mt-2 flex items-center gap-2 flex-wrap">
-            <span class="category-badge">{{ business.category_name }}</span>
-            <span class="status-badge" [ngClass]="'status-' + business.status.toLowerCase()">
-              {{ business.status }}
-            </span>
+      }
+      @if (filteredBusinesses.length === 0) {
+        <ion-item>
+          <div class="flex flex-col items-center justify-center p-8 w-full text-center text-gray-500">
+            <ion-icon name="business-outline" class="text-4xl mb-2 opacity-50"></ion-icon>
+            <p>No businesses found matching your criteria.</p>
           </div>
-        </div>
-        <div class="business-action">
-          <ion-icon name="chevron-forward" class="text-medium"></ion-icon>
-        </div>
-      </div>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <ion-card class="m-0 mt-4 shadow-sm border-radius-lg">
+      <ion-list class="p-0 m-0">
+        @for (i of [1,2,3,4,5]; track i) {
+          <ion-item>
+            <div slot="start" class="premium-business-logo skeleton-logo">
+              <ion-skeleton-text animated style="width: 100%; height: 100%; margin: 0;"></ion-skeleton-text>
+            </div>
+            <ion-label>
+              <h2><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h2>
+              <p><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></p>
+              <p><ion-skeleton-text animated style="width: 30%"></ion-skeleton-text></p>
+            </ion-label>
+            <ion-skeleton-text slot="end" animated style="width: 60px; height: 20px; border-radius: 4px;"></ion-skeleton-text>
+          </ion-item>
+        }
+      </ion-list>
+    </ion-card>
+  }
 
-      <div class="business-card-footer">
-        <!-- Options for PENDING status -->
-        <ion-button *ngIf="business.status === BusinessStatus.PENDING" fill="clear" color="success" size="small" (click)="updateStatus(business, BusinessStatus.ACTIVE)">
-          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon> Approve
-        </ion-button>
-        <ion-button *ngIf="business.status === BusinessStatus.PENDING" fill="clear" color="danger" size="small" (click)="updateStatus(business, BusinessStatus.REJECTED)">
-          <ion-icon slot="start" name="close-circle-outline"></ion-icon> Reject
-        </ion-button>
-
-        <!-- Options for ACTIVE status -->
-        <ion-button *ngIf="business.status === BusinessStatus.ACTIVE" fill="clear" color="danger" size="small" (click)="updateStatus(business, BusinessStatus.SUSPENDED)">
-          <ion-icon slot="start" name="ban-outline"></ion-icon> Suspend
-        </ion-button>
-        <ion-button *ngIf="business.status === BusinessStatus.ACTIVE" fill="clear" color="warning" size="small" (click)="toggleFeature(business)">
-          <ion-icon slot="start" [name]="business.is_featured ? 'star-outline' : 'star'"></ion-icon> Feature
-        </ion-button>
-
-        <!-- Options for SUSPENDED / REJECTED status -->
-        <ion-button *ngIf="business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED" fill="clear" color="success" size="small" (click)="updateStatus(business, BusinessStatus.ACTIVE)">
-          <ion-icon slot="start" name="refresh-outline"></ion-icon> Reactivate
-        </ion-button>
-      </div>
-    </div>
-
-    <ion-item *ngIf="filteredBusinesses.length === 0">
-      <div class="flex flex-col items-center justify-center p-8 w-full text-center text-gray-500">
-        <ion-icon name="business-outline" class="text-4xl mb-2 opacity-50"></ion-icon>
-        <p>No businesses found matching your criteria.</p>
-      </div>
-    </ion-item>
-  </ion-list>
-  
-  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore" *ngIf="!isLoading">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more businesses..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+  @if (!isLoading) {
+    <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more businesses..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  }
 </div>
 
-<ng-template #skeleton>
-  <ion-card class="m-0 mt-4 shadow-sm border-radius-lg">
-    <ion-list class="p-0 m-0">
-      <ion-item *ngFor="let i of [1,2,3,4,5]">
-        <div slot="start" class="premium-business-logo skeleton-logo">
-          <ion-skeleton-text animated style="width: 100%; height: 100%; margin: 0;"></ion-skeleton-text>
-        </div>
-        <ion-label>
-          <h2><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h2>
-          <p><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></p>
-          <p><ion-skeleton-text animated style="width: 30%"></ion-skeleton-text></p>
-        </ion-label>
-        <ion-skeleton-text slot="end" animated style="width: 60px; height: 20px; border-radius: 4px;"></ion-skeleton-text>
-      </ion-item>
-    </ion-list>
-  </ion-card>
-</ng-template>

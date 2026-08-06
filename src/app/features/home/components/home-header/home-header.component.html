@@ -34,7 +34,7 @@
       <!-- Notification Bell -->
       <button class="notif-btn bd-btn-outline" (click)="onNotificationClick()" type="button" aria-label="Notifications">
         <ion-icon name="notifications-outline" class="notif-icon" />
-        @if ((unreadCount() || 0) > 0) {
+        @if ((unreadCount() || 0)> 0) {
           <span class="notif-badge">{{ unreadCount() }}</span>
         }
       </button>

@@ -236,7 +236,7 @@ Prefer Angular built-in template control flow:
 }
 ```
 
-Avoid introducing new `*ngIf` and `*ngFor` usage in new code unless required by an existing compatibility constraint.
+**MANDATORY RULE:** Do not use structural directives (`*ngIf`, `*ngFor`, `*ngSwitch`). You MUST strictly use the new Angular control flow (`@if`, `@for`, `@switch`) everywhere.
 
 Always provide a meaningful tracking expression for repeated lists.
 

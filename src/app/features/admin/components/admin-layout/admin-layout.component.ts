@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
@@ -16,7 +16,7 @@ import { menuOutline, closeOutline, filterOutline } from 'ionicons/icons';
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterModule, AdminSidebarComponent, AdminLogoutButtonComponent, AdminReferralsFilterModalComponent]
+  imports: [IonicModule, RouterModule, AdminSidebarComponent, AdminLogoutButtonComponent, AdminReferralsFilterModalComponent]
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {
   isMobileDrawerOpen = false;

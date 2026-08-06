@@ -33,7 +33,7 @@
         </ion-item>
       }
     </ion-list>
-  } @else if (displayedList().length > 0) {
+  } @else if (displayedList().length> 0) {
     <ion-list lines="inset" class="conversations-list">
       @for (item of displayedList(); track item.contact.id) {
         <ion-item button (click)="onSelectUnified(item)" class="conversation-item">
@@ -43,12 +43,8 @@
               <div class="avatar-fallback group-avatar">
                 <ion-icon name="people-outline" />
               </div>
-            } @else if (item.contact.profile_pic_url) {
-              <img [appCachedImg]="item.contact.profile_pic_url" alt="{{ item.contact.full_name }}" class="partner-avatar" (error)="item.contact.profile_pic_url = null" />
             } @else {
-              <div class="initials-avatar" [style.background]="getAvatarColor(item.contact.full_name)">
-                {{ getInitials(item.contact.full_name) }}
-              </div>
+              <img loading="lazy" [appCachedImg]="item.contact.profile_pic_url" [fallbackName]="item.contact.full_name" alt="{{ item.contact.full_name }}" class="partner-avatar" />
             }
             @if (!item.isGroup && isOnline(item.contact.id)) {
               <span class="online-status-indicator online"></span>
@@ -67,7 +63,7 @@
                 }
               </div>
               <!-- Unread badge in top right -->
-              @if (item.unread_count > 0) {
+              @if (item.unread_count> 0) {
                 <ion-badge color="primary" class="unread-badge">{{ item.unread_count }}</ion-badge>
               }
             </div>

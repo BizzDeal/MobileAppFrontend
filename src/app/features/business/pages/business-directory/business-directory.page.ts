@@ -1,6 +1,6 @@
 // Business Directory Page Standalone Component
 import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import {
@@ -47,7 +47,6 @@ export interface DirectoryBusinessDTO {
   selector: 'app-business-directory',
   standalone: true,
   imports: [
-    CommonModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -58,7 +57,7 @@ export interface DirectoryBusinessDTO {
     IonButton,
     CachedImgDirective,
     CardSkeletonComponent
-  ],
+],
   templateUrl: './business-directory.page.html',
   styleUrl: './business-directory.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

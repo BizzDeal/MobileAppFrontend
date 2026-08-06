@@ -1,5 +1,5 @@
 import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AdminUsersService } from '../../services/admin-users.service';
@@ -15,7 +15,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 @Component({
   selector: 'app-admin-members-list',
   standalone: true,
-  imports: [CommonModule, IonicModule, CachedImgDirective],
+  imports: [IonicModule, CachedImgDirective],
   templateUrl: './admin-members-list.component.html',
   styleUrls: ['./admin-members-list.component.scss']
 })
@@ -131,11 +131,6 @@ export class AdminMembersListComponent implements OnInit, OnChanges {
       case UserStatus.SUSPENDED: return 'medium';
       default: return 'primary';
     }
-  }
-
-  getFallbackAvatar(name: string): string {
-    const fallbackName = name ? encodeURIComponent(name) : 'User';
-    return `https://ui-avatars.com/api/?name=${fallbackName}&background=random&color=fff`;
   }
 
   getInitials(name: string): string {

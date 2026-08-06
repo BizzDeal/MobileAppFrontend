@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -25,7 +25,7 @@ import { AuthSessionService } from '../../../../core/services/auth-session.servi
   selector: 'app-admin-sidebar',
   templateUrl: './admin-sidebar.component.html',
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterModule],
+  imports: [IonicModule, RouterModule],
   styles: [`
     :host {
       height: 100%;

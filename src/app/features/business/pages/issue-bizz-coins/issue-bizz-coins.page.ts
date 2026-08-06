@@ -1,5 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -30,7 +31,7 @@ export interface CustomerLookupResult {
 @Component({
   selector: 'app-issue-bizz-coins',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, CachedImgDirective],
+  imports: [IonicModule, ReactiveFormsModule, CachedImgDirective],
   templateUrl: './issue-bizz-coins.page.html',
   styleUrls: ['./issue-bizz-coins.page.scss']
 })
@@ -39,6 +40,7 @@ export class IssueBizzCoinsPage implements OnInit {
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
   private readonly vouchersService = inject(VouchersService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly getInitials = getInitials;
   readonly getAvatarColor = getAvatarColor;
@@ -53,7 +55,7 @@ export class IssueBizzCoinsPage implements OnInit {
   isSearchingCustomer = false;
   customerNotFound = false;
   searchedCustomer: CustomerLookupResult | null = null;
-  avatarLoadError = false;
+  
 
   constructor() {
     addIcons({
@@ -73,7 +75,7 @@ export class IssueBizzCoinsPage implements OnInit {
     });
 
     // Listen to phone number changes for customer lookup
-    this.issueForm.get('customer_phone')?.valueChanges.subscribe(val => {
+    this.issueForm.get('customer_phone')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(val => {
       const cleanPhone = (val || '').toString().trim().replace(/\D/g, '');
       if (cleanPhone.length === 10) {
         this.lookupCustomer(cleanPhone);
@@ -105,7 +107,6 @@ export class IssueBizzCoinsPage implements OnInit {
     this.isSearchingCustomer = true;
     this.customerNotFound = false;
     this.searchedCustomer = null;
-    this.avatarLoadError = false;
 
     this.http.get<any>(`${environment.apiUrl}/users/by-phone/${phone}`).subscribe({
       next: (res) => {

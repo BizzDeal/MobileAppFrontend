@@ -130,7 +130,7 @@
     </div>
 
     <!-- 4. Transactions List -->
-    @if (filteredTransactions().length > 0) {
+    @if (filteredTransactions().length> 0) {
       <div class="tx-list">
         @for (tx of filteredTransactions(); track tx.id) {
           <div class="tx-item bd-card" [class.is-coin-item]="tx.isBizzCoin" (click)="viewTransactionDetails(tx)">

@@ -1,11 +1,11 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonCard, IonSkeletonText } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-card-skeleton',
   standalone: true,
-  imports: [CommonModule, IonCard, IonSkeletonText],
+  imports: [IonCard, IonSkeletonText],
   templateUrl: './card-skeleton.component.html',
   styleUrl: './card-skeleton.component.scss'
 })

@@ -22,17 +22,18 @@
       <ion-button fill="outline" (click)="loadAttendees()">Retry</ion-button>
     </div>
   } @else {
-    <div class="chart-container" *ngIf="attendees().length > 0">
-      <apx-chart
-        [series]="chartOptions.series"
-        [chart]="chartOptions.chart"
-        [labels]="chartOptions.labels"
-        [plotOptions]="chartOptions.plotOptions"
-        [colors]="chartOptions.colors"
-        [legend]="chartOptions.legend"
-        [dataLabels]="chartOptions.dataLabels"
-      ></apx-chart>
-    </div>
+    @if (attendees().length> 0) {
+      <div class="chart-container">
+        <apx-chart
+          [series]="chartOptions.series"
+          [chart]="chartOptions.chart"
+          [labels]="chartOptions.labels"
+          [plotOptions]="chartOptions.plotOptions"
+          [colors]="chartOptions.colors"
+          [legend]="chartOptions.legend"
+          [dataLabels]="chartOptions.dataLabels"></apx-chart>
+      </div>
+    }
 
     <ion-segment [value]="selectedFilter()" (ionChange)="onFilterChange($event)" mode="ios" class="status-segment">
       <ion-segment-button value="ALL">All</ion-segment-button>
@@ -45,28 +46,27 @@
       @for (attendee of displayedAttendees(); track attendee.id) {
         <ion-item class="attendee-item" lines="none">
           <ion-avatar slot="start">
-            <img *ngIf="attendee.profile_pic" [appCachedImg]="attendee.profile_pic" alt="avatar" (error)="attendee.profile_pic = undefined" />
-            <div *ngIf="!attendee.profile_pic" class="initials-avatar" [style.background]="getAvatarColor(attendee.full_name)">
-              {{ getInitials(attendee.full_name) }}
-            </div>
+              <img loading="lazy" [appCachedImg]="attendee.profile_pic" [fallbackName]="attendee.full_name" alt="avatar" />
           </ion-avatar>
           <ion-label>
             <h3>{{ attendee.full_name || 'No Name' }}</h3>
-            <p *ngIf="attendee.business_name" class="user-business" style="font-size: 12px; color: var(--ion-color-medium); margin: 2px 0;">{{ attendee.business_name }}</p>
+            @if (attendee.business_name) {
+              <p class="user-business" style="font-size: 12px; color: var(--ion-color-medium); margin: 2px 0;">{{ attendee.business_name }}</p>
+            }
             <p>{{ attendee.phone }}</p>
           </ion-label>
           <ion-badge slot="end" [class]="attendee.status | lowercase">
             {{ attendee.status }}
           </ion-badge>
         </ion-item>
-      } @empty {
+        } @empty {
         <div class="empty-state">
           <p>No attendees found for this status.</p>
         </div>
       }
     </div>
 
-    <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="displayedAttendees().length >= filteredAttendees().length">
+    <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="displayedAttendees().length>= filteredAttendees().length">
       <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more attendees..."></ion-infinite-scroll-content>
     </ion-infinite-scroll>
   }

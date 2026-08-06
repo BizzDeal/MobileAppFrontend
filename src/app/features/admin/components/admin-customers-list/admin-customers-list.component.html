@@ -1,56 +1,63 @@
 <div class="list-container m-0 mt-4 mx-4">
-  <ion-list *ngIf="!loading; else skeleton" lines="none" class="p-0 m-0 bg-transparent">
-    <div *ngFor="let customer of filteredCustomers" class="premium-user-card" (click)="viewUser(customer)">
-      <div class="user-card-body">
-        <div class="user-avatar">
-          <img *ngIf="customer.profile_pic_url" [appCachedImg]="customer.profile_pic_url" alt="avatar"
-            (error)="customer.profile_pic_url = ''">
-          <div *ngIf="!customer.profile_pic_url" class="initials-avatar"
-            [style.background]="getAvatarColor(customer.full_name)">
-            {{ getInitials(customer.full_name) }}
+  @if (!loading) {
+    <ion-list lines="none" class="p-0 m-0 bg-transparent">
+      @for (customer of filteredCustomers; track customer) {
+        <div class="premium-user-card" (click)="viewUser(customer)">
+          <div class="user-card-body">
+            <div class="user-avatar">
+              <img loading="lazy" [appCachedImg]="customer.profile_pic_url" [fallbackName]="customer.full_name" alt="avatar">
+            </div>
+            <div class="user-details-wrapper">
+              <h2 class="user-name">{{ customer.full_name }}</h2>
+              @if (customer.primary_business_store?.business_name) {
+                <p class="user-business">Store: {{
+                customer.primary_business_store?.business_name }}</p>
+              }
+              @if (!customer.primary_business_store?.business_name) {
+                <p class="user-business">Store: None</p>
+              }
+              <p class="user-phone">{{ customer.phone }}</p>
+              <!-- <p *ngIf="customer.email" class="text-sm text-gray-500 mt-1"><span class="role-badge">{{ customer.email
+            }}</span></p> -->
+          </div>
+          <div class="user-action">
+            <ion-badge [color]="getStatusColor(customer.status)" class="status-badge">
+              {{ customer.status }}
+            </ion-badge>
+            <ion-icon name="chevron-forward" class="text-medium ml-2"></ion-icon>
           </div>
         </div>
-        <div class="user-details-wrapper">
-          <h2 class="user-name">{{ customer.full_name }}</h2>
-          <p class="user-business" *ngIf="customer.primary_business_store?.business_name">Store: {{
-            customer.primary_business_store?.business_name }}</p>
-          <p class="user-business" *ngIf="!customer.primary_business_store?.business_name">Store: None</p>
-          <p class="user-phone">{{ customer.phone }}</p>
-          <!-- <p *ngIf="customer.email" class="text-sm text-gray-500 mt-1"><span class="role-badge">{{ customer.email
-              }}</span></p> -->
-        </div>
-        <div class="user-action">
-          <ion-badge [color]="getStatusColor(customer.status)" class="status-badge">
-            {{ customer.status }}
-          </ion-badge>
-          <ion-icon name="chevron-forward" class="text-medium ml-2"></ion-icon>
-        </div>
       </div>
-    </div>
-
-    <ion-item *ngIf="filteredCustomers.length === 0">
-      <ion-label class="ion-text-center py-4 text-gray-500">No customers found.</ion-label>
-    </ion-item>
+    }
+    @if (filteredCustomers.length === 0) {
+      <ion-item>
+        <ion-label class="ion-text-center py-4 text-gray-500">No customers found.</ion-label>
+      </ion-item>
+    }
   </ion-list>
-
-  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore" *ngIf="!loading">
-    <ion-infinite-scroll-content loadingSpinner="bubbles"
-      loadingText="Loading more customers..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
-</div>
-
-<ng-template #skeleton>
+} @else {
   <ion-card class="m-0 mt-4 shadow-sm border-radius-lg">
     <ion-list class="p-0 m-0">
-      <ion-item *ngFor="let i of [1,2,3,4]">
-        <ion-avatar slot="start">
-          <ion-skeleton-text animated></ion-skeleton-text>
-        </ion-avatar>
-        <ion-label>
-          <h2><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h2>
-          <p><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></p>
-        </ion-label>
-      </ion-item>
+      @for (i of [1,2,3,4]; track i) {
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-avatar>
+          <ion-label>
+            <h2><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h2>
+            <p><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></p>
+          </ion-label>
+        </ion-item>
+      }
     </ion-list>
   </ion-card>
-</ng-template>
+}
+
+@if (!loading) {
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore">
+    <ion-infinite-scroll-content loadingSpinner="bubbles"
+    loadingText="Loading more customers..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+}
+</div>
+

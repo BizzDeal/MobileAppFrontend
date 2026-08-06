@@ -1,61 +1,68 @@
 <div class="list-container m-0 mt-4 mx-4">
-  <ion-list *ngIf="!loading; else skeleton" lines="none" class="p-0 m-0 bg-transparent">
-    <div *ngFor="let member of filteredMembers" class="premium-user-card" (click)="viewUser(member)">
-      <div class="user-card-body">
-        <div class="user-card-main">
-          <div class="user-avatar">
-            <img *ngIf="member.profile_pic_url" [appCachedImg]="member.profile_pic_url" alt="avatar" (error)="member.profile_pic_url = ''">
-            <div *ngIf="!member.profile_pic_url" class="initials-avatar" [style.background]="getAvatarColor(member.full_name)">
-              {{ getInitials(member.full_name) }}
+  @if (!loading) {
+    <ion-list lines="none" class="p-0 m-0 bg-transparent">
+      @for (member of filteredMembers; track member) {
+        <div class="premium-user-card" (click)="viewUser(member)">
+          <div class="user-card-body">
+            <div class="user-card-main">
+              <div class="user-avatar">
+                <img loading="lazy" [appCachedImg]="member.profile_pic_url" [fallbackName]="member.full_name" alt="avatar">
+              </div>
+              <div class="user-details-wrapper">
+                <h2 class="user-name">{{ member.full_name }}</h2>
+                @if (member.businessProfile?.business_name) {
+                  <p class="user-business">{{ member.businessProfile?.business_name }}</p>
+                }
+                <p class="user-phone">{{ member.phone }}</p>
+              </div>
+              <div class="user-status-wrapper">
+                <ion-badge [color]="getStatusColor(member.status)" class="status-badge">
+                  {{ member.status }}
+                </ion-badge>
+              </div>
+            </div>
+            <div class="user-card-footer">
+              <button class="footer-action-btn" (click)="onCallClick($event, member)">
+                <ion-icon name="call-outline"></ion-icon>
+                <span>Call</span>
+              </button>
+              <div class="footer-divider"></div>
+              <button class="footer-action-btn" (click)="onChatClick($event, member)">
+                <ion-icon name="chatbubbles-outline"></ion-icon>
+                <span>Chat</span>
+              </button>
             </div>
           </div>
-          <div class="user-details-wrapper">
-            <h2 class="user-name">{{ member.full_name }}</h2>
-            <p class="user-business" *ngIf="member.businessProfile?.business_name">{{ member.businessProfile?.business_name }}</p>
-            <p class="user-phone">{{ member.phone }}</p>
-          </div>
-          <div class="user-status-wrapper">
-            <ion-badge [color]="getStatusColor(member.status)" class="status-badge">
-              {{ member.status }}
-            </ion-badge>
-          </div>
         </div>
-        <div class="user-card-footer">
-          <button class="footer-action-btn" (click)="onCallClick($event, member)">
-            <ion-icon name="call-outline"></ion-icon>
-            <span>Call</span>
-          </button>
-          <div class="footer-divider"></div>
-          <button class="footer-action-btn" (click)="onChatClick($event, member)">
-            <ion-icon name="chatbubbles-outline"></ion-icon>
-            <span>Chat</span>
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <ion-item *ngIf="filteredMembers.length === 0">
-      <ion-label class="ion-text-center py-4 text-gray-500">No members found.</ion-label>
-    </ion-item>
-  </ion-list>
-  
-  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore" *ngIf="!loading">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more members..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+      }
+      @if (filteredMembers.length === 0) {
+        <ion-item>
+          <ion-label class="ion-text-center py-4 text-gray-500">No members found.</ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <ion-card class="m-0 mt-4 shadow-sm border-radius-lg">
+      <ion-list class="p-0 m-0">
+        @for (i of [1,2,3,4]; track i) {
+          <ion-item>
+            <ion-avatar slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-avatar>
+            <ion-label>
+              <h2><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h2>
+              <p><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    </ion-card>
+  }
+
+  @if (!loading) {
+    <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more members..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  }
 </div>
 
-<ng-template #skeleton>
-  <ion-card class="m-0 mt-4 shadow-sm border-radius-lg">
-    <ion-list class="p-0 m-0">
-      <ion-item *ngFor="let i of [1,2,3,4]">
-        <ion-avatar slot="start">
-          <ion-skeleton-text animated></ion-skeleton-text>
-        </ion-avatar>
-        <ion-label>
-          <h2><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h2>
-          <p><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </ion-card>
-</ng-template>

@@ -1,87 +1,73 @@
-// App Routing Configuration
 import { Routes } from '@angular/router';
-
-// Static imports
-import { AUTH_ROUTES } from './features/auth/auth.routes';
-import { HomePage } from './home/home.page';
-import { BusinessDirectoryPage } from './features/business/pages/business-directory/business-directory.page';
-import { OfferFormPage } from './features/business/pages/offer-form/offer-form.page';
-import { BizzCoinsOfferPage } from './features/business/pages/bizz-coins-offer/bizz-coins-offer.page';
-import { IssueVoucherPage } from './features/business/pages/issue-voucher/issue-voucher.page';
-import { IssueBizzCoinsPage } from './features/business/pages/issue-bizz-coins/issue-bizz-coins.page';
-import { RedeemVoucherPage } from './features/business/pages/redeem-voucher/redeem-voucher.page';
-import { RedeemBizzCoinsPage } from './features/business/pages/redeem-bizz-coins/redeem-bizz-coins.page';
-import { AnalyticsDashboardPage } from './features/analytics/pages/analytics-dashboard/analytics-dashboard.page';
-import { ADMIN_ROUTES } from './features/admin/admin.routes';
 import { authGuard } from './core/guards/auth.guard';
 import { UserRole } from './features/auth/models/auth.model';
 
 export const routes: Routes = [
   {
     path: 'auth',
-    children: AUTH_ROUTES,
+    loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES),
   },
   {
     path: 'home',
-    component: HomePage,
+    loadComponent: () => import('./home/home.page').then(m => m.HomePage),
     canActivate: [authGuard],
   },
   {
     path: 'business-directory',
-    component: BusinessDirectoryPage,
+    loadComponent: () => import('./features/business/pages/business-directory/business-directory.page').then(m => m.BusinessDirectoryPage),
     canActivate: [authGuard],
   },
   {
     path: 'offers/bizz-coins',
-    component: BizzCoinsOfferPage,
+    loadComponent: () => import('./features/business/pages/bizz-coins-offer/bizz-coins-offer.page').then(m => m.BizzCoinsOfferPage),
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'offers/new',
-    component: OfferFormPage,
+    loadComponent: () => import('./features/business/pages/offer-form/offer-form.page').then(m => m.OfferFormPage),
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'offers/:id/edit',
-    component: OfferFormPage,
+    loadComponent: () => import('./features/business/pages/offer-form/offer-form.page').then(m => m.OfferFormPage),
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'vouchers/issue',
-    component: IssueVoucherPage,
+    loadComponent: () => import('./features/business/pages/issue-voucher/issue-voucher.page').then(m => m.IssueVoucherPage),
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'vouchers/issue-bizz-coins',
-    component: IssueBizzCoinsPage,
+    loadComponent: () => import('./features/business/pages/issue-bizz-coins/issue-bizz-coins.page').then(m => m.IssueBizzCoinsPage),
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'vouchers/redeem',
-    component: RedeemVoucherPage,
+    loadComponent: () => import('./features/business/pages/redeem-voucher/redeem-voucher.page').then(m => m.RedeemVoucherPage),
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'vouchers/redeem-bizz-coins',
-    component: RedeemBizzCoinsPage,
+    loadComponent: () => import('./features/business/pages/redeem-bizz-coins/redeem-bizz-coins.page').then(m => m.RedeemBizzCoinsPage),
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'analytics',
-    component: AnalyticsDashboardPage,
+    loadComponent: () => import('./features/analytics/pages/analytics-dashboard/analytics-dashboard.page').then(m => m.AnalyticsDashboardPage),
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
     path: 'admin',
-    children: ADMIN_ROUTES,
+    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
     canActivate: [authGuard],
     data: { roles: [UserRole.ADMIN] },
   },

@@ -17,12 +17,8 @@
               <div class="partner-avatar-placeholder">
                 <ion-icon name="people-outline" />
               </div>
-            } @else if (conv.partner?.profile_pic_url) {
-              <img [appCachedImg]="conv.partner!.profile_pic_url" alt="{{ conv.partner!.full_name }}" class="partner-avatar" (error)="conv.partner!.profile_pic_url = null" />
             } @else {
-              <div class="initials-avatar" [style.background]="getAvatarColor(conv.partner?.full_name)">
-                {{ getInitials(conv.partner?.full_name) }}
-              </div>
+              <img loading="lazy" [appCachedImg]="conv.partner?.profile_pic_url" [fallbackName]="conv.partner?.full_name" alt="{{ conv.partner?.full_name }}" class="partner-avatar" />
             }
             @if (conv.type !== 'GROUP' && isPartnerOnline()) {
               <span class="presence-dot online"></span>
@@ -44,7 +40,7 @@
 
     <!-- 2. Scrollable Messages Area -->
     <div class="messages-scroll-area" #scrollContainer>
-      @if (activeMessages().length > 0) {
+      @if (activeMessages().length> 0) {
         <div class="messages-list">
           @for (msg of activeMessages(); track msg.id; let idx = $index) {
             
@@ -85,7 +81,7 @@
             </div>
           } @else if (conv.partner?.profile_pic_url) {
             <div class="avatar-large">
-              <img [appCachedImg]="conv.partner!.profile_pic_url" alt="{{ conv.partner!.full_name }}" (error)="conv.partner!.profile_pic_url = null" />
+              <img loading="lazy" [appCachedImg]="conv.partner!.profile_pic_url" alt="{{ conv.partner!.full_name }}"  />
             </div>
           } @else {
             <div class="avatar-large initials-avatar" [style.background]="getAvatarColor(conv.partner?.full_name)">
@@ -132,7 +128,7 @@
               <ion-icon name="people-outline" />
             </div>
           } @else if (conv.partner?.profile_pic_url) {
-            <img [src]="conv.partner!.profile_pic_url" class="zoomed-img" alt="zoom view" />
+            <img loading="lazy" [src]="conv.partner!.profile_pic_url" class="zoomed-img" alt="zoom view" />
           } @else {
             <div class="zoomed-placeholder initials-avatar" [style.background]="getAvatarColor(conv.partner?.full_name)">
               {{ getInitials(conv.partner?.full_name) }}

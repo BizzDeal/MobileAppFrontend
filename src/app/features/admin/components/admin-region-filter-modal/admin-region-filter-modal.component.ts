@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AdminSettingsService } from '../../services/admin-settings.service';
@@ -11,7 +11,7 @@ import { closeOutline, checkmarkOutline, filterOutline, refreshOutline } from 'i
   templateUrl: './admin-region-filter-modal.component.html',
   styleUrls: ['./admin-region-filter-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [FormsModule, IonicModule]
 })
 export class AdminRegionFilterModalComponent implements OnInit {
   @Input() isOpen: boolean = false;

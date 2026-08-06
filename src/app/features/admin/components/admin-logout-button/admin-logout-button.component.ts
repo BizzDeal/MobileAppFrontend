@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule, AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { logOutOutline } from 'ionicons/icons';
@@ -19,7 +19,7 @@ import { AuthSessionService } from '../../../../core/services/auth-session.servi
     }
   `],
   standalone: true,
-  imports: [CommonModule, IonicModule]
+  imports: [IonicModule]
 })
 export class AdminLogoutButtonComponent {
   private readonly alertController = inject(AlertController);

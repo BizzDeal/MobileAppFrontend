@@ -7,19 +7,15 @@
     <!-- Header -->
     <header class="dashboard-header">
       <div class="brand-info">
-        @if (profile()?.profile_pic_url && !picLoadError()) {
-          <img [appCachedImg]="profile()?.profile_pic_url" (error)="picLoadError.set(true)" alt="Profile Pic" class="business-logo" />
-        } @else {
-          <div class="initials-avatar business-logo">{{ getInitials(profile()?.full_name) }}</div>
-        }
+        <img loading="lazy" [appCachedImg]="profile()?.profile_pic_url" [fallbackName]="profile()?.full_name" alt="Profile Pic" class="business-logo" />
         <h1 class="business-name"><span class="truncate-name">Hi {{ getFirstName(profile()?.full_name) }}</span></h1>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
         <button class="notification-btn bd-btn-outline" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
           <ion-icon name="notifications-outline" class="notif-icon" />
-          @if ((unreadCount() || 0) > 0) {
-            <span class="badge count-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
-          } @else if (data.alerts.length > 0) {
+          @if ((unreadCount() || 0)> 0) {
+            <span class="badge count-badge">{{ unreadCount()> 99 ? '99+' : unreadCount() }}</span>
+          } @else if (data.alerts.length> 0) {
             <span class="badge"></span>
           }
         </button>
@@ -36,11 +32,7 @@
     <section class="business-profile-card bd-card-premium">
       <div class="biz-profile-main">
         <div class="logo-wrapper">
-          @if (profile()?.business_logo_url && !logoLoadError()) {
-            <img [appCachedImg]="profile()?.business_logo_url" (error)="logoLoadError.set(true)" alt="Business Logo" class="biz-profile-logo" />
-          } @else {
-            <div class="initials-avatar biz-profile-logo">{{ getInitials(profile()?.business_name || 'My Business') }}</div>
-          }
+            <img loading="lazy" [appCachedImg]="profile()?.business_logo_url" [fallbackName]="profile()?.business_name || 'My Business'" alt="Business Logo" class="biz-profile-logo" />
         </div>
         <div class="biz-info">
           <h2 class="biz-profile-name">
@@ -256,7 +248,7 @@
           <h2 class="section-title">Pending Approvals</h2>
         </div>
       </div>
-      @if (pendingOffers().length > 0) {
+      @if (pendingOffers().length> 0) {
         <div class="pending-list">
           @for (offer of pendingOffers(); track offer.id) {
             <div class="pending-item" (click)="onDealClick(offer)">
@@ -281,7 +273,7 @@
     </section>
 
     <!-- Upcoming Meetings -->
-    @if (upcomingMeetings().length > 0) {
+    @if (upcomingMeetings().length> 0) {
       <section class="feed-section upcoming-meetings-section">
         <div class="section-header">
           <div class="header-left">

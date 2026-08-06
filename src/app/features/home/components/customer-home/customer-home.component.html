@@ -30,7 +30,7 @@
     <span class="swipe-hint">Swipe to explore &rarr;</span>
   </div>
 
-  @if (filteredFeaturedBiz.length > 0) {
+  @if (filteredFeaturedBiz.length> 0) {
   <div class="horizontal-scroll-feed">
     @for (biz of filteredFeaturedBiz; track biz.id) {
     <app-business-card [business]="biz" (businessClick)="businessClick.emit($event)" />
@@ -52,7 +52,7 @@
     <span class="swipe-hint">Swipe to explore &rarr;</span>
   </div>
 
-  @if (filteredTopBiz.length > 0) {
+  @if (filteredTopBiz.length> 0) {
   <div class="horizontal-scroll-feed">
     @for (biz of filteredTopBiz; track biz.id) {
     <app-business-card [business]="biz" (businessClick)="businessClick.emit($event)" />
@@ -74,7 +74,7 @@
     </div>
   </div>
 
-  @if (activeVouchers.length > 0) {
+  @if (activeVouchers.length> 0) {
   <div class="vertical-feed">
     @for (v of activeVouchers; track v.id) {
     <div class="voucher-list-item" 

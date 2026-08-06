@@ -1,7 +1,9 @@
 <ion-app>
   <!-- Fixed Status Bar Background Backdrop for Android 15+ / Edge-to-Edge -->
   <div class="system-status-bar-bg"></div>
-  <app-splash-screen *ngIf="showSplash"></app-splash-screen>
+  @if (showSplash) {
+    <app-splash-screen></app-splash-screen>
+  }
   <!-- <app-smart-loading-screen></app-smart-loading-screen> -->
   <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

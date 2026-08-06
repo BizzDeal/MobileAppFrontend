@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule } from '@ionic/angular';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AdminPaymentSettingsService, PaymentSettings } from '../../services/admin-payment-settings.service';
@@ -11,7 +11,7 @@ import { CardSkeletonComponent } from '../../../../shared/components/skeletons/c
 @Component({
   selector: 'app-admin-payment-details',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, CardSkeletonComponent],
+  imports: [IonicModule, ReactiveFormsModule, CardSkeletonComponent],
   templateUrl: './admin-payment-details.page.html',
   styleUrls: ['./admin-payment-details.page.scss']
 })

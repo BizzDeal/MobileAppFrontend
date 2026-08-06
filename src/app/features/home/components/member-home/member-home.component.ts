@@ -119,9 +119,7 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return all.filter(m => new Date(m.meeting_date) >= now && m.status !== 'CANCELLED');
   });
 
-  readonly picLoadError = signal(false);
-  readonly logoLoadError = signal(false);
-
+    
   constructor() {
     addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline });
   }

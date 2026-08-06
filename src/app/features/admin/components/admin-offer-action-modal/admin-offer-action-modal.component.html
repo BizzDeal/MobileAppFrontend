@@ -19,10 +19,12 @@
         <span class="label">Type</span>
         <span class="value">{{ offer.offer_type }}</span>
       </div>
-      <div class="detail-item" *ngIf="offer.discount_value">
-        <span class="label">Discount Value</span>
-        <span class="value">{{ offer.discount_value }} {{ offer.discount_type === 'PERCENTAGE' ? '%' : 'Flat' }}</span>
-      </div>
+      @if (offer.discount_value) {
+        <div class="detail-item">
+          <span class="label">Discount Value</span>
+          <span class="value">{{ offer.discount_value }} {{ offer.discount_type === 'PERCENTAGE' ? '%' : 'Flat' }}</span>
+        </div>
+      }
       <div class="detail-item">
         <span class="label">Valid From</span>
         <span class="value">{{ offer.start_date | date:'mediumDate' }}</span>
@@ -39,94 +41,112 @@
           </ion-badge>
         </span>
       </div>
-      <div class="detail-item w-full" *ngIf="offer.rejection_reason">
-        <span class="label text-danger">Rejection Reason</span>
-        <span class="value text-danger">{{ offer.rejection_reason }}</span>
-      </div>
+      @if (offer.rejection_reason) {
+        <div class="detail-item w-full">
+          <span class="label text-danger">Rejection Reason</span>
+          <span class="value text-danger">{{ offer.rejection_reason }}</span>
+        </div>
+      }
     </div>
 
     <!-- Business Details Section -->
     <h3 class="font-bold text-dark mt-6 mb-3" style="font-size: 1.1rem;">Business Details</h3>
-    <div *ngIf="loadingBusiness" class="ion-text-center mt-4">
-      <ion-spinner></ion-spinner>
-    </div>
-    
-    <div class="details-grid premium-info-card" *ngIf="!loadingBusiness && business">
-      <div class="detail-item w-full">
-        <span class="label">Business Name</span>
-        <span class="value">{{ business.name }}</span>
+    @if (loadingBusiness) {
+      <div class="ion-text-center mt-4">
+        <ion-spinner></ion-spinner>
       </div>
-      <div class="detail-item">
-        <span class="label">Owner</span>
-        <span class="value">{{ business.owner_name || 'N/A' }}</span>
+    }
+
+    @if (!loadingBusiness && business) {
+      <div class="details-grid premium-info-card">
+        <div class="detail-item w-full">
+          <span class="label">Business Name</span>
+          <span class="value">{{ business.name }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Owner</span>
+          <span class="value">{{ business.owner_name || 'N/A' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Email</span>
+          <span class="value">{{ business.owner_email || 'N/A' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Phone</span>
+          <span class="value">{{ business.owner_phone || business.phone || 'N/A' }}</span>
+        </div>
+        @if (business.state_name) {
+          <div class="detail-item">
+            <span class="label">State</span>
+            <span class="value">{{ business.state_name }}</span>
+          </div>
+        }
+        @if (business.district_name) {
+          <div class="detail-item">
+            <span class="label">District</span>
+            <span class="value">{{ business.district_name }}</span>
+          </div>
+        }
+        @if (business.address) {
+          <div class="detail-item w-full">
+            <span class="label">Address</span>
+            <span class="value">{{ business.address }}</span>
+          </div>
+        }
+        @if (business.gst_number) {
+          <div class="detail-item">
+            <span class="label">GST Number</span>
+            <span class="value">{{ business.gst_number }}</span>
+          </div>
+        }
+        @if (business.category_name) {
+          <div class="detail-item">
+            <span class="label">Category</span>
+            <span class="value">{{ business.category_name }}</span>
+          </div>
+        }
       </div>
-      <div class="detail-item">
-        <span class="label">Email</span>
-        <span class="value">{{ business.owner_email || 'N/A' }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="label">Phone</span>
-        <span class="value">{{ business.owner_phone || business.phone || 'N/A' }}</span>
-      </div>
-      <div class="detail-item" *ngIf="business.state_name">
-        <span class="label">State</span>
-        <span class="value">{{ business.state_name }}</span>
-      </div>
-      <div class="detail-item" *ngIf="business.district_name">
-        <span class="label">District</span>
-        <span class="value">{{ business.district_name }}</span>
-      </div>
-      <div class="detail-item w-full" *ngIf="business.address">
-        <span class="label">Address</span>
-        <span class="value">{{ business.address }}</span>
-      </div>
-      <div class="detail-item" *ngIf="business.gst_number">
-        <span class="label">GST Number</span>
-        <span class="value">{{ business.gst_number }}</span>
-      </div>
-      <div class="detail-item" *ngIf="business.category_name">
-        <span class="label">Category</span>
-        <span class="value">{{ business.category_name }}</span>
-      </div>
-    </div>
+    }
 
   </div>
 
-  <div class="action-section mt-6" *ngIf="offer.status === OfferStatus.PENDING">
-    <ng-container *ngIf="!showRejectInput">
-      <ion-button expand="block" color="success" (click)="approve()" class="mb-3">
-        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-        Approve Offer
-      </ion-button>
-      <ion-button expand="block" color="danger" fill="outline" (click)="toggleRejectInput()">
-        <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-        Reject Offer
-      </ion-button>
-    </ng-container>
-
-    <div class="reject-input-container" *ngIf="showRejectInput">
-      <ion-item lines="none" class="premium-input-item mb-3">
-        <ion-label position="stacked">
-          Rejection Reason <span class="required-star">*</span>
-        </ion-label>
-        <ion-textarea 
-          [(ngModel)]="rejectionReason" 
-          placeholder="Please provide a reason for rejecting this offer..."
-          rows="3"
-        ></ion-textarea>
-      </ion-item>
-      
-      <!-- Error container to prevent layout shift -->
-      <div class="error-container">
-        <ion-text color="danger" *ngIf="!rejectionReason.trim()">
-          <small>Rejection reason is required.</small>
-        </ion-text>
-      </div>
-
-      <div class="flex gap-3 mt-3">
-        <ion-button fill="outline" color="medium" class="flex-1" (click)="cancelReject()">Cancel</ion-button>
-        <ion-button color="danger" class="flex-1" (click)="reject()" [disabled]="!rejectionReason.trim()">Confirm Reject</ion-button>
-      </div>
+  @if (offer.status === OfferStatus.PENDING) {
+    <div class="action-section mt-6">
+      @if (!showRejectInput) {
+        <ion-button expand="block" color="success" (click)="approve()" class="mb-3">
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          Approve Offer
+        </ion-button>
+        <ion-button expand="block" color="danger" fill="outline" (click)="toggleRejectInput()">
+          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+          Reject Offer
+        </ion-button>
+      }
+      @if (showRejectInput) {
+        <div class="reject-input-container">
+          <ion-item lines="none" class="premium-input-item mb-3">
+            <ion-label position="stacked">
+              Rejection Reason <span class="required-star">*</span>
+            </ion-label>
+            <ion-textarea
+              [(ngModel)]="rejectionReason"
+              placeholder="Please provide a reason for rejecting this offer..."
+              rows="3"></ion-textarea>
+          </ion-item>
+          <!-- Error container to prevent layout shift -->
+          <div class="error-container">
+            @if (!rejectionReason.trim()) {
+              <ion-text color="danger">
+                <small>Rejection reason is required.</small>
+              </ion-text>
+            }
+          </div>
+          <div class="flex gap-3 mt-3">
+            <ion-button fill="outline" color="medium" class="flex-1" (click)="cancelReject()">Cancel</ion-button>
+            <ion-button color="danger" class="flex-1" (click)="reject()" [disabled]="!rejectionReason.trim()">Confirm Reject</ion-button>
+          </div>
+        </div>
+      }
     </div>
-  </div>
+  }
 </ion-content>

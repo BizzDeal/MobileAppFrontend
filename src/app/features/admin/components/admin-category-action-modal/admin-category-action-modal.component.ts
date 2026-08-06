@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule, ModalController } from '@ionic/angular';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -8,7 +8,7 @@ import { closeOutline, saveOutline, trashOutline } from 'ionicons/icons';
 @Component({
   selector: 'app-admin-category-action-modal',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [IonicModule, ReactiveFormsModule],
   templateUrl: './admin-category-action-modal.component.html',
   styleUrls: ['./admin-category-action-modal.component.scss']
 })

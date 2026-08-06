@@ -1,4 +1,5 @@
-import { Injectable, inject, signal, effect, untracked } from '@angular/core';
+import { Injectable, inject, signal, effect, untracked, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap, shareReplay, finalize } from 'rxjs/operators';
@@ -16,6 +17,7 @@ export class CustomerVouchersService {
   private readonly apiUrl = environment.apiUrl;
   private readonly appSocket = inject(AppSocketService);
   private readonly authSession = inject(AuthSessionService);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly _vouchers = signal<CustomerVoucher[]>([]);
   private readonly _loading = signal<boolean>(true);
@@ -54,7 +56,7 @@ export class CustomerVouchersService {
       }
     });
     
-    this.appSocket.onEvent('VOUCHER_REDEEMED').subscribe(event => {
+    this.appSocket.onEvent('VOUCHER_REDEEMED').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(event => {
       this.updateVoucherStatus(event.payload.voucher_id, event.payload.status);
     });
   }

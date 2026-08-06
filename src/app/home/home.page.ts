@@ -1,6 +1,7 @@
 import { DatePipe, NgClass, TitleCasePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -116,6 +117,7 @@ export class HomePage {
   private readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
   readonly walletService = inject(WalletService);
+  private readonly destroyRef = inject(DestroyRef);
   
   readonly getInitials = getInitials;
   readonly getAvatarColor = getAvatarColor;
@@ -227,7 +229,7 @@ export class HomePage {
     });
 
     // Handle tab query parameter for switching active nav tab
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const tab = params['tab'];
       if (tab) {
         this.activeNavTab.set(tab as any);

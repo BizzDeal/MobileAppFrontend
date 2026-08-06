@@ -1,25 +1,9 @@
 import { Routes } from '@angular/router';
 
-import { AdminLayoutComponent } from './components/admin-layout/admin-layout.component';
-import { AdminDashboardPage } from './pages/admin-dashboard/admin-dashboard.page';
-import { AdminUsersPage } from './pages/admin-users/admin-users.page';
-import { AdminUserDetailsPage } from './pages/admin-user-details/admin-user-details.page';
-import { AdminBusinessesPage } from './pages/admin-businesses/admin-businesses.page';
-import { AdminBusinessDetailsPage } from './pages/admin-business-details/admin-business-details.page';
-import { AdminOffersPage } from './pages/admin-offers/admin-offers.page';
-import { AdminReferralsPage } from './pages/admin-referrals/admin-referrals.page';
-import { AdminNotificationsPage } from './pages/admin-notifications/admin-notifications.page';
-import { AdminAnalyticsPage } from './pages/admin-analytics/admin-analytics.page';
-import { AdminMeetingsPage } from './pages/admin-meetings/admin-meetings.page';
-import { AdminChatPage } from './pages/admin-chat/admin-chat.page';
-import { AdminPaymentDetailsPage } from './pages/admin-payment-details/admin-payment-details.page';
-import { AdminSettingsPage } from './pages/admin-settings/admin-settings.page';
-import { AdminCategoriesPage } from './pages/admin-categories/admin-categories.page';
-
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
-    component: AdminLayoutComponent,
+    loadComponent: () => import('./components/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [
       {
         path: '',
@@ -28,61 +12,60 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'dashboard',
-        component: AdminDashboardPage,
+        loadComponent: () => import('./pages/admin-dashboard/admin-dashboard.page').then(m => m.AdminDashboardPage),
       },
       {
         path: 'users',
-        component: AdminUsersPage,
+        loadComponent: () => import('./pages/admin-users/admin-users.page').then(m => m.AdminUsersPage),
       },
       {
         path: 'users/:id',
-        component: AdminUserDetailsPage,
+        loadComponent: () => import('./pages/admin-user-details/admin-user-details.page').then(m => m.AdminUserDetailsPage),
       },
       {
         path: 'businesses',
-        component: AdminBusinessesPage,
+        loadComponent: () => import('./pages/admin-businesses/admin-businesses.page').then(m => m.AdminBusinessesPage),
       },
       {
         path: 'businesses/:id',
-        component: AdminBusinessDetailsPage,
+        loadComponent: () => import('./pages/admin-business-details/admin-business-details.page').then(m => m.AdminBusinessDetailsPage),
       },
       {
         path: 'offers',
-        component: AdminOffersPage,
+        loadComponent: () => import('./pages/admin-offers/admin-offers.page').then(m => m.AdminOffersPage),
       },
       {
         path: 'categories',
-        component: AdminCategoriesPage,
+        loadComponent: () => import('./pages/admin-categories/admin-categories.page').then(m => m.AdminCategoriesPage),
       },
       {
         path: 'referrals',
-        component: AdminReferralsPage,
+        loadComponent: () => import('./pages/admin-referrals/admin-referrals.page').then(m => m.AdminReferralsPage),
       },
       {
         path: 'meetings',
-        component: AdminMeetingsPage,
+        loadComponent: () => import('./pages/admin-meetings/admin-meetings.page').then(m => m.AdminMeetingsPage),
       },
       {
         path: 'chat',
-        component: AdminChatPage,
+        loadComponent: () => import('./pages/admin-chat/admin-chat.page').then(m => m.AdminChatPage),
       },
       {
         path: 'payment-details',
-        component: AdminPaymentDetailsPage,
+        loadComponent: () => import('./pages/admin-payment-details/admin-payment-details.page').then(m => m.AdminPaymentDetailsPage),
       },
       {
         path: 'notifications',
-        component: AdminNotificationsPage,
+        loadComponent: () => import('./pages/admin-notifications/admin-notifications.page').then(m => m.AdminNotificationsPage),
       },
       {
         path: 'analytics',
-        component: AdminAnalyticsPage,
+        loadComponent: () => import('./pages/admin-analytics/admin-analytics.page').then(m => m.AdminAnalyticsPage),
       },
       {
         path: 'settings',
-        component: AdminSettingsPage,
+        loadComponent: () => import('./pages/admin-settings/admin-settings.page').then(m => m.AdminSettingsPage),
       },
     ],
   },
 ];
-

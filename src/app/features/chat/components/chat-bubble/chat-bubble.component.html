@@ -21,7 +21,7 @@
         <!-- 2. Image Message -->
         @if (message().message_type === 'IMAGE') {
           <div class="image-content" (click)="$event.stopPropagation(); openImage()">
-            <img [appCachedImg]="message().media_url" alt="Attached photo" class="bubble-img" />
+            <img loading="lazy" [appCachedImg]="message().media_url" alt="Attached photo" class="bubble-img" />
             @if (message().message) {
               <p class="message-text caption">{{ message().message }}</p>
             }
@@ -59,7 +59,7 @@
               <div class="voice-progress-bar">
                 <div class="voice-progress-fill" [style.width.%]="playbackProgress()"></div>
               </div>
-              <span class="voice-duration">0:{{ playbackProgress() > 0 ? (10 - (playbackProgress() / 10) | number:'1.0-0') : '10' }}</span>
+              <span class="voice-duration">0:{{ playbackProgress()> 0 ? (10 - (playbackProgress() / 10) | number:'1.0-0') : '10' }}</span>
             </div>
           </div>
         }
@@ -107,7 +107,7 @@
     </ion-header>
     <ion-content class="image-viewer-content">
       <div class="zoomed-image-container">
-        <img [src]="message().media_url" class="zoomed-img" alt="zoom view" />
+        <img loading="lazy" [src]="message().media_url" class="zoomed-img" alt="zoom view" />
         @if (message().message) {
           <div class="zoomed-caption-box">
             <p>{{ message().message }}</p>

@@ -11,21 +11,25 @@
 
 <ion-content class="modal-content">
   <form [formGroup]="composeForm" (ngSubmit)="submit()" class="bizz-form">
-    
+
     <!-- Audience Selection -->
     <div class="form-group">
       <ion-label class="field-label">Target Audience <span class="required-star">*</span></ion-label>
       <ion-item class="custom-input-item" lines="none">
         <ion-select formControlName="audience" interface="popover" placeholder="Select Audience">
-          <ion-select-option *ngFor="let option of audienceOptions" [value]="option.value">
-            {{ option.label }}
-          </ion-select-option>
+          @for (option of audienceOptions; track option) {
+            <ion-select-option [value]="option.value">
+              {{ option.label }}
+            </ion-select-option>
+          }
         </ion-select>
       </ion-item>
       <div class="error-container">
-        <span class="error-text" *ngIf="composeForm.get('audience')?.touched && composeForm.get('audience')?.hasError('required')">
-          Target Audience is required.
-        </span>
+        @if (composeForm.get('audience')?.touched && composeForm.get('audience')?.hasError('required')) {
+          <span class="error-text">
+            Target Audience is required.
+          </span>
+        }
       </div>
     </div>
 
@@ -35,15 +39,19 @@
       <ion-label class="field-label">Notification Type <span class="required-star">*</span></ion-label>
       <ion-item class="custom-input-item" lines="none">
         <ion-select formControlName="type" interface="popover" placeholder="Select Type">
-          <ion-select-option *ngFor="let type of typeOptions" [value]="type">
-            {{ type }}
-          </ion-select-option>
+          @for (type of typeOptions; track type) {
+            <ion-select-option [value]="type">
+              {{ type }}
+            </ion-select-option>
+          }
         </ion-select>
       </ion-item>
       <div class="error-container">
-        <span class="error-text" *ngIf="composeForm.get('type')?.touched && composeForm.get('type')?.hasError('required')">
-          Notification Type is required.
-        </span>
+        @if (composeForm.get('type')?.touched && composeForm.get('type')?.hasError('required')) {
+          <span class="error-text">
+            Notification Type is required.
+          </span>
+        }
       </div>
     </div>
 
@@ -54,9 +62,11 @@
         <ion-input formControlName="title" placeholder="Enter notification title"></ion-input>
       </ion-item>
       <div class="error-container">
-        <span class="error-text" *ngIf="composeForm.get('title')?.touched && composeForm.get('title')?.hasError('required')">
-          Title is required.
-        </span>
+        @if (composeForm.get('title')?.touched && composeForm.get('title')?.hasError('required')) {
+          <span class="error-text">
+            Title is required.
+          </span>
+        }
       </div>
     </div>
 
@@ -67,9 +77,11 @@
         <ion-textarea formControlName="message" placeholder="Enter notification message" [autoGrow]="true" rows="4"></ion-textarea>
       </ion-item>
       <div class="error-container">
-        <span class="error-text" *ngIf="composeForm.get('message')?.touched && composeForm.get('message')?.hasError('required')">
-          Message is required.
-        </span>
+        @if (composeForm.get('message')?.touched && composeForm.get('message')?.hasError('required')) {
+          <span class="error-text">
+            Message is required.
+          </span>
+        }
       </div>
     </div>
 
@@ -83,8 +95,12 @@
         Cancel
       </ion-button>
       <ion-button class="submit-btn primary-btn" [disabled]="isSubmitting" (click)="submit()">
-        <ion-spinner name="crescent" *ngIf="isSubmitting"></ion-spinner>
-        <span *ngIf="!isSubmitting">Send Notification</span>
+        @if (isSubmitting) {
+          <ion-spinner name="crescent"></ion-spinner>
+        }
+        @if (!isSubmitting) {
+          <span>Send Notification</span>
+        }
       </ion-button>
     </div>
   </ion-toolbar>

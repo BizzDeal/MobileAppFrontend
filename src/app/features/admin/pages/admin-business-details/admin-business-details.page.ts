@@ -176,8 +176,4 @@ export class AdminBusinessDetailsPage implements OnInit {
     return 'medium';
   }
 
-  getFallbackAvatar(name: string | undefined | null): string {
-    const fallbackName = name ? encodeURIComponent(name) : 'Business';
-    return `https://ui-avatars.com/api/?name=${fallbackName}&background=random&color=fff`;
-  }
 }

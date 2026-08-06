@@ -145,8 +145,4 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
     }
   }
 
-  getFallbackAvatar(name: string | undefined | null): string {
-    const fallbackName = name ? encodeURIComponent(name) : 'User';
-    return `https://ui-avatars.com/api/?name=${fallbackName}&background=random&color=fff`;
-  }
 }

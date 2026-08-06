@@ -1,4 +1,4 @@
-@if (megaDeals().length > 0 || featuredBusinesses().length > 0) {
+@if (megaDeals().length> 0 || featuredBusinesses().length> 0) {
 <section class="hero-section">
   <!-- Section Header -->
   <div class="section-header">
@@ -17,7 +17,7 @@
         <div class="banner-bg" [style.background]="getAvatarColor(biz.name)">
           <span class="initials-text">{{ getInitials(biz.name) }}</span>
           @if (biz.bannerUrl || biz.logoUrl) {
-            <img [appCachedImg]="biz.bannerUrl || biz.logoUrl" [alt]="biz.name" class="banner-img" />
+            <img loading="lazy" [appCachedImg]="biz.bannerUrl || biz.logoUrl" [alt]="biz.name" class="banner-img" />
           }
         </div>
         <div class="banner-overlay biz-overlay"></div>
@@ -45,7 +45,7 @@
         <div class="banner-bg" [style.background]="getAvatarColor(deal.businessName || deal.title)">
           <span class="initials-text">{{ getInitials(deal.businessName || deal.title) }}</span>
           @if (deal.imageUrl) {
-            <img [appCachedImg]="deal.imageUrl" [alt]="deal.title" class="banner-img" />
+            <img loading="lazy" [appCachedImg]="deal.imageUrl" [alt]="deal.title" class="banner-img" />
           }
         </div>
         <div class="banner-overlay"></div>

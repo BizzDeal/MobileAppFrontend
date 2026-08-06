@@ -40,4 +40,12 @@ export class AdminSettingsService {
   getDistricts(stateId: string): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/locations/states/${stateId}/districts`);
   }
+
+  clearSystemCache(): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${environment.apiUrl}/settings/cache/clear`, 
+      {},
+      { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }
+    );
+  }
 }

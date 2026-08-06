@@ -1,5 +1,6 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, untracked, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
@@ -81,6 +82,7 @@ export class ProfileViewComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
   private readonly alertController = inject(AlertController);
   private readonly modalCtrl = inject(ModalController);
+  private readonly destroyRef = inject(DestroyRef);
 
 
   readonly getAvatarColor = getAvatarColor;
@@ -96,9 +98,7 @@ export class ProfileViewComponent implements OnInit {
   readonly selectedBusinessLogoUrl = signal<string | null>(null);
   readonly selectedBusinessLogoFile = signal<File | null>(null);
   readonly isCompleteProfileModalOpen = signal<boolean>(false);
-  readonly picLoadError = signal<boolean>(false);
-  readonly logoLoadError = signal<boolean>(false);
-
+    
   readonly registeredDevices = signal<any[]>([]);
   readonly loadingDevices = signal<boolean>(false);
   readonly togglingDeviceId = signal<string | null>(null);
@@ -159,7 +159,7 @@ export class ProfileViewComponent implements OnInit {
 
     this.profileService.fetchStates();
 
-    this.profileForm.controls['state_id'].valueChanges.subscribe((stateId) => {
+    this.profileForm.controls['state_id'].valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stateId) => {
       this.profileForm.controls['district_id'].setValue('', { emitEvent: false });
       if (stateId) {
         this.profileService.fetchDistrictsByState(stateId);
@@ -168,7 +168,7 @@ export class ProfileViewComponent implements OnInit {
       }
     });
 
-    this.profileForm.controls['business_state_id'].valueChanges.subscribe((stateId) => {
+    this.profileForm.controls['business_state_id'].valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stateId) => {
       this.profileForm.controls['business_district_id'].setValue('', { emitEvent: false });
       if (stateId) {
         this.profileService.fetchDistrictsByState(stateId);
@@ -177,7 +177,7 @@ export class ProfileViewComponent implements OnInit {
       }
     });
 
-    this.profileForm.controls['category_id'].valueChanges.subscribe((categoryId) => {
+    this.profileForm.controls['category_id'].valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((categoryId) => {
       if (categoryId) {
         const categories = this.onboardingService.categories();
         const selected = categories.find((c) => c.id === categoryId);
@@ -394,8 +394,7 @@ export class ProfileViewComponent implements OnInit {
       if (role === 'confirm' && data) {
         this.selectedPhotoFile.set(data.file);
         this.selectedPhotoUrl.set(data.base64);
-        this.picLoadError.set(false);
-        this.profileService.updateProfilePic(data.base64);
+                this.profileService.updateProfilePic(data.base64);
         this.toastService.showSuccess('📸 Profile picture adjusted & cropped successfully!');
       }
 
@@ -430,8 +429,7 @@ export class ProfileViewComponent implements OnInit {
       if (role === 'confirm' && data) {
         this.selectedBusinessLogoFile.set(data.file);
         this.selectedBusinessLogoUrl.set(data.base64);
-        this.logoLoadError.set(false);
-        this.toastService.showSuccess('📸 Brand image adjusted & cropped successfully!');
+                this.toastService.showSuccess('📸 Brand image adjusted & cropped successfully!');
       }
 
       input.value = '';

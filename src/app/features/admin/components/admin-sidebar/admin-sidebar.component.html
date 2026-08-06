@@ -1,7 +1,7 @@
 <div class="sidebar-header">
   <div class="header-content">
     <div class="logo-icon">
-      <img src="assets/icon-foreground2.png" alt="BizzDeal Logo">
+      <img loading="lazy" src="assets/icon-foreground2.png" alt="BizzDeal Logo">
     </div>
     <div class="title-wrap">
       <h2>Admin</h2>
@@ -12,13 +12,15 @@
 
 <div class="sidebar-body">
   <div class="nav-list">
-    <ion-item *ngFor="let p of adminPages" [routerLink]="[p.url]" routerDirection="root"
-      routerLinkActive="selected-item" [routerLinkActiveOptions]="{ exact: false }" lines="none" class="nav-item" button
-      detail="false" (click)="onItemClick()">
-      <ion-icon slot="start" [name]="p.icon + '-outline'" class="nav-icon"></ion-icon>
-      <ion-label>{{ p.title }}</ion-label>
-      <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
-    </ion-item>
+    @for (p of adminPages; track p) {
+      <ion-item [routerLink]="[p.url]" routerDirection="root"
+        routerLinkActive="selected-item" [routerLinkActiveOptions]="{ exact: false }" lines="none" class="nav-item" button
+        detail="false" (click)="onItemClick()">
+        <ion-icon slot="start" [name]="p.icon + '-outline'" class="nav-icon"></ion-icon>
+        <ion-label>{{ p.title }}</ion-label>
+        <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+      </ion-item>
+    }
   </div>
 </div>
 

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpContext } from '@angular/common/http';
@@ -20,11 +20,20 @@ import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils'
   selector: 'app-offer-form',
   standalone: true,
   imports: [
-    CommonModule, 
     ReactiveFormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonButtons,
+    IonBackButton,
+    IonInput,
+    IonTextarea,
+    IonSelect,
+    IonSelectOption,
+    IonIcon,
     CachedImgDirective
-  ],
+],
   templateUrl: './offer-form.page.html',
   styleUrls: ['./offer-form.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

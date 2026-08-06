@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>Notifications</ion-title>
     <ion-buttons slot="end">
-      @if (unreadCount() > 0) {
+      @if (unreadCount()> 0) {
         <ion-button (click)="markAllAsRead()" color="primary" class="mark-all-btn">
           <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
           Mark all read

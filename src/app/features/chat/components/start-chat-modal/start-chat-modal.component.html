@@ -22,18 +22,12 @@
   </div>
 
   <!-- Contacts List -->
-  @if (filteredContacts().length > 0) {
+  @if (filteredContacts().length> 0) {
     <ion-list lines="inset" class="contacts-list">
       @for (c of filteredContacts(); track c.id) {
         <ion-item button (click)="onSelect(c)" class="contact-item">
           <div class="avatar-wrapper" slot="start">
-            @if (c.profile_pic_url) {
-              <img [appCachedImg]="c.profile_pic_url" alt="{{ c.full_name }}" class="contact-avatar" (error)="c.profile_pic_url = null" />
-            } @else {
-              <div class="initials-avatar" [style.background]="getAvatarColor(c.full_name)">
-                {{ getInitials(c.full_name) }}
-              </div>
-            }
+            <img loading="lazy" [appCachedImg]="c.profile_pic_url" [fallbackName]="c.full_name" alt="{{ c.full_name }}" class="contact-avatar" />
             @if (c.isOnline) {
               <span class="status-dot online"></span>
             }

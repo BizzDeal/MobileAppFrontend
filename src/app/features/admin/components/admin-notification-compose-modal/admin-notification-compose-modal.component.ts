@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminNotificationsService } from '../../services/admin-notifications.service';
@@ -10,7 +10,7 @@ import { closeOutline, saveOutline, peopleOutline, personOutline, megaphoneOutli
 @Component({
   selector: 'app-admin-notification-compose-modal',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [IonicModule, ReactiveFormsModule],
   templateUrl: './admin-notification-compose-modal.component.html',
   styleUrls: ['./admin-notification-compose-modal.component.scss']
 })

@@ -1,16 +1,17 @@
 import { Component, OnInit, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
   IonInput,
   IonButton,
   IonIcon,
+
   IonSpinner
 } from '@ionic/angular/standalone';
 import { AdminSettingsService, PlatformSettings } from '../../services/admin-settings.service';
 import { addIcons } from 'ionicons';
-import { saveOutline } from 'ionicons/icons';
+import { saveOutline, refreshOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-settings',
@@ -23,7 +24,6 @@ import { saveOutline } from 'ionicons/icons';
     IonButton,
     IonIcon,
     IonSpinner,
-    CommonModule,
     FormsModule
   ]
 })
@@ -36,11 +36,12 @@ export class AdminSettingsPage implements OnInit {
 
   isLoading = true;
   isSaving = false;
+  isClearingCache = false;
 
   constructor(
     private readonly settingsService: AdminSettingsService
   ) {
-    addIcons({ saveOutline });
+    addIcons({ saveOutline, refreshOutline });
   }
 
   ngOnInit() {
@@ -76,6 +77,19 @@ export class AdminSettingsPage implements OnInit {
       error: (err) => {
         console.error('Failed to save settings', err);
         this.isSaving = false;
+      }
+    });
+  }
+
+  clearCache() {
+    this.isClearingCache = true;
+    this.settingsService.clearSystemCache().subscribe({
+      next: () => {
+        this.isClearingCache = false;
+      },
+      error: (err) => {
+        console.error('Failed to clear cache', err);
+        this.isClearingCache = false;
       }
     });
   }

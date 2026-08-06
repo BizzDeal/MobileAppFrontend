@@ -15,9 +15,11 @@
       <ion-label class="field-label">Name <span class="required-star">*</span></ion-label>
       <ion-input type="text" formControlName="name" placeholder="e.g. Health & Wellness" class="custom-input"></ion-input>
       <div class="error-container">
-        <ion-text color="danger" class="error-message" *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched">
-          Category name is required (min 2 characters)
-        </ion-text>
+        @if (categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched) {
+          <ion-text color="danger" class="error-message">
+            Category name is required (min 2 characters)
+          </ion-text>
+        }
       </div>
     </div>
 
@@ -39,11 +41,13 @@
 <ion-footer class="ion-no-border">
   <ion-toolbar>
     <div class="action-buttons">
-      <ion-button *ngIf="isEditMode" fill="outline" color="danger" class="delete-btn" (click)="delete()">
-        <ion-icon slot="start" name="trash-outline"></ion-icon>
-        Delete
-      </ion-button>
-      
+      @if (isEditMode) {
+        <ion-button fill="outline" color="danger" class="delete-btn" (click)="delete()">
+          <ion-icon slot="start" name="trash-outline"></ion-icon>
+          Delete
+        </ion-button>
+      }
+
       <ion-button (click)="submit()" color="primary" class="save-btn" [class.full-width]="!isEditMode">
         <ion-icon slot="start" name="save-outline"></ion-icon>
         Save

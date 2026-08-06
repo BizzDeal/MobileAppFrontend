@@ -51,14 +51,14 @@
             </div>
           }
         </div>
-      } @else if (displayedBusinesses().length > 0) {
+      } @else if (displayedBusinesses().length> 0) {
         <div class="results-list">
           @for (biz of displayedBusinesses(); track biz.id) {
             <div class="result-card business-item" (click)="businessClick.emit(biz)">
               <div class="card-thumbnail" [style.background]="getAvatarColor(biz.name)">
                 <span class="initials-text">{{ getInitials(biz.name) }}</span>
                 @if (biz.logoUrl) {
-                  <img [appCachedImg]="biz.logoUrl" [alt]="biz.name" class="thumbnail-img" />
+                  <img loading="lazy" [appCachedImg]="biz.logoUrl" [alt]="biz.name" class="thumbnail-img" />
                 }
               </div>
               
@@ -112,14 +112,14 @@
             </div>
           }
         </div>
-      } @else if (displayedOffers().length > 0) {
+      } @else if (displayedOffers().length> 0) {
         <div class="results-list">
           @for (offer of displayedOffers(); track offer.id) {
             <div class="result-card offer-item" (click)="offerClick.emit(offer)">
               <div class="card-thumbnail" [style.background]="getAvatarColor(offer.businessName || offer.title)">
                 <span class="initials-text">{{ getInitials(offer.businessName || offer.title) }}</span>
                 @if (offer.imageUrl) {
-                  <img [appCachedImg]="offer.imageUrl" [alt]="offer.title" class="thumbnail-img" />
+                  <img loading="lazy" [appCachedImg]="offer.imageUrl" [alt]="offer.title" class="thumbnail-img" />
                 }
                 <span class="discount-banner">
                   {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '% OFF' : '₹' + offer.discount_value + ' OFF' }}

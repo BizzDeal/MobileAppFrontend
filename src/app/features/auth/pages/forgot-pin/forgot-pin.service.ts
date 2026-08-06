@@ -1,4 +1,5 @@
-import { inject, Injectable, OnDestroy, signal } from '@angular/core';
+import { inject, Injectable, OnDestroy, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
@@ -11,6 +12,7 @@ export class ForgotPinService implements OnDestroy {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly authApi = inject(AuthApiService);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly _step = signal<'phone' | 'otp' | 'reset'>('phone');
   private readonly _isSubmitting = signal(false);
@@ -47,7 +49,7 @@ export class ForgotPinService implements OnDestroy {
   private _verifiedOtp?: string;
 
   constructor() {
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       if (params['email']) {
         this.forgotForm.controls.email.setValue(params['email']);
       }

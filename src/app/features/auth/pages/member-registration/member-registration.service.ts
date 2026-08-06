@@ -1,4 +1,5 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfirmationResult } from '@angular/fire/auth';
@@ -21,6 +22,7 @@ export class MemberRegistrationService {
   readonly authApi = inject(AuthApiService);
   private readonly toastService = inject(ToastService);
   private readonly modalCtrl = inject(ModalController);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly photoPreview = signal<string | null>(null);
   private photoFile: File | null = null;
@@ -55,7 +57,7 @@ export class MemberRegistrationService {
     this.onboardingService.fetchCategories();
     this.onboardingService.fetchStates();
 
-    this.regForm.controls.stateId.valueChanges.subscribe((stateId) => {
+    this.regForm.controls.stateId.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stateId) => {
       this.regForm.controls.districtId.setValue('');
       if (stateId) {
         this.onboardingService.fetchDistrictsByState(stateId);
@@ -64,7 +66,7 @@ export class MemberRegistrationService {
       }
     });
 
-    this.regForm.controls.businessStateId.valueChanges.subscribe((stateId) => {
+    this.regForm.controls.businessStateId.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stateId) => {
       this.regForm.controls.businessDistrictId.setValue('');
       if (stateId) {
         this.onboardingService.fetchBusinessDistrictsByState(stateId);
@@ -73,7 +75,7 @@ export class MemberRegistrationService {
       }
     });
 
-    this.regForm.controls.businessCategory.valueChanges.subscribe((categoryId) => {
+    this.regForm.controls.businessCategory.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((categoryId) => {
       if (categoryId) {
         const categories = this.onboardingService.categories();
         const selected = categories.find((c) => c.id === categoryId);

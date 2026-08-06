@@ -1,5 +1,5 @@
 import { Component, Input, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ModalController, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -18,7 +18,7 @@ import { PermissionType } from '../../../core/platform/permissions.service';
 @Component({
   selector: 'app-permission-modal',
   standalone: true,
-  imports: [CommonModule, IonIcon],
+  imports: [IonIcon],
   templateUrl: './permission-modal.component.html',
   styleUrls: ['./permission-modal.component.scss']
 })

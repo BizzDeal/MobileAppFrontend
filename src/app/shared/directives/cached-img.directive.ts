@@ -8,6 +8,8 @@ import {
 } from '@angular/core';
 import { ImageCacheService } from '../../core/platform/image-cache.service';
 
+import { generateAvatarSvg } from '../utils/avatar.util';
+
 @Directive({
   selector: '[appCachedImg]',
   standalone: true,
@@ -19,43 +21,62 @@ export class CachedImgDirective {
 
   readonly appCachedImg = input<string | null | undefined>('');
   readonly fallbackImg = input<string>('');
+  readonly fallbackName = input<string | null | undefined>('');
+
+  private getFallbackUrl(): string {
+    if (this.fallbackImg()) return this.fallbackImg();
+    if (this.fallbackName()) {
+      return generateAvatarSvg(this.fallbackName());
+    }
+    return '';
+  }
 
   constructor() {
     effect(() => {
       const url = this.appCachedImg();
+      const fallback = this.getFallbackUrl();
+
       if (!url) {
-        if (this.fallbackImg()) {
-          this.setImageSrc(this.fallbackImg());
-        } else {
-          this.setImageSrc('');
-        }
+        this.setImageSrc(fallback || '');
         return;
       }
 
-      if (!this.getElSrc() && this.fallbackImg()) {
-        this.setImageSrc(this.fallbackImg());
+      // Show fallback instantly while loading
+      if (fallback && this.getElSrc() !== url) {
+        this.setImageSrc(fallback);
       }
 
       this.imageCacheService
         .getCachedImage(url)
         .then((cachedSrc) => {
-          this.setImageSrc(cachedSrc || url);
+          const finalSrc = cachedSrc || url;
+          const img = new Image();
+          img.onload = () => {
+            this.setImageSrc(finalSrc);
+          };
+          img.onerror = () => {
+            if (fallback) {
+              this.setImageSrc(fallback);
+            } else {
+              this.setImageSrc(finalSrc);
+            }
+          };
+          img.src = finalSrc;
         })
         .catch(() => {
-          if (this.fallbackImg()) {
-            this.setImageSrc(this.fallbackImg());
+          if (fallback) {
+            this.setImageSrc(fallback);
           } else {
             this.setImageSrc(url);
           }
         });
     });
 
-    // Handle image loading failure for standard img and ion-img
     const handleError = () => {
-      const fallback = this.fallbackImg();
+      const fallback = this.getFallbackUrl();
       if (fallback && this.getElSrc() !== fallback) {
         this.setImageSrc(fallback);
-      } else {
+      } else if (!fallback) {
         this.setImageSrc('');
       }
     };

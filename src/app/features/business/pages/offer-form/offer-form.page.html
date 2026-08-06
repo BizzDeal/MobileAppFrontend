@@ -108,7 +108,7 @@
       <label class="form-label">Offer Image</label>
       @if (selectedImagePreview()) {
         <div class="image-preview-card">
-          <img [appCachedImg]="selectedImagePreview()" class="preview-image" alt="Offer image preview" />
+          <img loading="lazy" [appCachedImg]="selectedImagePreview()" class="preview-image" alt="Offer image preview" />
           <div class="preview-actions">
             <button type="button" class="bd-btn-secondary change-btn" (click)="fileInput.click()">
               <ion-icon name="image-outline"></ion-icon> Change Image

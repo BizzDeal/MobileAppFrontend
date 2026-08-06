@@ -4,14 +4,16 @@
     <ion-buttons slot="end">
       <button (click)="openFilter()" type="button" class="filter-icon-btn" aria-label="Filter by region">
         <ion-icon name="filter-outline"></ion-icon>
-        <span *ngIf="stateId || districtId" class="filter-active-dot"></span>
+        @if (stateId || districtId) {
+          <span class="filter-active-dot"></span>
+        }
       </button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="admin-content ion-padding">
-  
+
 
   <ion-segment [value]="selectedTab()" (ionChange)="onTabChange($event)" class="premium-segment" mode="ios">
     <ion-segment-button value="upcoming">
@@ -29,12 +31,12 @@
   } @else {
     <div class="meetings-list">
       @for (meeting of meetings(); track meeting.id) {
-        <app-meeting-card 
-          [meeting]="meeting" 
+        <app-meeting-card
+          [meeting]="meeting"
           [isAdmin]="true"
           (editClick)="openMeetingModal($event)"
           (viewAttendeesClick)="openAttendeeModal($event)" />
-      } @empty {
+        } @empty {
         <div class="empty-state">
           <div class="empty-icon-wrapper">
             <ion-icon name="calendar-outline"></ion-icon>
@@ -60,5 +62,4 @@
   [stateId]="stateId"
   [districtId]="districtId"
   (filterApplied)="onFilterApplied($event)"
-  (closed)="isFilterOpen = false"
-></app-admin-region-filter-modal>
+  (closed)="isFilterOpen = false"></app-admin-region-filter-modal>

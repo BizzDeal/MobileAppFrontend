@@ -73,7 +73,7 @@
         <label class="upload-box" [class.has-file]="payService.receiptPreview()" for="receiptInput">
           @if (payService.receiptPreview()) {
             <div class="preview-container">
-              <img [appCachedImg]="payService.receiptPreview()" alt="Payment receipt preview" class="receipt-img" />
+              <img loading="lazy" [appCachedImg]="payService.receiptPreview()" alt="Payment receipt preview" class="receipt-img" />
               <div class="file-info">
                 <ion-icon name="checkmark-circle-outline" class="success-icon"></ion-icon>
                 <span class="file-name">{{ payService.receiptFileName() }}</span>
@@ -110,8 +110,7 @@
       <button
         type="button"
         class="payment-done-btn bd-btn-primary"
-        (click)="payService.completePayment()"
-      >
+        (click)="payService.completePayment()">
         <span>Payment Done</span>
       </button>
     </div>

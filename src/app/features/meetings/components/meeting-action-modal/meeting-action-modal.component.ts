@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { MeetingWithAttendee, MeetingsService } from '../../services/meetings.service';
@@ -13,7 +13,7 @@ import { closeOutline, calendarOutline, documentTextOutline, locationOutline, li
   templateUrl: './meeting-action-modal.component.html',
   styleUrls: ['./meeting-action-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule]
+  imports: [IonicModule, ReactiveFormsModule]
 })
 export class MeetingActionModalComponent implements OnInit {
   @Input() meeting?: MeetingWithAttendee;

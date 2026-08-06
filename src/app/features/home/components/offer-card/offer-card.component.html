@@ -3,7 +3,7 @@
   <div class="card-image-box" [style.background]="getAvatarColor(offer().businessName || offer().title)">
     <span class="initials-text">{{ getInitials(offer().businessName || offer().title) }}</span>
     @if (offer().imageUrl) {
-      <img [appCachedImg]="offer().imageUrl" [alt]="offer().title" class="card-img" />
+      <img loading="lazy" [appCachedImg]="offer().imageUrl" [alt]="offer().title" class="card-img" />
     }
     <div class="image-overlay"></div>
     <span class="discount-badge">
@@ -17,7 +17,7 @@
   <!-- Content Section -->
   <div class="card-content">
     <div class="business-meta">
-      <img [appCachedImg]="offer().businessLogoUrl" alt="logo" class="biz-logo" />
+      <img loading="lazy" [appCachedImg]="offer().businessLogoUrl" alt="logo" class="biz-logo" />
       <div class="biz-info">
         <span class="biz-name">{{ offer().businessName || 'BizzDeal Partner' }}</span>
         <span class="biz-location">

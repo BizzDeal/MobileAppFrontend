@@ -243,11 +243,6 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     }
   }
 
-  getFallbackAvatar(name: string): string {
-    const fallbackName = name ? encodeURIComponent(name) : 'Business';
-    return `https://ui-avatars.com/api/?name=${fallbackName}&background=random&color=fff`;
-  }
-
   getInitials(name: string): string {
     if (!name) return 'B';
     const parts = name.trim().split(' ');

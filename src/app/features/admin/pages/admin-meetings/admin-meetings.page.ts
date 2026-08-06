@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule, ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { calendarOutline, addOutline, filterOutline } from 'ionicons/icons';
@@ -16,7 +16,7 @@ import { CardSkeletonComponent } from '../../../../shared/components/skeletons/c
   templateUrl: './admin-meetings.page.html',
   styleUrls: ['./admin-meetings.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, MeetingCardComponent, CardSkeletonComponent, AdminRegionFilterModalComponent]
+  imports: [IonicModule, MeetingCardComponent, CardSkeletonComponent, AdminRegionFilterModalComponent]
 })
 export class AdminMeetingsPage implements OnInit {
   private readonly adminMeetingsService = inject(AdminMeetingsService);

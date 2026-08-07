@@ -118,11 +118,29 @@ export class ChatService {
   }
 
   private mapMessage(msg: any): ChatMessage {
-    return {
+    const mapped = {
       ...msg,
       media_url: msg.media_file?.file_url || msg.media_url || null,
       media_name: msg.media_file?.file_type || msg.media_name || null
     };
+
+    // Attempt to enrich sender info from contacts directory if missing
+    if (mapped.sender_id && !mapped.sender?.profile?.full_name) {
+      const contact = this._contactsDirectory().find(c => c.id === mapped.sender_id);
+      if (contact && contact.full_name) {
+        mapped.sender = {
+          ...(mapped.sender || {}),
+          id: mapped.sender_id,
+          phone: mapped.sender?.phone || contact.phone,
+          profile: {
+            ...(mapped.sender?.profile || {}),
+            full_name: contact.full_name
+          }
+        };
+      }
+    }
+
+    return mapped;
   }
 
   // Set the currently active conversation and load messages

@@ -41,6 +41,7 @@ export interface ChatMessage {
   status: MessageStatus;
   sender?: {
     id: string;
+    phone?: string;
     profile?: {
       full_name: string;
     };

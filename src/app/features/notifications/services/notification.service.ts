@@ -440,25 +440,48 @@ export class NotificationService {
 
       // Background/Killed: when user taps on a push notification in tray
       await PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-        console.log('[Notifications] Push notification tapped:', action);
-
-        this.getNotifications().subscribe({
-          error: (err) => console.error('[Notifications] Failed to refresh notifications after tap:', err),
-        });
-        this.router.navigate(['/notifications']);
+        this.handleNotificationTap(action);
       });
 
       // When user taps on a local system notification scheduled while app was in foreground
       await LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
-        console.log('[Notifications] Local system notification tapped:', action);
-
-        this.getNotifications().subscribe({
-          error: (err) => console.error('[Notifications] Failed to refresh notifications after local tap:', err),
-        });
-        this.router.navigate(['/notifications']);
+        this.handleNotificationTap(action);
       });
 
       console.log('[Notifications] Permanent push notification listeners registered for foreground and background.');
+    }
+  }
+
+  private handleNotificationTap(action: any): void {
+    console.log('[Notifications] Notification tapped:', action);
+
+    this.getNotifications().subscribe({
+      error: (err) => console.error('[Notifications] Failed to refresh notifications after tap:', err),
+    });
+
+    const data = action.notification?.data || action.notification?.extra || {};
+    
+    // Sometimes push payloads arrive as strings from FCM or APNs.
+    // Try to parse 'data' string to object if necessary, or check if type is 'CHAT'.
+    // If backend sends it as type: 'CHAT' inside data:
+    if (data.type === 'CHAT' && data.conversation_id) {
+      const role = this.authSession.userRole();
+      if (role === 'ADMIN') {
+        this.router.navigate(['/admin/chat'], { queryParams: { conversation_id: data.conversation_id } });
+      } else if (role === 'MEMBER') {
+        this.router.navigate(['/home'], { queryParams: { tab: 'chat', conversation_id: data.conversation_id } });
+      } else {
+        this.router.navigate(['/home']);
+      }
+      return;
+    }
+
+    // Default routing
+    const role = this.authSession.userRole();
+    if (role === 'ADMIN') {
+      this.router.navigate(['/admin/notifications']);
+    } else {
+      this.router.navigate(['/home']);
     }
   }
 

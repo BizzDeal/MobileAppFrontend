@@ -1,12 +1,15 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, output, signal, OnInit, OnDestroy } from '@angular/core';
+import { IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { callOutline, mailOutline, globeOutline } from 'ionicons/icons';
 import { CustomerProfileDTO, WalletDTO } from '../../models/home.model';
 import { WalletService } from '../../../wallet/services/wallet.service';
 
 @Component({
   selector: 'app-home-header',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, IonIcon],
   templateUrl: './home-header.component.html',
   styleUrl: './home-header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +30,12 @@ export class HomeHeaderComponent implements OnInit, OnDestroy {
   // 3D Auto Infinite Flip state
   readonly isFlipped = signal<boolean>(false);
   readonly searchQuery = signal<string>('');
+  readonly showSupportDialog = signal<boolean>(false);
   private flipInterval: ReturnType<typeof setInterval> | null = null;
+
+  constructor() {
+    addIcons({ callOutline, mailOutline, globeOutline });
+  }
 
   ngOnInit(): void {
     this.startAutoFlip();
@@ -47,8 +55,7 @@ export class HomeHeaderComponent implements OnInit, OnDestroy {
 
   getFirstName(fullName?: string): string {
     if (!fullName) return 'User';
-    const first = fullName.trim().split(' ')[0];
-    return first.length > 10 ? `${first.substring(0, 15)}...` : first;
+    return fullName.trim().split(' ')[0];
   }
 
   onWalletClick(): void {
@@ -76,5 +83,13 @@ export class HomeHeaderComponent implements OnInit, OnDestroy {
       event.preventDefault();
     }
     this.searchSubmit.emit(this.searchQuery());
+  }
+
+  showSupportInfo() {
+    this.showSupportDialog.set(true);
+  }
+
+  closeSupportInfo() {
+    this.showSupportDialog.set(false);
   }
 }

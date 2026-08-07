@@ -1,38 +1,43 @@
 @if (loading()) {
-  <div class="dashboard-content" style="padding-top: 16px;">
-    <app-dashboard-skeleton></app-dashboard-skeleton>
-  </div>
+<div class="dashboard-content" style="padding-top: 16px;">
+  <app-dashboard-skeleton></app-dashboard-skeleton>
+</div>
 } @else if (dashboardData(); as data) {
-  <div class="member-dashboard">
-    <!-- Header -->
-    <header class="dashboard-header">
-      <div class="brand-info">
-        <img loading="lazy" [appCachedImg]="profile()?.profile_pic_url" [fallbackName]="profile()?.full_name" alt="Profile Pic" class="business-logo" />
-        <h1 class="business-name"><span class="truncate-name">Hi {{ getFirstName(profile()?.full_name) }}</span></h1>
-      </div>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <button class="notification-btn bd-btn-outline" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
-          <ion-icon name="notifications-outline" class="notif-icon" />
-          @if ((unreadCount() || 0)> 0) {
-            <span class="badge count-badge">{{ unreadCount()> 99 ? '99+' : unreadCount() }}</span>
-          } @else if (data.alerts.length> 0) {
-            <span class="badge"></span>
-          }
-        </button>
-      </div>
-    </header>
+<div class="member-dashboard">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="brand-info">
+      <img loading="lazy" [appCachedImg]="profile()?.profile_pic_url" [fallbackName]="profile()?.full_name"
+        alt="Profile Pic" class="business-logo" />
+      <h1 class="business-name"><span class="truncate-name">Hi {{ getFirstName(profile()?.full_name) }}</span></h1>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="notification-btn" (click)="showSupportInfo()" type="button" aria-label="Support">
+        <ion-icon name="headset-outline" class="notif-icon" />
+      </button>
+      <button class="notification-btn" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
+        <ion-icon name="notifications-outline" class="notif-icon" />
+        @if ((unreadCount() || 0)> 0) {
+        <span class="badge count-badge">{{ unreadCount()> 99 ? '99+' : unreadCount() }}</span>
+        } @else if (data.alerts.length> 0) {
+        <span class="badge"></span>
+        }
+      </button>
+    </div>
+  </header>
 
   <div class="dashboard-content">
     @if (error() || meetingsError()) {
-      <div class="error-container">
-        <span class="error-text">{{ error() || meetingsError() }}</span>
-      </div>
+    <div class="error-container">
+      <span class="error-text">{{ error() || meetingsError() }}</span>
+    </div>
     }
 
     <section class="business-profile-card bd-card-premium">
       <div class="biz-profile-main">
         <div class="logo-wrapper">
-            <img loading="lazy" [appCachedImg]="profile()?.business_logo_url" [fallbackName]="profile()?.business_name || 'My Business'" alt="Business Logo" class="biz-profile-logo" />
+          <img loading="lazy" [appCachedImg]="profile()?.business_logo_url"
+            [fallbackName]="profile()?.business_name || 'My Business'" alt="Business Logo" class="biz-profile-logo" />
         </div>
         <div class="biz-info">
           <h2 class="biz-profile-name">
@@ -48,17 +53,16 @@
           </div>
 
           @if (bizzCoinOffer(); as coinOffer) {
-            <div class="bizz-coin-offer-pill" (click)="onBizzCoinsOffer()">
-              <ion-icon name="ribbon-outline" class="pill-icon"></ion-icon>
-              <span class="pill-title">Bizz Coin Offer</span>
-              <span class="pill-status" 
-                [class.active]="coinOffer.status === 'APPROVED'" 
-                [class.pending]="coinOffer.status === 'PENDING'"
-                [class.rejected]="coinOffer.status === 'REJECTED'"
-                [class.inactive]="coinOffer.status === 'INACTIVE'">
-                {{ coinOffer.status === 'APPROVED' ? 'Active' : (coinOffer.status === 'PENDING' ? 'Pending Approval' : (coinOffer.status | titlecase)) }}
-              </span>
-            </div>
+          <div class="bizz-coin-offer-pill" (click)="onBizzCoinsOffer()">
+            <ion-icon name="ribbon-outline" class="pill-icon"></ion-icon>
+            <span class="pill-title">Bizz Coin Offer</span>
+            <span class="pill-status" [class.active]="coinOffer.status === 'APPROVED'"
+              [class.pending]="coinOffer.status === 'PENDING'" [class.rejected]="coinOffer.status === 'REJECTED'"
+              [class.inactive]="coinOffer.status === 'INACTIVE'">
+              {{ coinOffer.status === 'APPROVED' ? 'Active' : (coinOffer.status === 'PENDING' ? 'Pending Approval' :
+              (coinOffer.status | titlecase)) }}
+            </span>
+          </div>
           }
         </div>
       </div>
@@ -93,155 +97,143 @@
 
         <!-- Slide 2: District Overview -->
         @if (data.analytics.districtStats) {
-          <div class="section-slide">
-            <div class="section-header" style="margin-top: 0;">
-              <h2 class="section-title">District Overview</h2>
+        <div class="section-slide">
+          <div class="section-header" style="margin-top: 0;">
+            <h2 class="section-title">District Overview</h2>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Businesses</span>
+              <h2 class="stat-value">{{ data.analytics.districtStats.totalBusinesses }}</h2>
             </div>
-            <div class="stats-grid">
-              <div class="stat-card">
-                <span class="stat-label">Businesses</span>
-                <h2 class="stat-value">{{ data.analytics.districtStats.totalBusinesses }}</h2>
-              </div>
-              <div class="stat-card">
-                <span class="stat-label">Members</span>
-                <h2 class="stat-value">{{ data.analytics.districtStats.totalMembers }}</h2>
-              </div>
-              <div class="stat-card">
-                <span class="stat-label">Redeemed</span>
-                <h2 class="stat-value">{{ data.analytics.districtStats.totalVouchers }}</h2>
-              </div>
-              <div class="stat-card">
-                <span class="stat-label">Volume</span>
-                <h2 class="stat-value">&#8377;{{ data.analytics.districtStats.revenue | number:'1.0-0' }}</h2>
-              </div>
+            <div class="stat-card">
+              <span class="stat-label">Members</span>
+              <h2 class="stat-value">{{ data.analytics.districtStats.totalMembers }}</h2>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Redeemed</span>
+              <h2 class="stat-value">{{ data.analytics.districtStats.totalVouchers }}</h2>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Volume</span>
+              <h2 class="stat-value">&#8377;{{ data.analytics.districtStats.revenue | number:'1.0-0' }}</h2>
             </div>
           </div>
+        </div>
 
-          <!-- Slide 3: Clone of Slide 1 for infinite left-to-right scroll loop -->
-          <div class="section-slide">
-            <div class="section-header">
-              <h2 class="section-title">My Performance</h2>
+        <!-- Slide 3: Clone of Slide 1 for infinite left-to-right scroll loop -->
+        <div class="section-slide">
+          <div class="section-header">
+            <h2 class="section-title">My Performance</h2>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Active Offers</span>
+              <h2 class="stat-value">{{ data.analytics.activeOffersCount }}</h2>
             </div>
-            <div class="stats-grid">
-              <div class="stat-card">
-                <span class="stat-label">Active Offers</span>
-                <h2 class="stat-value">{{ data.analytics.activeOffersCount }}</h2>
-              </div>
-              <div class="stat-card">
-                <span class="stat-label">Redeemed</span>
-                <h2 class="stat-value">{{ data.analytics.vouchersRedeemedToday }}</h2>
-              </div>
-              <div class="stat-card">
-                <span class="stat-label">Growth</span>
-                <h3 class="stat-value highlight">+{{ data.analytics.businessGrowth }}%</h3>
-              </div>
-              <div class="stat-card clickable" (click)="referralsClick.emit()">
-                <span class="stat-label">Referrals</span>
-                <h2 class="stat-value">{{ data.analytics.successfulReferrals }}</h2>
-              </div>
+            <div class="stat-card">
+              <span class="stat-label">Redeemed</span>
+              <h2 class="stat-value">{{ data.analytics.vouchersRedeemedToday }}</h2>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Growth</span>
+              <h3 class="stat-value highlight">+{{ data.analytics.businessGrowth }}%</h3>
+            </div>
+            <div class="stat-card clickable" (click)="referralsClick.emit()">
+              <span class="stat-label">Referrals</span>
+              <h2 class="stat-value">{{ data.analytics.successfulReferrals }}</h2>
             </div>
           </div>
+        </div>
         }
       </div>
     </section>
 
     <!-- Top Deals (Percentage) Carousel -->
-    <app-hero-carousel 
-      [title]="'Top Deals'"
-      [icon]="'flame-outline'"
-      [featuredBusinesses]="[]"
-      [megaDeals]="percentageDeals()"
-      [isMemberView]="true"
-      (dealClick)="onDealClick($event)" />
+    <app-hero-carousel [title]="'Top Deals'" [icon]="'flame-outline'" [featuredBusinesses]="[]"
+      [megaDeals]="percentageDeals()" [isMemberView]="true" (dealClick)="onDealClick($event)" />
 
     <!-- Flat Offers Carousel -->
-    <app-hero-carousel 
-      [title]="'Flat Offers'"
-      [icon]="'pricetag-outline'"
-      [featuredBusinesses]="[]"
-      [megaDeals]="flatOffers()"
-      [isMemberView]="true"
-      (dealClick)="onDealClick($event)" />
+    <app-hero-carousel [title]="'Flat Offers'" [icon]="'pricetag-outline'" [featuredBusinesses]="[]"
+      [megaDeals]="flatOffers()" [isMemberView]="true" (dealClick)="onDealClick($event)" />
 
     <!-- Cashback Rewards Carousel -->
-    <app-hero-carousel 
-      [title]="'Cashback Rewards'"
-      [icon]="'cash-outline'"
-      [featuredBusinesses]="[]"
-      [megaDeals]="cashbackOffers()"
-      [isMemberView]="true"
-      (dealClick)="onDealClick($event)" />
+    <app-hero-carousel [title]="'Cashback Rewards'" [icon]="'cash-outline'" [featuredBusinesses]="[]"
+      [megaDeals]="cashbackOffers()" [isMemberView]="true" (dealClick)="onDealClick($event)" />
 
     <!-- Floating Quick Actions Speed Dial -->
     <div class="fab-actions-wrapper" [class.is-open]="isActionsMenuOpen()">
       @if (isActionsMenuOpen()) {
-        <div class="fab-backdrop" (click)="closeActionsMenu()"></div>
-        
-        <div class="fab-slide-menu">
-          <button type="button" class="fab-slide-item primary-item" (click)="onCreateOffer(); closeActionsMenu()">
-            <div class="icon-bubble">
-              <ion-icon name="add-circle-outline"></ion-icon>
-            </div>
-            <span class="item-label">Create New Offer</span>
-          </button>
+      <div class="fab-backdrop" (click)="closeActionsMenu()"></div>
 
-          <button type="button" class="fab-slide-item bizz-coins-item" (click)="onBizzCoinsOffer(); closeActionsMenu()">
-            <div class="icon-bubble">
-              <ion-icon name="ribbon-outline"></ion-icon>
-            </div>
-            <span class="item-label">Bizz Coins Offer</span>
-          </button>
-          
-          <button type="button" class="fab-slide-item bizz-coins-issue-item" (click)="onIssueBizzCoins(); closeActionsMenu()">
-            <div class="icon-bubble">
-              <ion-icon name="sparkles-outline"></ion-icon>
-            </div>
-            <span class="item-label">Issue Bizz Coin</span>
-          </button>
-          
-          <button type="button" class="fab-slide-item" (click)="onIssueVoucher(); closeActionsMenu()">
-            <div class="icon-bubble">
-              <ion-icon name="ticket-outline"></ion-icon>
-            </div>
-            <span class="item-label">Issue Voucher</span>
-          </button>
-          
-          <button type="button" class="fab-slide-item" (click)="onRedeemVoucher(); closeActionsMenu()">
-            <div class="icon-bubble">
-              <ion-icon name="scan-outline"></ion-icon>
-            </div>
-            <span class="item-label">Redeem Voucher</span>
-          </button>
+      <div class="fab-slide-menu">
+        <button type="button" class="fab-slide-item primary-item" (click)="onCreateOffer(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="add-circle-outline"></ion-icon>
+          </div>
+          <span class="item-label">Create New Offer</span>
+        </button>
 
-          @if (canRedeemBizzCoins()) {
-            <button type="button" class="fab-slide-item bizz-coins-redeem-item" (click)="onRedeemBizzCoins(); closeActionsMenu()">
-              <div class="icon-bubble">
-                <ion-icon name="wallet-outline"></ion-icon>
-              </div>
-              <span class="item-label">Redeem Bizz Coins</span>
-            </button>
-          }
-          
-          <button type="button" class="fab-slide-item" (click)="onViewAnalytics(); closeActionsMenu()">
-            <div class="icon-bubble">
-              <ion-icon name="bar-chart-outline"></ion-icon>
-            </div>
-            <span class="item-label">Analytics</span>
-          </button>
-          
-          <button type="button" class="fab-slide-item" (click)="onViewDirectory(); closeActionsMenu()">
-            <div class="icon-bubble">
-              <ion-icon name="business-outline"></ion-icon>
-            </div>
-            <span class="item-label">Business Directory</span>
-          </button>
-        </div>
+        <button type="button" class="fab-slide-item bizz-coins-item" (click)="onBizzCoinsOffer(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="ribbon-outline"></ion-icon>
+          </div>
+          <span class="item-label">Bizz Coins Offer</span>
+        </button>
+
+        <button type="button" class="fab-slide-item bizz-coins-issue-item"
+          (click)="onIssueBizzCoins(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="sparkles-outline"></ion-icon>
+          </div>
+          <span class="item-label">Issue Bizz Coin</span>
+        </button>
+
+        <button type="button" class="fab-slide-item" (click)="onIssueVoucher(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="ticket-outline"></ion-icon>
+          </div>
+          <span class="item-label">Issue Voucher</span>
+        </button>
+
+        <button type="button" class="fab-slide-item" (click)="onRedeemVoucher(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="scan-outline"></ion-icon>
+          </div>
+          <span class="item-label">Redeem Voucher</span>
+        </button>
+
+        @if (canRedeemBizzCoins()) {
+        <button type="button" class="fab-slide-item bizz-coins-redeem-item"
+          (click)="onRedeemBizzCoins(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="wallet-outline"></ion-icon>
+          </div>
+          <span class="item-label">Redeem Bizz Coins</span>
+        </button>
+        }
+
+        <button type="button" class="fab-slide-item" (click)="onViewAnalytics(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="bar-chart-outline"></ion-icon>
+          </div>
+          <span class="item-label">Analytics</span>
+        </button>
+
+        <button type="button" class="fab-slide-item" (click)="onViewDirectory(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="business-outline"></ion-icon>
+          </div>
+          <span class="item-label">Business Directory</span>
+        </button>
+      </div>
       }
 
-      <button type="button" class="fab-trigger-btn" [class.open]="isActionsMenuOpen()" (click)="toggleActionsMenu()" aria-label="Quick Actions">
+      <button type="button" class="fab-trigger-btn" [class.open]="isActionsMenuOpen()" (click)="toggleActionsMenu()"
+        aria-label="Quick Actions">
         <ion-icon [name]="isActionsMenuOpen() ? 'close-outline' : 'flash-outline'" class="trigger-icon"></ion-icon>
         @if (!isActionsMenuOpen()) {
-          <span class="trigger-badge">Actions</span>
+        <span class="trigger-badge">Actions</span>
         }
       </button>
     </div>
@@ -255,49 +247,76 @@
         </div>
       </div>
       @if (pendingOffers().length> 0) {
-        <div class="pending-list">
-          @for (offer of pendingOffers(); track offer.id) {
-            <div class="pending-item" (click)="onDealClick(offer)">
-              <div class="pending-item-content">
-                <div class="pending-icon-box">
-                  <ion-icon name="pricetag-outline"></ion-icon>
-                </div>
-                <div class="pending-details">
-                  <h4 class="pending-title">{{ offer.title }}</h4>
-                  <span class="pending-status">Pending Admin Approval</span>
-                </div>
-              </div>
-              <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="pending-list">
+        @for (offer of pendingOffers(); track offer.id) {
+        <div class="pending-item" (click)="onDealClick(offer)">
+          <div class="pending-item-content">
+            <div class="pending-icon-box">
+              <ion-icon name="pricetag-outline"></ion-icon>
             </div>
-          }
+            <div class="pending-details">
+              <h4 class="pending-title">{{ offer.title }}</h4>
+              <span class="pending-status">Pending Admin Approval</span>
+            </div>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
         </div>
+        }
+      </div>
       } @else {
-        <div class="empty-feed">
-          <p>You have no pending approvals at the moment.</p>
-        </div>
+      <div class="empty-feed">
+        <p>You have no pending approvals at the moment.</p>
+      </div>
       }
     </section>
 
     <!-- Upcoming Meetings -->
     @if (upcomingMeetings().length> 0) {
-      <section class="feed-section upcoming-meetings-section">
-        <div class="section-header">
-          <div class="header-left">
-            <ion-icon name="calendar-outline" class="section-icon spark" />
-            <h2 class="section-title">Upcoming Meetings</h2>
-          </div>
+    <section class="feed-section upcoming-meetings-section">
+      <div class="section-header">
+        <div class="header-left">
+          <ion-icon name="calendar-outline" class="section-icon spark" />
+          <h2 class="section-title">Upcoming Meetings</h2>
         </div>
-        <div class="meetings-feed">
-          @for (meeting of upcomingMeetings(); track meeting.id) {
-            <app-meeting-card 
-              [meeting]="meeting" 
-              (rsvpChange)="handleRsvp($event)" />
-          }
-        </div>
-      </section>
+      </div>
+      <div class="meetings-feed">
+        @for (meeting of upcomingMeetings(); track meeting.id) {
+        <app-meeting-card [meeting]="meeting" (rsvpChange)="handleRsvp($event)" />
+        }
+      </div>
+    </section>
     }
 
 
+  </div>
+</div>
+}
+
+<!-- Custom Support Dialog -->
+@if (showSupportDialog()) {
+<div class="custom-support-overlay">
+  <div class="custom-support-backdrop" (click)="closeSupportInfo()"></div>
+  <div class="custom-support-dialog">
+    <div class="dialog-header">
+      <h3>INQUIRY & SUPPORT</h3>
+    </div>
+    <div class="dialog-body">
+      <a href="tel:+919121232727" class="support-link">
+        <ion-icon name="call-outline"></ion-icon>
+        <span><strong>Call Us:</strong> +91 9121232727</span>
+      </a>
+      <a href="mailto:support@bizzdeal.in" class="support-link">
+        <ion-icon name="mail-outline"></ion-icon>
+        <span><strong>Email Us:</strong> support@bizzdeal.in</span>
+      </a>
+      <a href="https://bizzdeal.in" target="_blank" class="support-link">
+        <ion-icon name="globe-outline"></ion-icon>
+        <span><strong>Web:</strong> bizzdeal.in</span>
+      </a>
+    </div>
+    <div class="dialog-footer">
+      <button class="close-btn" (click)="closeSupportInfo()">Close</button>
+    </div>
   </div>
 </div>
 }

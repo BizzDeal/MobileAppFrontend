@@ -1,5 +1,6 @@
 import { DatePipe, NgClass, KeyValuePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -33,6 +34,7 @@ import {
 } from 'ionicons/icons';
 import { NotificationDTO, NotificationType } from '../../models/notification.model';
 import { NotificationService } from '../../services/notification.service';
+import { AuthSessionService } from '../../../../core/services/auth-session.service';
 
 @Component({
   selector: 'app-notifications-page',
@@ -64,6 +66,8 @@ import { NotificationService } from '../../services/notification.service';
 })
 export class NotificationsPageComponent {
   private readonly notificationService = inject(NotificationService);
+  private readonly router = inject(Router);
+  private readonly authSession = inject(AuthSessionService);
 
   readonly closeNotifications = output<void>();
 
@@ -113,6 +117,18 @@ export class NotificationsPageComponent {
     if (!notification.is_read) {
       this.markAsRead(notification.id);
     }
+    
+    if (notification.type === NotificationType.CHAT && notification.data?.['conversation_id']) {
+      this.closeModal();
+      const role = this.authSession.userRole();
+      if (role === 'ADMIN') {
+        this.router.navigate(['/admin/chat'], { queryParams: { conversation_id: notification.data['conversation_id'] } });
+      } else if (role === 'MEMBER') {
+        this.router.navigate(['/home'], { queryParams: { tab: 'chat', conversation_id: notification.data['conversation_id'] } });
+      }
+      return;
+    }
+
     this.selectedNotification.set(notification);
   }
 

@@ -23,7 +23,7 @@
       }
 
       .greeting-title {
-        font-size: 17px;
+        font-size: 14px;
         font-weight: 700;
         margin: 1px 0 0 0;
         color: #ffffff;
@@ -208,4 +208,113 @@
       }
     }
   }
+}
+
+.custom-support-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bizzdeal-text-primary, #1e293b);
+
+  .custom-support-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+  }
+
+  .custom-support-dialog {
+    position: relative;
+    background: var(--bizzdeal-bg-surface, #ffffff);
+    width: 90%;
+    max-width: 400px;
+    border-radius: var(--bizzdeal-radius-lg, 12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: dialogPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+
+    .dialog-header {
+      padding: 20px;
+      text-align: center;
+      
+      h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--bizzdeal-text-primary, #1e293b);
+      }
+    }
+
+    .dialog-body {
+      padding: 0 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .support-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+        padding: 12px;
+        border-radius: var(--bizzdeal-radius-md, 8px);
+        background: var(--bizzdeal-bg-elevated, #f8fafc);
+        color: var(--bizzdeal-text-secondary, #64748B);
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+
+        ion-icon {
+          font-size: 1.25rem;
+          color: var(--bizzdeal-primary, #1565C0);
+        }
+
+        span {
+          strong {
+            color: var(--bizzdeal-text-primary, #1e293b);
+            font-weight: 600;
+          }
+        }
+
+        &:hover, &:active {
+          background: var(--bizzdeal-bg-hover, #f1f5f9);
+          transform: translateY(-1px);
+        }
+      }
+    }
+
+    .dialog-footer {
+      border-top: 1px solid var(--bizzdeal-border-color, #e2e8f0);
+      display: flex;
+
+      .close-btn {
+        flex: 1;
+        background: transparent;
+        border: none;
+        padding: 16px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--bizzdeal-primary, #1565C0);
+        cursor: pointer;
+
+        &:active {
+          background: rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
+  }
+}
+
+@keyframes dialogPop {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }

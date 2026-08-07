@@ -233,6 +233,9 @@ export class HomePage {
       const tab = params['tab'];
       if (tab) {
         this.activeNavTab.set(tab as any);
+        if (tab === 'chat' && params['conversation_id']) {
+          this.chatService.setActiveConversation(params['conversation_id']);
+        }
       } else {
         this.activeNavTab.set('home');
       }

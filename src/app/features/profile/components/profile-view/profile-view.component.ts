@@ -160,8 +160,25 @@ export class ProfileViewComponent implements OnInit {
 
     this.profileService.fetchStates();
 
+    effect(() => {
+      const states = this.profileService.states();
+      if (states.length > 0) {
+        const apState = states.find((s) => s.name.toLowerCase().includes('andhra pradesh'));
+        if (apState) {
+          if (this.profileForm.controls['state_id'].value !== apState.id) {
+            this.profileForm.controls['state_id'].setValue(apState.id, { emitEvent: false });
+            this.profileService.fetchDistrictsByState(apState.id);
+          }
+          if (this.profileForm.controls['business_state_id'].value !== apState.id) {
+            this.profileForm.controls['business_state_id'].setValue(apState.id, { emitEvent: false });
+          }
+          this.profileForm.controls['state_id'].disable({ emitEvent: false });
+          this.profileForm.controls['business_state_id'].disable({ emitEvent: false });
+        }
+      }
+    });
+
     this.profileForm.controls['state_id'].valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stateId) => {
-      this.profileForm.controls['district_id'].setValue('', { emitEvent: false });
       if (stateId) {
         this.profileService.fetchDistrictsByState(stateId);
       } else {
@@ -170,7 +187,6 @@ export class ProfileViewComponent implements OnInit {
     });
 
     this.profileForm.controls['business_state_id'].valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stateId) => {
-      this.profileForm.controls['business_district_id'].setValue('', { emitEvent: false });
       if (stateId) {
         this.profileService.fetchDistrictsByState(stateId);
       } else {
@@ -227,12 +243,17 @@ export class ProfileViewComponent implements OnInit {
           this.profileForm.controls[key].updateValueAndValidity({ emitEvent: false });
         });
 
+        const states = this.profileService.states();
+        const apState = states.find((s) => s.name.toLowerCase().includes('andhra pradesh'));
+        const targetStateId = apState?.id || p.state_id || p.business_state_id || '';
+        const targetBusinessStateId = apState?.id || p.business_state_id || p.state_id || '';
+
         this.profileForm.patchValue({
           full_name: p.full_name || '',
           phone: p.phone || '',
           whatsapp: p.whatsapp || '',
           email: p.email || '',
-          state_id: p.state_id || p.business_state_id || '',
+          state_id: targetStateId,
           district_id: p.district_id || p.business_district_id || '',
           address: p.address || '',
           business_name: p.business_name || '',
@@ -240,13 +261,16 @@ export class ProfileViewComponent implements OnInit {
           website: p.website || '',
           gst_number: p.gst_number || '',
           category_id: p.category_id || '',
-          business_state_id: p.business_state_id || p.state_id || '',
+          business_state_id: targetBusinessStateId,
           business_district_id: p.business_district_id || p.district_id || '',
           business_address: p.business_address || ''
         }, { emitEvent: false });
 
-        if (p.state_id) {
-          this.profileService.fetchDistrictsByState(p.state_id);
+        this.profileForm.controls['state_id'].disable({ emitEvent: false });
+        this.profileForm.controls['business_state_id'].disable({ emitEvent: false });
+
+        if (targetStateId) {
+          this.profileService.fetchDistrictsByState(targetStateId);
         } else {
           this.profileService.clearDistricts();
         }
@@ -418,9 +442,12 @@ export class ProfileViewComponent implements OnInit {
         component: ImageCropperModalComponent,
         componentProps: {
           imageSource: rawFile,
-          title: 'Crop Brand Image',
+          title: 'Crop Brand Banner Image',
           roundCropper: false,
-          outputFileName: 'brand-logo.jpg'
+          aspectRatio: 16 / 9,
+          targetWidth: 800,
+          targetHeight: 450,
+          outputFileName: 'brand-banner.jpg'
         }
       });
 
@@ -449,7 +476,7 @@ export class ProfileViewComponent implements OnInit {
       return;
     }
 
-    const formVal = this.profileForm.value;
+    const formVal = this.profileForm.getRawValue();
     let payload: any;
     const photoFile = this.selectedPhotoFile();
     const logoFile = this.selectedBusinessLogoFile();

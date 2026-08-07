@@ -541,12 +541,29 @@ ion-searchbar {
    Guarantees a clean, solid white background directly behind system status
    bar icons (time, WiFi, battery) preventing scrolling content overlap.
    ========================================================================== */
+/* ==========================================================================
+   Android 15+ / Edge-to-Edge System Status Bar Safe Area Height Fallback
+   Forces --ion-safe-area-top to at least 48px on Android native platform 
+   when overlaysWebView is active, preventing top cards and titles from 
+   colliding with clock, WiFi, and battery status bar icons.
+   ========================================================================== */
+html.plt-android,
+body.plt-android,
+html.plt-capacitor,
+body.plt-capacitor,
+body.capacitor-native,
+.plt-android,
+.plt-capacitor {
+  --ion-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
+  --bizzdeal-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
+}
+
 .system-status-bar-bg {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
+  height: var(--ion-safe-area-top, env(safe-area-inset-top, 32px));
   background: transparent;
   z-index: 999999;
   pointer-events: none;

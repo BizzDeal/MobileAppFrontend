@@ -4,13 +4,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { SHOW_SUCCESS_TOAST } from '../../../../core/interceptors/interceptor.tokens';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, AlertController } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonIcon, AlertController, ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { imageOutline, saveOutline, arrowBackOutline, calendarOutline, pricetagOutline, documentTextOutline, optionsOutline, cashOutline, calculatorOutline, closeCircleOutline, trashOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { compressImageClientSide } from '../../../../shared/utils/image-compressor.util';
 import { validateFileSize } from '../../../../shared/utils/file-validator.util';
+import { ImageCropperModalComponent, ImageCropResult } from '../../../../shared/components/image-cropper-modal/image-cropper-modal.component';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { environment } from '../../../../../environments/environment';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
@@ -47,6 +48,7 @@ export class OfferFormPage implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly toastService = inject(ToastService);
   private readonly alertCtrl = inject(AlertController);
+  private readonly modalCtrl = inject(ModalController);
 
   readonly isEditMode = signal(false);
   readonly offerId = signal<string | null>(null);
@@ -166,15 +168,32 @@ export class OfferFormPage implements OnInit {
         input.value = '';
         return;
       }
-      const file = await compressImageClientSide(rawFile);
-      this.selectedImageName.set(file.name);
-      this.selectedImageFile.set(file);
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.selectedImagePreview.set(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const modal = await this.modalCtrl.create({
+        component: ImageCropperModalComponent,
+        componentProps: {
+          imageSource: rawFile,
+          title: 'Crop Offer Banner Image',
+          roundCropper: false,
+          aspectRatio: 16 / 9,
+          targetWidth: 800,
+          targetHeight: 450,
+          outputFileName: 'offer-image.jpg'
+        }
+      });
+
+      await modal.present();
+      const { data, role } = await modal.onDidDismiss<ImageCropResult>();
+
+      if (role === 'confirm' && data) {
+        const file = await compressImageClientSide(data.file);
+        this.selectedImageName.set(file.name);
+        this.selectedImageFile.set(file);
+        this.selectedImagePreview.set(data.base64);
+        this.toastService.showSuccess('📸 Offer banner image cropped successfully!');
+      }
+
+      input.value = '';
     }
   }
 

@@ -7,6 +7,19 @@
   }
 }
 
+.sticky-vouchers-top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bizzdeal-bg-surface, #ffffff);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
+
+  .vouchers-header-wrapper {
+    padding: var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md) 0 var(--bizzdeal-spacing-md);
+  }
+}
+
 /* Search bar styling */
 .search-section {
   padding: 16px;

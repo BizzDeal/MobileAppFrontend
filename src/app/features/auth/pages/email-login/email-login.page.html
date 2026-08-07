@@ -172,39 +172,4 @@
       </p>
     </footer>
   </div>
-
-  <!-- Join As Member Modal -->
-  <ion-modal [isOpen]="authService.isJoinModalOpen()" (didDismiss)="authService.closeJoinModal()"
-    class="join-member-modal">
-    <ng-template>
-      <div class="modal-card">
-        <div class="modal-icon-circle">
-          <ion-icon name="briefcase-outline" class="modal-icon"></ion-icon>
-        </div>
-
-        <h2 class="modal-title">Join as Member</h2>
-        <p class="modal-description">
-          Pay the one-time registration fee to unlock member features — offers, vouchers, referrals & analytics.
-        </p>
-
-        <div class="fee-badge">
-          @if (authService.isLoadingPaymentSettings()) {
-          <ion-spinner name="crescent" size="small"></ion-spinner>
-          } @else if (authService.paymentSettings()) {
-          <span>Registration Fee: ₹{{ authService.paymentSettings()?.registration_fee | number }}</span>
-          } @else {
-          <span>Registration Fee: ₹10,000</span>
-          }
-        </div>
-
-        <button type="button" class="pay-now-btn bd-btn-primary" (click)="authService.proceedToRegistration()">
-          Pay Now
-        </button>
-
-        <button type="button" class="not-now-btn" (click)="authService.closeJoinModal()">
-          Not Now
-        </button>
-      </div>
-    </ng-template>
-  </ion-modal>
 </ion-content>

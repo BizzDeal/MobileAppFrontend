@@ -113,7 +113,7 @@
       <div class="form-group">
         <label class="input-label">State <span class="required-star">*</span></label>
         <div class="select-box" [class.input-error]="regService.regForm.controls.stateId.invalid && regService.regForm.controls.stateId.touched">
-          <ion-select formControlName="stateId" placeholder="Select state" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
+          <ion-select formControlName="stateId" placeholder="Select state" [disabled]="true" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (state of regService.onboardingService.states(); track state.id) {
               <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
             }
@@ -130,7 +130,7 @@
       <div class="form-group">
         <label class="input-label">District <span class="required-star">*</span></label>
         <div class="select-box" [class.input-error]="regService.regForm.controls.districtId.invalid && regService.regForm.controls.districtId.touched">
-          <ion-select formControlName="districtId" placeholder="Select district" [disabled]="!regService.regForm.controls.stateId.value" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
+          <ion-select formControlName="districtId" placeholder="Select district" [disabled]="!regService.regForm.getRawValue().stateId" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (district of regService.onboardingService.districts(); track district.id) {
               <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
             }
@@ -225,7 +225,7 @@
       <div class="form-group">
         <label class="input-label">Business State <span class="required-star">*</span></label>
         <div class="select-box" [class.input-error]="regService.regForm.controls.businessStateId.invalid && regService.regForm.controls.businessStateId.touched">
-          <ion-select formControlName="businessStateId" placeholder="Select state" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
+          <ion-select formControlName="businessStateId" placeholder="Select state" [disabled]="true" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (state of regService.onboardingService.states(); track state.id) {
               <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
             }
@@ -242,7 +242,7 @@
       <div class="form-group">
         <label class="input-label">Business District <span class="required-star">*</span></label>
         <div class="select-box" [class.input-error]="regService.regForm.controls.businessDistrictId.invalid && regService.regForm.controls.businessDistrictId.touched">
-          <ion-select formControlName="businessDistrictId" placeholder="Select district" [disabled]="!regService.regForm.controls.businessStateId.value" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
+          <ion-select formControlName="businessDistrictId" placeholder="Select district" [disabled]="!regService.regForm.getRawValue().businessStateId" interface="action-sheet" toggleIcon="caret-down-outline" class="custom-select">
             @for (district of regService.onboardingService.businessDistricts(); track district.id) {
               <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
             }

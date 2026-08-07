@@ -14,9 +14,11 @@ export class StatusBarService {
   async initialize(): Promise<void> {
     if (Capacitor.isNativePlatform()) {
       try {
+        document.body.classList.add('capacitor-native');
         await StatusBar.setStyle({ style: Style.Light });
 
         if (Capacitor.getPlatform() === 'android') {
+          document.body.classList.add('plt-android');
           await StatusBar.setOverlaysWebView({ overlay: true });
           await StatusBar.setBackgroundColor({ color: '#00000000' });
         }

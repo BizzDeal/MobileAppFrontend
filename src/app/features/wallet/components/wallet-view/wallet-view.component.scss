@@ -1,8 +1,17 @@
 .wallet-container {
-  padding: var(--bizzdeal-spacing-md);
+  padding: 0 16px 16px 16px;
   background-color: var(--bizzdeal-bg-main);
   min-height: 100%;
   box-sizing: border-box;
+}
+
+.sticky-wallet-top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--bizzdeal-bg-main, #ffffff);
+  padding-top: calc(var(--bizzdeal-spacing-md, 16px) + var(--ion-safe-area-top, env(safe-area-inset-top, 0px)));
+  padding-bottom: 4px;
 }
 
 // 1. Loading & Error States

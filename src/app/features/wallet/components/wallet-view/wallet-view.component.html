@@ -1,16 +1,4 @@
-<div class="wallet-container" style="padding: var(--bizzdeal-spacing-md);">
-  <div class="page-top-header">
-    <div class="header-content">
-      <div class="header-icon-box">
-        <ion-icon name="wallet-outline"></ion-icon>
-      </div>
-      <div class="header-text">
-        <h2>My Wallet</h2>
-        <p>Manage your balances and transaction history.</p>
-      </div>
-    </div>
-  </div>
-
+<div class="wallet-container">
   @if (loading() && !wallet()) {
     <div style="padding-top: 8px;">
       <app-list-skeleton [count]="5"></app-list-skeleton>
@@ -23,110 +11,125 @@
       <button class="retry-btn bd-btn-primary" (click)="retryLoad()">Try Again</button>
     </div>
   } @else {
-    <!-- Manual Swipeable Carousel (Cards Sync Contextually with Transactions) -->
-    <div class="carousel-container">
-      <div class="carousel-track" (scroll)="onCarouselScroll($event)">
-        <!-- 1. Cash Balance Card -->
-        <div class="balance-card cash-card">
-          <div class="balance-card-inner">
-            <div class="card-bg-glow"></div>
-            <div class="balance-section">
-              <span class="label">Cash Balance</span>
-              <h1 class="amount">₹{{ wallet()?.balance | number:'1.2-2' }}</h1>
-            </div>
-            <div class="divider"></div>
-            <div class="savings-section">
-              <div class="savings-left">
-                <ion-icon name="sparkles-outline" class="savings-icon"></ion-icon>
-                <div>
-                  <span class="label">Total Lifetime Savings</span>
-                  <h3 class="savings-amount">₹{{ wallet()?.total_savings | number:'1.2-2' }}</h3>
-                </div>
-              </div>
-              <span class="badge">Active Member</span>
-            </div>
+    <!-- Sticky Fixed Top Container -->
+    <div class="sticky-wallet-top">
+      <div class="page-top-header">
+        <div class="header-content">
+          <div class="header-icon-box">
+            <ion-icon name="wallet-outline"></ion-icon>
           </div>
-        </div>
-
-        <!-- 2. Bizz Coin Balance Card -->
-        <div class="balance-card bizz-coin-card">
-          <div class="balance-card-inner">
-            <div class="card-bg-glow coin-glow"></div>
-            <div class="balance-section">
-              <div class="coin-header-top">
-                <span class="label">Bizz Coin Balance</span>
-                <span class="coin-ribbon-badge">
-                  <ion-icon name="sparkles-outline"></ion-icon> Rewards
-                </span>
-              </div>
-              <h1 class="amount coin-amount-text">
-                <span class="coin-emoji">🪙</span> {{ bizzCoinsBalance() | number }} <span class="coin-unit">Coins</span>
-              </h1>
-            </div>
-            <div class="divider"></div>
-            <div class="savings-section">
-              <div class="savings-left">
-                <ion-icon name="gift-outline" class="coin-gift-icon"></ion-icon>
-                <div>
-                  <span class="label">Non-Expiring Bizz Coins</span>
-                  <h3 class="savings-amount">Redeemable on Offers</h3>
-                </div>
-              </div>
-            </div>
+          <div class="header-text">
+            <h2>My Wallet</h2>
+            <p>Manage your balances and transaction history.</p>
           </div>
         </div>
       </div>
 
-      <!-- Carousel Pagination Indicator Dots -->
-      <div class="carousel-dots">
+      <!-- Manual Swipeable Carousel (Cards Sync Contextually with Transactions) -->
+      <div class="carousel-container">
+        <div class="carousel-track" (scroll)="onCarouselScroll($event)">
+          <!-- 1. Cash Balance Card -->
+          <div class="balance-card cash-card">
+            <div class="balance-card-inner">
+              <div class="card-bg-glow"></div>
+              <div class="balance-section">
+                <span class="label">Cash Balance</span>
+                <h1 class="amount">₹{{ wallet()?.balance | number:'1.2-2' }}</h1>
+              </div>
+              <div class="divider"></div>
+              <div class="savings-section">
+                <div class="savings-left">
+                  <ion-icon name="sparkles-outline" class="savings-icon"></ion-icon>
+                  <div>
+                    <span class="label">Total Lifetime Savings</span>
+                    <h3 class="savings-amount">₹{{ wallet()?.total_savings | number:'1.2-2' }}</h3>
+                  </div>
+                </div>
+                <span class="badge">Active Member</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Bizz Coin Balance Card -->
+          <div class="balance-card bizz-coin-card">
+            <div class="balance-card-inner">
+              <div class="card-bg-glow coin-glow"></div>
+              <div class="balance-section">
+                <div class="coin-header-top">
+                  <span class="label">Bizz Coin Balance</span>
+                  <span class="coin-ribbon-badge">
+                    <ion-icon name="sparkles-outline"></ion-icon> Rewards
+                  </span>
+                </div>
+                <h1 class="amount coin-amount-text">
+                  <span class="coin-emoji">🪙</span> {{ bizzCoinsBalance() | number }} <span class="coin-unit">Coins</span>
+                </h1>
+              </div>
+              <div class="divider"></div>
+              <div class="savings-section">
+                <div class="savings-left">
+                  <ion-icon name="gift-outline" class="coin-gift-icon"></ion-icon>
+                  <div>
+                    <span class="label">Non-Expiring Bizz Coins</span>
+                    <h3 class="savings-amount">Redeemable on Offers</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel Pagination Indicator Dots -->
+        <div class="carousel-dots">
+          <button 
+            type="button" 
+            class="dot" 
+            [class.active]="activeCardIndex() === 0" 
+            (click)="scrollToCard(0)"
+            aria-label="Cash Balance Card">
+          </button>
+          <button 
+            type="button" 
+            class="dot" 
+            [class.active]="activeCardIndex() === 1" 
+            (click)="scrollToCard(1)"
+            aria-label="Bizz Coin Balance Card">
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Transaction List Header -->
+      <div class="list-header">
+        <h2 class="section-title">
+          {{ activeCardIndex() === 1 ? '🪙 Bizz Coin History' : 'Cash History' }}
+        </h2>
+        <span class="tx-count">{{ filteredTransactions().length }} items</span>
+      </div>
+
+      <!-- 3. Clean 3 Filter Chips (Contextually Filtered by Selected Card) -->
+      <div class="filter-chips">
         <button 
           type="button" 
-          class="dot" 
-          [class.active]="activeCardIndex() === 0" 
-          (click)="scrollToCard(0)"
-          aria-label="Cash Balance Card">
+          class="filter-chip" 
+          [class.active]="activeFilter() === 'ALL'" 
+          (click)="setFilter('ALL')">
+          All
         </button>
         <button 
           type="button" 
-          class="dot" 
-          [class.active]="activeCardIndex() === 1" 
-          (click)="scrollToCard(1)"
-          aria-label="Bizz Coin Balance Card">
+          class="filter-chip" 
+          [class.active]="activeFilter() === 'CREDIT'" 
+          (click)="setFilter('CREDIT')">
+          Credits
+        </button>
+        <button 
+          type="button" 
+          class="filter-chip" 
+          [class.active]="activeFilter() === 'DEBIT'" 
+          (click)="setFilter('DEBIT')">
+          Debits
         </button>
       </div>
-    </div>
-
-    <!-- 2. Transaction List Header -->
-    <div class="list-header">
-      <h2 class="section-title">
-        {{ activeCardIndex() === 1 ? '🪙 Bizz Coin History' : 'Cash History' }}
-      </h2>
-      <span class="tx-count">{{ filteredTransactions().length }} items</span>
-    </div>
-
-    <!-- 3. Clean 3 Filter Chips (Contextually Filtered by Selected Card) -->
-    <div class="filter-chips">
-      <button 
-        type="button" 
-        class="filter-chip" 
-        [class.active]="activeFilter() === 'ALL'" 
-        (click)="setFilter('ALL')">
-        All
-      </button>
-      <button 
-        type="button" 
-        class="filter-chip" 
-        [class.active]="activeFilter() === 'CREDIT'" 
-        (click)="setFilter('CREDIT')">
-        Credits
-      </button>
-      <button 
-        type="button" 
-        class="filter-chip" 
-        [class.active]="activeFilter() === 'DEBIT'" 
-        (click)="setFilter('DEBIT')">
-        Debits
-      </button>
     </div>
 
     <!-- 4. Transactions List -->

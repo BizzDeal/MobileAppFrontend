@@ -1,19 +1,25 @@
-<header class="home-header">
+<header class="home-header flipkart-header">
+  <!-- Top Row: Logo/Greeting & Actions -->
   <div class="top-row">
-    <div class="user-greeting">
+    <div class="brand-greeting">
+      <span class="fk-brand-badge">BizzDeal</span>
       <h1 class="greeting-title" [title]="customer().name">
-        <span class="truncate-name">Hi, {{ getFirstName(customer().name) }}</span>
+        Hi, {{ getFirstName(customer().name) }}
       </h1>
     </div>
 
     <!-- Quick Wallet Balance (3D Flipped) & Notification Bell -->
     <div class="header-actions">
       <!-- 3D Flipping Wallet Balance Pill -->
-      <div class="wallet-flip-container" (click)="onWalletClick()" role="button" aria-label="View Wallet">
+      <div class="wallet-flip-container" (click)="onWalletClick()" role="button" tabindex="0" aria-label="View Wallet">
         <div class="wallet-flip-card" [class.flipped]="isFlipped()">
           <!-- Front Face: Cash Wallet Balance -->
           <div class="flip-face flip-front">
-            <ion-icon name="wallet-outline" class="wallet-icon" />
+            <svg class="wallet-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+              <path d="M16 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+              <path d="M4 7V5a2 2 0 0 1 2-2h12"/>
+            </svg>
             <div class="wallet-info">
               <span class="wallet-label">Wallet</span>
               <span class="wallet-amount">₹{{ (wallet().balance || 0) | number:'1.0-0' }}</span>
@@ -32,20 +38,38 @@
       </div>
 
       <!-- Notification Bell -->
-      <button class="notif-btn bd-btn-outline" (click)="onNotificationClick()" type="button" aria-label="Notifications">
-        <ion-icon name="notifications-outline" class="notif-icon" />
-        @if ((unreadCount() || 0)> 0) {
+      <button class="notif-btn" (click)="onNotificationClick()" type="button" aria-label="Notifications">
+        <svg class="notif-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        @if ((unreadCount() || 0) > 0) {
           <span class="notif-badge">{{ unreadCount() }}</span>
         }
       </button>
     </div>
   </div>
 
-  <!-- Search Bar Row -->
-  <div class="search-row">
-    <ion-searchbar mode="ios" placeholder="Search businesses, deals, vouchers..." [debounce]="300"
-      (ionInput)="onSearchInput($event)" (search)="onSearchSubmit($event)" (keyup.enter)="onSearchSubmit($event)"
-      class="custom-searchbar">
-    </ion-searchbar>
-  </div>
+  <!-- Custom Pure HTML Search Bar Row -->
+  <form class="search-row" (submit)="onSearchSubmit($event)">
+    <div class="custom-search-box">
+      <svg class="search-icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input 
+        type="search" 
+        class="custom-search-input"
+        placeholder="Search deals, stores, vouchers..." 
+        [value]="searchQuery()" 
+        (input)="onSearchInput($event)"
+        (keyup.enter)="onSearchSubmit($event)"
+      />
+      @if (searchQuery()) {
+        <button type="button" class="clear-search-btn" (click)="onClearSearch()" aria-label="Clear Search">
+          &times;
+        </button>
+      }
+    </div>
+  </form>
 </header>

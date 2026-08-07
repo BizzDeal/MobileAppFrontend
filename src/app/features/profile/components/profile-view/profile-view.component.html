@@ -1,4 +1,4 @@
-<div class="profile-container" style="padding: var(--bizzdeal-spacing-md);">
+<div class="sticky-profile-top">
   <div class="page-top-header">
     <div class="header-content">
       <div class="header-icon-box">
@@ -10,6 +10,9 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="profile-container">
 
   @if (profile() && !loading()) {
     <div class="completion-card bd-card" [class.incomplete]="isIncompleteProfile()" [class.pass]="!isIncompleteProfile()">
@@ -152,7 +155,7 @@
         </label>
         <div class="input-wrapper">
           <ion-icon name="map-outline" class="input-icon"></ion-icon>
-          <ion-select id="state_id" formControlName="state_id" placeholder="Select State" interface="action-sheet"
+          <ion-select id="state_id" formControlName="state_id" placeholder="Select State" [disabled]="true" interface="action-sheet"
             toggleIcon="caret-down-outline" class="form-input">
             @for (state of profileService.states(); track state.id) {
             <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
@@ -175,7 +178,7 @@
           <ion-icon name="location-outline" class="input-icon"></ion-icon>
           <ion-select id="district_id" formControlName="district_id" placeholder="Select District"
             interface="action-sheet" toggleIcon="caret-down-outline" class="form-input"
-            [disabled]="!profileForm.controls['state_id'].value || profileService.districts().length === 0">
+            [disabled]="!profileForm.getRawValue().state_id || profileService.districts().length === 0">
             @for (district of profileService.districts(); track district.id) {
             <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
             }
@@ -292,7 +295,7 @@
         </label>
         <div class="input-wrapper">
           <ion-icon name="map-outline" class="input-icon"></ion-icon>
-          <ion-select id="state_id" formControlName="state_id" placeholder="Select State" interface="action-sheet"
+          <ion-select id="state_id" formControlName="business_state_id" placeholder="Select State" [disabled]="true" interface="action-sheet"
             toggleIcon="caret-down-outline" class="form-input">
             @for (state of profileService.states(); track state.id) {
             <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
@@ -300,7 +303,7 @@
           </ion-select>
         </div>
         <div class="error-container">
-          @if (profileForm.get('state_id')?.touched && profileForm.get('state_id')?.invalid) {
+          @if (profileForm.get('business_state_id')?.touched && profileForm.get('business_state_id')?.invalid) {
           <span class="error-message">State is required</span>
           }
         </div>
@@ -313,16 +316,16 @@
         </label>
         <div class="input-wrapper">
           <ion-icon name="location-outline" class="input-icon"></ion-icon>
-          <ion-select id="district_id" formControlName="district_id" placeholder="Select District"
+          <ion-select id="district_id" formControlName="business_district_id" placeholder="Select District"
             interface="action-sheet" toggleIcon="caret-down-outline" class="form-input"
-            [disabled]="!profileForm.controls['state_id'].value || profileService.districts().length === 0">
+            [disabled]="!profileForm.getRawValue().business_state_id || profileService.districts().length === 0">
             @for (district of profileService.districts(); track district.id) {
             <ion-select-option [value]="district.id">{{ district.name }}</ion-select-option>
             }
           </ion-select>
         </div>
         <div class="error-container">
-          @if (profileForm.get('district_id')?.touched && profileForm.get('district_id')?.invalid) {
+          @if (profileForm.get('business_district_id')?.touched && profileForm.get('business_district_id')?.invalid) {
           <span class="error-message">District is required</span>
           }
         </div>

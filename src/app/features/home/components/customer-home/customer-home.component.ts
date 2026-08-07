@@ -1,31 +1,44 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+  inject,
+  signal,
+} from '@angular/core';
 import { BusinessDTO, CustomerHomeFeedDTO, OfferDTO, CustomerProfileDTO, WalletDTO } from '../../models/home.model';
 import { HomeHeaderComponent } from '../home-header/home-header.component';
-import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
 import { CategoryChipsComponent } from '../category-chips/category-chips.component';
-import { BusinessCardComponent } from '../business-card/business-card.component';
-import { IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { sparklesOutline, ticketOutline, timeOutline, chevronForwardOutline } from 'ionicons/icons';
-import { DatePipe, NgClass } from '@angular/common';
+import { InfiniteScrollingCardsComponent } from '../infinite-scrolling-cards/infinite-scrolling-cards.component';
+import { FeaturedStoreBannersComponent } from '../featured-store-banners/featured-store-banners.component';
+import { OfferCardComponent } from '../offer-card/offer-card.component';
+import { IntersectionObserverDirective } from '../../../../shared/directives/intersection-observer.directive';
+import { HomeService } from '../../services/home.service';
+import { PlatformSettingsService } from '../../../../core/services/platform-settings.service';
 
 @Component({
   selector: 'app-customer-home',
   standalone: true,
   imports: [
     HomeHeaderComponent,
-    HeroCarouselComponent,
     CategoryChipsComponent,
-    BusinessCardComponent,
-    IonIcon,
-    DatePipe,
-    NgClass
+    InfiniteScrollingCardsComponent,
+    FeaturedStoreBannersComponent,
+    OfferCardComponent,
+    IntersectionObserverDirective,
   ],
   templateUrl: './customer-home.component.html',
   styleUrls: ['./customer-home.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CustomerHomeComponent {
+export class CustomerHomeComponent implements OnInit, OnChanges {
+  private readonly homeService = inject(HomeService);
+  private readonly platformSettingsService = inject(PlatformSettingsService);
+
   @Input({ required: true }) feed!: CustomerHomeFeedDTO;
   @Input({ required: true }) customer!: CustomerProfileDTO;
   @Input({ required: true }) wallet!: WalletDTO;
@@ -37,7 +50,7 @@ export class CustomerHomeComponent {
   @Input({ required: true }) filteredFlatOffers!: OfferDTO[];
   @Input({ required: true }) filteredCashbackOffers!: OfferDTO[];
   @Input({ required: true }) activeVouchersCount!: number;
-  @Input() activeVouchers: any[] = []; // Using any to avoid importing VoucherDTO if not needed, or better import it
+  @Input() activeVouchers: any[] = [];
 
   @Output() walletClick = new EventEmitter<void>();
   @Output() notificationClick = new EventEmitter<void>();
@@ -50,8 +63,66 @@ export class CustomerHomeComponent {
   @Output() voucherClick = new EventEmitter<any>();
   @Output() claimOffer = new EventEmitter<OfferDTO>();
 
-  constructor() {
-    addIcons({ sparklesOutline, ticketOutline, timeOutline, chevronForwardOutline });
+  readonly infiniteOffers = signal<OfferDTO[]>([]);
+  readonly feedPage = signal<number>(1);
+  readonly loadingMoreFeed = signal<boolean>(false);
+  readonly hasMoreFeed = signal<boolean>(true);
+  readonly initialFeedLoaded = signal<boolean>(false);
+
+  ngOnInit(): void {
+    this.loadFeedBatch(true);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedCategory'] && !changes['selectedCategory'].firstChange) {
+      this.loadFeedBatch(true);
+    }
+  }
+
+  onSentinelIntersect(): void {
+    if (this.hasMoreFeed() && !this.loadingMoreFeed() && this.initialFeedLoaded()) {
+      this.loadFeedBatch(false);
+    }
+  }
+
+  loadFeedBatch(reset: boolean = false): void {
+    if (reset) {
+      this.feedPage.set(1);
+      this.infiniteOffers.set([]);
+      this.hasMoreFeed.set(true);
+      this.initialFeedLoaded.set(false);
+    }
+
+    if (this.loadingMoreFeed()) return;
+
+    this.loadingMoreFeed.set(true);
+
+    const limit = this.platformSettingsService.platformSettings()?.home_feed_limit || 10;
+    const pageToFetch = this.feedPage();
+
+    this.homeService.getPaginatedOffers(pageToFetch, limit, this.selectedCategory).subscribe({
+      next: (res) => {
+        const newItems = res.data || [];
+        const existing = reset ? [] : this.infiniteOffers();
+        const existingIds = new Set(existing.map((o) => o.id));
+        const filteredNew = newItems.filter((o) => !existingIds.has(o.id));
+
+        this.infiniteOffers.set([...existing, ...filteredNew]);
+        this.hasMoreFeed.set(res.meta.hasMore);
+
+        if (res.meta.hasMore) {
+          this.feedPage.update((p) => p + 1);
+        }
+
+        this.loadingMoreFeed.set(false);
+        this.initialFeedLoaded.set(true);
+      },
+      error: (err) => {
+        console.error('Error fetching paginated home feed offers:', err);
+        this.loadingMoreFeed.set(false);
+        this.initialFeedLoaded.set(true);
+      },
+    });
   }
 
   getVoucherTypeClass(v: any): string {
@@ -65,10 +136,6 @@ export class CustomerHomeComponent {
     if (discountType === 'PERCENTAGE' || text.includes('%')) {
       return 'type-percentage';
     }
-    if (discountType === 'FIXED_AMOUNT' || discountType === 'FIXED' || text.includes('₹') || text.includes('off')) {
-      return 'type-fixed';
-    }
-
-    return 'type-fixed'; // default fallback for colored items
+    return 'type-fixed';
   }
 }

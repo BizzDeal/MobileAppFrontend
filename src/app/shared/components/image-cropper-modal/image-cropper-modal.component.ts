@@ -47,10 +47,20 @@ export class ImageCropperModalComponent implements AfterViewInit {
 
   @Input() imageSource!: File | Blob | string;
   @Input() title: string = 'Crop & Adjust Photo';
-  @Input() roundCropper: boolean = true; // true for round avatar, false for square
-  @Input() outputFileName: string = 'profile-photo.jpg';
+  @Input() roundCropper: boolean = true; // true for round avatar, false for rectangular/square
+  @Input() aspectRatio: number = 1.0; // 1.0 for square profile avatar, 16/9 for banners & cards
+  @Input() outputFileName: string = 'cropped-photo.jpg';
   @Input() targetWidth: number = 500;
   @Input() targetHeight: number = 500;
+
+  get canvasWidth(): number {
+    return 320;
+  }
+
+  get canvasHeight(): number {
+    const ratio = this.aspectRatio || 1.0;
+    return Math.round(320 / ratio);
+  }
 
   @ViewChild('canvasElement') canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('cropperContainer') cropperContainerRef!: ElementRef<HTMLDivElement>;
@@ -94,6 +104,12 @@ export class ImageCropperModalComponent implements AfterViewInit {
 
   private loadImage(): void {
     if (!this.imageSource) return;
+
+    // Adjust default target dimensions for non-1:1 aspect ratios if defaults weren't explicitly customized
+    if (this.aspectRatio && this.aspectRatio !== 1.0 && this.targetWidth === 500 && this.targetHeight === 500) {
+      this.targetWidth = 800;
+      this.targetHeight = Math.round(800 / this.aspectRatio);
+    }
 
     this.loading.set(true);
     const img = new Image();
@@ -217,6 +233,7 @@ export class ImageCropperModalComponent implements AfterViewInit {
 
     const width = canvas.width;
     const height = canvas.height;
+    const canvasRatio = width / height;
 
     ctx.clearRect(0, 0, width, height);
     ctx.save();
@@ -232,15 +249,17 @@ export class ImageCropperModalComponent implements AfterViewInit {
     const scaleY = (this.flipV() ? -1 : 1) * this.zoomScale();
     ctx.scale(scaleX, scaleY);
 
-    // Draw Image Centered
+    // Draw Image Centered (Cover fit within canvas container)
     const imgRatio = img.width / img.height;
     let drawW = width;
     let drawH = height;
 
-    if (imgRatio > 1) {
-      drawH = width / imgRatio;
-    } else {
+    if (imgRatio > canvasRatio) {
+      drawH = height;
       drawW = height * imgRatio;
+    } else {
+      drawW = width;
+      drawH = width / imgRatio;
     }
 
     ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);

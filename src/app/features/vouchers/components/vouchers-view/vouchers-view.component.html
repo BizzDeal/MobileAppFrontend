@@ -2,48 +2,52 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div style="padding: var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md) 0 var(--bizzdeal-spacing-md);">
-    <div class="page-top-header">
-      <div class="header-content">
-        <div class="header-icon-box">
-          <ion-icon name="ticket-outline"></ion-icon>
-        </div>
-        <div class="header-text">
-          <h2>My Vouchers</h2>
-          <p>View and redeem your active vouchers.</p>
+
+  <!-- Sticky Fixed Top Header & Filters Container -->
+  <div class="sticky-vouchers-top">
+    <div class="vouchers-header-wrapper">
+      <div class="page-top-header">
+        <div class="header-content">
+          <div class="header-icon-box">
+            <ion-icon name="ticket-outline"></ion-icon>
+          </div>
+          <div class="header-text">
+            <h2>My Vouchers</h2>
+            <p>View and redeem your active vouchers.</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Search Section -->
-  <div class="search-section">
-    <div class="search-bar-wrapper">
-      <ion-icon name="search-outline" class="search-icon"></ion-icon>
-      <ion-input type="text" placeholder="Search by store or offer title..." [value]="searchQuery()"
-        (ionInput)="onSearchChange($event)" class="vouchers-search-input">
-      </ion-input>
+    <!-- Search Section -->
+    <div class="search-section">
+      <div class="search-bar-wrapper">
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+        <ion-input type="text" placeholder="Search by store or offer title..." [value]="searchQuery()"
+          (ionInput)="onSearchChange($event)" class="vouchers-search-input">
+        </ion-input>
+      </div>
     </div>
-  </div>
 
-  <!-- Seggregation Filters Chips -->
-  <div class="filter-wrapper">
-    <div class="filter-chips">
-      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'ALL'" (click)="setFilter('ALL')">
-        All
-      </button>
-      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'ACTIVE'"
-        (click)="setFilter('ACTIVE')">
-        Active
-      </button>
-      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'REDEEMED'"
-        (click)="setFilter('REDEEMED')">
-        Redeemed
-      </button>
-      <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'CANCELLED'"
-        (click)="setFilter('CANCELLED')">
-        Cancelled
-      </button>
+    <!-- Seggregation Filters Chips -->
+    <div class="filter-wrapper">
+      <div class="filter-chips">
+        <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'ALL'" (click)="setFilter('ALL')">
+          All
+        </button>
+        <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'ACTIVE'"
+          (click)="setFilter('ACTIVE')">
+          Active
+        </button>
+        <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'REDEEMED'"
+          (click)="setFilter('REDEEMED')">
+          Redeemed
+        </button>
+        <button type="button" class="filter-chip" [class.active]="selectedFilter() === 'CANCELLED'"
+          (click)="setFilter('CANCELLED')">
+          Cancelled
+        </button>
+      </div>
     </div>
   </div>
 

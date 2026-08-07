@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: var(--bizzdeal-spacing-md, 16px);
+  padding: calc(var(--bizzdeal-spacing-md, 16px) + var(--ion-safe-area-top, env(safe-area-inset-top, 0px))) var(--bizzdeal-spacing-md, 16px) var(--bizzdeal-spacing-md, 16px) var(--bizzdeal-spacing-md, 16px);
   padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); /* space for bottom nav */
   background: var(--bizzdeal-bg-main, #f8fafc);
   overflow-y: auto;

@@ -1,15 +1,27 @@
+:host {
+  display: block;
+}
+
+.sticky-profile-top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--bizzdeal-bg-main, #ffffff);
+  padding: calc(var(--bizzdeal-spacing-md, 16px) + var(--ion-safe-area-top, env(safe-area-inset-top, 0px))) var(--bizzdeal-spacing-md, 16px) 4px var(--bizzdeal-spacing-md, 16px);
+
+  .page-top-header {
+    margin-bottom: 0 !important;
+  }
+}
+
 .profile-container {
-  padding: var(--bizzdeal-spacing-md);
+  padding: 0 var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md);
   background-color: var(--bizzdeal-bg-main);
   min-height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 12px;
-
-  .page-top-header {
-    margin-bottom: 0 !important;
-  }
 }
 
 /* Completion Card Styles */

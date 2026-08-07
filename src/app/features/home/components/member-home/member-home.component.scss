@@ -32,7 +32,7 @@
 
 .dashboard-header {
   background: var(--bizzdeal-bg-surface);
-  padding: var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-sm);
+  padding: calc(var(--bizzdeal-spacing-md) + var(--ion-safe-area-top, env(safe-area-inset-top, 0px))) var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-sm);
   border-bottom: 1px solid var(--bizzdeal-border-color);
   display: flex;
   justify-content: space-between;

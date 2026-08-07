@@ -7,7 +7,6 @@ import { AuthApiService } from '../../services/auth-api.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
 import { ProfileService } from '../../../profile/services/profile.service';
-import { MemberOnboardingService } from '../../services/member-onboarding.service';
 import { UserRole } from '../../models/auth.model';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
@@ -19,7 +18,6 @@ export class EmailLoginService {
   private readonly authSession = inject(AuthSessionService);
   private readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
   private readonly profileService = inject(ProfileService);
-  private readonly onboardingService = inject(MemberOnboardingService);
   private readonly alertController = inject(AlertController);
 
   private readonly _authStep = signal<'phone' | 'pin' | 'otp_register'>('phone');
@@ -29,7 +27,6 @@ export class EmailLoginService {
   private readonly _isConfirmPinFocused = signal(false);
   private readonly _isOtpFocused = signal(false);
   private readonly _errorMessage = signal<string | null>(null);
-  private readonly _isJoinModalOpen = signal(false);
 
   private _confirmationResult?: ConfirmationResult;
 
@@ -40,10 +37,6 @@ export class EmailLoginService {
   readonly isConfirmPinFocused = this._isConfirmPinFocused.asReadonly();
   readonly isOtpFocused = this._isOtpFocused.asReadonly();
   readonly errorMessage = this._errorMessage.asReadonly();
-  readonly isJoinModalOpen = this._isJoinModalOpen.asReadonly();
-  
-  readonly paymentSettings = this.onboardingService.paymentSettings;
-  readonly isLoadingPaymentSettings = this.onboardingService.isLoadingPaymentSettings;
 
   readonly loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -257,18 +250,6 @@ export class EmailLoginService {
   }
 
   joinAsMember(): void {
-    this.onboardingService.fetchPaymentSettings().catch(console.error);
-    this._isJoinModalOpen.set(true);
-  }
-
-  closeJoinModal(): void {
-    this._isJoinModalOpen.set(false);
-  }
-
-  proceedToRegistration(): void {
-    this._isJoinModalOpen.set(false);
-    setTimeout(() => {
-      this.router.navigate(['/auth/member-payment']);
-    }, 250);
+    this.router.navigate(['/auth/member-payment']);
   }
 }

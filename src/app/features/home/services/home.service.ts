@@ -351,4 +351,75 @@ export class HomeService {
       })
     );
   }
+
+  getPaginatedOffers(
+    page: number = 1,
+    limit: number = 10,
+    categoryId?: string,
+    search?: string
+  ): Observable<{
+    data: OfferDTO[];
+    meta: { currentPage: number; itemsPerPage: number; totalItems: number; totalPages: number; hasMore: boolean };
+  }> {
+    const params = new URLSearchParams();
+    params.set('page', page.toString());
+    params.set('limit', limit.toString());
+    if (categoryId && categoryId !== 'ALL') {
+      params.set('category_id', categoryId);
+    }
+    if (search && search.trim()) {
+      params.set('search', search.trim());
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/offers?${params.toString()}`).pipe(
+      map((res) => {
+        const dataRaw = Array.isArray(res) ? res : res.data || res.items || [];
+        const metaRaw = res.meta || {};
+        const currentPage = metaRaw.currentPage || page;
+        const itemsPerPage = metaRaw.itemsPerPage || limit;
+        const totalItems = metaRaw.totalItems ?? dataRaw.length;
+        const totalPages = metaRaw.totalPages || Math.ceil(totalItems / itemsPerPage) || 1;
+        const hasMore = currentPage < totalPages && dataRaw.length > 0;
+
+        const claimedOfferIds = new Set(this.customerVouchersService.vouchers().map((v) => v.offer_id));
+
+        const mappedData: OfferDTO[] = dataRaw.map((o: any) => ({
+          id: o.id,
+          business_id: o.business_id,
+          title: o.title,
+          description: o.description || '',
+          offer_type: o.offer_type || 'DISCOUNT',
+          discount_value: o.discount_value ?? null,
+          discount_type: o.discount_type || null,
+          start_date: o.start_date || new Date().toISOString(),
+          end_date: o.end_date || new Date().toISOString(),
+          image_id: o.image_id || null,
+          status: o.status || 'APPROVED',
+          approved_by_id: o.approved_by_id || null,
+          approved_at: o.approved_at || null,
+          created_at: o.created_at || new Date().toISOString(),
+          updated_at: o.updated_at || new Date().toISOString(),
+          businessName: o.businessName || o.business?.name || 'Partner Business',
+          businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || o.business?.logoUrl || null,
+          imageUrl: o.imageUrl || o.image_url || null,
+          isClaimed: claimedOfferIds.has(o.id),
+        }));
+
+        return {
+          data: mappedData,
+          meta: {
+            currentPage,
+            itemsPerPage,
+            totalItems,
+            totalPages,
+            hasMore,
+          },
+        };
+      }),
+      catchError((err) => {
+        return throwError(() => err);
+      })
+    );
+  }
 }
+

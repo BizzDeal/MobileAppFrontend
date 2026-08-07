@@ -26,6 +26,8 @@
   top: 0;
   z-index: 100;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+  padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
+  background: var(--bizzdeal-bg-surface);
   
   ion-toolbar {
     --background: var(--bizzdeal-bg-surface);

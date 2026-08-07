@@ -24,6 +24,8 @@
       #cropperContainer
       class="canvas-container"
       [class.round-mask]="roundCropper"
+      [style.width.px]="canvasWidth"
+      [style.height.px]="canvasHeight"
       (mousedown)="onMouseDown($event)"
       (mousemove)="onMouseMove($event)"
       (mouseup)="onMouseUp()"
@@ -31,7 +33,7 @@
       (touchstart)="onMouseDown($event)"
       (touchmove)="onMouseMove($event)"
       (touchend)="onMouseUp()">
-      <canvas #canvasElement width="320" height="320" class="cropper-canvas"></canvas>
+      <canvas #canvasElement [attr.width]="canvasWidth" [attr.height]="canvasHeight" class="cropper-canvas"></canvas>
 
       <!-- Mask Overlay Guide -->
       <div class="crop-overlay-guide">

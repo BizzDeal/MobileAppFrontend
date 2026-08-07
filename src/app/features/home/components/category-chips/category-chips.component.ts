@@ -1,24 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  businessOutline,
-  cutOutline,
-  fastFoodOutline,
-  fitnessOutline,
-  gridOutline,
-  hardwareChipOutline,
-  homeOutline,
-  schoolOutline,
-  shirtOutline,
-  sparklesOutline
-} from 'ionicons/icons';
 import { BusinessCategoryDTO } from '../../models/home.model';
 
 @Component({
   selector: 'app-category-chips',
   standalone: true,
-  imports: [IonIcon],
+  imports: [],
   templateUrl: './category-chips.component.html',
   styleUrl: './category-chips.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,64 +15,29 @@ export class CategoryChipsComponent {
 
   readonly categorySelect = output<string>();
 
-  constructor() {
-    addIcons({ 
-      gridOutline, 
-      fastFoodOutline, 
-      shirtOutline, 
-      fitnessOutline, 
-      hardwareChipOutline, 
-      cutOutline,
-      sparklesOutline,
-      businessOutline,
-      homeOutline,
-      schoolOutline
-    });
-  }
-
-  getIconName(icon?: string, slug?: string): string {
-    const key = (icon || slug || '').toLowerCase();
-    switch (key) {
-      case 'restaurant':
-      case 'fast-food': 
-      case 'food-dining': return 'fast-food-outline';
-      case 'retail':
-      case 'shirt': 
-      case 'fashion-retail': return 'shirt-outline';
-      case 'healthcare':
-      case 'fitness': 
-      case 'health-wellness': return 'fitness-outline';
-      case 'it-services':
-      case 'hardware-chip': 
-      case 'tech-gadgets': return 'hardware-chip-outline';
-      case 'hotels':
-      case 'business': return 'business-outline';
-      case 'real-estate':
-      case 'home': return 'home-outline';
-      case 'education':
-      case 'school': return 'school-outline';
-      case 'cut': 
-      case 'services-care': return 'cut-outline';
-      default: return 'sparkles-outline';
-    }
+  getCategoryIconType(slug?: string): string {
+    const key = (slug || '').toLowerCase();
+    if (key.includes('food') || key.includes('restaurant')) return 'food';
+    if (key.includes('fashion') || key.includes('retail') || key.includes('shirt')) return 'fashion';
+    if (key.includes('health') || key.includes('wellness') || key.includes('fitness')) return 'health';
+    if (key.includes('tech') || key.includes('gadget') || key.includes('it')) return 'tech';
+    if (key.includes('hotel') || key.includes('stay')) return 'hotel';
+    if (key.includes('real-estate') || key.includes('home')) return 'home';
+    if (key.includes('edu') || key.includes('school')) return 'edu';
+    if (key.includes('service') || key.includes('care')) return 'service';
+    return 'sparkle';
   }
 
   getCategoryColor(color?: string, slug?: string): string {
     if (color && color.startsWith('#')) return color;
     const key = (slug || '').toLowerCase();
-    switch (key) {
-      case 'restaurant':
-      case 'food-dining': return '#F97316'; // orange
-      case 'retail':
-      case 'fashion-retail': return '#EC4899'; // pink
-      case 'healthcare':
-      case 'health-wellness': return '#38BDF8'; // blue
-      case 'it-services':
-      case 'tech-gadgets': return '#A78BFA'; // purple
-      case 'hotels': return '#EAB308'; // yellow
-      case 'real-estate': return '#10B981'; // green
-      case 'education': return '#3B82F6'; // indigo
-      default: return '#38BDF8';
-    }
+    if (key.includes('food') || key.includes('restaurant')) return '#f97316';
+    if (key.includes('fashion') || key.includes('retail')) return '#ec4899';
+    if (key.includes('health') || key.includes('wellness')) return '#06b6d4';
+    if (key.includes('tech') || key.includes('gadget')) return '#8b5cf6';
+    if (key.includes('hotel')) return '#eab308';
+    if (key.includes('real-estate') || key.includes('home')) return '#10b981';
+    if (key.includes('edu')) return '#3b82f6';
+    return '#2874f0';
   }
 }

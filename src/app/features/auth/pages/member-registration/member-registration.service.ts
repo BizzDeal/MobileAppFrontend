@@ -1,4 +1,4 @@
-import { inject, Injectable, signal, DestroyRef } from '@angular/core';
+import { inject, Injectable, signal, DestroyRef, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -57,8 +57,26 @@ export class MemberRegistrationService {
     this.onboardingService.fetchCategories();
     this.onboardingService.fetchStates();
 
+    effect(() => {
+      const states = this.onboardingService.states();
+      if (states.length > 0) {
+        const apState = states.find((s) => s.name.toLowerCase().includes('andhra pradesh'));
+        if (apState) {
+          if (this.regForm.controls.stateId.value !== apState.id) {
+            this.regForm.controls.stateId.setValue(apState.id);
+            this.onboardingService.fetchDistrictsByState(apState.id);
+          }
+          if (this.regForm.controls.businessStateId.value !== apState.id) {
+            this.regForm.controls.businessStateId.setValue(apState.id);
+            this.onboardingService.fetchBusinessDistrictsByState(apState.id);
+          }
+          this.regForm.controls.stateId.disable();
+          this.regForm.controls.businessStateId.disable();
+        }
+      }
+    });
+
     this.regForm.controls.stateId.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stateId) => {
-      this.regForm.controls.districtId.setValue('');
       if (stateId) {
         this.onboardingService.fetchDistrictsByState(stateId);
       } else {
@@ -67,7 +85,6 @@ export class MemberRegistrationService {
     });
 
     this.regForm.controls.businessStateId.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stateId) => {
-      this.regForm.controls.businessDistrictId.setValue('');
       if (stateId) {
         this.onboardingService.fetchBusinessDistrictsByState(stateId);
       } else {
@@ -143,9 +160,12 @@ export class MemberRegistrationService {
         component: ImageCropperModalComponent,
         componentProps: {
           imageSource: rawFile,
-          title: 'Crop Brand Image',
+          title: 'Crop Brand Banner Image',
           roundCropper: false,
-          outputFileName: 'brand-logo.jpg'
+          aspectRatio: 16 / 9,
+          targetWidth: 800,
+          targetHeight: 450,
+          outputFileName: 'brand-banner.jpg'
         }
       });
 

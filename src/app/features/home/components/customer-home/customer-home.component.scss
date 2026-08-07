@@ -1,261 +1,167 @@
-// Styles are mostly handled by global or home.page.scss
-.feed-section {
-  margin-bottom: var(--bizzdeal-spacing-lg);
-
-  &.mb-extra {
-    margin-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* Space for bottom nav */
-  }
-
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 var(--bizzdeal-spacing-md);
-    margin-bottom: var(--bizzdeal-spacing-md);
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-
-      .section-icon {
-        font-size: 1.25rem;
-        &.spark { color: var(--bizzdeal-color-secondary); }
-      }
-
-      .section-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        margin: 0;
-        color: var(--bizzdeal-color-text);
-      }
-    }
-
-    .swipe-hint {
-      font-size: 0.75rem;
-      color: var(--bizzdeal-text-tertiary);
-      font-weight: 500;
-    }
-  }
-
-  .horizontal-scroll-feed {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: var(--bizzdeal-spacing-md);
-    padding: 4px var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-lg);
-    -webkit-overflow-scrolling: touch;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  .empty-feed {
-    padding: var(--bizzdeal-spacing-xl) var(--bizzdeal-spacing-md);
-    text-align: center;
-    color: var(--bizzdeal-color-text-light);
-    font-size: 0.9rem;
-  }
+.sticky-top-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.vertical-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 0 var(--bizzdeal-spacing-md);
-}
+.customer-feed-body {
+  padding-bottom: 0;
+  background: #f1f5f9;
 
-.voucher-list-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background: var(--bizzdeal-color-surface);
-  border-radius: var(--bizzdeal-radius-md);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  border-left: 6px solid var(--bizzdeal-color-primary);
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-  overflow: hidden;
+  .vertical-infinite-feed-section {
+    padding: 16px;
+    background: #ffffff;
+    margin-top: 10px;
+    margin-bottom: 24px;
 
-  &:active {
-    transform: scale(0.98);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-  }
-
-  .v-main-content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    flex: 1;
-    padding: 10px 12px;
-    min-width: 0;
-  }
-
-  .v-icon-box {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.1);
-    color: var(--bizzdeal-color-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 12px;
-
-    ion-icon {
-      font-size: 1.25rem;
-    }
-  }
-
-  /* Cashback Specific Styling (Green) */
-  &.type-cashback {
-    border: 2px solid #10b981;
-    border-left-width: 8px;
-    background: rgba(16, 185, 129, 0.06);
-
-    .v-icon-box {
-      background: #10b981;
-      color: #ffffff;
-    }
-    .v-title {
-      color: #047857;
-    }
-    .v-discount-badge {
-      background: rgba(16, 185, 129, 0.15);
-      color: #047857;
-    }
-    .v-stub {
-      color: #10b981;
-      border-left-color: rgba(16, 185, 129, 0.3);
-    }
-  }
-
-  /* Percentage Specific Styling (Orange) */
-  &.type-percentage {
-    border: 2px solid #f97316;
-    border-left-width: 8px;
-    background: rgba(249, 115, 22, 0.06);
-
-    .v-icon-box {
-      background: #f97316;
-      color: #ffffff;
-    }
-    .v-title {
-      color: #c2410c;
-    }
-    .v-discount-badge {
-      background: rgba(249, 115, 22, 0.15);
-      color: #c2410c;
-    }
-    .v-stub {
-      color: #f97316;
-      border-left-color: rgba(249, 115, 22, 0.3);
-    }
-  }
-
-  /* Fixed Amount Styling (Purple) */
-  &.type-fixed {
-    border: 2px solid #8b5cf6;
-    border-left-width: 8px;
-    background: rgba(139, 92, 246, 0.06);
-
-    .v-icon-box {
-      background: #8b5cf6;
-      color: #ffffff;
-    }
-    .v-title {
-      color: #6d28d9;
-    }
-    .v-discount-badge {
-      background: rgba(139, 92, 246, 0.15);
-      color: #6d28d9;
-    }
-    .v-stub {
-      color: #8b5cf6;
-      border-left-color: rgba(139, 92, 246, 0.3);
-    }
-  }
-
-  .v-details {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-
-    .v-top-row {
+    .section-header-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 6px;
+      margin-bottom: 14px;
 
-      .v-biz {
-        font-size: 0.75rem;
-        font-weight: 500;
-        color: var(--bizzdeal-text-tertiary);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+      .title-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
 
-      .v-discount-badge {
-        font-size: 0.68rem;
-        font-weight: 700;
-        color: #2563eb;
-        background: rgba(37, 99, 235, 0.1);
-        padding: 1px 6px;
-        border-radius: 4px;
-        white-space: nowrap;
+        .icon-badge.icon-infinite {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          background: #f3e8ff;
+          color: #9333ea;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .text-meta {
+          .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+          }
+
+          .section-subtitle {
+            font-size: 11px;
+            color: #64748b;
+            margin: 1px 0 0 0;
+          }
+        }
       }
     }
 
-    .v-title {
-      margin: 0;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--bizzdeal-color-text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .vertical-deals-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+      width: 100%;
+      box-sizing: border-box;
+
+      @media (min-width: 640px) {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+      }
+
+      app-offer-card {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
     }
 
-    .v-exp {
-      font-size: 0.7rem;
-      color: #2563eb;
+    .feed-sentinel {
+      min-height: 48px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 4px;
-      font-weight: 600;
-      margin-top: 1px;
+      justify-content: center;
 
-      ion-icon {
-        font-size: 0.85rem;
-        color: #2563eb;
+      .infinite-loader-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        color: #475569;
+        font-size: 13px;
+        font-weight: 600;
+
+        .spinner-ring {
+          width: 18px;
+          height: 18px;
+          border: 2px solid #cbd5e1;
+          border-top-color: #2874f0;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+      }
+
+      .end-of-feed-card {
+        text-align: center;
+        padding: 24px 16px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 480px;
+        margin: 10px auto;
+
+        .end-icon {
+          font-size: 24px;
+          margin-bottom: 6px;
+        }
+
+        h4 {
+          font-size: 14px;
+          font-weight: 700;
+          color: #334155;
+          margin: 0 0 4px 0;
+        }
+
+        p {
+          font-size: 12px;
+          color: #64748b;
+          margin: 0;
+        }
+      }
+
+      .empty-feed-card {
+        text-align: center;
+        padding: 30px 16px;
+        width: 100%;
+
+        h4 {
+          font-size: 15px;
+          font-weight: 700;
+          color: #475569;
+          margin: 10px 0 4px 0;
+        }
+
+        p {
+          font-size: 12px;
+          color: #94a3b8;
+          margin: 0;
+        }
       }
     }
-  }
-
-  .v-stub {
-    flex-shrink: 0;
-    width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px dashed var(--bizzdeal-color-border);
-    color: var(--bizzdeal-color-primary);
-    align-self: stretch;
-
-    ion-icon {
-      font-size: 1.25rem;
-      transition: transform 0.2s ease;
-    }
-  }
-
-  &:hover .v-stub ion-icon {
-    transform: translateX(3px);
   }
 }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+

@@ -1,21 +1,12 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, output, signal, OnInit, OnDestroy } from '@angular/core';
-import { IonIcon, IonSearchbar } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  notificationsOutline,
-  optionsOutline,
-  searchOutline,
-  walletOutline,
-  sparklesOutline
-} from 'ionicons/icons';
 import { CustomerProfileDTO, WalletDTO } from '../../models/home.model';
 import { WalletService } from '../../../wallet/services/wallet.service';
 
 @Component({
   selector: 'app-home-header',
   standalone: true,
-  imports: [IonIcon, IonSearchbar, DecimalPipe],
+  imports: [DecimalPipe],
   templateUrl: './home-header.component.html',
   styleUrl: './home-header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,29 +26,20 @@ export class HomeHeaderComponent implements OnInit, OnDestroy {
 
   // 3D Auto Infinite Flip state
   readonly isFlipped = signal<boolean>(false);
-  private flipInterval: any = null;
+  readonly searchQuery = signal<string>('');
+  private flipInterval: ReturnType<typeof setInterval> | null = null;
 
-  constructor() {
-    addIcons({
-      walletOutline,
-      notificationsOutline,
-      searchOutline,
-      optionsOutline,
-      sparklesOutline
-    });
-  }
-
-  ngOnInit() {
+  ngOnInit(): void {
     this.startAutoFlip();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.flipInterval) {
       clearInterval(this.flipInterval);
     }
   }
 
-  private startAutoFlip() {
+  private startAutoFlip(): void {
     this.flipInterval = setInterval(() => {
       this.isFlipped.update(val => !val);
     }, 3500);
@@ -78,13 +60,21 @@ export class HomeHeaderComponent implements OnInit, OnDestroy {
   }
 
   onSearchInput(event: Event): void {
-    const customEvent = event as CustomEvent;
-    const value = (customEvent.detail?.value || '') as string;
+    const inputElement = event.target as HTMLInputElement;
+    const value = inputElement.value || '';
+    this.searchQuery.set(value);
     this.searchChange.emit(value);
   }
 
-  onSearchSubmit(event: Event): void {
-    const searchbar = event.target as HTMLIonSearchbarElement;
-    this.searchSubmit.emit(searchbar.value || '');
+  onClearSearch(): void {
+    this.searchQuery.set('');
+    this.searchChange.emit('');
+  }
+
+  onSearchSubmit(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+    }
+    this.searchSubmit.emit(this.searchQuery());
   }
 }

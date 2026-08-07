@@ -6,8 +6,17 @@
   padding: 0 var(--bizzdeal-spacing-md) var(--bizzdeal-spacing-xl);
 }
 
+.sticky-search-top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bizzdeal-bg-surface, #ffffff);
+  padding-top: calc(var(--bizzdeal-spacing-md, 16px) + var(--ion-safe-area-top, env(safe-area-inset-top, 0px)));
+  padding-bottom: 6px;
+  margin-bottom: var(--bizzdeal-spacing-xs, 4px);
+}
+
 .search-header {
-  padding-top: var(--bizzdeal-spacing-lg);
   margin-bottom: var(--bizzdeal-spacing-md);
   
   .search-title {
@@ -33,7 +42,7 @@
   border: 1px solid var(--bizzdeal-border-color, #e2e8f0);
   padding: 6px;
   border-radius: var(--bizzdeal-radius-xl, 16px);
-  margin-bottom: var(--bizzdeal-spacing-lg);
+  margin-bottom: var(--bizzdeal-spacing-sm, 8px);
   gap: 6px;
   box-shadow: var(--bizzdeal-shadow-sm);
   

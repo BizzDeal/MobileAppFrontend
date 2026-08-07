@@ -1,36 +1,39 @@
 <div class="search-page-container">
-  <!-- Search Input Area -->
-  <div class="search-header">
-    <h2 class="search-title">Find Deals & Businesses</h2>
-    <ion-searchbar 
-      mode="ios"
-      placeholder="Search for store names, offers, keywords..." 
-      [value]="searchQuery()"
-      [debounce]="200"
-      (ionInput)="onSearchInput($event)"
-      (ionClear)="onSearchClear()"
-      class="custom-search-page-bar">
-    </ion-searchbar>
-  </div>
+  <!-- Sticky Fixed Top Header Area -->
+  <div class="sticky-search-top">
+    <!-- Search Input Area -->
+    <div class="search-header">
+      <h2 class="search-title">Find Deals & Businesses</h2>
+      <ion-searchbar 
+        mode="ios"
+        placeholder="Search for store names, offers, keywords..." 
+        [value]="searchQuery()"
+        [debounce]="200"
+        (ionInput)="onSearchInput($event)"
+        (ionClear)="onSearchClear()"
+        class="custom-search-page-bar">
+      </ion-searchbar>
+    </div>
 
-  <!-- Tab Switcher -->
-  <div class="tab-switcher">
-    <button 
-      type="button" 
-      class="tab-btn" 
-      [class.active]="activeTab() === 'businesses'" 
-      (click)="setTab('businesses')">
-      <ion-icon name="business-outline" class="tab-icon" />
-      <span class="tab-label">Businesses</span>
-    </button>
-    <button 
-      type="button" 
-      class="tab-btn" 
-      [class.active]="activeTab() === 'offers'" 
-      (click)="setTab('offers')">
-      <ion-icon name="pricetag-outline" class="tab-icon" />
-      <span class="tab-label">Offers & Deals</span>
-    </button>
+    <!-- Tab Switcher -->
+    <div class="tab-switcher">
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="activeTab() === 'businesses'" 
+        (click)="setTab('businesses')">
+        <ion-icon name="business-outline" class="tab-icon" />
+        <span class="tab-label">Businesses</span>
+      </button>
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="activeTab() === 'offers'" 
+        (click)="setTab('offers')">
+        <ion-icon name="pricetag-outline" class="tab-icon" />
+        <span class="tab-label">Offers & Deals</span>
+      </button>
+    </div>
   </div>
 
   <!-- Content Results -->

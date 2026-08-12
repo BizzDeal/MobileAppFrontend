@@ -700,7 +700,48 @@ ion-modal.permission-modal-dialog {
   }
 }
 
+/* ==========================================================================
+   Custom Thin Scrollbars
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
 
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+  border-radius: 4px;
+}
 
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
 
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
+}
+
+/* Custom Thin Scrollbars for Ionic content (Shadow DOM) */
+ion-content::part(scroll)::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+  border-radius: 4px;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}

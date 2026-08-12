@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { AdminNotificationsService } from '../../services/admin-notifications.service';
@@ -7,7 +7,7 @@ import { AdminNotificationComposeModalComponent } from '../../components/admin-n
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 
 import { addIcons } from 'ionicons';
-import { notificationsOutline, trashOutline, peopleOutline, personOutline, megaphoneOutline, timeOutline, filterOutline, addOutline } from 'ionicons/icons';
+import { notificationsOutline, trashOutline, peopleOutline, personOutline, megaphoneOutline, timeOutline, filterOutline, addOutline, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-notifications',
@@ -18,9 +18,14 @@ import { notificationsOutline, trashOutline, peopleOutline, personOutline, megap
 })
 export class AdminNotificationsPage implements OnInit {
   notifications: AdminNotification[] = [];
-  filteredNotifications: AdminNotification[] = [];
   loading = true;
   selectedAudience: string = 'ALL';
+
+  isDesktop = window.innerWidth >= 992;
+  page = 1;
+  limit = this.isDesktop ? 5 : 20;
+  hasMore = true;
+  totalPages = 1;
 
   constructor(
     private adminNotificationsService: AdminNotificationsService,
@@ -29,7 +34,8 @@ export class AdminNotificationsPage implements OnInit {
   ) {
     addIcons({
       notificationsOutline, trashOutline, peopleOutline, personOutline, 
-      megaphoneOutline, timeOutline, filterOutline, addOutline
+      megaphoneOutline, timeOutline, filterOutline, addOutline,
+      chevronBackOutline, chevronForwardOutline
     });
   }
 
@@ -37,46 +43,87 @@ export class AdminNotificationsPage implements OnInit {
     this.loadNotifications();
   }
 
-  loadNotifications() {
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    const wasDesktop = this.isDesktop;
+    this.isDesktop = window.innerWidth >= 992;
+    if (this.isDesktop !== wasDesktop) {
+      this.limit = this.isDesktop ? 5 : 20;
+      this.refresh();
+    }
+  }
+
+  refresh() {
+    this.page = 1;
+    this.notifications = [];
     this.loading = true;
-    this.adminNotificationsService.getAllNotifications().subscribe({
-      next: (data) => {
-        this.notifications = data;
-        this.applyFilters();
+    this.loadNotifications();
+  }
+
+  loadNotifications(event?: any) {
+    this.loading = true;
+    const filters = this.selectedAudience === 'ALL' ? undefined : { audience: this.selectedAudience as NotificationAudience };
+    
+    this.adminNotificationsService.getAllNotifications(filters, this.page, this.limit).subscribe({
+      next: (res) => {
+        if (this.page === 1 || this.isDesktop) {
+          this.notifications = res.data;
+        } else {
+          const existingIds = new Set(this.notifications.map(n => n.id));
+          const newNotifs = res.data.filter((n: any) => !existingIds.has(n.id));
+          this.notifications = [...this.notifications, ...newNotifs];
+        }
+
+        if (res.meta) {
+          this.page = res.meta.currentPage;
+          this.totalPages = res.meta.totalPages;
+          this.hasMore = res.meta.currentPage < res.meta.totalPages;
+        } else {
+          this.hasMore = res.data.length === this.limit;
+        }
+
         this.loading = false;
+        if (event) event.target.complete();
       },
       error: (err) => {
         console.error('Failed to load notifications', err);
         this.loading = false;
+        if (event) event.target.complete();
       }
     });
   }
 
+  loadMore(event: any) {
+    if (this.hasMore) {
+      this.page++;
+      this.loadNotifications(event);
+    } else {
+      event.target.complete();
+    }
+  }
+
+  changePageSize(event: any) {
+    this.limit = parseInt(event.target.value, 10);
+    this.refresh();
+  }
+
+  changePage(newPage: number) {
+    if (newPage > 0 && newPage <= this.totalPages) {
+      this.page = newPage;
+      this.loadNotifications();
+    }
+  }
+
   handleRefresh(event: any) {
-    this.adminNotificationsService.getAllNotifications().subscribe({
-      next: (data) => {
-        this.notifications = data;
-        this.applyFilters();
-        event.target.complete();
-      },
-      error: (err) => {
-        console.error('Failed to load notifications', err);
-        event.target.complete();
-      }
-    });
+    this.refresh();
+    setTimeout(() => {
+      event.target.complete();
+    }, 1000);
   }
 
   filterByAudience(event: any) {
     this.selectedAudience = event.detail.value;
-    this.applyFilters();
-  }
-
-  applyFilters() {
-    if (this.selectedAudience === 'ALL') {
-      this.filteredNotifications = [...this.notifications];
-    } else {
-      this.filteredNotifications = this.notifications.filter(n => n.audience === this.selectedAudience);
-    }
+    this.refresh();
   }
 
   getAudienceIcon(audience: NotificationAudience): string {

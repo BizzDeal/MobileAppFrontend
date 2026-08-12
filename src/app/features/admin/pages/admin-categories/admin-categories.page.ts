@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
@@ -7,7 +7,9 @@ import { CardSkeletonComponent } from '../../../../shared/components/skeletons/c
 import { ToastService } from '../../../../core/services/toast.service';
 
 import { addIcons } from 'ionicons';
-import { addOutline, searchOutline, createOutline, listOutline, trashOutline, albumsOutline, chevronForwardOutline } from 'ionicons/icons';
+import { addOutline, searchOutline, createOutline, listOutline, trashOutline, albumsOutline, chevronForwardOutline, chevronBackOutline } from 'ionicons/icons';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-admin-categories',
@@ -16,16 +18,21 @@ import { addOutline, searchOutline, createOutline, listOutline, trashOutline, al
   templateUrl: './admin-categories.page.html',
   styleUrls: ['./admin-categories.page.scss']
 })
-export class AdminCategoriesPage implements OnInit {
+export class AdminCategoriesPage implements OnInit, OnDestroy {
   categories: any[] = [];
   filteredCategories: any[] = [];
   displayedCategories: any[] = [];
   loading = true;
   searchQuery = '';
-  
+
   // Pagination
   page = 1;
   pageSize = 15;
+  totalPages = 1;
+
+  isDesktop = window.innerWidth >= 992;
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
 
   constructor(
     private adminBusinessesService: AdminBusinessesService,
@@ -39,41 +46,93 @@ export class AdminCategoriesPage implements OnInit {
       listOutline,
       trashOutline,
       albumsOutline,
-      chevronForwardOutline
+      chevronForwardOutline,
+      chevronBackOutline
     });
   }
 
-  ngOnInit() {
-    this.loadCategories();
+  @HostListener('window:resize')
+  onResize() {
+    const wasDesktop = this.isDesktop;
+    this.isDesktop = window.innerWidth >= 992;
+    if (this.isDesktop !== wasDesktop) {
+      this.pageSize = this.isDesktop ? 5 : 15;
+      this.page = 1;
+      this.loadCategories();
+    }
   }
 
-  loadCategories() {
-    this.loading = true;
-    this.adminBusinessesService.getCategories().subscribe({
-      next: (res: any) => {
-        if (res && res.data) {
-          this.categories = res.data;
-          this.filterCategories();
-        }
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-        this.toastService.showError('Failed to load categories');
+  ngOnInit() {
+    this.pageSize = this.isDesktop ? 5 : 15;
+    this.loadCategories();
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.page = 1;
+      if (this.isDesktop) {
+        this.loadCategories();
+      } else {
+        this.filterCategories();
       }
     });
   }
 
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+
+  loadCategories(event?: any) {
+    this.loading = true;
+    if (this.isDesktop) {
+      this.adminBusinessesService.getCategories({ page: this.page, limit: this.pageSize, search: this.searchQuery }).subscribe({
+        next: (res: any) => {
+          this.displayedCategories = res.data || [];
+          this.totalPages = res.meta?.totalPages || 1;
+          this.loading = false;
+          if (event) event.target.complete();
+        },
+        error: () => {
+          this.loading = false;
+          this.toastService.showError('Failed to load categories');
+          if (event) event.target.complete();
+        }
+      });
+    } else {
+      this.adminBusinessesService.getCategories().subscribe({
+        next: (res: any) => {
+          if (res && res.data) {
+            this.categories = res.data;
+            this.filterCategories();
+          }
+          this.loading = false;
+          if (event) event.target.complete();
+        },
+        error: () => {
+          this.loading = false;
+          this.toastService.showError('Failed to load categories');
+          if (event) event.target.complete();
+        }
+      });
+    }
+  }
+
   onSearch(event: any) {
-    this.searchQuery = event.target.value?.toLowerCase() || '';
-    this.filterCategories();
+    this.searchQuery = event.target.value || '';
+    if (this.isDesktop) {
+      this.searchSubject.next(this.searchQuery);
+    } else {
+      this.filterCategories();
+    }
   }
 
   filterCategories() {
     if (this.searchQuery.trim() !== '') {
-      this.filteredCategories = this.categories.filter(cat => 
-        cat.name.toLowerCase().includes(this.searchQuery) ||
-        (cat.description && cat.description.toLowerCase().includes(this.searchQuery))
+      const q = this.searchQuery.toLowerCase();
+      this.filteredCategories = this.categories.filter(cat =>
+        cat.name.toLowerCase().includes(q) ||
+        (cat.description && cat.description.toLowerCase().includes(q))
       );
     } else {
       this.filteredCategories = [...this.categories];
@@ -87,22 +146,37 @@ export class AdminCategoriesPage implements OnInit {
   }
 
   loadMore(event: any) {
+    if (this.isDesktop) return;
+
     const nextCategories = this.filteredCategories.slice(
-      this.page * this.pageSize, 
+      this.page * this.pageSize,
       (this.page + 1) * this.pageSize
     );
-    
+
     if (nextCategories.length > 0) {
       this.displayedCategories = [...this.displayedCategories, ...nextCategories];
       this.page++;
     }
-    
+
     if (event) {
       event.target.complete();
-      
+
       if (this.displayedCategories.length >= this.filteredCategories.length) {
         event.target.disabled = true;
       }
+    }
+  }
+
+  changePageSize(event: any) {
+    this.pageSize = parseInt(event.target.value, 10);
+    this.page = 1;
+    this.loadCategories();
+  }
+
+  changePage(newPage: number) {
+    if (newPage > 0 && newPage <= this.totalPages) {
+      this.page = newPage;
+      this.loadCategories();
     }
   }
 
@@ -110,9 +184,9 @@ export class AdminCategoriesPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: AdminCategoryActionModalComponent
     });
-    
+
     await modal.present();
-    
+
     const { data } = await modal.onDidDismiss();
     if (data && data.action === 'save') {
       this.adminBusinessesService.createCategory(data.data).subscribe({
@@ -131,9 +205,9 @@ export class AdminCategoriesPage implements OnInit {
       component: AdminCategoryActionModalComponent,
       componentProps: { category }
     });
-    
+
     await modal.present();
-    
+
     const { data } = await modal.onDidDismiss();
     if (data) {
       if (data.action === 'save') {

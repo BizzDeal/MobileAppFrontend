@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -14,7 +14,9 @@ import {
   starOutline, 
   star, 
   refreshOutline,
-  businessOutline
+  businessOutline,
+  chevronBackOutline,
+  chevronForwardOutline
 } from 'ionicons/icons';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getAvatarColor } from '../../../../shared/utils/avatar.util';
@@ -54,9 +56,11 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
   businesses: AdminBusiness[] = [];
   filteredBusinesses: AdminBusiness[] = [];
   isLoading = true;
+  isDesktop = window.innerWidth >= 992;
   page = 1;
-  limit = 20;
+  limit = this.isDesktop ? 5 : 20;
   hasMore = true;
+  totalPages = 1;
 
   // Enum access for template
   BusinessStatus = BusinessStatus;
@@ -73,7 +77,9 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
       starOutline,
       star,
       refreshOutline,
-      businessOutline
+      businessOutline,
+      chevronBackOutline,
+      chevronForwardOutline
     });
   }
 
@@ -101,6 +107,16 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     this.loadBusinesses();
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    const wasDesktop = this.isDesktop;
+    this.isDesktop = window.innerWidth >= 992;
+    if (this.isDesktop !== wasDesktop) {
+      this.limit = this.isDesktop ? 5 : 20;
+      this.refresh();
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if ((changes['stateId'] && !changes['stateId'].firstChange) || (changes['districtId'] && !changes['districtId'].firstChange)) {
       this.refresh();
@@ -122,7 +138,7 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     this.adminBusinessesService.getBusinesses(query).subscribe({
       next: (response) => {
         if (response.success) {
-          if (this.page === 1) {
+          if (this.page === 1 || this.isDesktop) {
             this.businesses = response.data;
           } else {
             // filter out duplicates just in case
@@ -132,6 +148,7 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
           }
           if (response.meta) {
             this.page = response.meta.currentPage;
+            this.totalPages = response.meta.totalPages;
             this.hasMore = response.meta.currentPage < response.meta.totalPages;
           } else {
             this.hasMore = response.data.length === this.limit;
@@ -155,6 +172,18 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
       this.loadBusinesses(event);
     } else {
       event.target.complete();
+    }
+  }
+
+  changePageSize(event: any) {
+    this.limit = parseInt(event.target.value, 10);
+    this.refresh();
+  }
+
+  changePage(newPage: number) {
+    if (newPage > 0 && newPage <= this.totalPages) {
+      this.page = newPage;
+      this.loadBusinesses();
     }
   }
 

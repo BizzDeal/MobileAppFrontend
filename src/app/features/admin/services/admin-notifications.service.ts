@@ -29,13 +29,19 @@ export class AdminNotificationsService {
   constructor(private http: HttpClient) {}
 
   // List Notifications from Backend
-  getAllNotifications(filters?: AdminNotificationFilters): Observable<AdminNotification[]> {
+  getAllNotifications(filters?: AdminNotificationFilters, page: number = 1, limit: number = 20): Observable<{ data: AdminNotification[], meta?: any }> {
     this._loading.set(true);
     this._error.set(null);
 
-    let params = new HttpParams();
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
     if (filters?.type) {
       params = params.set('type', filters.type);
+    }
+    if (filters?.audience) {
+      params = params.set('audience', filters.audience);
     }
 
     return this.http.get<any>(this.apiUrl, { params }).pipe(
@@ -59,13 +65,10 @@ export class AdminNotificationsService {
           };
         });
 
-        if (filters?.audience) {
-          list = list.filter((n) => n.audience === filters.audience);
-        }
-
+        // Use the signal to store the latest fetched items.
         this._notifications.set(list);
         this._loading.set(false);
-        return list;
+        return { data: list, meta: res?.meta };
       }),
       catchError((err) => {
         console.error('Error fetching admin notifications:', err);

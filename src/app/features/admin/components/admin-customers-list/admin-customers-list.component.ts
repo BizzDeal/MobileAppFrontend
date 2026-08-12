@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input, HostListener } from '@angular/core';
 
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -8,6 +8,8 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 import { getAvatarColor } from '../../../../shared/utils/avatar.util';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { addIcons } from 'ionicons';
+import { chevronForward, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-customers-list',
@@ -33,9 +35,11 @@ export class AdminCustomersListComponent implements OnInit, OnChanges {
 
   customers: AdminCustomer[] = [];
   loading = true;
+  isDesktop = window.innerWidth >= 992;
   page = 1;
-  limit = 20;
+  limit = this.isDesktop ? 5 : 20;
   hasMore = true;
+  totalPages = 1;
   private isInitialLoad = true;
 
   get filteredCustomers(): AdminCustomer[] {
@@ -45,7 +49,9 @@ export class AdminCustomersListComponent implements OnInit, OnChanges {
   constructor(
     private adminUsersService: AdminUsersService,
     private router: Router
-  ) {}
+  ) {
+    addIcons({ chevronForward, chevronBackOutline, chevronForwardOutline });
+  }
 
   ngOnInit() {
     this.loadCustomers();
@@ -77,10 +83,20 @@ export class AdminCustomersListComponent implements OnInit, OnChanges {
     this.loadCustomers();
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    const wasDesktop = this.isDesktop;
+    this.isDesktop = window.innerWidth >= 992;
+    if (this.isDesktop !== wasDesktop) {
+      this.limit = this.isDesktop ? 5 : 20;
+      this.refresh();
+    }
+  }
+
   loadCustomers(event?: any) {
     this.loading = true;
     this.adminUsersService.getCustomers(this.page, this.limit, this.searchQuery, this.stateId, this.districtId).subscribe((res) => {
-      if (this.page === 1) {
+      if (this.page === 1 || this.isDesktop) {
         this.customers = res.data;
       } else {
         // filter out duplicates just in case
@@ -91,6 +107,7 @@ export class AdminCustomersListComponent implements OnInit, OnChanges {
 
       if (res.meta) {
         this.page = res.meta.currentPage;
+        this.totalPages = res.meta.totalPages;
         this.hasMore = res.meta.currentPage < res.meta.totalPages;
       } else {
         this.hasMore = res.data.length === this.limit;
@@ -109,6 +126,18 @@ export class AdminCustomersListComponent implements OnInit, OnChanges {
       this.loadCustomers(event);
     } else {
       event.target.complete();
+    }
+  }
+
+  changePageSize(event: any) {
+    this.limit = parseInt(event.target.value, 10);
+    this.refresh();
+  }
+
+  changePage(newPage: number) {
+    if (newPage > 0 && newPage <= this.totalPages) {
+      this.page = newPage;
+      this.loadCustomers();
     }
   }
 

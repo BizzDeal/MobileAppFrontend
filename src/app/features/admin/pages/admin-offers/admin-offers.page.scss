@@ -153,21 +153,22 @@
   }
 }
 
-.premium-select-item {
+.premium-segment {
   --background: #f4f5f8;
-  --border-radius: 8px;
-  --padding-start: 12px;
+  border-radius: 8px;
+  padding: 2px;
   margin: 0 16px;
-  
-  ion-select {
-    width: 100%;
+
+  ion-segment-button {
+    --color: #666;
+    --color-checked: #111;
+    --background-checked: #ffffff;
+    --indicator-box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     font-weight: 500;
-    font-size: 15px;
-    
-    &::part(icon) {
-      position: absolute;
-      right: 12px;
-    }
+    font-size: 14px;
+    border-radius: 6px;
+    margin: 2px;
+    min-height: 36px;
   }
 }
 
@@ -178,7 +179,8 @@
   --placeholder-color: #999;
   --icon-color: #999;
   --clear-button-color: #999;
-  padding: 0 16px !important;
+  padding-top: 0px;
+  padding-bottom: 0px;
   
   .searchbar-input {
     font-size: 15px;
@@ -205,3 +207,190 @@ ion-toolbar {
     --padding-end: 0px !important;
   }
 }
+
+/* Desktop Table Styles */
+.admin-table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.03);
+  overflow: hidden;
+  margin: 0;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  th {
+    background: #fafafa;
+    padding: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+    transition: background-color 0.2s ease;
+  }
+
+  tr {
+    cursor: pointer;
+  }
+
+  tr:hover td {
+    background-color: rgba(var(--ion-color-primary-rgb), 0.02);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .table-offer-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .table-offer-title {
+    font-weight: 600;
+    color: #222;
+  }
+
+  .table-business-name {
+    font-weight: 500;
+    color: #444;
+  }
+  
+  .table-offer-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    
+    .table-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      
+      &.type-badge {
+        background: #f4f5f8;
+        color: #4b5563;
+      }
+      
+      &.value-badge {
+        background: rgba(var(--ion-color-primary-rgb), 0.1);
+        color: var(--ion-color-primary);
+        font-weight: 700;
+      }
+    }
+  }
+
+  .table-date-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    color: #666;
+    
+    .date-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      
+      .date-label {
+        font-weight: 500;
+        color: #888;
+        width: 36px;
+      }
+    }
+  }
+
+  .status-badge {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+}
+
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+
+  .page-size-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+
+    .premium-select {
+      padding: 6px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: #fafafa;
+      color: #222;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+
+      &:focus {
+        border-color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  .page-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .page-info {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .page-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      color: #222;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #fafafa;
+      }
+
+      &:not(:disabled):hover {
+        background: #f4f5f8;
+        border-color: #d0d0d0;
+      }
+    }
+  }
+}
+

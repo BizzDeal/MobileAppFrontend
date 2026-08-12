@@ -68,15 +68,19 @@ export class AdminBusinessesService {
     return this.http.get<any>(`${this.apiUrl}/offers`, { params }).pipe(
       map(res => {
         let actualData = res;
+        let meta;
         if (res && res.data && res.meta) {
           actualData = res.data;
+          meta = res.meta;
         } else if (res && res.success !== undefined) {
           actualData = res.data;
+          meta = res.meta;
         }
         return {
           success: res && res.success !== undefined ? res.success : true,
           message: res && res.message ? res.message : 'Offers fetched successfully',
-          data: actualData
+          data: actualData,
+          meta: meta
         };
       }),
       catchError(err => {
@@ -156,8 +160,16 @@ export class AdminBusinessesService {
     }
   }
 
-  getCategories(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/businesses/categories`).pipe(
+  getCategories(query?: any): Observable<ApiResponse<any[]>> {
+    let params = new HttpParams();
+    if (query) {
+      Object.keys(query).forEach(key => {
+        if (query[key] !== null && query[key] !== undefined) {
+          params = params.set(key, query[key]);
+        }
+      });
+    }
+    return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/businesses/categories`, { params }).pipe(
       catchError(err => {
         throw new Error(extractFriendlyErrorMessage(err, 'Failed to fetch categories'));
       })

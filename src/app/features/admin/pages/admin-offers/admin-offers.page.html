@@ -14,77 +14,188 @@
       }
     </button>
   </div>
-  <ion-toolbar class="toolbar-no-padding pb-2">
-    <ion-item lines="none" class="premium-select-item">
-      <ion-icon name="filter-outline" slot="start" class="text-medium"></ion-icon>
-      <ion-select [value]="selectedStatus" (ionChange)="segmentChanged($event)" interface="action-sheet" placeholder="Filter by status" justify="space-between" class="w-full">
-        <ion-select-option value="ALL">All Offers</ion-select-option>
-        <ion-select-option value="PENDING">Pending</ion-select-option>
-        <ion-select-option value="APPROVED">Approved</ion-select-option>
-        <ion-select-option value="REJECTED">Rejected</ion-select-option>
-      </ion-select>
-    </ion-item>
+  <ion-toolbar class="pb-2">
+    <ion-segment [value]="selectedStatus" (ionChange)="segmentChanged($event)" mode="ios" class="premium-segment">
+      <ion-segment-button value="ALL">
+        <ion-label>All</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="PENDING">
+        <ion-label>Pending</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="APPROVED">
+        <ion-label>Approved</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="REJECTED">
+        <ion-label>Rejected</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
 <ion-content style="--background: #fff;">
-  @if (loading) {
-    <div style="padding: 16px;">
-      <app-card-skeleton [count]="3"></app-card-skeleton>
-    </div>
-  }
-
-  @if (!loading && filteredOffers.length === 0) {
-    <div class="ion-padding ion-text-center mt-4">
-      <ion-icon name="pricetag-outline" class="text-4xl text-medium"></ion-icon>
-      <p class="text-medium mt-2">No offers found for the selected status.</p>
-    </div>
-  }
-
-  @if (!loading && filteredOffers.length> 0) {
-    <ion-list class="bg-transparent p-0 pt-4 m-0" lines="none">
-      @for (offer of filteredOffers; track offer) {
-        <div class="premium-offer-card" (click)="openOfferModal(offer)" style="cursor: pointer;">
-          <div class="card-body">
-            <!-- Content -->
-            <div class="offer-details">
-              <div class="offer-header">
-                <h3 class="offer-title">{{ offer.title }}</h3>
-                <span class="custom-badge shrink-0" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
-                  {{ offer.status }}
-                </span>
-              </div>
-              <div class="offer-business">
-                <ion-icon name="business-outline" class="icon-primary"></ion-icon>
-                <span>{{ offer.business_name || 'Unknown Business' }}</span>
-              </div>
-              <div class="offer-badges">
-                @if (offer.offer_type) {
-                  <span class="type-badge">
-                    <ion-icon name="pricetag-outline"></ion-icon>
-                    {{ offer.offer_type }}
-                  </span>
-                }
-                @if (offer.discount_value) {
-                  <span class="value-badge">
-                    {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }} OFF
-                  </span>
-                }
-              </div>
-            </div>
-          </div>
-          <!-- Footer / Extra info -->
-          <div class="card-footer">
-            <div class="footer-time">
-              <ion-icon name="time-outline"></ion-icon>
-              <span>Ends: {{ offer.end_date | date:'mediumDate' }}</span>
-            </div>
-            <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
-          </div>
+  <div class="list-container m-0 mt-4 mx-4">
+    @if (!isDesktop) {
+      @if (loading && offers.length === 0) {
+        <div style="padding: 16px;">
+          <app-card-skeleton [count]="3"></app-card-skeleton>
         </div>
       }
-    </ion-list>
-  }
+
+      @if (!loading && offers.length === 0) {
+        <div class="ion-padding ion-text-center mt-4">
+          <ion-icon name="pricetag-outline" class="text-4xl text-medium"></ion-icon>
+          <p class="text-medium mt-2">No offers found for the selected status.</p>
+        </div>
+      }
+
+      @if (offers.length > 0) {
+        <ion-list class="bg-transparent p-0 m-0" lines="none">
+          @for (offer of offers; track offer) {
+            <div class="premium-offer-card" (click)="openOfferModal(offer)" style="cursor: pointer;">
+              <div class="card-body">
+                <!-- Content -->
+                <div class="offer-details">
+                  <div class="offer-header">
+                    <h3 class="offer-title">{{ offer.title }}</h3>
+                    <span class="custom-badge shrink-0" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
+                      {{ offer.status }}
+                    </span>
+                  </div>
+                  <div class="offer-business">
+                    <ion-icon name="business-outline" class="icon-primary"></ion-icon>
+                    <span>{{ offer.business_name || 'Unknown Business' }}</span>
+                  </div>
+                  <div class="offer-badges">
+                    @if (offer.offer_type) {
+                      <span class="type-badge">
+                        <ion-icon name="pricetag-outline"></ion-icon>
+                        {{ offer.offer_type }}
+                      </span>
+                    }
+                    @if (offer.discount_value) {
+                      <span class="value-badge">
+                        {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }} OFF
+                      </span>
+                    }
+                  </div>
+                </div>
+              </div>
+              <!-- Footer / Extra info -->
+              <div class="card-footer">
+                <div class="footer-time">
+                  <ion-icon name="time-outline"></ion-icon>
+                  <span>Ends: {{ offer.end_date | date:'mediumDate' }}</span>
+                </div>
+                <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
+              </div>
+            </div>
+          }
+        </ion-list>
+      }
+
+      @if (!loading) {
+        <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore">
+          <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more offers..."></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      }
+    } @else {
+      <!-- Table View (Desktop) -->
+      <div class="admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Offer</th>
+              <th>Business</th>
+              <th>Details</th>
+              <th>Duration</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (!loading && offers.length === 0) {
+              <tr>
+                <td colspan="5" class="text-center py-8 text-muted">No offers found for the selected status.</td>
+              </tr>
+            }
+            @if (!loading && offers.length > 0) {
+              @for (offer of offers; track offer) {
+                <tr (click)="openOfferModal(offer)">
+                  <td>
+                    <div class="table-offer-info">
+                      <span class="table-offer-title">{{ offer.title }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="table-business-name">{{ offer.business_name || 'Unknown Business' }}</span>
+                  </td>
+                  <td>
+                    <div class="table-offer-details">
+                      @if (offer.offer_type) {
+                        <span class="table-badge type-badge">{{ offer.offer_type }}</span>
+                      }
+                      @if (offer.discount_value) {
+                        <span class="table-badge value-badge">
+                          {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }} OFF
+                        </span>
+                      }
+                    </div>
+                  </td>
+                  <td>
+                    <div class="table-date-info">
+                      <div class="date-row">
+                        <span class="date-label">Start:</span>
+                        <span class="date-value">{{ offer.start_date | date:'shortDate' }}</span>
+                      </div>
+                      <div class="date-row">
+                        <span class="date-label">End:</span>
+                        <span class="date-value">{{ offer.end_date | date:'shortDate' }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <ion-badge [color]="getOfferStatusColor(offer.status)" class="status-badge">
+                      {{ offer.status }}
+                    </ion-badge>
+                  </td>
+                </tr>
+              }
+            } @else if (loading) {
+              @for (i of [1,2,3,4,5]; track i) {
+                <tr>
+                  <td colspan="5">
+                    <ion-skeleton-text animated style="width: 100%; height: 30px;"></ion-skeleton-text>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="table-pagination">
+          <div class="page-size-selector">
+            <label>Rows per page:</label>
+            <select class="premium-select" [value]="limit" (change)="changePageSize($event)">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="15">15</option>
+              <option [value]="20">20</option>
+            </select>
+          </div>
+          
+          <div class="page-controls">
+            <span class="page-info">Page {{ page }} of {{ totalPages || 1 }}</span>
+            <button class="page-btn" [disabled]="page === 1" (click)="changePage(page - 1)">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+            <button class="page-btn" [disabled]="page >= totalPages || totalPages === 0" (click)="changePage(page + 1)">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
 </ion-content>
 
 <app-admin-region-filter-modal
@@ -93,4 +204,3 @@
   [districtId]="districtId"
   (filterApplied)="onFilterApplied($event)"
   (closed)="isFilterOpen = false"></app-admin-region-filter-modal>
-

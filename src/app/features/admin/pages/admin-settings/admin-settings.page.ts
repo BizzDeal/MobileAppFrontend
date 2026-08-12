@@ -6,8 +6,10 @@ import {
   IonInput,
   IonButton,
   IonIcon,
-
-  IonSpinner
+  IonSpinner,
+  IonGrid,
+  IonRow,
+  IonCol
 } from '@ionic/angular/standalone';
 import { AdminSettingsService, PlatformSettings } from '../../services/admin-settings.service';
 import { addIcons } from 'ionicons';
@@ -24,6 +26,9 @@ import { saveOutline, refreshOutline } from 'ionicons/icons';
     IonButton,
     IonIcon,
     IonSpinner,
+    IonGrid,
+    IonRow,
+    IonCol,
     FormsModule
   ]
 })

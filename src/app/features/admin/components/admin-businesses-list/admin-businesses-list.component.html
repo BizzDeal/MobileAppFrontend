@@ -1,5 +1,6 @@
 <div class="list-container m-0 mt-4 mx-4">
-  @if (!isLoading) {
+  @if (!isDesktop) {
+    @if (!isLoading) {
     <ion-list lines="none" class="p-0 m-0 bg-transparent">
       @for (business of filteredBusinesses; track business) {
         <div class="premium-business-card">
@@ -88,9 +89,121 @@
   }
 
   @if (!isLoading) {
-    <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore">
-      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more businesses..."></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
+      <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more businesses..."></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    }
+  } @else {
+    <!-- Table View (Desktop) -->
+    <div class="admin-table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Owner</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (!isLoading) {
+            @for (business of filteredBusinesses; track business) {
+              <tr (click)="viewBusiness(business)">
+                <td>
+                  <div class="table-user-info">
+                    <img loading="lazy" [appCachedImg]="business.logo_url" [fallbackName]="business.name" class="table-avatar" [alt]="business.name">
+                    <span class="table-user-name">
+                      {{ business.name }}
+                      @if (business.is_featured) {
+                        <ion-icon name="star" color="warning" class="ml-1 text-base"></ion-icon>
+                      }
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <span>{{ business.owner_name }}</span>
+                </td>
+                <td>
+                  <span class="category-badge">{{ business.category_name }}</span>
+                </td>
+                <td>
+                  <span class="status-badge" [ngClass]="'status-' + business.status.toLowerCase()">
+                    {{ business.status }}
+                  </span>
+                </td>
+                <td>
+                  <div class="table-actions">
+                    @if (business.status === BusinessStatus.PENDING) {
+                      <button class="table-action-btn success-btn" (click)="$event.stopPropagation(); updateStatus(business, BusinessStatus.ACTIVE)" title="Approve">
+                        <ion-icon name="checkmark-circle-outline"></ion-icon>
+                        <span>Approve</span>
+                      </button>
+                      <button class="table-action-btn danger-btn" (click)="$event.stopPropagation(); updateStatus(business, BusinessStatus.REJECTED)" title="Reject">
+                        <ion-icon name="close-circle-outline"></ion-icon>
+                        <span>Reject</span>
+                      </button>
+                    }
+                    @if (business.status === BusinessStatus.ACTIVE) {
+                      <button class="table-action-btn danger-btn" (click)="$event.stopPropagation(); updateStatus(business, BusinessStatus.SUSPENDED)" title="Suspend">
+                        <ion-icon name="ban-outline"></ion-icon>
+                        <span>Suspend</span>
+                      </button>
+                      <button class="table-action-btn warning-btn" (click)="$event.stopPropagation(); toggleFeature(business)" title="Feature">
+                        <ion-icon [name]="business.is_featured ? 'star-outline' : 'star'"></ion-icon>
+                        <span>{{ business.is_featured ? 'Unfeature' : 'Feature' }}</span>
+                      </button>
+                    }
+                    @if (business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED) {
+                      <button class="table-action-btn success-btn" (click)="$event.stopPropagation(); updateStatus(business, BusinessStatus.ACTIVE)" title="Reactivate">
+                        <ion-icon name="refresh-outline"></ion-icon>
+                        <span>Reactivate</span>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (filteredBusinesses.length === 0) {
+              <tr>
+                <td colspan="5" class="text-center py-8 text-muted">No businesses found.</td>
+              </tr>
+            }
+          } @else {
+            @for (i of [1,2,3,4,5]; track i) {
+              <tr>
+                <td colspan="5">
+                  <ion-skeleton-text animated style="width: 100%; height: 30px;"></ion-skeleton-text>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+
+      <!-- Pagination Controls -->
+      <div class="table-pagination">
+        <div class="page-size-selector">
+          <label>Rows per page:</label>
+          <select class="premium-select" [value]="limit" (change)="changePageSize($event)">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="15">15</option>
+            <option [value]="20">20</option>
+          </select>
+        </div>
+        
+        <div class="page-controls">
+          <span class="page-info">Page {{ page }} of {{ totalPages || 1 }}</span>
+          <button class="page-btn" [disabled]="page === 1" (click)="changePage(page - 1)">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+          </button>
+          <button class="page-btn" [disabled]="page >= totalPages || totalPages === 0" (click)="changePage(page + 1)">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
   }
 </div>
 

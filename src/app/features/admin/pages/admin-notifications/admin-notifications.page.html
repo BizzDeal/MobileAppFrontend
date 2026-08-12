@@ -1,14 +1,19 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
-  <ion-toolbar class="toolbar-no-padding pt-3 pb-2">
-    <ion-item lines="none" class="premium-select-item">
-      <ion-icon name="filter-outline" slot="start" class="text-medium"></ion-icon>
-      <ion-select [value]="selectedAudience" (ionChange)="filterByAudience($event)" interface="action-sheet" placeholder="Filter by audience" justify="space-between" class="w-full">
-        <ion-select-option value="ALL">All Audiences</ion-select-option>
-        <ion-select-option value="BULK_USERS">Bulk Users</ion-select-option>
-        <ion-select-option value="ALL_MEMBERS">All Members</ion-select-option>
-        <ion-select-option value="ALL_CUSTOMERS">All Customers</ion-select-option>
-      </ion-select>
-    </ion-item>
+  <ion-toolbar class="px-2 pb-2 pt-3">
+    <ion-segment [value]="selectedAudience" (ionChange)="filterByAudience($event)" mode="ios" class="premium-segment">
+      <ion-segment-button value="ALL">
+        <ion-label>All Audiences</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="BULK_USERS">
+        <ion-label>Bulk</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="ALL_MEMBERS">
+        <ion-label>Members</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="ALL_CUSTOMERS">
+        <ion-label>Customers</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
@@ -16,65 +21,178 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  @if (loading) {
-    <div style="padding: 16px;">
-      <app-list-skeleton [count]="4"></app-list-skeleton>
-    </div>
-  }
 
-  @if (!loading && filteredNotifications.length === 0) {
-    <div class="ion-padding ion-text-center mt-4">
-      <ion-icon name="notifications-outline" class="text-4xl text-medium"></ion-icon>
-      <p class="text-medium mt-2">No notifications found.</p>
-    </div>
-  }
-
-  @if (!loading && filteredNotifications.length> 0) {
-    <ion-list class="bg-transparent p-0 pt-4 m-0" lines="none">
-      @for (notification of filteredNotifications; track notification) {
-        <div class="premium-offer-card">
-          <div class="card-body">
-            <div class="offer-details">
-              <div class="offer-header">
-                <h3 class="offer-title">{{ notification.title }}</h3>
-                <span class="custom-badge shrink-0" [ngClass]="'badge-' + getTypeBadgeColor(notification.type)">
-                  {{ notification.type }}
-                </span>
-              </div>
-              <div class="notification-message">
-                {{ notification.message }}
-              </div>
-              <div class="offer-badges">
-                <span class="type-badge">
-                  <ion-icon [name]="getAudienceIcon(notification.audience)"></ion-icon>
-                  {{ getAudienceLabel(notification.audience) }}
-                </span>
-                @if (notification.target_phones?.length || notification.target_ids?.length) {
-                  <span class="value-badge">
-                    {{ (notification.target_phones?.length || notification.target_ids?.length) }} selected
-                  </span>
-                }
-              </div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <div class="footer-time">
-              <ion-icon name="time-outline"></ion-icon>
-              <span>Sent: {{ notification.created_at | date:'medium' }}</span>
-            </div>
-            <ion-button fill="clear" color="danger" size="small" class="delete-btn" (click)="deleteNotification(notification.id)">
-              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </div>
+  <div class="list-container m-0 mx-4">
+    @if (!isDesktop) {
+      @if (loading && notifications.length === 0) {
+        <div style="padding: 16px;">
+          <app-list-skeleton [count]="4"></app-list-skeleton>
         </div>
       }
-    </ion-list>
-  }
 
-  <!-- Compose FAB -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button color="primary" (click)="openComposeModal()">
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+      @if (!loading && notifications.length === 0) {
+        <div class="ion-padding ion-text-center mt-4">
+          <ion-icon name="notifications-outline" class="text-4xl text-medium"></ion-icon>
+          <p class="text-medium mt-2">No notifications found.</p>
+        </div>
+      }
+
+      @if (notifications.length > 0) {
+        <ion-list class="bg-transparent p-0 pt-4 m-0" lines="none">
+          @for (notification of notifications; track notification) {
+            <div class="premium-offer-card">
+              <div class="card-body">
+                <div class="offer-details">
+                  <div class="offer-header">
+                    <h3 class="offer-title">{{ notification.title }}</h3>
+                    <span class="custom-badge shrink-0" [ngClass]="'badge-' + getTypeBadgeColor(notification.type)">
+                      {{ notification.type }}
+                    </span>
+                  </div>
+                  <div class="notification-message">
+                    {{ notification.message }}
+                  </div>
+                  <div class="offer-badges">
+                    <span class="type-badge">
+                      <ion-icon [name]="getAudienceIcon(notification.audience)"></ion-icon>
+                      {{ getAudienceLabel(notification.audience) }}
+                    </span>
+                    @if (notification.target_phones?.length || notification.target_ids?.length) {
+                      <span class="value-badge">
+                        {{ (notification.target_phones?.length || notification.target_ids?.length) }} selected
+                      </span>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="footer-time">
+                  <ion-icon name="time-outline"></ion-icon>
+                  <span>Sent: {{ notification.created_at | date:'medium' }}</span>
+                </div>
+                <ion-button fill="clear" color="danger" size="small" class="delete-btn" (click)="deleteNotification(notification.id)">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          }
+        </ion-list>
+      }
+
+      @if (!loading) {
+        <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore">
+          <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more notifications..."></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      }
+    } @else {
+      <!-- Table View (Desktop) -->
+      <div class="d-flex align-items-center mb-2 mt-3" style="margin: 16px 16px 0 16px;">
+        <ion-button color="primary" class="premium-btn m-0" (click)="openComposeModal()">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          SEND NOTIFICATIONS
+        </ion-button>
+      </div>
+
+      <div class="admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Audience</th>
+              <th>Message</th>
+              <th>Sent Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (!loading) {
+              @for (notification of notifications; track notification) {
+                <tr>
+                  <td>
+                    <span class="fw-bold">{{ notification.title }}</span>
+                  </td>
+                  <td>
+                    <span class="custom-badge shrink-0" [ngClass]="'badge-' + getTypeBadgeColor(notification.type)">
+                      {{ notification.type }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="table-contact-info">
+                      <ion-icon [name]="getAudienceIcon(notification.audience)" class="me-1"></ion-icon>
+                      <span>{{ getAudienceLabel(notification.audience) }}</span>
+                      @if (notification.target_phones?.length || notification.target_ids?.length) {
+                        <span class="text-muted ms-1">({{ (notification.target_phones?.length || notification.target_ids?.length) }})</span>
+                      }
+                    </div>
+                  </td>
+                  <td>
+                    <span class="text-muted notification-message-truncate" [title]="notification.message">{{ notification.message }}</span>
+                  </td>
+                  <td>
+                    <div class="table-contact-info">
+                      <ion-icon name="time-outline" class="me-1"></ion-icon>
+                      <span>{{ notification.created_at | date:'medium' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="table-action-btn delete-btn text-danger" (click)="deleteNotification(notification.id)" title="Delete">
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+              @if (notifications.length === 0) {
+                <tr>
+                  <td colspan="6" class="text-center py-8 text-muted">No notifications found.</td>
+                </tr>
+              }
+            } @else {
+              @for (i of [1,2,3,4,5]; track i) {
+                <tr>
+                  <td colspan="6">
+                    <ion-skeleton-text animated style="width: 100%; height: 30px;"></ion-skeleton-text>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+  
+        <!-- Pagination Controls -->
+        <div class="table-pagination">
+          <div class="page-size-selector">
+            <label>Rows per page:</label>
+            <select class="premium-select" [value]="limit" (change)="changePageSize($event)">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="15">15</option>
+              <option [value]="20">20</option>
+            </select>
+          </div>
+          
+          <div class="page-controls">
+            <span class="page-info">Page {{ page }} of {{ totalPages || 1 }}</span>
+            <button class="page-btn" [disabled]="page === 1" (click)="changePage(page - 1)">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+            <button class="page-btn" [disabled]="page >= totalPages || totalPages === 0" (click)="changePage(page + 1)">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Compose FAB (Mobile) -->
+  @if (!isDesktop) {
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button color="primary" (click)="openComposeModal()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
 </ion-content>

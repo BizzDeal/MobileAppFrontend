@@ -32,7 +32,7 @@ export class AdminBusinessDetailsPage implements OnInit {
   vouchers: AdminVoucher[] = [];
   
   loading = true;
-  selectedSegment: 'details' | 'offers' | 'vouchers' = 'details';
+  activeTab: 'details' | 'offers' | 'vouchers' = 'details';
   BusinessStatus = BusinessStatus;
 
   constructor(
@@ -99,8 +99,8 @@ export class AdminBusinessDetailsPage implements OnInit {
     });
   }
 
-  segmentChanged(event: any) {
-    this.selectedSegment = event.detail.value;
+  setTab(tab: 'details' | 'offers' | 'vouchers') {
+    this.activeTab = tab;
   }
 
   async toggleFeatured() {

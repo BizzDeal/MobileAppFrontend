@@ -1,312 +1,235 @@
-<ion-header class="ion-no-border" collapse="fade" [translucent]="true">
+<ion-header class="ion-no-border">
   <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin/businesses"></ion-back-button>
-    </ion-buttons>
-    <ion-title class="font-bold">Business Details</ion-title>
-    <ion-buttons slot="end">
-      <app-admin-logout-button></app-admin-logout-button>
-    </ion-buttons>
+    <div class="web-header-content">
+      <div class="header-left">
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/admin/businesses"></ion-back-button>
+        </ion-buttons>
+        <ion-title class="page-title font-bold">Business Details</ion-title>
+      </div>
+      <div class="header-right">
+        <app-admin-logout-button></app-admin-logout-button>
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content style="--background: #fff;">
-  @if (loading) {
-    <div style="padding: 16px;">
-      <app-card-skeleton [count]="2"></app-card-skeleton>
-    </div>
-  }
+<ion-content style="--background: #f4f5f8;">
+  <main class="web-content">
+    @if (loading) {
+      <div class="loading-container">
+        <app-card-skeleton [count]="2"></app-card-skeleton>
+      </div>
+    }
 
-  @if (!loading && !business) {
-    <div class="ion-padding ion-text-center mt-4">
-      <ion-text color="danger">Business not found.</ion-text>
-    </div>
-  }
+    @if (!loading && !business) {
+      <div class="error-msg">Business not found.</div>
+    }
 
-  @if (!loading && business) {
-    <div>
-      <!-- Header Card -->
-      <div class="profile-top-card">
-        <div class="header-banner"></div>
-        <div class="profile-header-content">
-          <div class="profile-avatar-wrap">
-            <img loading="lazy" [appCachedImg]="business.logo_url " [fallbackName]="business.name" alt="Logo">
+    @if (!loading && business) {
+      <div class="content-wrapper">
+        
+        <div class="user-profile-header">
+          <div class="user-info-section">
+            <div class="user-avatar business-logo-box">
+              <img loading="lazy" [appCachedImg]="business.logo_url" [fallbackName]="business.name" alt="Logo">
+            </div>
+            <div class="user-title-group">
+              <h2>{{ business.name }}</h2>
+              <div class="badges">
+                <span class="role-badge">{{ business.category_name }}</span>
+                <span class="badge" [ngClass]="'badge-' + getStatusColor(business.status)">{{ business.status }}</span>
+              </div>
+            </div>
           </div>
-          <h2 class="profile-name">{{ business.name }}</h2>
-          <div class="flex items-center justify-center gap-2 mt-1">
-            <span class="category-badge">{{ business.category_name }}</span>
-            <ion-badge [color]="getStatusColor(business.status)" class="status-badge m-0">{{ business.status }}</ion-badge>
+          
+          <div class="header-actions">
+            @if (business.status === BusinessStatus.PENDING) {
+              <button class="action-btn btn-success" (click)="updateStatus(BusinessStatus.ACTIVE)">Approve</button>
+              <button class="action-btn btn-outline-danger" (click)="updateStatus(BusinessStatus.REJECTED)">Reject</button>
+            }
+            @if (business.status === BusinessStatus.ACTIVE) {
+              <button class="action-btn btn-outline-danger" (click)="updateStatus(BusinessStatus.SUSPENDED)">Suspend</button>
+            }
+            @if (business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED) {
+              <button class="action-btn btn-success" (click)="updateStatus(BusinessStatus.ACTIVE)">Reactivate</button>
+            }
           </div>
         </div>
-      </div>
-      <!-- Segments -->
-      <div class="px-4 mt-4">
-        <ion-segment [value]="selectedSegment" (ionChange)="segmentChanged($event)">
-          <ion-segment-button value="details">
-            <ion-label>Details</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="offers">
-            <ion-label>Offers</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="vouchers">
-            <ion-label>Vouchers</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </div>
-      <!-- Segment Contents -->
-      <div class="mt-4 px-2">
-        @switch (selectedSegment) {
-          <!-- DETAILS TAB -->
-          @case ('details') {
-            <div>
-              <ion-card class="premium-card m-0 mb-4 shadow-sm border-radius-xl">
-                <div class="card-section-header">
-                  <h3 class="card-section-title">General Information</h3>
-                </div>
-                <ion-card-content class="px-0 pb-0">
-                  <ion-list lines="none" class="p-0 m-0 bg-transparent">
-                    <!-- Featured Toggle -->
-                    <ion-item class="premium-item">
-                      <div slot="start" class="icon-box warning-box">
-                        <ion-icon [name]="business.is_featured ? 'star' : 'star-outline'" color="warning"></ion-icon>
-                      </div>
-                      <ion-label>
-                        <h2>Featured Business</h2>
-                        <p>Display in featured sections</p>
-                      </ion-label>
-                      <label slot="end" class="custom-toggle">
-                        <input type="checkbox" [checked]="business.is_featured" (change)="toggleFeatured()">
-                        <span class="slider"></span>
-                      </label>
-                    </ion-item>
-                    <ion-item class="premium-item">
-                      <div slot="start" class="icon-box">
-                        <ion-icon name="person-outline" color="medium"></ion-icon>
-                      </div>
-                      <ion-label class="ion-text-wrap">
-                        <h3 class="text-medium text-xs font-semibold uppercase">Owner</h3>
-                        <p class="text-dark font-medium mt-1">{{ business.owner_name }}</p>
-                      </ion-label>
-                    </ion-item>
-                    @if (business.phone || business.owner_phone) {
-                      <ion-item class="premium-item">
-                        <div slot="start" class="icon-box">
-                          <ion-icon name="call-outline" color="medium"></ion-icon>
-                        </div>
-                        <ion-label class="ion-text-wrap">
-                          <h3 class="text-medium text-xs font-semibold uppercase">Phone</h3>
-                          <p class="text-dark font-medium mt-1">{{ business.phone || business.owner_phone }}</p>
-                        </ion-label>
-                      </ion-item>
-                    }
-                    @if (business.owner_email) {
-                      <ion-item class="premium-item">
-                        <div slot="start" class="icon-box">
-                          <ion-icon name="mail-outline" color="medium"></ion-icon>
-                        </div>
-                        <ion-label class="ion-text-wrap">
-                          <h3 class="text-medium text-xs font-semibold uppercase">Email</h3>
-                          <p class="text-dark font-medium mt-1">{{ business.owner_email }}</p>
-                        </ion-label>
-                      </ion-item>
-                    }
-                    @if (business.website) {
-                      <ion-item class="premium-item">
-                        <div slot="start" class="icon-box">
-                          <ion-icon name="globe-outline" color="medium"></ion-icon>
-                        </div>
-                        <ion-label class="ion-text-wrap">
-                          <h3 class="text-medium text-xs font-semibold uppercase">Website</h3>
-                          <a [href]="business.website" target="_blank" class="text-primary font-medium mt-1 inline-block">{{ business.website }}</a>
-                        </ion-label>
-                      </ion-item>
-                    }
-                    @if (business.gst_number) {
-                      <ion-item class="premium-item">
-                        <div slot="start" class="icon-box">
-                          <ion-icon name="document-text-outline" color="medium"></ion-icon>
-                        </div>
-                        <ion-label class="ion-text-wrap">
-                          <h3 class="text-medium text-xs font-semibold uppercase">GST Number</h3>
-                          <p class="text-dark font-medium mt-1">{{ business.gst_number }}</p>
-                        </ion-label>
-                      </ion-item>
-                    }
-                    @if (business.state_name || business.state_id) {
-                      <ion-item class="premium-item">
-                        <div slot="start" class="icon-box">
-                          <ion-icon name="map-outline" color="medium"></ion-icon>
-                        </div>
-                        <ion-label class="ion-text-wrap">
-                          <h3 class="text-medium text-xs font-semibold uppercase">State</h3>
-                          <p class="text-dark font-medium mt-1">{{ business.state_name || business.state_id }}</p>
-                        </ion-label>
-                      </ion-item>
-                    }
-                    @if (business.district_name || business.district_id) {
-                      <ion-item class="premium-item">
-                        <div slot="start" class="icon-box">
-                          <ion-icon name="navigate-outline" color="medium"></ion-icon>
-                        </div>
-                        <ion-label class="ion-text-wrap">
-                          <h3 class="text-medium text-xs font-semibold uppercase">District</h3>
-                          <p class="text-dark font-medium mt-1">{{ business.district_name || business.district_id }}</p>
-                        </ion-label>
-                      </ion-item>
-                    }
-                  </ion-list>
-                </ion-card-content>
-              </ion-card>
-              @if (business.description) {
-                <ion-card class="premium-card m-0 mb-4 shadow-sm border-radius-xl">
-                  <ion-card-header class="border-b">
-                    <ion-card-title class="font-bold text-dark text-md">About Business</ion-card-title>
-                  </ion-card-header>
-                  <ion-card-content class="pb-4 text-dark" style="white-space: pre-line;">
-                    {{ business.description }}
-                  </ion-card-content>
-                </ion-card>
-              }
-            </div>
-          }
-          <!-- OFFERS TAB -->
-          @case ('offers') {
-            <div>
-              @if (offers.length === 0) {
-                <div class="ion-padding ion-text-center">
-                  <ion-icon name="pricetag-outline" class="text-4xl text-medium"></ion-icon>
-                  <p class="text-medium mt-2">No offers found for this business.</p>
-                </div>
-              }
-              @if (offers.length> 0) {
-                <ion-list class="bg-transparent p-0 m-0 pb-4" lines="none">
-                  @for (offer of offers; track offer) {
-                    <div class="premium-offer-card mb-3 shadow-sm" (click)="openOfferModal(offer)" style="cursor: pointer;">
-                      <div class="p-4 flex items-center gap-3">
-                        <!-- Content -->
-                        <div class="flex-1">
-                          <div class="flex justify-between items-start">
-                            <h3 class="font-bold text-dark text-md m-0">{{ offer.title }}</h3>
-                            <span class="custom-badge" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
-                              {{ offer.status }}
-                            </span>
-                          </div>
-                          <div class="mt-2 flex items-center gap-2">
-                            @if (offer.offer_type) {
-                              <span class="type-badge">
-                                <ion-icon name="flash-outline"></ion-icon>
-                                {{ offer.offer_type }}
-                              </span>
-                            }
-                            @if (offer.discount_value) {
-                              <span class="value-badge">
-                                {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }}
-                              </span>
-                            }
-                          </div>
-                          <div class="mt-2 flex items-center text-medium text-xs">
-                            <ion-icon name="time-outline" class="mr-1"></ion-icon>
-                            Ends: {{ offer.end_date | date:'mediumDate' }}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                </ion-list>
-              }
-            </div>
-          }
-          <!-- VOUCHERS TAB -->
-          @case ('vouchers') {
-            <div>
-              @if (vouchers.length === 0) {
-                <div class="ion-padding ion-text-center">
-                  <ion-icon name="ticket-outline" class="text-4xl text-medium"></ion-icon>
-                  <p class="text-medium mt-2">No vouchers issued yet.</p>
-                </div>
-              }
-              @if (vouchers.length> 0) {
-                <ion-list class="bg-transparent p-0 m-0 pb-4" lines="none">
-                  @for (voucher of vouchers; track voucher) {
-                    <div class="premium-voucher-card mb-3 shadow-sm">
-                      <div class="p-4 flex items-center gap-3">
-                        <!-- Content -->
-                        <div class="flex-1">
-                          <div class="flex justify-between items-start">
-                            <h3 class="font-bold text-dark text-md m-0 font-mono tracking-wide">{{ voucher.voucher_code }}</h3>
-                            <span class="custom-badge" [ngClass]="'badge-' + getVoucherStatusColor(voucher.status)">
-                              {{ voucher.status }}
-                            </span>
-                          </div>
-                          <div class="mt-2 flex items-center" style="gap: 12px;">
-                            <ion-avatar class="m-0 shrink-0 shadow-sm" style="width: 32px; height: 32px;">
-                              <img loading="lazy" [appCachedImg]="voucher.customer_avatar" [fallbackName]="voucher.customer_name" alt="Avatar">
-                            </ion-avatar>
-                            <div style="display: flex; flex-direction: column; gap: 4px;">
-                              <div class="text-sm text-dark font-medium leading-tight">{{ voucher.customer_name }}</div>
-                              @if (voucher.customer_phone) {
-                                <div class="text-xs text-medium leading-none">{{ voucher.customer_phone }}</div>
-                              }
-                            </div>
-                          </div>
-                          <div class="mt-2 flex items-center justify-between">
-                            <span class="text-medium text-xs flex items-center">
-                              <ion-icon name="calendar-outline" class="mr-1"></ion-icon>
-                              @if (voucher.redeemed_at) {
-                                Redeemed: {{ voucher.redeemed_at | date:'mediumDate' }}
-                              } @else {
-                                Issued: {{ voucher.issued_at | date:'mediumDate' }}
-                              }
-                            </span>
-                            @if (voucher.discount_applied) {
-                              <span class="discount-applied font-bold">
-                                -{{ voucher.discount_applied | currency:'INR' }}
-                              </span>
-                            }
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                </ion-list>
-              }
-            </div>
-          }
-        }
-      </div>
-    </div>
-  }
-</ion-content>
 
-@if (!loading && business) {
-  <ion-footer class="ion-no-border">
-    @if (business.status === BusinessStatus.PENDING) {
-      <ion-toolbar class="ion-padding-horizontal ion-padding-bottom bg-transparent">
-        <ion-button expand="block" color="success" (click)="updateStatus(BusinessStatus.ACTIVE)" class="mb-3">
-          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-          Approve Business
-        </ion-button>
-        <ion-button expand="block" color="danger" fill="outline" (click)="updateStatus(BusinessStatus.REJECTED)">
-          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-          Reject Business
-        </ion-button>
-      </ion-toolbar>
+        <div class="tabs-container">
+          <button class="tab-btn" [class.active]="activeTab === 'details'" (click)="setTab('details')">Details</button>
+          <button class="tab-btn" [class.active]="activeTab === 'offers'" (click)="setTab('offers')">Offers</button>
+          <button class="tab-btn" [class.active]="activeTab === 'vouchers'" (click)="setTab('vouchers')">Vouchers</button>
+        </div>
+
+        <div class="tab-content">
+          <!-- Details Tab -->
+          @if (activeTab === 'details') {
+            <div class="compact-grid">
+              
+              <!-- Featured Toggle Custom Checkbox -->
+              <div class="data-group full-width featured-group">
+                <div class="featured-info">
+                  <span class="label">Featured Business</span>
+                  <span class="sub-label">Display in featured sections</span>
+                </div>
+                <label class="custom-toggle">
+                  <input type="checkbox" [checked]="business.is_featured" (change)="toggleFeatured()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="data-group">
+                <span class="label">Owner Name</span>
+                <span class="value">{{ business.owner_name }}</span>
+              </div>
+              
+              @if (business.phone || business.owner_phone) {
+                <div class="data-group">
+                  <span class="label">Phone</span>
+                  <span class="value">{{ business.phone || business.owner_phone }}</span>
+                </div>
+              }
+              
+              @if (business.owner_email) {
+                <div class="data-group">
+                  <span class="label">Email</span>
+                  <span class="value">{{ business.owner_email }}</span>
+                </div>
+              }
+
+              @if (business.website) {
+                <div class="data-group">
+                  <span class="label">Website</span>
+                  <span class="value">
+                    <a [href]="business.website" target="_blank" class="web-link">{{ business.website }}</a>
+                  </span>
+                </div>
+              }
+
+              @if (business.gst_number) {
+                <div class="data-group">
+                  <span class="label">GST Number</span>
+                  <span class="value">{{ business.gst_number }}</span>
+                </div>
+              }
+
+              @if (business.state_name || business.state_id) {
+                <div class="data-group">
+                  <span class="label">State</span>
+                  <span class="value">{{ business.state_name || business.state_id }}</span>
+                </div>
+              }
+
+              @if (business.district_name || business.district_id) {
+                <div class="data-group">
+                  <span class="label">District</span>
+                  <span class="value">{{ business.district_name || business.district_id }}</span>
+                </div>
+              }
+
+              @if (business.description) {
+                <div class="data-group full-width mt-2">
+                  <span class="label">About Business</span>
+                  <span class="value" style="white-space: pre-line;">{{ business.description }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Offers Tab -->
+          @if (activeTab === 'offers') {
+            <div class="offers-section">
+              @if (offers.length === 0) {
+                <div class="empty-state">
+                  <ion-icon name="pricetag-outline"></ion-icon>
+                  <p>No offers found for this business.</p>
+                </div>
+              }
+              @if (offers.length > 0) {
+                <div class="cards-grid">
+                  @for (offer of offers; track offer) {
+                    <div class="custom-card clickable" (click)="openOfferModal(offer)">
+                      <div class="card-header">
+                        <h3>{{ offer.title }}</h3>
+                        <span class="badge" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">{{ offer.status }}</span>
+                      </div>
+                      <div class="card-body">
+                        <div class="detail-pill-group">
+                          @if (offer.offer_type) {
+                            <span class="detail-pill">
+                              <ion-icon name="flash-outline"></ion-icon> {{ offer.offer_type }}
+                            </span>
+                          }
+                          @if (offer.discount_value) {
+                            <span class="detail-pill primary-pill">
+                              {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }}
+                            </span>
+                          }
+                        </div>
+                        <div class="card-footer-text mt-3">
+                          <ion-icon name="time-outline"></ion-icon> Ends: {{ offer.end_date | date:'mediumDate' }}
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Vouchers Tab -->
+          @if (activeTab === 'vouchers') {
+            <div class="vouchers-section">
+              @if (vouchers.length === 0) {
+                <div class="empty-state">
+                  <ion-icon name="ticket-outline"></ion-icon>
+                  <p>No vouchers issued yet.</p>
+                </div>
+              }
+              @if (vouchers.length > 0) {
+                <div class="cards-grid">
+                  @for (voucher of vouchers; track voucher) {
+                    <div class="custom-card">
+                      <div class="card-header">
+                        <h3 class="font-mono">{{ voucher.voucher_code }}</h3>
+                        <span class="badge" [ngClass]="'badge-' + getVoucherStatusColor(voucher.status)">{{ voucher.status }}</span>
+                      </div>
+                      <div class="card-body">
+                        <div class="customer-info">
+                          <div class="avatar-small">
+                            <img loading="lazy" [appCachedImg]="voucher.customer_avatar" [fallbackName]="voucher.customer_name" alt="Avatar">
+                          </div>
+                          <div class="customer-text">
+                            <div class="name">{{ voucher.customer_name }}</div>
+                            @if (voucher.customer_phone) {
+                              <div class="phone">{{ voucher.customer_phone }}</div>
+                            }
+                          </div>
+                        </div>
+                        <div class="card-footer-split mt-3">
+                          <span class="date-text">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            @if (voucher.redeemed_at) {
+                              Redeemed: {{ voucher.redeemed_at | date:'mediumDate' }}
+                            } @else {
+                              Issued: {{ voucher.issued_at | date:'mediumDate' }}
+                            }
+                          </span>
+                          @if (voucher.discount_applied) {
+                            <span class="discount-text">-{{ voucher.discount_applied | currency:'INR' }}</span>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
     }
-    @if (business.status === BusinessStatus.ACTIVE) {
-      <ion-toolbar class="ion-padding-horizontal ion-padding-bottom bg-transparent">
-        <ion-button expand="block" color="danger" fill="outline" (click)="updateStatus(BusinessStatus.SUSPENDED)">
-          <ion-icon name="ban-outline" slot="start"></ion-icon>
-          Suspend Business
-        </ion-button>
-      </ion-toolbar>
-    }
-    @if (business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED) {
-      <ion-toolbar class="ion-padding-horizontal ion-padding-bottom bg-transparent">
-        <ion-button expand="block" color="success" (click)="updateStatus(BusinessStatus.ACTIVE)">
-          <ion-icon name="refresh-outline" slot="start"></ion-icon>
-          Reactivate Business
-        </ion-button>
-      </ion-toolbar>
-    }
-  </ion-footer>
-}
+  </main>
+</ion-content>

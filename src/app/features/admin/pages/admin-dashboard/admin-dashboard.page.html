@@ -57,33 +57,7 @@
         </ion-card-content>
       </ion-card>
     </div>
-    <!-- Revenue Analytics Chart -->
-    <ion-card class="chart-card">
-      <ion-card-header class="chart-header-with-actions">
-        <ion-card-title>Revenue Analytics</ion-card-title>
-        <div class="header-actions">
-          <ion-button fill="clear" size="small" class="reset-chart-btn" (click)="resetChart('revenue-analytics-chart')" aria-label="Reset Revenue Chart">
-            <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" size="small" (click)="toggleChartType()">
-            <ion-icon slot="start" [name]="chartType === 'area' ? 'bar-chart-outline' : 'pulse-outline'"></ion-icon>
-            Toggle View
-          </ion-button>
-        </div>
-      </ion-card-header>
-      <ion-card-content>
-        @if (chartOptions) {
-          <apx-chart
-            [series]="chartOptions.series"
-            [chart]="chartOptions.chart"
-            [xaxis]="chartOptions.xaxis"
-            [stroke]="chartOptions.stroke"
-            [dataLabels]="chartOptions.dataLabels"
-            [colors]="chartOptions.colors"
-            [fill]="chartOptions.fill"></apx-chart>
-        }
-      </ion-card-content>
-    </ion-card>
+
   } @else {
     <div style="padding: 16px 0;">
       <app-dashboard-skeleton></app-dashboard-skeleton>

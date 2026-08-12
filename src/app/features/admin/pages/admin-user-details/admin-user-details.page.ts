@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule, AlertController, NavController } from '@ionic/angular';
+import { CommonModule, Location } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AdminUsersService } from '../../services/admin-users.service';
 import { AdminMember, AdminCustomer, UserStatus, UserRole, AdminUser } from '../../models/admin-user.model';
@@ -26,6 +26,15 @@ import { AdminLogoutButtonComponent } from '../../components/admin-logout-button
   styleUrls: ['./admin-user-details.page.scss']
 })
 export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
+  activeTab: 'personal' | 'business' = 'personal';
+
+  goBack() {
+    this.location.back();
+  }
+
+  setTab(tab: 'personal' | 'business') {
+    this.activeTab = tab;
+  }
   @ViewChild('receiptImage') receiptImageRef?: ElementRef<HTMLImageElement>;
   user: AdminUser | null = null;
   loading = true;
@@ -35,8 +44,7 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
   constructor(
     private route: ActivatedRoute,
     private adminUsersService: AdminUsersService,
-    private alertCtrl: AlertController,
-    private navCtrl: NavController
+    private location: Location
   ) {
     addIcons({
       callOutline, logoWhatsapp, mailOutline, locationOutline, 
@@ -83,24 +91,11 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
     if (!this.user) return;
     
     const actionText = action.charAt(0).toUpperCase() + action.slice(1);
-    const alert = await this.alertCtrl.create({
-      header: `Confirm ${actionText}`,
-      message: `Are you sure you want to ${action} ${this.user.full_name}?`,
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        },
-        {
-          text: actionText,
-          role: 'confirm',
-          handler: () => {
-            this.executeAction(action);
-          }
-        }
-      ]
-    });
-    await alert.present();
+    const confirmed = window.confirm(`Are you sure you want to ${action} ${this.user.full_name}?`);
+    
+    if (confirmed) {
+      this.executeAction(action);
+    }
   }
 
   private executeAction(action: 'approve' | 'reject' | 'suspend' | 'delete') {
@@ -126,7 +121,7 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
 
     obs$.subscribe(async (res: any) => {
       if (action === 'delete') {
-        this.navCtrl.back();
+        this.location.back();
       } else {
         if ('status' in (res.data || {}) && this.user) {
           this.user.status = (res.data as any).status;

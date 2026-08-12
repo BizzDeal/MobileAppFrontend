@@ -1,12 +1,19 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
-  <div class="admin-search-filter-bar">
+  <div class="admin-search-filter-bar" style="display: flex; align-items: center; justify-content: space-between; padding-right: 16px;">
     <ion-searchbar
       [value]="searchQuery"
       (ionInput)="onSearch($event)"
       placeholder="Search categories..."
       mode="md"
-      class="premium-searchbar">
+      class="premium-searchbar"
+      style="flex: 1;">
     </ion-searchbar>
+    @if (isDesktop) {
+      <ion-button (click)="openAddCategoryModal()" mode="ios" style="margin-left: 16px; --border-radius: 8px; font-weight: 600; height: 40px; --padding-start: 16px; --padding-end: 16px; font-size: 14px; text-transform: none;">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
+        Add Category
+      </ion-button>
+    }
   </div>
 </ion-header>
 
@@ -24,43 +31,108 @@
     </div>
   }
 
-  @if (!loading && displayedCategories.length> 0) {
-    <ion-list class="bg-transparent p-0 pt-4 m-0" lines="none">
-      @for (category of displayedCategories; track category) {
-        <div class="premium-category-card" (click)="openEditCategoryModal(category)" style="cursor: pointer;">
-          <div class="card-body">
-            <div class="category-details">
-              <div class="category-header">
-                <h3 class="category-title">{{ category.name }}</h3>
-                <span class="custom-badge shrink-0" [ngClass]="category.is_active ? 'badge-success' : 'badge-warning'">
-                  {{ category.is_active ? 'Active' : 'Inactive' }}
-                </span>
+  @if (!loading && displayedCategories.length > 0) {
+    @if (!isDesktop) {
+      <ion-list class="bg-transparent p-0 pt-4 m-0" lines="none">
+        @for (category of displayedCategories; track category) {
+          <div class="premium-category-card" (click)="openEditCategoryModal(category)" style="cursor: pointer;">
+            <div class="card-body">
+              <div class="category-details">
+                <div class="category-header">
+                  <h3 class="category-title">{{ category.name }}</h3>
+                  <span class="custom-badge shrink-0" [ngClass]="category.is_active ? 'badge-success' : 'badge-warning'">
+                    {{ category.is_active ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+                <div class="category-desc mt-2 text-sm text-medium line-clamp-2">
+                  {{ category.description || 'No description provided.' }}
+                </div>
               </div>
-              <div class="category-desc mt-2 text-sm text-medium line-clamp-2">
-                {{ category.description || 'No description provided.' }}
+            </div>
+            <!-- Footer / Extra info -->
+            <div class="card-footer">
+              <div class="footer-action">
+                <ion-icon name="create-outline"></ion-icon>
+                <span>Tap to edit</span>
               </div>
+              <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
             </div>
           </div>
-          <!-- Footer / Extra info -->
-          <div class="card-footer">
-            <div class="footer-action">
-              <ion-icon name="create-outline"></ion-icon>
-              <span>Tap to edit</span>
-            </div>
-            <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
+        }
+      </ion-list>
+      <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="displayedCategories.length >= filteredCategories.length">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more categories..."></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    } @else {
+      <!-- Table View (Desktop) -->
+      <div class="admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (category of displayedCategories; track category) {
+              <tr (click)="openEditCategoryModal(category)" style="cursor: pointer;">
+                <td>
+                  <span class="table-user-name">{{ category.name }}</span>
+                </td>
+                <td>
+                  <span class="text-medium line-clamp-2" style="max-width: 400px; display: inline-block;">{{ category.description || 'No description provided.' }}</span>
+                </td>
+                <td>
+                  <span class="custom-badge shrink-0" [ngClass]="category.is_active ? 'badge-success' : 'badge-warning'">
+                    {{ category.is_active ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="table-actions">
+                    <button class="table-action-btn edit-btn" (click)="$event.stopPropagation(); openEditCategoryModal(category)" title="Edit">
+                      <ion-icon name="create-outline"></ion-icon>
+                      <span>Edit</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="table-pagination">
+          <div class="page-size-selector">
+            <label>Rows per page:</label>
+            <select class="premium-select" [value]="pageSize" (change)="changePageSize($event)">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="15">15</option>
+              <option [value]="20">20</option>
+            </select>
+          </div>
+          
+          <div class="page-controls">
+            <span class="page-info">Page {{ page }} of {{ totalPages || 1 }}</span>
+            <button class="page-btn" [disabled]="page === 1" (click)="changePage(page - 1)">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+            <button class="page-btn" [disabled]="page >= totalPages || totalPages === 0" (click)="changePage(page + 1)">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
           </div>
         </div>
-      }
-    </ion-list>
+      </div>
+    }
   }
 
-  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="displayedCategories.length>= filteredCategories.length">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more categories..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
-
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="custom-fab">
-    <ion-fab-button color="primary" (click)="openAddCategoryModal()">
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  @if (!isDesktop) {
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="custom-fab">
+      <ion-fab-button color="primary" (click)="openAddCategoryModal()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
 </ion-content>

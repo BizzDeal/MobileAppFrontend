@@ -142,8 +142,8 @@
         </form>
       </section>
 
-      <!-- What You Get Section (Hidden in PIN and OTP steps!) -->
-      @if (authService.authStep() === 'phone') {
+      <!-- What You Get Section (Hidden in PIN and OTP steps, and hidden on Web) -->
+      @if (authService.authStep() === 'phone' && !isWeb) {
       <section class="features-section">
         <h2 class="features-heading">What you get</h2>
 
@@ -164,12 +164,14 @@
       }
     </div>
 
-    <!-- Footer Section (Always at Bottom of Viewport) -->
+    <!-- Footer Section (Always at Bottom of Viewport, Hidden on Web) -->
+    @if (!isWeb) {
     <footer class="footer-section">
       <p class="footer-text">
         New to BIZZ DEAL?
         <a href="javascript:void(0)" (click)="authService.joinAsMember()" class="join-link">Join As Member</a>
       </p>
     </footer>
+    }
   </div>
 </ion-content>

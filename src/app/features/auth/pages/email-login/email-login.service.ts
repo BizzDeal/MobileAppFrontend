@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfirmationResult } from '@angular/fire/auth';
+import { Capacitor } from '@capacitor/core';
 import { AlertController } from '@ionic/angular/standalone';
 import { AuthApiService } from '../../services/auth-api.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
@@ -29,6 +30,10 @@ export class EmailLoginService {
   private readonly _errorMessage = signal<string | null>(null);
 
   private _confirmationResult?: ConfirmationResult;
+
+  get isWeb(): boolean {
+    return !Capacitor.isNativePlatform();
+  }
 
   readonly authStep = this._authStep.asReadonly();
   readonly isSubmitting = this._isSubmitting.asReadonly();
@@ -112,6 +117,11 @@ export class EmailLoginService {
             this._authStep.set('pin');
             this._isSubmitting.set(false);
           } else {
+            if (this.isWeb) {
+              this._errorMessage.set('Admin accounts must be created by the system. Registration is not available on web.');
+              this._isSubmitting.set(false);
+              return;
+            }
             this.authApi.sendOtp(email, 'register').subscribe({
               next: () => {
                 this._authStep.set('otp_register');
@@ -151,6 +161,12 @@ export class EmailLoginService {
       this.authApi.login({ email, pin } as any).subscribe({
         next: async (res: any) => {
           try {
+            if (this.isWeb && res.user.role !== UserRole.ADMIN) {
+              this._errorMessage.set('Only administrators can log in via the web platform.');
+              this._isSubmitting.set(false);
+              return;
+            }
+            
             await this.authSession.setSession(res.accessToken, res.refreshToken, res.user);
             this.profileService.loadProfile().subscribe();
             this._isSubmitting.set(false);

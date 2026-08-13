@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -57,5 +58,9 @@ export class EmailLoginPage implements OnInit {
         this.router.navigate(['/home'], { replaceUrl: true }).catch(() => {});
       }
     }
+  }
+
+  get isWeb(): boolean {
+    return !Capacitor.isNativePlatform();
   }
 }

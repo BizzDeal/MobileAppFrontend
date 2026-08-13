@@ -19,12 +19,11 @@ import {
 import { EmailLoginService } from './email-login.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { UserRole } from '../../models/auth.model';
-import { AnimatedBackgroundComponent } from '../../../../shared/components/animated-background/animated-background.component';
 
 @Component({
   selector: 'app-email-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IonContent, IonIcon, AnimatedBackgroundComponent],
+  imports: [CommonModule, ReactiveFormsModule, IonContent, IonIcon],
   providers: [EmailLoginService],
   templateUrl: './email-login.page.html',
   styleUrl: './email-login.page.scss',

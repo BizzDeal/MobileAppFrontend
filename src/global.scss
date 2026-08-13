@@ -547,13 +547,7 @@ ion-searchbar {
    when overlaysWebView is active, preventing top cards and titles from 
    colliding with clock, WiFi, and battery status bar icons.
    ========================================================================== */
-html.plt-android,
-body.plt-android,
-html.plt-capacitor,
-body.plt-capacitor,
-body.capacitor-native,
-.plt-android,
-.plt-capacitor {
+body.capacitor-native.plt-android {
   --ion-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
   --bizzdeal-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
 }
@@ -743,13 +737,7 @@ ion-content::part(scroll)::-webkit-scrollbar-track {
    when overlaysWebView is active, preventing top cards and titles from 
    colliding with clock, WiFi, and battery status bar icons.
    ========================================================================== */
-html.plt-android,
-body.plt-android,
-html.plt-capacitor,
-body.plt-capacitor,
-body.capacitor-native,
-.plt-android,
-.plt-capacitor {
+body.capacitor-native.plt-android {
   --ion-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
   --bizzdeal-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
 }

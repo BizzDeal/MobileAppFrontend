@@ -44,7 +44,7 @@ export interface ReferralDTO {
     businessProfile?: {
       business_name: string;
     } | null;
-  };
+  } | null;
   to_member: {
     id: string;
     full_name: string;
@@ -53,7 +53,7 @@ export interface ReferralDTO {
     businessProfile?: {
       business_name: string;
     } | null;
-  };
+  } | null;
 }
 
 export interface ReferralQueryDto {

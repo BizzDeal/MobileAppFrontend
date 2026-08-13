@@ -181,7 +181,8 @@ export class AdminOffersPage implements OnInit {
       component: AdminOfferActionModalComponent,
       componentProps: {
         offer
-      }
+      },
+      cssClass: 'admin-modal-theme'
     });
 
     await modal.present();

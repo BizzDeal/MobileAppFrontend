@@ -78,11 +78,11 @@
                 </div>
                 <div class="info-pill member-pill">
                   <ion-icon name="people-outline"></ion-icon>
-                  <span>{{ activeSegment() === 'GIVEN' ? ref.to_member.full_name : ref.referrer.full_name }}</span>
+                  <span>{{ activeSegment() === 'GIVEN' ? ref.to_member?.full_name : ref.referrer?.full_name }}</span>
                 </div>
               </div>
               <div class="action-arrow">
-                @if (ref.rating) {
+                @if (ref.rating != null) {
                   <div class="stars-mini">
                     <ion-icon name="star" class="star-mini-icon"></ion-icon>
                     <span class="rating-num">{{ ref.rating }}</span>
@@ -283,14 +283,14 @@
             <div class="form-section">
               <div class="contact-profile ion-margin-bottom">
                 <div class="avatar-circle">
-                  @if (ref.referrer.profile_pic_url) {
-                    <img loading="lazy" [src]="ref.referrer.profile_pic_url" [alt]="ref.referrer.full_name" />
+                  @if (ref.referrer?.profile_pic_url) {
+                    <img loading="lazy" [src]="ref.referrer?.profile_pic_url" [alt]="ref.referrer?.full_name" />
                   } @else {
                     <ion-icon name="person-outline"></ion-icon>
                   }
                 </div>
                 <div class="contact-info">
-                  <h2 class="contact-name">{{ ref.referrer.full_name }}</h2>
+                  <h2 class="contact-name">{{ ref.referrer?.full_name }}</h2>
                   <div class="badge-row">
                     <span class="date-chip">
                       <ion-icon name="calendar-outline"></ion-icon>
@@ -299,7 +299,7 @@
                   </div>
                 </div>
               </div>
-              <p class="search-helper">Record the revenue generated from this referral and send a thank you message to <b>{{ ref.referrer.full_name }}</b>.</p>
+              <p class="search-helper">Record the revenue generated from this referral and send a thank you message to <b>{{ ref.referrer?.full_name }}</b>.</p>
               <ion-item class="input-item">
                 <ion-input type="number" labelPlacement="stacked" placeholder="e.g. 5000" [value]="appreciationCost()" (ionInput)="onCostChange($event)">
                   <div slot="label">Revenue Generated (₹) <span class="required-star">*</span></div>
@@ -403,7 +403,7 @@
                     </div>
                     <div class="detail-content">
                       <span class="item-label">{{ activeSegment() === 'GIVEN' ? 'To Member' : 'From Member' }}</span>
-                      <span class="item-value font-highlight">{{ activeSegment() === 'GIVEN' ? ref.to_member.full_name : ref.referrer.full_name }}</span>
+                      <span class="item-value font-highlight">{{ activeSegment() === 'GIVEN' ? ref.to_member?.full_name : ref.referrer?.full_name }}</span>
                     </div>
                   </div>
                   <!-- Address (if present) -->

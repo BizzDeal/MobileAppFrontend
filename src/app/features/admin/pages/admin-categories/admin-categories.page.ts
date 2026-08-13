@@ -182,7 +182,8 @@ export class AdminCategoriesPage implements OnInit, OnDestroy {
 
   async openAddCategoryModal() {
     const modal = await this.modalCtrl.create({
-      component: AdminCategoryActionModalComponent
+      component: AdminCategoryActionModalComponent,
+      cssClass: 'admin-modal-theme'
     });
 
     await modal.present();
@@ -203,7 +204,8 @@ export class AdminCategoriesPage implements OnInit, OnDestroy {
   async openEditCategoryModal(category: any) {
     const modal = await this.modalCtrl.create({
       component: AdminCategoryActionModalComponent,
-      componentProps: { category }
+      componentProps: { category },
+      cssClass: 'admin-modal-theme'
     });
 
     await modal.present();

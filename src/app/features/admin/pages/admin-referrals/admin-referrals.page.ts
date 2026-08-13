@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, signal, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -18,7 +18,8 @@ import {
   IonSpinner,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  IonItem
+  IonItem,
+  IonSkeletonText
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -42,7 +43,9 @@ import {
   cashOutline,
   trophyOutline,
   personCircleOutline,
-  calendarOutline
+  calendarOutline,
+  chevronBackOutline,
+  chevronForwardOutline
 } from 'ionicons/icons';
 import { ReferralsService } from '../../../referrals/services/referrals.service';
 import { AdminReferralsStateService } from '../../services/admin-referrals-state.service';
@@ -76,6 +79,7 @@ register();
     IonModal,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
+    IonSkeletonText,
     ListSkeletonComponent
   ],
   templateUrl: './admin-referrals.page.html',
@@ -102,8 +106,11 @@ export class AdminReferralsPage implements OnInit, OnDestroy {
   readonly selectedType = signal<string>('ALL'); // ALL, INHOUSE, OUTHOUSE
   readonly hasMore = signal<boolean>(false);
   
+  // Desktop / Mobile view detection
+  isDesktop = window.innerWidth >= 992;
   currentPage = 1;
-  readonly pageSize = 15;
+  limit = this.isDesktop ? 5 : 15;
+  totalPages = 1;
   private isLoadingMore = false;
 
   filterState: { startDate: string | null, endDate: string | null, dates?: string | null, stateId: string | null, districtId: string | null } = { startDate: null, endDate: null, dates: null, stateId: null, districtId: null };
@@ -137,7 +144,9 @@ export class AdminReferralsPage implements OnInit, OnDestroy {
       cashOutline,
       trophyOutline,
       personCircleOutline,
-      calendarOutline
+      calendarOutline,
+      chevronBackOutline,
+      chevronForwardOutline
     });
 
     this.searchSubject.pipe(
@@ -162,8 +171,19 @@ export class AdminReferralsPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  @HostListener('window:resize')
+  onResize(): void {
+    const wasDesktop = this.isDesktop;
+    this.isDesktop = window.innerWidth >= 992;
+    if (this.isDesktop !== wasDesktop) {
+      this.limit = this.isDesktop ? 5 : 15;
+      this.reloadReferrals();
+    }
+  }
+
   reloadReferrals(): void {
     this.currentPage = 1;
+    this.totalPages = 1;
     this.hasMore.set(false);
     this.isLoadingMore = false;
     this.referrals.set([]);
@@ -198,17 +218,29 @@ export class AdminReferralsPage implements OnInit, OnDestroy {
       state_id: this.filterState.stateId || undefined,
       district_id: this.filterState.districtId || undefined,
       page: this.currentPage,
-      limit: this.pageSize
+      limit: this.limit
     }).subscribe({
       next: (res) => {
         if (res && res.success) {
           const newItems = res.data || [];
-          this.referrals.update(prev => isInitial ? newItems : [...prev, ...newItems]);
+          if (this.isDesktop || isInitial) {
+            // Desktop: replace data (page-based); Mobile initial: replace
+            this.referrals.set(newItems);
+          } else {
+            // Mobile subsequent: append for infinite scroll
+            this.referrals.update(prev => [...prev, ...newItems]);
+          }
           if (res.summary) {
             this.summary.set(res.summary);
           }
           const meta = res.meta;
-          this.hasMore.set(meta ? meta.page < meta.totalPages : false);
+          if (meta) {
+            this.currentPage = meta.page;
+            this.totalPages = meta.totalPages;
+            this.hasMore.set(meta.page < meta.totalPages);
+          } else {
+            this.hasMore.set(false);
+          }
         }
         this.loading.set(false);
         this.isLoadingMore = false;
@@ -232,6 +264,20 @@ export class AdminReferralsPage implements OnInit, OnDestroy {
       this.fetchReferrals(event);
     } else {
       event.target.complete();
+    }
+  }
+
+  // Desktop table pagination
+  changePageSize(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.limit = parseInt(target.value, 10);
+    this.reloadReferrals();
+  }
+
+  changePage(newPage: number): void {
+    if (newPage > 0 && newPage <= this.totalPages) {
+      this.currentPage = newPage;
+      this.fetchReferrals();
     }
   }
 

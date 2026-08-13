@@ -1,7 +1,7 @@
 <ion-content>
   <div class="admin-referrals-container">
     <!-- Infinite Auto-Scroll Swiper for Metrics -->
-    <swiper-container autoplay-delay="3000" autoplay-disable-on-interaction="false" loop="true" speed="800" space-between="16" auto-height="true" class="metrics-swiper">
+    <swiper-container autoplay-delay="3000" autoplay-disable-on-interaction="false" loop="true" speed="800" space-between="16" class="metrics-swiper">
 
       <!-- Slide 1: The standard 5 metric cards -->
       <swiper-slide>
@@ -161,8 +161,8 @@
 
     <!-- Content State Container -->
     <div class="content-body">
-      <!-- Loading State -->
-      @if (loading()) {
+      <!-- Loading State (Mobile only) -->
+      @if (loading() && !isDesktop) {
         <app-list-skeleton></app-list-skeleton>
       }
 
@@ -178,93 +178,204 @@
         </div>
       }
 
-      <!-- Empty State -->
-      @if (!loading() && !error() && referrals().length === 0) {
-        <div class="state-card empty-card">
-          <div class="state-icon">
-            <ion-icon name="share-social-outline"></ion-icon>
-          </div>
-          <h3>No Referrals Found</h3>
-          <p>No referral slips match your current filter or search criteria.</p>
-        </div>
-      }
-
-      <!-- Referrals Cards List -->
-      @if (!loading() && !error() && referrals().length> 0) {
-        <div class="referrals-grid">
-          @for (ref of referrals(); track ref) {
-            <div
-              class="admin-referral-card"
-              (click)="openDetailModal(ref)">
-              <div class="card-header">
-                <div class="card-header-main">
-                  <h3 class="contact-name">{{ ref.contact_name }}</h3>
-                  <span class="type-pill" [class.inhouse]="ref.referral_type === 'INHOUSE'" [class.outhouse]="ref.referral_type === 'OUTHOUSE'">
-                    {{ ref.referral_type }}
-                  </span>
-                </div>
-                <span class="created-date">{{ ref.created_at | date:'MMM d, yyyy • h:mm a' }}</span>
+      @if (!error()) {
+        @if (!isDesktop) {
+          <!-- Mobile Card View (Unchanged) -->
+          @if (!loading() && referrals().length === 0) {
+            <div class="state-card empty-card">
+              <div class="state-icon">
+                <ion-icon name="share-social-outline"></ion-icon>
               </div>
-              <div class="card-flow">
-                <!-- Referrer Member -->
-                <div class="member-box referrer">
-                  <span class="role-tag">GIVEN BY</span>
-                  <strong class="member-name">{{ ref.referrer ? ref.referrer.full_name : 'Unknown Member' }}</strong>
-                  <span class="business-name">{{ ref.referrer.businessProfile?.business_name || 'No Business Listed' }}</span>
-                </div>
-                <div class="flow-arrow">
-                  <ion-icon name="arrow-forward-outline"></ion-icon>
-                </div>
-                <!-- Recipient Member -->
-                <div class="member-box recipient">
-                  <span class="role-tag">SENT TO</span>
-                  <strong class="member-name">{{ ref.to_member ? ref.to_member.full_name : 'Unknown Member' }}</strong>
-                  <span class="business-name">{{ ref.to_member.businessProfile?.business_name || 'No Business Listed' }}</span>
-                </div>
-              </div>
-              <div class="card-footer">
-                <div class="footer-pills">
-                  <div class="info-chip">
-                    <ion-icon name="call-outline"></ion-icon>
-                    <span>{{ ref.contact_phone }}</span>
-                  </div>
-                  @if (ref.contact_email) {
-                    <div class="info-chip">
-                      <ion-icon name="mail-outline"></ion-icon>
-                      <span>{{ ref.contact_email }}</span>
-                    </div>
-                  }
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  @if (ref.rating) {
-                    <div class="rating-badge">
-                      <ion-icon name="star" class="star-active"></ion-icon>
-                      <span>{{ ref.rating }}/5 Heat</span>
-                    </div>
-                  }
-                  @if (ref.is_appreciated) {
-                    <div class="appreciated-badge" style="display: flex; align-items: center; gap: 4px; background: #fef1f2; color: #e11d48; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">
-                      <ion-icon name="heart"></ion-icon>
-                      <span>Appreciated</span>
-                    </div>
-                  }
-                  @if (ref.is_appreciated && ref.cost_of_business) {
-                    <div class="revenue-badge" style="display: flex; align-items: center; gap: 4px; background: #ecfdf5; color: #059669; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">
-                      <ion-icon name="cash-outline"></ion-icon>
-                      <span>₹{{ ref.cost_of_business | number:'1.0-0' }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
+              <h3>No Referrals Found</h3>
+              <p>No referral slips match your current filter or search criteria.</p>
             </div>
           }
-        </div>
-      }
 
-      <!-- Infinite Scroll -->
-      <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)" [disabled]="!hasMore()">
-        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more referrals..."></ion-infinite-scroll-content>
-      </ion-infinite-scroll>
+          @if (!loading() && referrals().length > 0) {
+            <div class="referrals-grid">
+              @for (ref of referrals(); track ref) {
+                <div
+                  class="admin-referral-card"
+                  (click)="openDetailModal(ref)">
+                  <div class="card-header">
+                    <div class="card-header-main">
+                      <h3 class="contact-name">{{ ref.contact_name }}</h3>
+                      <span class="type-pill" [class.inhouse]="ref.referral_type === 'INHOUSE'" [class.outhouse]="ref.referral_type === 'OUTHOUSE'">
+                        {{ ref.referral_type }}
+                      </span>
+                    </div>
+                    <span class="created-date">{{ ref.created_at | date:'MMM d, yyyy • h:mm a' }}</span>
+                  </div>
+                  <div class="card-flow">
+                    <!-- Referrer Member -->
+                    <div class="member-box referrer">
+                      <span class="role-tag">GIVEN BY</span>
+                      <strong class="member-name">{{ ref.referrer?.full_name || 'Unknown Member' }}</strong>
+                      <span class="business-name">{{ ref.referrer?.businessProfile?.business_name || 'No Business Listed' }}</span>
+                    </div>
+                    <div class="flow-arrow">
+                      <ion-icon name="arrow-forward-outline"></ion-icon>
+                    </div>
+                    <!-- Recipient Member -->
+                    <div class="member-box recipient">
+                      <span class="role-tag">SENT TO</span>
+                      <strong class="member-name">{{ ref.to_member?.full_name || 'Unknown Member' }}</strong>
+                      <span class="business-name">{{ ref.to_member?.businessProfile?.business_name || 'No Business Listed' }}</span>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <div class="footer-pills">
+                      <div class="info-chip">
+                        <ion-icon name="call-outline"></ion-icon>
+                        <span>{{ ref.contact_phone }}</span>
+                      </div>
+                      @if (ref.contact_email) {
+                        <div class="info-chip">
+                          <ion-icon name="mail-outline"></ion-icon>
+                          <span>{{ ref.contact_email }}</span>
+                        </div>
+                      }
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      @if (ref.rating != null) {
+                        <div class="rating-badge">
+                          <ion-icon name="star" class="star-active"></ion-icon>
+                          <span>{{ ref.rating }}/5 Heat</span>
+                        </div>
+                      }
+                      @if (ref.is_appreciated) {
+                        <div class="appreciated-badge" style="display: flex; align-items: center; gap: 4px; background: #fef1f2; color: #e11d48; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">
+                          <ion-icon name="heart"></ion-icon>
+                          <span>Appreciated</span>
+                        </div>
+                      }
+                      @if (ref.is_appreciated && ref.cost_of_business) {
+                        <div class="revenue-badge" style="display: flex; align-items: center; gap: 4px; background: #ecfdf5; color: #059669; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">
+                          <ion-icon name="cash-outline"></ion-icon>
+                          <span>₹{{ ref.cost_of_business | number:'1.0-0' }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Infinite Scroll (Mobile only) -->
+          <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)" [disabled]="!hasMore()">
+            <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more referrals..."></ion-infinite-scroll-content>
+          </ion-infinite-scroll>
+        } @else {
+          <!-- Desktop Table View -->
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Contact</th>
+                  <th>Type</th>
+                  <th>Given By</th>
+                  <th>Sent To</th>
+                  <th>Phone</th>
+                  <th>Rating</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (!loading()) {
+                  @for (ref of referrals(); track ref) {
+                    <tr (click)="openDetailModal(ref)">
+                      <td>
+                        <span class="table-contact-name">{{ ref.contact_name }}</span>
+                      </td>
+                      <td>
+                        <span class="type-pill" [class.inhouse]="ref.referral_type === 'INHOUSE'" [class.outhouse]="ref.referral_type === 'OUTHOUSE'">
+                          {{ ref.referral_type }}
+                        </span>
+                      </td>
+                      <td>
+                        <div class="table-member-info">
+                          <span class="table-member-name">{{ ref.referrer?.full_name || 'Unknown' }}</span>
+                          <span class="table-member-business">{{ ref.referrer?.businessProfile?.business_name || '-' }}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="table-member-info">
+                          <span class="table-member-name">{{ ref.to_member?.full_name || 'Unknown' }}</span>
+                          <span class="table-member-business">{{ ref.to_member?.businessProfile?.business_name || '-' }}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="table-phone">{{ ref.contact_phone }}</span>
+                      </td>
+                      <td>
+                        @if (ref.rating != null) {
+                          <div class="table-rating">
+                            <ion-icon name="star" class="star-active"></ion-icon>
+                            <span>{{ ref.rating }}/5</span>
+                          </div>
+                        } @else {
+                          <span class="text-muted">-</span>
+                        }
+                      </td>
+                      <td>
+                        @if (ref.is_appreciated) {
+                          <div class="table-appreciated">
+                            <ion-icon name="heart"></ion-icon>
+                            <span>₹{{ ref.cost_of_business | number:'1.0-0' }}</span>
+                          </div>
+                        } @else {
+                          <span class="table-pending-badge">Pending</span>
+                        }
+                      </td>
+                      <td>
+                        <span class="table-date">{{ ref.created_at | date:'MMM d, yyyy' }}</span>
+                      </td>
+                    </tr>
+                  }
+                  @if (referrals().length === 0) {
+                    <tr>
+                      <td colspan="8" class="table-empty-state">No referrals found matching your criteria.</td>
+                    </tr>
+                  }
+                } @else {
+                  @for (i of [1,2,3,4,5]; track i) {
+                    <tr>
+                      <td colspan="8">
+                        <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+
+            <!-- Pagination Controls -->
+            <div class="table-pagination">
+              <div class="page-size-selector">
+                <label>Rows per page:</label>
+                <select class="premium-select" [value]="limit" (change)="changePageSize($event)">
+                  <option [value]="5">5</option>
+                  <option [value]="10">10</option>
+                  <option [value]="15">15</option>
+                  <option [value]="20">20</option>
+                </select>
+              </div>
+
+              <div class="page-controls">
+                <span class="page-info">Page {{ currentPage }} of {{ totalPages || 1 }}</span>
+                <button class="page-btn" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+                  <ion-icon name="chevron-back-outline"></ion-icon>
+                </button>
+                <button class="page-btn" [disabled]="currentPage >= totalPages || totalPages === 0" (click)="changePage(currentPage + 1)">
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      }
 
     </div>
   </div>
@@ -324,15 +435,15 @@
             <div class="exchange-grid">
               <div class="exchange-col">
                 <h5>Referrer (Sender)</h5>
-                <p class="name">{{ ref.referrer.full_name || 'N/A' }}</p>
-                <p class="sub">{{ ref.referrer.businessProfile?.business_name || 'No Business' }}</p>
-                <p class="contact-sub">{{ ref.referrer.phone }}</p>
+                <p class="name">{{ ref.referrer?.full_name || 'N/A' }}</p>
+                <p class="sub">{{ ref.referrer?.businessProfile?.business_name || 'No Business' }}</p>
+                <p class="contact-sub">{{ ref.referrer?.phone }}</p>
               </div>
               <div class="exchange-col">
                 <h5>Recipient (Receiver)</h5>
-                <p class="name">{{ ref.to_member.full_name || 'N/A' }}</p>
-                <p class="sub">{{ ref.to_member.businessProfile?.business_name || 'No Business' }}</p>
-                <p class="contact-sub">{{ ref.to_member.phone }}</p>
+                <p class="name">{{ ref.to_member?.full_name || 'N/A' }}</p>
+                <p class="sub">{{ ref.to_member?.businessProfile?.business_name || 'No Business' }}</p>
+                <p class="contact-sub">{{ ref.to_member?.phone }}</p>
               </div>
             </div>
           </div>
@@ -349,7 +460,7 @@
                 Card Given
               </span>
             </div>
-            @if (ref.rating) {
+            @if (ref.rating != null) {
               <div class="heat-rating-display">
                 <p>Referral Warmth Rating:</p>
                 <div class="stars">

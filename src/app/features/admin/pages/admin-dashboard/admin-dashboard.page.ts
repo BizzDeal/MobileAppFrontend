@@ -96,7 +96,8 @@ export class AdminDashboardPage implements OnInit {
   async openMemberModal(member: User) {
     const modal = await this.modalCtrl.create({
       component: AdminMemberActionModalComponent,
-      componentProps: { member }
+      componentProps: { member },
+      cssClass: 'admin-modal-theme'
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
@@ -112,7 +113,8 @@ export class AdminDashboardPage implements OnInit {
   async openOfferModal(offer: Offer) {
     const modal = await this.modalCtrl.create({
       component: AdminOfferActionModalComponent,
-      componentProps: { offer: offer as any }
+      componentProps: { offer: offer as any },
+      cssClass: 'admin-modal-theme'
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();

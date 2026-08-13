@@ -159,7 +159,7 @@ export class AdminNotificationsPage implements OnInit {
   async openComposeModal() {
     const modal = await this.modalCtrl.create({
       component: AdminNotificationComposeModalComponent,
-      cssClass: 'admin-action-modal'
+      cssClass: 'admin-action-modal admin-modal-theme'
     });
 
     await modal.present();

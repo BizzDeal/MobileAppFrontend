@@ -22,19 +22,27 @@ export class AdminMeetingsService {
   readonly error = this._error.asReadonly();
   readonly meetings = this._meetings.asReadonly();
 
-  loadMeetings(state?: string, district?: string): Observable<MeetingWithAttendee[]> {
+  loadMeetings(state?: string, district?: string, page: number = 1, limit?: number, append: boolean = false): Observable<any> {
     this._loading.set(true);
     this._error.set(null);
 
     let params = new HttpParams();
     if (state) params = params.set('state', state);
     if (district) params = params.set('district', district);
+    params = params.set('page', page.toString());
+    if (limit) params = params.set('limit', limit.toString());
 
     return this.http.get<any>(`${this.apiUrl}/meetings`, { params }).pipe(
       tap({
         next: (res) => {
           const meetingsList = Array.isArray(res) ? res : res?.data || res?.items || [];
-          this._meetings.set(meetingsList);
+          if (append) {
+             const existingIds = new Set(this._meetings().map(m => m.id));
+             const newMeetings = meetingsList.filter((m: any) => !existingIds.has(m.id));
+             this._meetings.update(curr => [...curr, ...newMeetings]);
+          } else {
+             this._meetings.set(meetingsList);
+          }
           this._loading.set(false);
         },
         error: (err) => {

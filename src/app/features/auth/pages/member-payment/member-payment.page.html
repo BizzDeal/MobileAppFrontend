@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/auth/login" (click)="payService.backStep($event)" text="" color="dark"></ion-back-button>
     </ion-buttons>
-    <ion-title>Member Payment</ion-title>
+    <ion-title>Registration Payment</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -43,19 +43,11 @@
 
       <!-- Payment Details Section -->
       <section class="details-section">
-        <h3 class="section-title">Payment Details</h3>
+        <h3 class="section-title">Payment Summary</h3>
         <div class="details-card">
           <div class="detail-row">
-            <span class="detail-label">UPI ID</span>
-            <div class="detail-value-box" (click)="payService.copyToClipboard(settings.upi_id)">
-              <span class="detail-value font-mono">{{ settings.upi_id }}</span>
-              <ion-icon name="copy-outline" class="copy-icon"></ion-icon>
-            </div>
-          </div>
-          <div class="detail-divider"></div>
-          <div class="detail-row">
-            <span class="detail-label">Account Name</span>
-            <span class="detail-value font-semibold">{{ settings.account_name }}</span>
+            <span class="detail-label">Description</span>
+            <span class="detail-value font-semibold">Member Registration Fee</span>
           </div>
           <div class="detail-divider"></div>
           <div class="detail-row">
@@ -64,54 +56,20 @@
           </div>
         </div>
       </section>
+      
+      <div class="error-container" style="min-height: 24px; display: flex; align-items: center; margin-top: 8px;">
+        @if (payService.errorMessage()) {
+          <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.85rem;">{{ payService.errorMessage() }}</span>
+        }
+      </div>
 
-      <!-- Upload Payment Screenshot Section (Removed/Commented as file upload is no longer required) -->
-      <!--
-      <section class="upload-section">
-        <h3 class="section-title">Upload Payment Screenshot <span class="required-star">*</span></h3>
-        
-        <label class="upload-box" [class.has-file]="payService.receiptPreview()" for="receiptInput">
-          @if (payService.receiptPreview()) {
-            <div class="preview-container">
-              <img loading="lazy" [appCachedImg]="payService.receiptPreview()" alt="Payment receipt preview" class="receipt-img" />
-              <div class="file-info">
-                <ion-icon name="checkmark-circle-outline" class="success-icon"></ion-icon>
-                <span class="file-name">{{ payService.receiptFileName() }}</span>
-              </div>
-              <span class="change-link">Click to replace screenshot</span>
-            </div>
-          } @else {
-            <div class="upload-placeholder">
-              <div class="icon-circle">
-                <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
-              </div>
-              <span class="upload-title">Upload Payment Screenshot</span>
-              <span class="upload-subtitle">PNG, JPG or PDF up to 5MB</span>
-            </div>
-          }
-          <input
-            type="file"
-            id="receiptInput"
-            accept="image/*,application/pdf"
-            (change)="payService.onFileSelected($event)"
-            class="hidden-input"
-          />
-        </label>
-
-        <div class="error-container" style="min-height: 24px; display: flex; align-items: center; margin-top: 8px;">
-          @if (payService.errorMessage()) {
-            <span class="error-text" style="color: var(--ion-color-danger, #ef4444); font-size: 0.85rem;">{{ payService.errorMessage() }}</span>
-          }
-        </div>
-      </section>
-      -->
-
-      <!-- Payment Done Button -->
+      <!-- Pay Now Button -->
       <button
         type="button"
         class="payment-done-btn bd-btn-primary"
-        (click)="payService.completePayment()">
-        <span>Payment Done</span>
+        [disabled]="payService.isProcessing()"
+        (click)="payService.initiateRazorpayPayment()">
+        <span>{{ payService.isProcessing() ? 'Processing...' : 'Pay Now' }}</span>
       </button>
     </div>
   }

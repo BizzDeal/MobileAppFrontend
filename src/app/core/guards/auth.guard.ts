@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core';
 import { AuthSessionService } from '../services/auth-session.service';
-import { UserRole } from '../../features/auth/models/auth.model';
+import { UserRole, UserStatus } from '../../features/auth/models/auth.model';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authSession = inject(AuthSessionService);
@@ -21,6 +21,11 @@ export const authGuard: CanActivateFn = (route, state) => {
   if (isWeb && currentRole !== UserRole.ADMIN) {
     authSession.clearSession();
     return router.createUrlTree(['/auth/login']);
+  }
+
+  const currentUser = authSession.currentUser();
+  if (currentUser?.status === UserStatus.PENDING_PAYMENT && !state.url.includes('payment/registration')) {
+    return router.createUrlTree(['/payment/registration']);
   }
 
   const allowedRoles = route.data['roles'] as UserRole[] | undefined;

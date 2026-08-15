@@ -8,6 +8,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES),
   },
   {
+    path: 'payment/registration',
+    loadComponent: () => import('./features/auth/pages/member-payment/member-payment.page').then(m => m.MemberPaymentPage),
+    canActivate: [authGuard],
+  },
+  {
     path: 'home',
     loadComponent: () => import('./home/home.page').then(m => m.HomePage),
     canActivate: [authGuard],

@@ -9,4 +9,5 @@ export const environment = {
     appId: '1:852635887519:web:2275969c20f962ad393faa',
     measurementId: 'G-E352KVFJFS',
   },
+  razorpayKeyId: 'rzp_test_TPuVExiEzFPiJi',
 };

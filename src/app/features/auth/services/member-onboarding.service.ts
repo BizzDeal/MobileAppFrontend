@@ -107,7 +107,6 @@ export class MemberOnboardingService {
   readonly registrationData = signal<MemberRegistrationPayload | null>(null);
   readonly profilePicFile = signal<File | null>(null);
   readonly businessLogoFile = signal<File | null>(null);
-  readonly paymentReceiptFile = signal<File | null>(null);
   readonly isSubmitting = signal<boolean>(false);
 
   async fetchCategories(): Promise<void> {
@@ -203,21 +202,11 @@ export class MemberOnboardingService {
     }
   }
 
-  setPaymentReceipt(receipt: File | null): void {
-    this.paymentReceiptFile.set(receipt);
-  }
-
-  async submitMemberRegistration(paymentReceipt?: File): Promise<{ success: boolean; message: string }> {
+  async submitMemberRegistration(): Promise<{ success: boolean; message: string }> {
     const data = this.registrationData();
     if (!data) {
       throw new Error('Registration data is missing. Please complete the registration form.');
     }
-
-    const receipt = paymentReceipt || this.paymentReceiptFile();
-    // Payment receipt is optional
-    // if (!receipt) {
-    //   throw new Error('Payment receipt is missing. Please upload your payment screenshot.');
-    // }
 
     this.isSubmitting.set(true);
     try {
@@ -249,9 +238,6 @@ export class MemberOnboardingService {
       const businessLogo = this.businessLogoFile();
       if (businessLogo) {
         formData.append('business_logo', businessLogo, businessLogo.name);
-      }
-      if (receipt) {
-        formData.append('payment_receipt', receipt, receipt.name);
       }
 
       const res: any = await firstValueFrom(

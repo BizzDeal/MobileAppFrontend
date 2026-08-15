@@ -223,8 +223,4 @@ export class MemberRegistrationService {
     }
   }
 
-  backStep(event: Event): void {
-    event.preventDefault();
-    this.router.navigate(['/auth/member-payment']);
-  }
 }

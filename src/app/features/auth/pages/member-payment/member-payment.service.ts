@@ -1,21 +1,25 @@
 import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 import { MemberOnboardingService } from '../../services/member-onboarding.service';
+import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { ToastService } from '../../../../core/services/toast.service';
-import { compressImageClientSide } from '../../../../shared/utils/image-compressor.util';
-import { validateFileSize } from '../../../../shared/utils/file-validator.util';
+
+declare var Razorpay: any;
 
 @Injectable()
 export class MemberPaymentService {
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly authSession = inject(AuthSessionService);
   readonly onboardingService = inject(MemberOnboardingService);
   private readonly toastService = inject(ToastService);
+  private readonly apiUrl = environment.apiUrl;
 
-  readonly receiptPreview = signal<string | null>(null);
-  readonly receiptFileName = signal<string | null>(null);
+  readonly isProcessing = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly isSuccess = signal<boolean>(false);
-  private receiptFile: File | null = null;
 
   constructor() {
     this.loadSettings();
@@ -25,53 +29,105 @@ export class MemberPaymentService {
     try {
       await this.onboardingService.fetchPaymentSettings();
     } catch (err) {
-      // Error is set in onboardingService.paymentSettingsError
+      // Error is handled in onboardingService
     }
   }
 
-  async onFileSelected(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const rawFile = input.files[0];
-      const validation = validateFileSize(rawFile, 10);
-      if (!validation.valid) {
-        this.toastService.showError(validation.error || 'File size exceeds limit');
-        input.value = '';
-        return;
-      }
-      this.receiptFile = await compressImageClientSide(rawFile);
-      this.receiptFileName.set(this.receiptFile.name);
-      this.errorMessage.set(null);
+  async initiateRazorpayPayment(): Promise<void> {
+    const user = this.authSession.currentUser();
+    const settings = this.onboardingService.paymentSettings();
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.receiptPreview.set(reader.result as string);
-      };
-      reader.readAsDataURL(this.receiptFile);
+    if (!user) {
+      this.toastService.showError('User not found. Please log in again.');
+      return;
     }
-  }
 
-  completePayment(): void {
-    // Payment receipt is no longer mandatory
-    // if (!this.receiptFile) {
-    //   this.errorMessage.set('Please upload your payment screenshot to proceed.');
-    //   return;
-    // }
+    if (!settings || !settings.registration_fee) {
+      this.toastService.showError('Payment settings not loaded properly. Please try again.');
+      return;
+    }
 
+    this.isProcessing.set(true);
     this.errorMessage.set(null);
-    if (this.receiptFile) {
-      this.onboardingService.setPaymentReceipt(this.receiptFile);
+
+    try {
+      // 1. Create Order in Backend
+      const orderRes = await firstValueFrom(
+        this.http.post<{ order_id: string; amount: number }>(`${this.apiUrl}/payments/create-order`, {
+          amount: settings.registration_fee,
+          purpose: 'REGISTRATION_FEE'
+        })
+      );
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: environment.razorpayKeyId, // Must be added to environment
+        amount: Math.round(settings.registration_fee * 100), // convert to paise
+        currency: 'INR',
+        name: 'BizzDeal',
+        description: 'Member Registration Fee',
+        order_id: orderRes.order_id,
+        handler: async (response: any) => {
+          await this.verifyPayment(
+            response.razorpay_order_id,
+            response.razorpay_payment_id,
+            response.razorpay_signature
+          );
+        },
+        prefill: {
+          name: user.full_name,
+          email: user.email || '',
+          contact: user.phone
+        },
+        theme: {
+          color: '#5b21b6'
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.on('payment.failed', (response: any) => {
+        this.toastService.showError('Payment failed or was cancelled.');
+        this.isProcessing.set(false);
+      });
+      rzp.open();
+
+    } catch (err: any) {
+      this.isProcessing.set(false);
+      this.toastService.showError('Failed to initiate payment. Please try again.');
+      console.error(err);
     }
-    this.router.navigate(['/auth/member-registration']);
   }
 
-  copyToClipboard(text: string): void {
-    navigator.clipboard.writeText(text);
-    this.toastService.showSuccess(`Copied "${text}" to clipboard!`);
+  private async verifyPayment(orderId: string, paymentId: string, signature: string): Promise<void> {
+    try {
+      const res = await firstValueFrom(
+        this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/payments/verify`, {
+          razorpay_order_id: orderId,
+          razorpay_payment_id: paymentId,
+          razorpay_signature: signature
+        })
+      );
+
+      if (res.success) {
+        this.toastService.showSuccess('Payment successful! Your account is now pending admin approval.');
+        
+        // Let's just log them out so they get a fresh session when they login next,
+        // or just let them stay and we will refresh their profile.
+        // Doing a simple logout is safer to refresh tokens right now.
+        this.authSession.clearSession();
+        this.router.navigate(['/auth/login']);
+      }
+    } catch (err: any) {
+      this.toastService.showError('Payment verification failed.');
+      console.error(err);
+    } finally {
+      this.isProcessing.set(false);
+    }
   }
 
   backStep(event: Event): void {
     event.preventDefault();
+    this.authSession.clearSession();
     this.router.navigate(['/auth/login']);
   }
 }

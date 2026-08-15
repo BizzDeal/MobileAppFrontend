@@ -18,10 +18,6 @@ export const AUTH_ROUTES: Routes = [
     canActivate: [guestGuard],
   },
   {
-    path: 'member-payment',
-    loadComponent: () => import('./pages/member-payment/member-payment.page').then(m => m.MemberPaymentPage),
-  },
-  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',

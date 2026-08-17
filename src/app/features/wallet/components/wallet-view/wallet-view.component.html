@@ -32,9 +32,15 @@
           <div class="balance-card cash-card">
             <div class="balance-card-inner">
               <div class="card-bg-glow"></div>
-              <div class="balance-section">
-                <span class="label">Cash Balance</span>
-                <h1 class="amount">₹{{ wallet()?.balance | number:'1.2-2' }}</h1>
+              <div class="balance-section" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <span class="label">Cash Balance</span>
+                  <h1 class="amount">₹{{ wallet()?.balance | number:'1.2-2' }}</h1>
+                </div>
+                <ion-button fill="clear" color="light" (click)="openAddFundsPrompt()" style="--padding-start: 8px; --padding-end: 8px; font-weight: 600; font-size: 13px; margin: 0; background: rgba(255,255,255,0.15); border-radius: var(--bizzdeal-radius-full);">
+                  <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+                  Add Funds
+                </ion-button>
               </div>
               <div class="divider"></div>
               <div class="savings-section">

@@ -27,6 +27,10 @@ export const authGuard: CanActivateFn = (route, state) => {
   if (currentUser?.status === UserStatus.PENDING_PAYMENT && !state.url.includes('payment/registration')) {
     return router.createUrlTree(['/payment/registration']);
   }
+  
+  if (currentUser?.status === UserStatus.PENDING && !state.url.includes('auth/pending-approval')) {
+    return router.createUrlTree(['/auth/pending-approval']);
+  }
 
   const allowedRoles = route.data['roles'] as UserRole[] | undefined;
   if (allowedRoles && allowedRoles.length > 0) {

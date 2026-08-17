@@ -18,6 +18,10 @@ export const AUTH_ROUTES: Routes = [
     canActivate: [guestGuard],
   },
   {
+    path: 'pending-approval',
+    loadComponent: () => import('./pages/pending-approval/pending-approval.page').then(m => m.PendingApprovalPage),
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',

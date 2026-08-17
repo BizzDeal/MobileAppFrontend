@@ -6,6 +6,7 @@ import { environment } from '../../../../../environments/environment';
 import { MemberOnboardingService } from '../../services/member-onboarding.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { UserStatus } from '../../models/auth.model';
 
 declare var Razorpay: any;
 
@@ -111,11 +112,11 @@ export class MemberPaymentService {
       if (res.success) {
         this.toastService.showSuccess('Payment successful! Your account is now pending admin approval.');
         
-        // Let's just log them out so they get a fresh session when they login next,
-        // or just let them stay and we will refresh their profile.
-        // Doing a simple logout is safer to refresh tokens right now.
-        this.authSession.clearSession();
-        this.router.navigate(['/auth/login']);
+        const currentUser = this.authSession.currentUser();
+        if (currentUser) {
+          this.authSession.updateCurrentUser({ ...currentUser, status: UserStatus.PENDING });
+        }
+        this.router.navigate(['/auth/pending-approval']);
       }
     } catch (err: any) {
       this.toastService.showError('Payment verification failed.');

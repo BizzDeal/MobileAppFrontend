@@ -266,6 +266,6 @@ export class EmailLoginService {
   }
 
   joinAsMember(): void {
-    this.router.navigate(['/auth/member-payment']);
+    this.router.navigate(['/auth/member-registration']);
   }
 }

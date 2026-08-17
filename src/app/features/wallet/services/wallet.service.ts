@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal, effect, untracked, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { forkJoin, Observable, of, throwError, firstValueFrom } from 'rxjs';
 import { catchError, map, tap, shareReplay, finalize } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -9,6 +9,9 @@ import { WalletDTO, WalletTransactionDTO } from '../models/wallet.model';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { AppSocketService } from '../../../core/services/app-socket.service';
 import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
+import { ToastService } from '../../../core/services/toast.service';
+
+declare var Razorpay: any;
 
 export interface BizzCoinTransactionItem {
   id: string;
@@ -29,6 +32,7 @@ export class WalletService {
   private readonly appSocket = inject(AppSocketService);
   private readonly apiUrl = environment.apiUrl;
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toastService = inject(ToastService);
 
   private readonly _wallet = signal<WalletDTO | null>(null);
   private readonly _transactions = signal<WalletTransactionDTO[]>([]);
@@ -243,5 +247,86 @@ export class WalletService {
       }),
       map(({ transactions }) => transactions)
     );
+  }
+
+  async initiateAddFundsPayment(amount: number): Promise<void> {
+    const user = this.authSession.currentUser();
+
+    if (!user) {
+      this.toastService.showError('User not found. Please log in again.');
+      return;
+    }
+
+    if (!amount || amount <= 0) {
+      this.toastService.showError('Please enter a valid amount.');
+      return;
+    }
+
+    try {
+      // 1. Create Order in Backend
+      const orderRes = await firstValueFrom(
+        this.http.post<{ order_id: string; amount: number }>(`${this.apiUrl}/payments/create-order`, {
+          amount,
+          purpose: 'WALLET_TOPUP'
+        })
+      );
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: environment.razorpayKeyId,
+        amount: Math.round(amount * 100), // convert to paise
+        currency: 'INR',
+        name: 'BizzDeal',
+        description: 'Wallet Top-up',
+        order_id: orderRes.order_id,
+        handler: async (response: any) => {
+          await this.verifyAddFundsPayment(
+            response.razorpay_order_id,
+            response.razorpay_payment_id,
+            response.razorpay_signature
+          );
+        },
+        prefill: {
+          name: user.full_name,
+          email: user.email || '',
+          contact: user.phone
+        },
+        theme: {
+          color: '#5b21b6'
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.on('payment.failed', (response: any) => {
+        this.toastService.showError('Payment failed or was cancelled.');
+      });
+      rzp.open();
+
+    } catch (err: any) {
+      this.toastService.showError('Failed to initiate payment. Please try again.');
+      console.error(err);
+    }
+  }
+
+  private async verifyAddFundsPayment(orderId: string, paymentId: string, signature: string): Promise<void> {
+    try {
+      const res = await firstValueFrom(
+        this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/payments/verify`, {
+          razorpay_order_id: orderId,
+          razorpay_payment_id: paymentId,
+          razorpay_signature: signature
+        })
+      );
+
+      if (res.success) {
+        this.toastService.showSuccess('Funds added successfully!');
+        this.refreshWallet().subscribe({
+          error: (err) => console.error('Failed to refresh wallet after top-up', err)
+        });
+      }
+    } catch (err: any) {
+      this.toastService.showError('Payment verification failed.');
+      console.error(err);
+    }
   }
 }

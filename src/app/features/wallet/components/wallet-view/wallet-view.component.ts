@@ -10,7 +10,8 @@ import {
   IonTitle,
   IonToolbar,
   IonInfiniteScroll,
-  IonInfiniteScrollContent
+  IonInfiniteScrollContent,
+  AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -25,7 +26,8 @@ import {
   timeOutline,
   trendingUpOutline,
   walletOutline,
-  ribbonOutline
+  ribbonOutline,
+  addCircleOutline
 } from 'ionicons/icons';
 import { WalletTransactionDTO } from '../../models/wallet.model';
 import { WalletService, BizzCoinTransactionItem } from '../../services/wallet.service';
@@ -67,6 +69,7 @@ export interface DisplayTransactionItem {
 })
 export class WalletViewComponent {
   readonly walletService = inject(WalletService);
+  private readonly alertController = inject(AlertController);
 
   readonly wallet = this.walletService.wallet;
   readonly transactions = this.walletService.transactions;
@@ -134,7 +137,8 @@ export class WalletViewComponent {
       alertCircleOutline,
       chevronForwardOutline,
       sparklesOutline,
-      ribbonOutline
+      ribbonOutline,
+      addCircleOutline
     });
   }
 
@@ -212,5 +216,39 @@ export class WalletViewComponent {
     } else {
       event.target.complete();
     }
+  }
+
+  async openAddFundsPrompt(): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Add Funds',
+      subHeader: 'Enter amount to add to your wallet',
+      inputs: [
+        {
+          name: 'amount',
+          type: 'number',
+          placeholder: 'Amount (₹)',
+          min: 1
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'alert-cancel-btn'
+        },
+        {
+          text: 'Proceed',
+          cssClass: 'alert-proceed-btn',
+          handler: (data) => {
+            const amount = Number(data.amount);
+            if (amount > 0) {
+              this.walletService.initiateAddFundsPayment(amount);
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

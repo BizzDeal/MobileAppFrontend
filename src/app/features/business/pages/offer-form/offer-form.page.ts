@@ -73,6 +73,7 @@ export class OfferFormPage implements OnInit {
       discount_value: [null, [Validators.required, Validators.min(0)]],
       start_date: [this.formatDateForInput(now.toISOString()), Validators.required],
       end_date: [this.formatDateForInput(nextMonth.toISOString()), Validators.required],
+      video_url: [''],
     }, { validators: this.dateValidator });
   }
 
@@ -132,6 +133,7 @@ export class OfferFormPage implements OnInit {
       discount_value: offer.discount_value ?? null,
       start_date: this.formatDateForInput(offer.start_date || new Date().toISOString()),
       end_date: this.formatDateForInput(offer.end_date || new Date().toISOString()),
+      video_url: offer.video_url || '',
     });
     const previewUrl = offer.imageUrl || offer.image_url || offer.image?.file_url;
     if (previewUrl) {
@@ -253,6 +255,8 @@ export class OfferFormPage implements OnInit {
     }
     formData.append('start_date', new Date(formValues.start_date).toISOString());
     formData.append('end_date', new Date(formValues.end_date).toISOString());
+    
+    formData.append('video_url', formValues.video_url || '');
 
     if (this.selectedImageFile()) {
       formData.append('offer_image', this.selectedImageFile()!);

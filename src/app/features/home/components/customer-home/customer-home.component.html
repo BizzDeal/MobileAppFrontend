@@ -8,12 +8,14 @@
     (notificationClick)="notificationClick.emit()"
     (searchChange)="searchChange.emit($event)" 
     (searchSubmit)="searchSubmit.emit($event)" 
+    [isScrolled]="isScrolled"
   />
 
   <app-category-chips 
     [categories]="feed.categories" 
     [selectedCategoryId]="selectedCategory"
     (categorySelect)="categorySelect.emit($event)" 
+    [isScrolled]="isScrolled"
   />
 </div>
 
@@ -26,7 +28,18 @@
     (storeClick)="businessClick.emit($event)" 
   />
 
-  <!-- 2. Top Deals (Percentage) Infinite Scrolling Rail -->
+  <!-- 2. Top Businesses Infinite Rail (Directly after Featured Stores with Auto-Scroll) -->
+  <app-infinite-scrolling-cards 
+    title="Top Businesses" 
+    subtitle="Explore trending merchants"
+    iconType="star"
+    [items]="filteredTopBiz"
+    cardType="business"
+    [autoScroll]="true"
+    (businessClick)="businessClick.emit($event)"
+  />
+
+  <!-- 3. Top Deals (Percentage) Infinite Scrolling Rail -->
   <app-infinite-scrolling-cards 
     title="Top Deals & Discounts" 
     subtitle="Handpicked mega savings near you"
@@ -37,7 +50,7 @@
     (claimClick)="claimOffer.emit($event)"
   />
 
-  <!-- 3. Flat Offers Infinite Scrolling Rail -->
+  <!-- 4. Flat Offers Infinite Scrolling Rail -->
   <app-infinite-scrolling-cards 
     title="Flat Price Offers" 
     subtitle="Direct instant price drops"
@@ -48,7 +61,7 @@
     (claimClick)="claimOffer.emit($event)"
   />
 
-  <!-- 4. Cashback Rewards Infinite Scrolling Rail -->
+  <!-- 5. Cashback Rewards Infinite Scrolling Rail -->
   <app-infinite-scrolling-cards 
     title="Cashback Rewards" 
     subtitle="Earn wallet cashback on every deal"
@@ -57,16 +70,6 @@
     cardType="deal"
     (itemClick)="dealClick.emit($event)"
     (claimClick)="claimOffer.emit($event)"
-  />
-
-  <!-- 5. Top Businesses Infinite Rail -->
-  <app-infinite-scrolling-cards 
-    title="Top Businesses" 
-    subtitle="Explore trending merchants"
-    iconType="star"
-    [items]="filteredTopBiz"
-    cardType="business"
-    (businessClick)="businessClick.emit($event)"
   />
 
   <!-- 6. Main Infinite Scroll Feed (Vertical Stream, No Loop) -->

@@ -1,6 +1,9 @@
 @if (stores().length > 0) {
-<section class="fk-featured-section">
-  <!-- Flipkart-Style Header Row -->
+<section 
+  class="fk-featured-section"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()">
+  <!-- Header Row -->
   <div class="fk-header-row">
     <div class="title-group">
       <div class="icon-badge">
@@ -15,102 +18,96 @@
     </div>
 
     <!-- Navigation Arrows -->
-    <div class="nav-controls">
-      <button type="button" class="nav-btn prev-btn" (click)="scrollPrev()" aria-label="Previous">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="15 18 9 12 15 6"/>
-        </svg>
-      </button>
-      <button type="button" class="nav-btn next-btn" (click)="scrollNext()" aria-label="Next">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Horizontal Scroll Rail (Flipkart Banner Deck) -->
-  <div class="fk-banners-rail" #railContainer (scroll)="onScroll($event)">
-    @for (store of stores(); track store.id || $index; let i = $index) {
-      <div class="fk-banner-card" [ngClass]="'variant-' + (i % 5)" (click)="storeClick.emit(store)">
-        
-        <!-- Banner Image Overlay Background -->
-        <div class="banner-media-bg" [style.background]="getAvatarColor(store.name)">
-          @if (store.bannerUrl || store.logoUrl) {
-            <img loading="lazy" [appCachedImg]="store.bannerUrl || store.logoUrl" [alt]="store.name" class="media-img" />
-          }
-          <div class="gradient-overlay"></div>
-        </div>
-
-        <!-- Banner Content Area -->
-        <div class="banner-inner">
-          <!-- Top Badges -->
-          <div class="badge-row">
-            <span class="spotlight-pill">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-              </svg>
-              SPOTLIGHT STORE
-            </span>
-
-            @if (store.hasBizzCoinOffer || store.has_bizz_coin_offer) {
-              <span class="coin-pill">🪙 BizzCoins Offer</span>
-            }
-          </div>
-
-          <!-- Store Info Row -->
-          <div class="store-info-box">
-            <div class="logo-avatar-wrap">
-              <div class="avatar-circle" [style.background]="getAvatarColor(store.name)">
-                {{ getInitials(store.name) }}
-                @if (store.logoUrl) {
-                  <img loading="lazy" [appCachedImg]="store.logoUrl" [alt]="store.name" class="logo-img" />
-                }
-              </div>
-              <span class="verified-check" title="Verified Merchant">
-                <svg viewBox="0 0 24 24" width="9" height="9" fill="currentColor">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                </svg>
-              </span>
-            </div>
-
-            <div class="text-details">
-              <span class="cat-label">{{ store.categoryName || 'Partner' }}</span>
-              <h3 class="store-name">{{ store.name }}</h3>
-              <p class="store-desc">{{ store.description }}</p>
-            </div>
-          </div>
-
-          <!-- Banner Footer Row -->
-          <div class="banner-footer">
-            <div class="meta-tag">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                <circle cx="12" cy="10" r="3"/>
-              </svg>
-              <span>{{ store.address ? (store.address.slice(0, 24) + '...') : 'Verified Local Partner' }}</span>
-            </div>
-
-            <button type="button" class="fk-visit-btn">
-              Explore Store
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
+    @if (stores().length > 1) {
+      <div class="nav-controls">
+        <button type="button" class="nav-btn prev-btn" (click)="scrollPrev()" aria-label="Previous">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <button type="button" class="nav-btn next-btn" (click)="scrollNext()" aria-label="Next">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
       </div>
     }
+  </div>
+
+  <!-- Carousel Viewport (overflow hidden, no scroll) -->
+  <div class="fk-banners-viewport" #viewportEl
+    (touchstart)="onTouchStart($event)"
+    (touchmove)="onTouchMove($event)"
+    (touchend)="onTouchEnd()">
+    <div class="fk-banners-track" #trackEl
+      [style.transform]="trackTransform()"
+      [style.transition]="trackTransition()"
+      (transitionend)="onTransitionEnd()">
+      @for (store of displayStores(); track (store.id || '') + '-' + $index; let i = $index) {
+        <div class="fk-banner-card" [ngClass]="'variant-' + (i % 5)"
+          [style.width.px]="cardWidth()"
+          [style.min-width.px]="cardWidth()"
+          (click)="storeClick.emit(store)">
+          
+          <!-- Banner Video / Image / Gradient Background -->
+          <div class="banner-media-bg" [style.background]="getAvatarColor(store.name)">
+            @if (store.bannerUrl || store.logoUrl) {
+              <img loading="lazy" [appCachedImg]="store.bannerUrl || store.logoUrl" [alt]="store.name" class="media-img" />
+            }
+            <div class="gradient-overlay"></div>
+          </div>
+
+          <!-- Banner Content Area -->
+          <div class="banner-inner">
+            <!-- Top Badges Row -->
+            <div class="badge-row">
+              <span class="spotlight-pill">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                SPOTLIGHT STORE
+              </span>
+
+              @if (store.hasBizzCoinOffer || store.has_bizz_coin_offer) {
+                <span class="coin-pill">🪙 BizzCoins Offer</span>
+              }
+            </div>
+
+            <!-- Banner Clean Bottom Bar -->
+            <div class="banner-footer">
+              <div class="store-headline-box">
+                <h3 class="banner-store-title">{{ store.name }}</h3>
+                <div class="meta-tag">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  <span>{{ store.address ? (store.address.slice(0, 26) + '...') : (store.categoryName || 'Verified Local Partner') }}</span>
+                </div>
+              </div>
+
+              <button type="button" class="fk-visit-btn">
+                Explore Store
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
   </div>
 
   <!-- Pagination Dot Indicators -->
   @if (stores().length > 1) {
     <div class="banner-dots">
       @for (store of stores(); track store.id || $index; let idx = $index) {
-        <span class="dot" [class.active]="activeSlide() === idx"></span>
+        <span class="dot" [class.active]="activeSlide() === idx" (click)="goToDot(idx)"></span>
       }
     </div>
   }
 </section>
 }
+

@@ -4,11 +4,36 @@
   color: #ffffff;
   box-shadow: 0 4px 16px rgba(40, 116, 240, 0.25);
 
+  transition: padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.scrolled {
+    padding-top: calc(4px + var(--ion-safe-area-top, env(safe-area-inset-top, 0px)));
+    padding-bottom: 8px;
+
+    .top-row {
+      transform: scaleY(0);
+      opacity: 0;
+      height: 0;
+      margin-bottom: 0;
+      pointer-events: none;
+    }
+  }
+
   .top-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 10px;
+    height: 38px;
+    opacity: 1;
+    transform: scaleY(1);
+    transform-origin: top center;
+    overflow: hidden;
+    will-change: transform, opacity, height;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                margin-bottom 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
     .brand-greeting {
       display: flex;

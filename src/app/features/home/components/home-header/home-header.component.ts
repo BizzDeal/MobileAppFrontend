@@ -21,6 +21,7 @@ export class HomeHeaderComponent implements OnInit, OnDestroy {
   readonly customer = input.required<CustomerProfileDTO>();
   readonly wallet = input.required<WalletDTO>();
   readonly unreadCount = input.required<number>();
+  readonly isScrolled = input<boolean>(false);
 
   readonly walletClick = output<void>();
   readonly notificationClick = output<void>();

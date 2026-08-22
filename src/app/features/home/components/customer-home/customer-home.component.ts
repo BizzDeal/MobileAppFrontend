@@ -63,6 +63,7 @@ export class CustomerHomeComponent implements OnInit, OnChanges {
   @Output() voucherClick = new EventEmitter<any>();
   @Output() claimOffer = new EventEmitter<OfferDTO>();
 
+  @Input() isScrolled = false;
   readonly infiniteOffers = signal<OfferDTO[]>([]);
   readonly feedPage = signal<number>(1);
   readonly loadingMoreFeed = signal<boolean>(false);

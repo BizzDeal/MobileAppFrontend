@@ -1,9 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController, AlertController } from '@ionic/angular';
+import { IonicModule, NavController, AlertController } from '@ionic/angular';
 import { AdminNotificationsService } from '../../services/admin-notifications.service';
 import { AdminNotification, NotificationType, NotificationAudience } from '../../models/admin-notification.model';
-import { AdminNotificationComposeModalComponent } from '../../components/admin-notification-compose-modal/admin-notification-compose-modal.component';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 
 import { addIcons } from 'ionicons';
@@ -29,7 +28,7 @@ export class AdminNotificationsPage implements OnInit {
 
   constructor(
     private adminNotificationsService: AdminNotificationsService,
-    private modalCtrl: ModalController,
+    private navCtrl: NavController,
     private alertController: AlertController
   ) {
     addIcons({
@@ -41,6 +40,10 @@ export class AdminNotificationsPage implements OnInit {
 
   ngOnInit() {
     this.loadNotifications();
+  }
+
+  ionViewWillEnter() {
+    this.refresh();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -156,20 +159,8 @@ export class AdminNotificationsPage implements OnInit {
     }
   }
 
-  async openComposeModal() {
-    const modal = await this.modalCtrl.create({
-      component: AdminNotificationComposeModalComponent,
-      cssClass: 'admin-action-modal admin-modal-theme'
-    });
-
-    await modal.present();
-
-    const { data, role } = await modal.onWillDismiss();
-
-    if (role === 'confirm' && data) {
-      // Reload notifications if a new one was sent
-      this.loadNotifications();
-    }
+  openCreatePage() {
+    this.navCtrl.navigateForward('/admin/notifications/create');
   }
 
   async deleteNotification(id: string) {

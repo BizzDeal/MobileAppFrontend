@@ -1,7 +1,9 @@
 <div class="business-card" (click)="businessClick.emit(business())">
   <div class="card-image-box" [style.background]="getAvatarColor(business().name)">
     <span class="initials-text">{{ getInitials(business().name) }}</span>
-    @if (business().bannerUrl) {
+    @if (business().is_featured && business().video_url && isVisible()) {
+      <iframe [src]="business().video_url | safeVideo:true" class="card-video-iframe" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    } @else if (business().bannerUrl) {
       <img loading="lazy" [appCachedImg]="business().bannerUrl" [alt]="business().name" class="card-banner-img" />
     }
     <div class="image-overlay"></div>

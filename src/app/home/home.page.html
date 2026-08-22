@@ -1,9 +1,10 @@
 <ion-content [fullscreen]="true" class="home-content">
   <!-- Pull to Refresh -->
-  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)" mode="ios">
-    <ion-refresher-content pullingText="Pull to refresh deals..." refreshingText="Updating deals & wallet...">
+  <ion-refresher slot="fixed" pullMin="120" pullFactor="0.5" (ionRefresh)="onRefresh($event)" mode="ios">
+    <ion-refresher-content pullingText="Pull down further to refresh..." refreshingText="Updating deals & wallet...">
     </ion-refresher-content>
   </ion-refresher>
+
 
   <div class="home-layout">
     @if (activeNavTab() === 'home') {
@@ -32,6 +33,7 @@
       [filteredTopBiz]="filteredTopBizBySearch()" [filteredFeaturedBiz]="filteredFeaturedBySearch()"
       [filteredFlatOffers]="filteredFlatOffersBySearch()" [filteredCashbackOffers]="filteredCashbackOffersBySearch()"
       [activeVouchersCount]="activeVouchers().length" [activeVouchers]="activeVouchers()"
+      [isScrolled]="isHeaderScrolled()"
       (walletClick)="onWalletClick()" (notificationClick)="onNotificationClick()"
       (searchChange)="onSearchChange($event)" (searchSubmit)="onSearchSubmit($event)" (dealClick)="onDealClick($event)"
       (businessClick)="onBusinessClick($event)" (categorySelect)="onCategorySelect($event)"

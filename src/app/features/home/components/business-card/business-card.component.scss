@@ -39,7 +39,7 @@
     font-family: var(--bizzdeal-font-family);
   }
 
-  .card-banner-img {
+  .card-banner-img, .card-video-iframe {
     position: absolute;
     top: 0;
     left: 0;
@@ -48,6 +48,7 @@
     object-fit: cover;
     object-position: center;
     z-index: 2;
+    pointer-events: none;
   }
 }
 

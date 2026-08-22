@@ -582,6 +582,10 @@ export class NotificationService {
     });
   }
 
+  unregisterDeviceByToken(fcmToken: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/notifications/devices/token/${fcmToken}`);
+  }
+
   getUserDevices(): Observable<any[]> {
     return this.http.get<any>(`${this.apiUrl}/notifications/devices`).pipe(
       map(res => Array.isArray(res) ? res : res?.data || res?.items || [])

@@ -110,6 +110,12 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
 
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
     .cards-rail {
       display: flex;
       gap: 12px;
@@ -117,15 +123,27 @@
       width: max-content;
     }
   }
+
+  /* TranslateX-based carousel viewport for business cards */
+  .business-carousel-viewport {
+    overflow: hidden;
+    position: relative;
+    padding: 4px 0 14px 0;
+    touch-action: pan-y;
+  }
+
+  .business-carousel-track {
+    display: flex;
+    gap: 16px;
+    will-change: transform;
+    padding: 0 16px;
+  }
 }
 
 .flipkart-card {
   scroll-snap-align: start;
   scroll-snap-stop: always;
   flex-shrink: 0;
-  width: 260px;
-  min-width: 260px;
-  max-width: 280px;
   background: #ffffff;
   border-radius: 16px;
   border: 1px solid #f1f5f9;
@@ -137,11 +155,32 @@
   transform: translateZ(0);
   backface-visibility: hidden;
   transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease;
+  box-sizing: border-box;
 
-  @media (max-width: 480px) {
-    width: calc(80vw - 12px);
-    min-width: 240px;
-    max-width: 285px;
+  &.deal-card {
+    width: 260px;
+  }
+
+  /* Single Full-Width Card for Top Businesses */
+  &.business-card {
+    scroll-snap-align: center;
+    border-radius: 20px;
+
+    .card-media-box {
+      height: 150px;
+    }
+
+    .biz-header-inline {
+      .biz-mini-logo {
+        width: 26px;
+        height: 26px;
+      }
+
+      .card-title.biz-title {
+        font-size: 15px;
+        font-weight: 800;
+      }
+    }
   }
 
   &:hover {

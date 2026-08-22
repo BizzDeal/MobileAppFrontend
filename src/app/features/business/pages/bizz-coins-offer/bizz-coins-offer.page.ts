@@ -58,6 +58,7 @@ export class BizzCoinsOfferPage implements OnInit {
       description: ['', [Validators.required]],
       start_date: [this.formatDateForInput(now.toISOString()), [Validators.required]],
       end_date: [this.formatDateForInput(nextMonth.toISOString()), [Validators.required]],
+      video_url: [''],
     }, { validators: this.dateValidator });
   }
 
@@ -97,6 +98,7 @@ export class BizzCoinsOfferPage implements OnInit {
       description: offer.description || '',
       start_date: this.formatDateForInput(offer.start_date || new Date().toISOString()),
       end_date: this.formatDateForInput(offer.end_date || new Date().toISOString()),
+      video_url: offer.video_url || '',
     });
   }
 
@@ -158,7 +160,8 @@ export class BizzCoinsOfferPage implements OnInit {
       title: '',
       description: '',
       start_date: this.formatDateForInput(now.toISOString()),
-      end_date: this.formatDateForInput(nextMonth.toISOString())
+      end_date: this.formatDateForInput(nextMonth.toISOString()),
+      video_url: ''
     });
     this.offerStatus.set(null);
     this.errorMessage.set(null);
@@ -180,6 +183,8 @@ export class BizzCoinsOfferPage implements OnInit {
     formData.append('offer_type', 'BIZZ_COINS');
     formData.append('start_date', new Date(formValues.start_date).toISOString());
     formData.append('end_date', new Date(formValues.end_date).toISOString());
+    
+    formData.append('video_url', formValues.video_url || '');
 
     if (this.isEditMode() && this.existingOfferId()) {
       this.http.put<any>(`${environment.apiUrl}/offers/${this.existingOfferId()}`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).subscribe({

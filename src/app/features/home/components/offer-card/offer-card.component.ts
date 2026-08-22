@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, OnInit, OnDestroy, signal, inject, ElementRef } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { locationOutline, pricetagOutline, sparklesOutline, timeOutline } from 'ionicons/icons';
@@ -14,15 +14,41 @@ import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.uti
   styleUrl: './offer-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OfferCardComponent {
+export class OfferCardComponent implements OnInit, OnDestroy {
   readonly offer = input.required<OfferDTO>();
   readonly hideClaimButton = input<boolean>(false);
 
   readonly claimClick = output<OfferDTO>();
   readonly cardClick = output<OfferDTO>();
 
+  readonly isVisible = signal(false);
+  private observer: IntersectionObserver | null = null;
+  private readonly el = inject(ElementRef);
+
   constructor() {
     addIcons({ timeOutline, sparklesOutline, locationOutline, pricetagOutline });
+  }
+
+  ngOnInit() {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          this.isVisible.set(true);
+          if (this.observer) {
+            this.observer.disconnect();
+            this.observer = null;
+          }
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    this.observer.observe(this.el.nativeElement);
+  }
+
+  ngOnDestroy() {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 
   getDaysLeft(endDateStr: string): string {

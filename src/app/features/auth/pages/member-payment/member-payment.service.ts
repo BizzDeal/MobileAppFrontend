@@ -54,7 +54,7 @@ export class MemberPaymentService {
     try {
       // 1. Create Order in Backend
       const orderRes = await firstValueFrom(
-        this.http.post<{ order_id: string; amount: number }>(`${this.apiUrl}/payments/create-order`, {
+        this.http.post<{ order_id: string; amount: number; key_id?: string }>(`${this.apiUrl}/payments/create-order`, {
           amount: settings.registration_fee,
           purpose: 'REGISTRATION_FEE'
         })
@@ -62,7 +62,7 @@ export class MemberPaymentService {
 
       // 2. Open Razorpay Checkout
       const options = {
-        key: environment.razorpayKeyId, // Must be added to environment
+        key: orderRes.key_id || environment.razorpayKeyId,
         amount: Math.round(settings.registration_fee * 100), // convert to paise
         currency: 'INR',
         name: 'BizzDeal',

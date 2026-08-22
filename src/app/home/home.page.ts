@@ -1,6 +1,6 @@
 import { DatePipe, NgClass, TitleCasePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked, DestroyRef, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -103,7 +103,7 @@ import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
   styleUrls: ['home.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomePage {
+export class HomePage implements AfterViewInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly homeService = inject(HomeService);
   private readonly memberDashboardService = inject(MemberDashboardService);
@@ -118,6 +118,8 @@ export class HomePage {
   readonly router = inject(Router);
   readonly walletService = inject(WalletService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly ngZone = inject(NgZone);
+  
   
   readonly getInitials = getInitials;
   readonly getAvatarColor = getAvatarColor;
@@ -135,6 +137,11 @@ export class HomePage {
   });
 
   readonly fallbackWallet = { id: '', user_id: '', balance: 0, total_savings: 0, created_at: '', updated_at: '' };
+
+  readonly showSearchBar = computed(() => ['home', 'search', 'vouchers'].includes(this.activeNavTab()));
+
+  // Scroll state for collapsible header
+  readonly isHeaderScrolled = signal<boolean>(false);
 
   readonly activeVouchers = computed(() => this.customerVouchersService.vouchers().filter(v => v.status === 'ISSUED'));
 
@@ -265,6 +272,12 @@ export class HomePage {
     if (this.authSession.isAuthenticated() && this.userRole() !== 'CUSTOMER') {
       this.chatService.refreshContactsAndConversations().subscribe();
     }
+  }
+  ngAfterViewInit(): void {
+    // Observer removed as per user request to keep header constant
+  }
+
+  ngOnDestroy(): void {
   }
 
   onRefresh(event: any): void {

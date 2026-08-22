@@ -1,20 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, NavController } from '@ionic/angular';
 import { AdminNotificationsService } from '../../services/admin-notifications.service';
 import { NotificationType, NotificationAudience } from '../../models/admin-notification.model';
 import { addIcons } from 'ionicons';
-import { closeOutline, saveOutline, peopleOutline, personOutline, megaphoneOutline } from 'ionicons/icons';
+import { saveOutline, peopleOutline, personOutline, megaphoneOutline } from 'ionicons/icons';
 
 @Component({
-  selector: 'app-admin-notification-compose-modal',
+  selector: 'app-admin-notification-create',
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule],
-  templateUrl: './admin-notification-compose-modal.component.html',
-  styleUrls: ['./admin-notification-compose-modal.component.scss']
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  templateUrl: './admin-notification-create.page.html',
+  styleUrls: ['./admin-notification-create.page.scss']
 })
-export class AdminNotificationComposeModalComponent implements OnInit {
+export class AdminNotificationCreatePage implements OnInit {
   composeForm: FormGroup;
   isSubmitting = false;
 
@@ -26,12 +26,12 @@ export class AdminNotificationComposeModalComponent implements OnInit {
   typeOptions = Object.values(NotificationType);
 
   constructor(
-    private modalCtrl: ModalController,
+    private navCtrl: NavController,
     private fb: FormBuilder,
     private notificationsService: AdminNotificationsService
   ) {
     addIcons({
-      closeOutline, saveOutline, peopleOutline, personOutline, megaphoneOutline
+      saveOutline, peopleOutline, personOutline, megaphoneOutline
     });
 
     this.composeForm = this.fb.group({
@@ -43,11 +43,10 @@ export class AdminNotificationComposeModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Dynamic validation not needed for broadcast
   }
 
-  dismiss(data?: any) {
-    this.modalCtrl.dismiss(data, data ? 'confirm' : 'cancel');
+  goBack() {
+    this.navCtrl.back();
   }
 
   async submit() {
@@ -80,13 +79,15 @@ export class AdminNotificationComposeModalComponent implements OnInit {
       request$.subscribe({
         next: (res) => {
           this.isSubmitting = false;
-          this.dismiss(res.notification);
+          this.goBack();
         },
         error: (err) => {
           this.isSubmitting = false;
           console.error('Error sending notification', err);
         }
       });
+    } else {
+      this.isSubmitting = false;
     }
   }
 }

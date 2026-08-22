@@ -75,6 +75,23 @@
         </div>
       </div>
 
+      <!-- Video URL -->
+      <div class="form-group">
+        <label for="video_url" class="form-label">
+          Video URL (YouTube, Instagram) <span class="optional-text">(Optional)</span>
+        </label>
+        <div class="input-wrapper" [class.invalid]="isFieldInvalid('video_url')">
+          <ion-icon name="globe-outline" class="field-icon"></ion-icon>
+          <input 
+            id="video_url" 
+            type="url" 
+            formControlName="video_url" 
+            placeholder="e.g. https://www.youtube.com/..." 
+            class="custom-input" />
+        </div>
+        <div class="error-container"></div>
+      </div>
+
       <!-- Start Date & End Date Row -->
       <div class="form-row">
         <!-- Start Date -->

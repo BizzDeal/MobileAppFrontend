@@ -265,7 +265,7 @@ export class WalletService {
     try {
       // 1. Create Order in Backend
       const orderRes = await firstValueFrom(
-        this.http.post<{ order_id: string; amount: number }>(`${this.apiUrl}/payments/create-order`, {
+        this.http.post<{ order_id: string; amount: number; key_id?: string }>(`${this.apiUrl}/payments/create-order`, {
           amount,
           purpose: 'WALLET_TOPUP'
         })
@@ -273,7 +273,7 @@ export class WalletService {
 
       // 2. Open Razorpay Checkout
       const options = {
-        key: environment.razorpayKeyId,
+        key: orderRes.key_id || environment.razorpayKeyId,
         amount: Math.round(amount * 100), // convert to paise
         currency: 'INR',
         name: 'BizzDeal',

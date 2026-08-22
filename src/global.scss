@@ -695,40 +695,50 @@ ion-modal.permission-modal-dialog {
 }
 
 /* ==========================================================================
-   Custom Thin Scrollbars
+   App-wide Invisible Scrollbars (Completely hidden in all cases while preserving scrollability)
    ========================================================================== */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+*, *::before, *::after, html, body, div, section, main, article, aside, nav, header, footer, 
+ion-app, ion-page, ion-content, ion-list, ion-scroll, ion-modal, ion-menu {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+*::-webkit-scrollbar,
+::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.4);
-  border-radius: 4px;
+*::-webkit-scrollbar-track,
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-corner,
+::-webkit-scrollbar-corner {
+  display: none !important;
+  background: transparent !important;
+  border: none !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.7);
+/* Custom Invisible Scrollbars for Ionic Shadow DOM parts */
+ion-content::part(scroll),
+ion-modal::part(content),
+ion-menu::part(container) {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
-/* For Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
-}
-
-/* Custom Thin Scrollbars for Ionic content (Shadow DOM) */
-ion-content::part(scroll)::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-ion-content::part(scroll)::-webkit-scrollbar-track {
-  background: transparent;
+ion-content::part(scroll)::-webkit-scrollbar,
+ion-modal::part(content)::-webkit-scrollbar,
+ion-menu::part(container)::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
 }
 
 /* ==========================================================================

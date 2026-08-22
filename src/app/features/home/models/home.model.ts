@@ -29,6 +29,7 @@ export interface BusinessDTO {
   state_id?: string | null;
   district_id: string;
   logo_id: string | null;
+  video_url?: string | null;
   status: BusinessStatus;
   is_featured: boolean;
   created_at: string;
@@ -52,6 +53,7 @@ export interface OfferDTO {
   start_date: string;
   end_date: string;
   image_id: string | null;
+  video_url?: string | null;
   status: OfferStatus;
   approved_by_id: string | null;
   approved_at: string | null;

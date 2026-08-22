@@ -92,6 +92,7 @@ export class AuthSessionService {
       await this.storage.remove(STORAGE_KEYS.REFRESH_TOKEN);
       await this.storage.remove(STORAGE_KEYS.CURRENT_USER);
       await this.storage.remove('bizzdeal_device_registered_v1');
+      await this.storage.remove('bizzdeal_fcm_token');
     } catch (error) {
       console.error('AuthSessionService.clearSession error:', error);
     } finally {
@@ -113,6 +114,16 @@ export class AuthSessionService {
     if (this._isLoggingOut) return;
     this._isLoggingOut = true;
     try {
+      const fcmToken = await this.storage.get('bizzdeal_fcm_token');
+      if (fcmToken) {
+        try {
+          const notificationService = this.injector.get(NotificationService);
+          await firstValueFrom(notificationService.unregisterDeviceByToken(fcmToken)).catch(() => {});
+        } catch (err) {
+          console.error('Failed to unregister FCM token:', err);
+        }
+      }
+
       const refreshToken = await this.getRefreshToken();
       const authApi = this.injector.get(AuthApiService);
       await firstValueFrom(authApi.logout(refreshToken || undefined)).catch(() => {});

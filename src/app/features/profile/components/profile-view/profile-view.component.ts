@@ -130,7 +130,8 @@ export class ProfileViewComponent implements OnInit {
     category_id: [''],
     business_state_id: [''],
     business_district_id: ['', [Validators.required]],
-    business_address: ['']
+    business_address: [''],
+    video_url: ['']
   });
 
   constructor() {
@@ -223,6 +224,7 @@ export class ProfileViewComponent implements OnInit {
           this.profileForm.controls['business_state_id'].clearValidators();
           this.profileForm.controls['business_district_id'].clearValidators();
           this.profileForm.controls['business_address'].clearValidators();
+          this.profileForm.controls['video_url'].clearValidators();
         } else {
           this.profileForm.controls['full_name'].setValidators([Validators.required, Validators.minLength(2)]);
           this.profileForm.controls['whatsapp'].setValidators([Validators.minLength(10)]);
@@ -237,6 +239,7 @@ export class ProfileViewComponent implements OnInit {
           this.profileForm.controls['business_district_id'].setValidators([Validators.required]);
           this.profileForm.controls['business_address'].clearValidators();
           this.profileForm.controls['website'].clearValidators();
+          this.profileForm.controls['video_url'].clearValidators();
           this.profileForm.controls['gst_number'].clearValidators();
         }
         Object.keys(this.profileForm.controls).forEach(key => {
@@ -263,7 +266,8 @@ export class ProfileViewComponent implements OnInit {
           category_id: p.category_id || '',
           business_state_id: targetBusinessStateId,
           business_district_id: p.business_district_id || p.district_id || '',
-          business_address: p.business_address || ''
+          business_address: p.business_address || '',
+          video_url: p.video_url || ''
         }, { emitEvent: false });
 
         this.profileForm.controls['state_id'].disable({ emitEvent: false });
@@ -499,6 +503,7 @@ export class ProfileViewComponent implements OnInit {
         if (formVal.business_state_id) formData.append('business_state_id', formVal.business_state_id);
         if (formVal.business_district_id) formData.append('business_district_id', formVal.business_district_id);
         if (formVal.business_address) formData.append('business_address', formVal.business_address);
+        formData.append('video_url', formVal.video_url || '');
       }
       if (photoFile) formData.append('profile_pic', photoFile, photoFile.name || 'profile.jpg');
       if (logoFile) formData.append('business_logo', logoFile, logoFile.name || 'logo.jpg');
@@ -522,7 +527,8 @@ export class ProfileViewComponent implements OnInit {
           category_id: formVal.category_id,
           business_state_id: formVal.business_state_id || null,
           business_district_id: formVal.business_district_id || null,
-          business_address: formVal.business_address
+          business_address: formVal.business_address,
+          video_url: formVal.video_url
         });
       }
     }

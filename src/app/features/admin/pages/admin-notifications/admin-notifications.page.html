@@ -87,7 +87,7 @@
     } @else {
       <!-- Table View (Desktop) -->
       <div class="d-flex align-items-center mb-2 mt-3" style="margin: 16px 16px 0 16px;">
-        <ion-button color="primary" class="premium-btn m-0" (click)="openComposeModal()">
+        <ion-button color="primary" class="premium-btn m-0" (click)="openCreatePage()">
           <ion-icon name="add-outline" slot="start"></ion-icon>
           SEND NOTIFICATIONS
         </ion-button>
@@ -190,7 +190,7 @@
   <!-- Compose FAB (Mobile) -->
   @if (!isDesktop) {
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button color="primary" (click)="openComposeModal()">
+      <ion-fab-button color="primary" (click)="openCreatePage()">
         <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab>

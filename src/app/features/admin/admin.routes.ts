@@ -55,6 +55,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./pages/admin-payment-details/admin-payment-details.page').then(m => m.AdminPaymentDetailsPage),
       },
       {
+        path: 'notifications/create',
+        loadComponent: () => import('./pages/admin-notification-create/admin-notification-create.page').then(m => m.AdminNotificationCreatePage),
+      },
+      {
         path: 'notifications',
         loadComponent: () => import('./pages/admin-notifications/admin-notifications.page').then(m => m.AdminNotificationsPage),
       },

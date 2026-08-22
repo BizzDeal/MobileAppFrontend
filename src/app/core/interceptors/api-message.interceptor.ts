@@ -43,8 +43,8 @@ function getFriendlyErrorMessage(req: HttpRequest<any>, error: HttpErrorResponse
 }
 
 function getFriendlySuccessMessage(req: HttpRequest<any>, res: HttpResponse<any>): string {
-  // Use backend message if provided
-  if (res.body && typeof res.body.message === 'string') {
+  // Use backend message if provided, but ignore 'fetched' messages for mutations
+  if (res.body && typeof res.body.message === 'string' && !res.body.message.toLowerCase().includes('fetched')) {
     return res.body.message;
   }
 

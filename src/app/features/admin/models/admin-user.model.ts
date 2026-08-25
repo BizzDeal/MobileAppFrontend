@@ -24,6 +24,7 @@ export interface AdminUser {
   state_name?: string | null;
   district_id?: string | null;
   district_name?: string | null;
+  pincode?: string | null;
   role: UserRole;
   status: UserStatus;
   approved_by_id: string | null;

@@ -62,6 +62,7 @@ import { MenuViewComponent } from '../features/menu/components/menu-view/menu-vi
 import { MeetingsPageComponent } from '../features/meetings/pages/meetings-page/meetings-page.component';
 import { VouchersViewComponent } from '../features/vouchers/components/vouchers-view/vouchers-view.component';
 import { CustomerVouchersService } from '../features/vouchers/services/customer-vouchers.service';
+import { CategoriesViewComponent } from '../features/categories/components/categories-view/categories-view.component';
 import { AuthSessionService } from '../core/services/auth-session.service';
 import { CachedImgDirective } from '../shared/directives/cached-img.directive';
 import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
@@ -98,6 +99,7 @@ import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
     ReferralsPageComponent,
     MenuViewComponent,
     VouchersViewComponent,
+    CategoriesViewComponent,
   ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
@@ -132,7 +134,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
       id: p?.id || 'unknown',
       name: p?.full_name || 'Customer',
       phone: p?.phone || '',
-      address: p?.address || ''
+      address: p?.address || '',
+      district_name: p?.district_name || p?.primary_business_district_name || null,
+      pincode: p?.pincode || p?.business_pincode || null,
+      profile_pic_url: p?.profile_pic_url || null,
     };
   });
 

@@ -1,11 +1,11 @@
 <header class="home-header flipkart-header" [class.scrolled]="isScrolled()">
-  <!-- Top Row: Logo/Greeting & Actions -->
+  <!-- Top Row: Profile Pic + Logo & Actions -->
   <div class="top-row">
-    <div class="brand-greeting">
-      <span class="fk-brand-badge">BizzDeal</span>
-      <h1 class="greeting-title" [title]="customer().name">
-        Hi, {{ getFirstName(customer().name) }}
-      </h1>
+    <div class="user-brand-group" (click)="showSupportInfo()" role="button" tabindex="0" aria-label="User and Support Details">
+      <div class="user-avatar-wrap">
+        <img loading="lazy" [appCachedImg]="customer().profile_pic_url" [fallbackName]="customer().name" alt="Profile" class="header-avatar" />
+      </div>
+      <img loading="lazy" src="assets/logo-text.png" alt="BizzDeal" class="header-logo-text" />
     </div>
 
     <!-- Quick Wallet Balance (3D Flipped) & Notification Bell -->
@@ -38,14 +38,12 @@
         </div>
       </div>
 
-      <!-- Support Help Button -->
-      <button class="notif-btn" (click)="showSupportInfo()" type="button" aria-label="Support">
-        <svg class="notif-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-          <path
-            d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z">
-          </path>
+      <!-- Search Button -->
+      <button class="notif-btn" (click)="onSearchClick()" type="button" aria-label="Search">
+        <svg class="notif-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
       </button>
 
@@ -63,47 +61,63 @@
     </div>
   </div>
 
-  <!-- Custom Pure HTML Search Bar Row -->
-  <form class="search-row" (submit)="onSearchSubmit($event)">
-    <div class="custom-search-box">
-      <svg class="search-icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-        stroke-width="2.2">
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  <!-- Location Bar Row (White Location Icon, District Name, Pincode in Same Row) -->
+  <div class="location-row" aria-label="Current Location">
+    <div class="location-box">
+      <svg class="location-pin-svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/>
       </svg>
-      <input type="search" class="custom-search-input" placeholder="Search deals, stores, vouchers..."
-        [value]="searchQuery()" (input)="onSearchInput($event)" (keyup.enter)="onSearchSubmit($event)" />
-      @if (searchQuery()) {
-      <button type="button" class="clear-search-btn" (click)="onClearSearch()" aria-label="Clear Search">
-        &times;
-      </button>
+      <span class="district-name">{{ customer().district_name || 'Location' }}</span>
+      @if (customer().pincode) {
+        <span class="pincode-text">{{ customer().pincode }}</span>
       }
     </div>
-  </form>
+  </div>
 </header>
 
-<!-- Custom Support Dialog -->
+<!-- Custom Support & User Details Dialog -->
 @if (showSupportDialog()) {
 <div class="custom-support-overlay">
   <div class="custom-support-backdrop" (click)="closeSupportInfo()"></div>
   <div class="custom-support-dialog">
-    <div class="dialog-header">
-      <h3>INQUIRY & SUPPORT</h3>
+    <!-- User Info Header Section -->
+    <div class="dialog-user-header">
+      <div class="dialog-user-avatar">
+        <img loading="lazy" [appCachedImg]="customer().profile_pic_url" [fallbackName]="customer().name" alt="User Avatar" class="dialog-avatar-img" />
+      </div>
+      <div class="dialog-user-info">
+        <h3 class="dialog-user-name">{{ customer().name || 'Customer' }}</h3>
+        @if (customer().phone) {
+        <span class="dialog-user-phone">
+          <ion-icon name="call-outline"></ion-icon> {{ customer().phone }}
+        </span>
+        }
+      </div>
     </div>
+
+    <!-- Inquiry & Support Section -->
     <div class="dialog-body">
+      <h4 class="section-heading">Help & Support</h4>
       <a href="tel:+919121232727" class="support-link">
         <ion-icon name="call-outline"></ion-icon>
         <span><strong>Call Us :</strong> +91 9121232727</span>
       </a>
       <a href="mailto:support@bizzdeal.in" class="support-link">
         <ion-icon name="mail-outline"></ion-icon>
-        <span><strong>Email Us:</strong> support@bizzdeal.in</span>
+        <span><strong>Email Us :</strong> support@bizzdeal.in</span>
       </a>
       <a href="https://bizzdeal.in" target="_blank" class="support-link">
         <ion-icon name="globe-outline"></ion-icon>
-        <span><strong>Web:</strong> bizzdeal.in</span>
+        <span><strong>Web :</strong> bizzdeal.in</span>
       </a>
+
+      <!-- App Share Button -->
+      <button type="button" class="share-app-btn" (click)="shareApp()">
+        <ion-icon name="share-social-outline"></ion-icon>
+        <span>Share BizzDeal App</span>
+      </button>
     </div>
+
     <div class="dialog-footer">
       <button class="close-btn" (click)="closeSupportInfo()">Close</button>
     </div>

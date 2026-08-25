@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>{{ isEditMode ? 'Edit Category' : 'New Category' }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="dismiss()" color="medium">
+      <ion-button (click)="dismiss()">
         <ion-icon slot="icon-only" name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -20,6 +20,22 @@
             Category name is required (min 2 characters)
           </ion-text>
         }
+      </div>
+    </div>
+
+    <!-- Category Icon / Emoji -->
+    <div class="form-group">
+      <ion-label class="field-label">Icon / Emoji</ion-label>
+      <div class="icon-input-row">
+        <div class="icon-live-preview">
+          <span class="preview-emoji">{{ categoryForm.get('icon')?.value || '🏷️' }}</span>
+        </div>
+        <ion-input
+          type="text"
+          formControlName="icon"
+          placeholder="e.g. 💻 or 🏥"
+          class="custom-input icon-field"
+        ></ion-input>
       </div>
     </div>
 

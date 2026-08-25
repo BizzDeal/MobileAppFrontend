@@ -58,6 +58,10 @@
     } @else {
     <app-conversation-list (selectConversation)="onConversationSelect($event)" />
     }
+    } @else if (activeNavTab() === 'categories') {
+    <app-categories-view
+      (dealClick)="onDealClick($event)"
+      (claimOffer)="onClaimOffer($event)" />
     } @else if (activeNavTab() === 'wallet') {
     <app-wallet-view />
     } @else if (activeNavTab() === 'vouchers') {

@@ -129,6 +129,13 @@
                 </div>
               }
 
+              @if (business.pincode) {
+                <div class="data-group">
+                  <span class="label">PIN Code</span>
+                  <span class="value">{{ business.pincode }}</span>
+                </div>
+              }
+
               @if (business.description) {
                 <div class="data-group full-width mt-2">
                   <span class="label">About Business</span>

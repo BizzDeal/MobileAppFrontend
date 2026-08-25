@@ -37,6 +37,9 @@
         @for (category of displayedCategories; track category) {
           <div class="premium-category-card" (click)="openEditCategoryModal(category)" style="cursor: pointer;">
             <div class="card-body">
+              <div class="category-icon-box">
+                <span class="cat-card-emoji">{{ category.icon || '🏷️' }}</span>
+              </div>
               <div class="category-details">
                 <div class="category-header">
                   <h3 class="category-title">{{ category.name }}</h3>
@@ -79,7 +82,10 @@
             @for (category of displayedCategories; track category) {
               <tr (click)="openEditCategoryModal(category)" style="cursor: pointer;">
                 <td>
-                  <span class="table-user-name">{{ category.name }}</span>
+                  <div class="table-name-with-icon">
+                    <span class="table-cat-icon">{{ category.icon || '🏷️' }}</span>
+                    <span class="table-user-name">{{ category.name }}</span>
+                  </div>
                 </td>
                 <td>
                   <span class="text-medium line-clamp-2" style="max-width: 400px; display: inline-block;">{{ category.description || 'No description provided.' }}</span>

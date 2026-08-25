@@ -1,0 +1,246 @@
+<div class="categories-page-container">
+  <!-- Left Rail: Categories Vertical Side Menu (Independent Scroll) -->
+  <aside class="cat-side-menu" aria-label="Categories Navigation">
+    <!-- "All" Category Item -->
+    <button
+      type="button"
+      class="side-cat-item"
+      [class.active]="selectedCategoryId() === 'ALL'"
+      (click)="onSelectCategory('ALL')"
+    >
+      <div class="cat-icon-wrap all-icon-wrap">
+        <span class="cat-emoji">🛍️</span>
+      </div>
+      <span class="cat-label">All</span>
+    </button>
+
+    <!-- Dynamic Categories List -->
+    @for (cat of categories(); track cat.id) {
+      <button
+        type="button"
+        class="side-cat-item"
+        [class.active]="selectedCategoryId() === cat.id"
+        (click)="onSelectCategory(cat.id)"
+      >
+        <div class="cat-icon-wrap">
+          <span class="cat-emoji">{{ cat.icon || '🏷️' }}</span>
+        </div>
+        <span class="cat-label">{{ cat.name }}</span>
+      </button>
+    }
+
+    @if (loadingCategories() && categories().length === 0) {
+      @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+        <div class="side-cat-item skeleton-item">
+          <div class="skeleton-icon"></div>
+          <div class="skeleton-label"></div>
+        </div>
+      }
+    }
+  </aside>
+
+  <!-- Right Rail: Deals & Offers Main Column (Independent Scroll) -->
+  <section class="cat-deals-column" aria-label="Deals & Offers">
+    <!-- Filter / Sort Pills Bar -->
+    <div class="filter-pills-bar">
+      <button
+        type="button"
+        class="filter-pill"
+        [class.active]="filterType() === 'ALL'"
+        (click)="onFilterSelect('ALL')"
+      >
+        <span>All Deals</span>
+      </button>
+
+      <button
+        type="button"
+        class="filter-pill"
+        [class.active]="filterType() === 'PERCENTAGE'"
+        (click)="onFilterSelect('PERCENTAGE')"
+      >
+        <span>% Discounts</span>
+      </button>
+
+      <button
+        type="button"
+        class="filter-pill"
+        [class.active]="filterType() === 'FIXED'"
+        (click)="onFilterSelect('FIXED')"
+      >
+        <span>Flat OFF</span>
+      </button>
+
+      <button
+        type="button"
+        class="filter-pill"
+        [class.active]="filterType() === 'CASHBACK'"
+        (click)="onFilterSelect('CASHBACK')"
+      >
+        <span>Cashback</span>
+      </button>
+
+      <button
+        type="button"
+        class="filter-pill sort-pill"
+        (click)="toggleSort()"
+        title="Change sorting"
+      >
+        <ion-icon name="swap-vertical-outline" />
+        <span>
+          @if (sortType() === 'NEWEST') {
+            Latest
+          } @else if (sortType() === 'DISCOUNT_DESC') {
+            High Discount
+          } @else {
+            A-Z
+          }
+        </span>
+      </button>
+    </div>
+
+    <!-- Category Promo Hero Mini-Banner -->
+    <div class="cat-promo-hero">
+      <div class="promo-text-wrap">
+        <span class="promo-badge">
+          <ion-icon name="sparkles-outline" /> Verified Offers
+        </span>
+        <h2 class="promo-title">
+          {{ selectedCategory()?.name || 'Exclusive Deals' }}
+        </h2>
+        <p class="promo-desc">
+          {{ selectedCategory()?.description || 'Discover savings, special discounts and rewards across verified businesses.' }}
+        </p>
+      </div>
+      <div class="promo-icon-art">
+        <span class="hero-art-emoji">{{ selectedCategory()?.icon || '✨' }}</span>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    @if (loadingOffers()) {
+      <!-- Skeleton Loading Grid -->
+      <div class="deals-grid">
+        @for (n of [1, 2, 3, 4]; track n) {
+          <div class="deal-card-skeleton">
+            <div class="sk-img"></div>
+            <div class="sk-body">
+              <div class="sk-line sk-title"></div>
+              <div class="sk-line sk-biz"></div>
+              <div class="sk-line sk-price"></div>
+              <div class="sk-btn"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (filteredOffers().length > 0) {
+      <!-- Deals Grid -->
+      <div class="deals-grid">
+        @for (deal of filteredOffers(); track deal.id) {
+          <article
+            class="cat-deal-card"
+            (click)="onCardClick(deal)"
+            role="button"
+            tabindex="0"
+          >
+            <!-- Card Image / Avatar Hero -->
+            <div class="card-img-wrap" [style.background]="getAvatarColor(deal.businessName)">
+              @if (deal.imageUrl) {
+                <img
+                  loading="lazy"
+                  [appCachedImg]="deal.imageUrl"
+                  [alt]="deal.title"
+                  class="deal-img"
+                />
+              } @else {
+                <span class="card-fallback-avatar">{{ getInitials(deal.businessName) }}</span>
+              }
+
+              <!-- Type / Discount Floating Badge -->
+              <span class="card-badge" [class.cashback-badge]="deal.offer_type === 'CASHBACK'">
+                {{ getDiscountBadgeText(deal) }}
+              </span>
+            </div>
+
+            <!-- Card Content -->
+            <div class="card-details">
+              <span class="deal-biz-name" [title]="deal.businessName">
+                <ion-icon name="storefront-outline" />
+                {{ deal.businessName }}
+              </span>
+
+              <h3 class="deal-card-title" [title]="deal.title">
+                {{ deal.title }}
+              </h3>
+
+              <!-- Offer Value Row & ADD Button -->
+              <div class="card-action-row">
+                <div class="deal-value-info">
+                  @if (deal.offer_type === 'CASHBACK') {
+                    <span class="val-primary">₹{{ deal.discount_value || 0 }}</span>
+                    <span class="val-sub">Cashback</span>
+                  } @else if (deal.discount_type === 'PERCENTAGE') {
+                    <span class="val-primary">{{ deal.discount_value }}%</span>
+                    <span class="val-sub">OFF</span>
+                  } @else {
+                    <span class="val-primary">₹{{ deal.discount_value }}</span>
+                    <span class="val-sub">OFF</span>
+                  }
+                </div>
+
+                <button
+                  type="button"
+                  class="claim-add-btn"
+                  [class.claimed]="deal.isClaimed"
+                  [disabled]="deal.isClaimed || claimingOfferId() === deal.id"
+                  (click)="onClaimClick($event, deal)"
+                  aria-label="Claim Offer"
+                >
+                  @if (claimingOfferId() === deal.id) {
+                    <ion-spinner name="dots" class="btn-spinner" />
+                  } @else if (deal.isClaimed) {
+                    <ion-icon name="checkmark-outline" />
+                    <span>CLAIMED</span>
+                  } @else {
+                    <span>CLAIM</span>
+                  }
+                </button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="empty-cat-state">
+        <div class="empty-icon-box">
+          <ion-icon name="bag-handle-outline" class="empty-icon" />
+        </div>
+        <h3 class="empty-title">No deals found</h3>
+        <p class="empty-desc">
+          @if (filterType() !== 'ALL') {
+            No offers matching the selected filter in this category.
+          } @else {
+            No active offers in {{ selectedCategory()?.name || 'this category' }} right now.
+          }
+        </p>
+        @if (filterType() !== 'ALL') {
+          <button
+            type="button"
+            class="bd-btn-secondary reset-filter-btn"
+            (click)="onFilterSelect('ALL')"
+          >
+            Reset Filters
+          </button>
+        } @else if (selectedCategoryId() !== 'ALL') {
+          <button
+            type="button"
+            class="bd-btn-primary reset-filter-btn"
+            (click)="onSelectCategory('ALL')"
+          >
+            Explore All Categories
+          </button>
+        }
+      </div>
+    }
+  </section>
+</div>

@@ -92,6 +92,12 @@
                   <span class="value">{{ user.district_name || user.district_id }}</span>
                 </div>
               }
+              @if (user.pincode) {
+                <div class="data-group">
+                  <span class="label">PIN Code</span>
+                  <span class="value">{{ user.pincode }}</span>
+                </div>
+              }
               <div class="data-group">
                 <span class="label">Registered On</span>
                 <span class="value">{{ user.created_at | date:'mediumDate' }}</span>

@@ -1,11 +1,23 @@
-ion-toolbar {
-  --background: #ffffff;
-  padding: 8px 16px;
-  
-  ion-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1f2937;
+ion-header {
+  ion-toolbar {
+    --background: var(--bizzdeal-gradient-primary, linear-gradient(90deg, #1565c0 0%, #2196f3 100%));
+    --color: #ffffff;
+    color: #ffffff;
+    padding: 8px 16px;
+
+    ion-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff !important;
+      letter-spacing: 0.2px;
+    }
+
+    ion-buttons ion-button,
+    ion-icon {
+      color: #ffffff !important;
+      --color: #ffffff !important;
+      font-size: 1.3rem;
+    }
   }
 }
 
@@ -45,6 +57,36 @@ ion-toolbar {
     --border-color: #3b82f6;
     --background: #ffffff;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+/* Icon / Emoji Input Row */
+.icon-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .icon-live-preview {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    border: 1.5px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    .preview-emoji {
+      font-size: 24px;
+      line-height: 1;
+    }
+  }
+
+  .icon-field {
+    flex: 1;
   }
 }
 

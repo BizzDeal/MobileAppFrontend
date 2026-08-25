@@ -35,27 +35,48 @@
                 height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
                 margin-bottom 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-    .brand-greeting {
+    .user-brand-group {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s ease, opacity 0.15s ease;
 
-      .fk-brand-badge {
-        font-size: 10px;
-        font-weight: 800;
-        letter-spacing: 0.8px;
-        text-transform: uppercase;
-        color: #ffe500;
+      &:active {
+        transform: scale(0.96);
+        opacity: 0.9;
       }
 
-      .greeting-title {
-        font-size: 14px;
-        font-weight: 700;
-        margin: 1px 0 0 0;
-        color: #ffffff;
-        white-space: nowrap;
+      .user-avatar-wrap {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
         overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 170px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        .header-avatar {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+      }
+
+      .header-logo-text {
+        height: 22px;
+        width: auto;
+        max-width: 120px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+        opacity: 0.95;
       }
     }
 
@@ -183,53 +204,40 @@
     }
   }
 
-  /* Search Box */
-  .search-row {
-    margin: 0;
+  /* Location Bar Row */
+  .location-row {
+    margin-top: 4px;
+    margin-bottom: 2px;
+    user-select: none;
 
-    .custom-search-box {
-      position: relative;
-      display: flex;
+    .location-box {
+      display: inline-flex;
       align-items: center;
-      background: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-      padding: 0 12px;
-      height: 40px;
+      gap: 6px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
 
-      .search-icon-svg {
-        color: #2874f0;
-        margin-right: 8px;
+      .location-pin-svg {
+        color: #ffffff;
         flex-shrink: 0;
       }
 
-      .custom-search-input {
-        width: 100%;
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 13px;
-        color: #1e293b;
-        font-family: inherit;
-
-        &::placeholder {
-          color: #94a3b8;
-        }
+      .district-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 0.2px;
+        line-height: 1.2;
       }
 
-      .clear-search-btn {
-        background: none;
-        border: none;
-        color: #64748b;
-        font-size: 18px;
-        line-height: 1;
-        cursor: pointer;
-        padding: 0 4px;
-        margin-left: 4px;
-
-        &:hover {
-          color: #0f172a;
-        }
+      .pincode-text {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        letter-spacing: 0.2px;
+        line-height: 1.2;
       }
     }
   }
@@ -267,40 +275,94 @@
     overflow: hidden;
     animation: dialogPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 
-    .dialog-header {
-      padding: 20px;
-      text-align: center;
-      
-      h3 {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--bizzdeal-text-primary, #1e293b);
+    .dialog-user-header {
+      padding: 20px 20px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, rgba(40, 116, 240, 0.08) 0%, rgba(21, 101, 192, 0.12) 100%);
+      border-bottom: 1px solid var(--bizzdeal-border-color, #e2e8f0);
+
+      .dialog-user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid var(--bizzdeal-primary, #1565C0);
+        box-shadow: 0 3px 10px rgba(21, 101, 192, 0.2);
+        flex-shrink: 0;
+
+        .dialog-avatar-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+      }
+
+      .dialog-user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+
+        .dialog-user-name {
+          margin: 0;
+          font-size: 1.05rem;
+          font-weight: 700;
+          color: var(--bizzdeal-text-primary, #1e293b);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .dialog-user-phone {
+          font-size: 0.85rem;
+          color: var(--bizzdeal-text-secondary, #64748b);
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+
+          ion-icon {
+            font-size: 0.95rem;
+            color: var(--bizzdeal-primary, #1565C0);
+          }
+        }
       }
     }
 
     .dialog-body {
-      padding: 0 20px 20px;
+      padding: 16px 20px 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
+
+      .section-heading {
+        margin: 0 0 2px 0;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--bizzdeal-text-secondary, #64748b);
+      }
 
       .support-link {
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: 10px;
         text-decoration: none;
-        padding: 12px;
+        padding: 10px 12px;
         border-radius: var(--bizzdeal-radius-md, 8px);
         background: var(--bizzdeal-bg-elevated, #f8fafc);
         color: var(--bizzdeal-text-secondary, #64748B);
         transition: all 0.2s ease;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+        border: 1px solid var(--bizzdeal-border-color, #e2e8f0);
 
         ion-icon {
-          font-size: 1.25rem;
+          font-size: 1.15rem;
           color: var(--bizzdeal-primary, #1565C0);
+          flex-shrink: 0;
         }
 
         span {
@@ -315,6 +377,33 @@
           transform: translateY(-1px);
         }
       }
+
+      .share-app-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 4px;
+        padding: 12px 16px;
+        border-radius: var(--bizzdeal-radius-md, 8px);
+        background: var(--bizzdeal-gradient-primary, linear-gradient(90deg, #1565C0 0%, #2196F3 100%));
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+        ion-icon {
+          font-size: 1.2rem;
+        }
+
+        &:active {
+          transform: scale(0.98);
+          box-shadow: 0 2px 6px rgba(33, 150, 243, 0.25);
+        }
+      }
     }
 
     .dialog-footer {
@@ -325,8 +414,8 @@
         flex: 1;
         background: transparent;
         border: none;
-        padding: 16px;
-        font-size: 1rem;
+        padding: 14px;
+        font-size: 0.95rem;
         font-weight: 600;
         color: var(--bizzdeal-primary, #1565C0);
         cursor: pointer;

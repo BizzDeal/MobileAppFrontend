@@ -6,6 +6,7 @@
     [unreadCount]="unreadNotificationsCount"
     (walletClick)="walletClick.emit()" 
     (notificationClick)="notificationClick.emit()"
+    (searchClick)="searchSubmit.emit('')"
     (searchChange)="searchChange.emit($event)" 
     (searchSubmit)="searchSubmit.emit($event)" 
     [isScrolled]="isScrolled"
@@ -22,22 +23,26 @@
 <!-- Main Feed Content Area (Scrolls seamlessly beneath the fixed header) -->
 <div class="customer-feed-body">
 
-  <!-- 1. Hero Featured Stores (Flipkart-Style Banners at Very Top) -->
-  <app-featured-store-banners 
-    [stores]="filteredFeaturedBiz" 
-    (storeClick)="businessClick.emit($event)" 
-  />
+  <!-- Combined Places Section -->
+  <section class="combined-places-section">
+    <!-- 1. Hero Featured Stores -->
+    <app-featured-store-banners 
+      [stores]="filteredFeaturedBiz" 
+      (storeClick)="businessClick.emit($event)" 
+    />
 
-  <!-- 2. Top Businesses Infinite Rail (Directly after Featured Stores with Auto-Scroll) -->
-  <app-infinite-scrolling-cards 
-    title="Top Businesses" 
-    subtitle="Explore trending merchants"
-    iconType="star"
-    [items]="filteredTopBiz"
-    cardType="business"
-    [autoScroll]="true"
-    (businessClick)="businessClick.emit($event)"
-  />
+    <!-- 2. Top Businesses (2-Column Vertical Grid) -->
+    <app-infinite-scrolling-cards 
+      title="Top Businesses" 
+      subtitle="Explore trending merchants"
+      iconType="star"
+      [items]="filteredTopBiz"
+      cardType="business"
+      [autoScroll]="true"
+      [hideHeader]="true"
+      (businessClick)="businessClick.emit($event)"
+    />
+  </section>
 
   <!-- 3. Top Deals (Percentage) Infinite Scrolling Rail -->
   <app-infinite-scrolling-cards 
@@ -46,6 +51,7 @@
     iconType="flame"
     [items]="filteredPercentageDeals"
     cardType="deal"
+    [autoScroll]="true"
     (itemClick)="dealClick.emit($event)"
     (claimClick)="claimOffer.emit($event)"
   />
@@ -57,6 +63,7 @@
     iconType="deal"
     [items]="filteredFlatOffers"
     cardType="deal"
+    [autoScroll]="true"
     (itemClick)="dealClick.emit($event)"
     (claimClick)="claimOffer.emit($event)"
   />
@@ -68,6 +75,7 @@
     iconType="cash"
     [items]="filteredCashbackOffers"
     cardType="deal"
+    [autoScroll]="true"
     (itemClick)="dealClick.emit($event)"
     (claimClick)="claimOffer.emit($event)"
   />

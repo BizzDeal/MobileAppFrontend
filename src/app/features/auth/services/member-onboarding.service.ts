@@ -50,6 +50,7 @@ export interface MemberRegistrationPayload {
   address: string;
   state_id: string;
   district_id: string;
+  pincode: string;
   business_name: string;
   category_id: string;
   business_description: string;
@@ -58,6 +59,7 @@ export interface MemberRegistrationPayload {
   business_address?: string;
   business_state_id?: string;
   business_district_id?: string;
+  business_pincode?: string;
   reference_code?: string;
 }
 
@@ -219,6 +221,7 @@ export class MemberOnboardingService {
       formData.append('address', data.address);
       formData.append('state_id', data.state_id);
       formData.append('district_id', data.district_id);
+      formData.append('pincode', data.pincode);
       formData.append('business_name', data.business_name);
       formData.append('category_id', data.category_id);
       formData.append('business_description', data.business_description);
@@ -227,6 +230,7 @@ export class MemberOnboardingService {
       if (data.business_address) formData.append('business_address', data.business_address);
       if (data.business_state_id) formData.append('business_state_id', data.business_state_id);
       if (data.business_district_id) formData.append('business_district_id', data.business_district_id);
+      if (data.business_pincode) formData.append('business_pincode', data.business_pincode);
       if (data.reference_code) {
         formData.append('reference_code', data.reference_code);
       }

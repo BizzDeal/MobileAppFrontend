@@ -22,10 +22,12 @@ import {
   people,
   peopleOutline,
   ticket,
-  ticketOutline
+  ticketOutline,
+  grid,
+  gridOutline
 } from 'ionicons/icons';
 
-export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile' | 'meetings' | 'menu' | 'referrals' | 'vouchers';
+export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile' | 'meetings' | 'menu' | 'referrals' | 'vouchers' | 'categories';
 
 @Component({
   selector: 'app-bottom-nav',
@@ -62,7 +64,9 @@ export class BottomNavComponent {
       people,
       peopleOutline,
       ticket,
-      ticketOutline
+      ticketOutline,
+      grid,
+      gridOutline
     });
   }
 }

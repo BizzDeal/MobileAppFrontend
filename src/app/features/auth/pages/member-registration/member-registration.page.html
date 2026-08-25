@@ -143,6 +143,19 @@
         </div>
       </div>
 
+      <!-- PIN Code -->
+      <div class="form-group">
+        <label class="input-label">PIN Code <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.pincode.invalid && regService.regForm.controls.pincode.touched">
+          <ion-input type="text" inputmode="numeric" formControlName="pincode" placeholder="6-digit PIN code" maxlength="6" class="custom-input"></ion-input>
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.pincode.invalid && regService.regForm.controls.pincode.touched) {
+            <span class="error-text">Valid 6-digit PIN code is required</span>
+          }
+        </div>
+      </div>
+
       <!-- Address -->
       <div class="form-group">
         <label class="input-label">Address</label>
@@ -251,6 +264,19 @@
         <div class="error-container">
           @if (regService.regForm.controls.businessDistrictId.invalid && regService.regForm.controls.businessDistrictId.touched) {
             <span class="error-text">Business District is required</span>
+          }
+        </div>
+      </div>
+
+      <!-- Business PIN Code -->
+      <div class="form-group">
+        <label class="input-label">Business PIN Code <span class="required-star">*</span></label>
+        <div class="input-box" [class.input-error]="regService.regForm.controls.businessPincode.invalid && regService.regForm.controls.businessPincode.touched">
+          <ion-input type="text" inputmode="numeric" formControlName="businessPincode" placeholder="6-digit PIN code" maxlength="6" class="custom-input"></ion-input>
+        </div>
+        <div class="error-container">
+          @if (regService.regForm.controls.businessPincode.invalid && regService.regForm.controls.businessPincode.touched) {
+            <span class="error-text">Valid 6-digit PIN code is required</span>
           }
         </div>
       </div>

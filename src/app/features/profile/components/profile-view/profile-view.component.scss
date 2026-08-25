@@ -406,6 +406,48 @@
   }
 }
 
+.view-mode-value {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  background-color: transparent;
+  border: none;
+
+  .view-icon {
+    display: none;
+  }
+
+  .value-text {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--bizzdeal-text-primary, #1e293b);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .edit-trigger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--bizzdeal-text-tertiary, #94a3b8);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+
+    &:hover, &:active {
+      color: var(--ion-color-primary, #1e88e5);
+      background-color: rgba(30, 136, 229, 0.1);
+    }
+  }
+}
+
 // 4. Read-Only Account Details
 .meta-row {
   display: flex;
@@ -498,6 +540,28 @@
     .btn-spinner {
       margin-right: var(--bizzdeal-spacing-sm);
       --color: var(--bizzdeal-text-on-primary);
+    }
+  }
+
+  .cancel-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 48px;
+    border: 1px solid var(--bizzdeal-border-color);
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--bizzdeal-radius-lg);
+    background-color: transparent;
+    color: var(--bizzdeal-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:active {
+      background-color: var(--bizzdeal-bg-surface-secondary);
     }
   }
 

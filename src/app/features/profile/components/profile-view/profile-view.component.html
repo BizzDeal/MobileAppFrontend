@@ -65,11 +65,13 @@
     <div class="avatar-wrapper">
       <img loading="lazy" [appCachedImg]="selectedPhotoUrl()" [fallbackName]="profileForm.value.full_name || profile()?.full_name" alt="Avatar Preview" class="profile-avatar" />
 
+      @if (isEditMode()) {
       <label for="profileFile" class="edit-badge">
         <ion-icon name="camera-outline"></ion-icon>
         <input type="file" id="profileFile" accept="image/*" (change)="onPhotoSelected($event)"
           style="display: none;" />
       </label>
+      }
     </div>
     <h2 class="profile-name">{{ profile()?.full_name }}</h2>
     <span class="profile-role">{{ userRole() }}</span>
@@ -85,6 +87,7 @@
         <label class="form-label" for="full_name">
           Full Name <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="person-outline" class="input-icon"></ion-icon>
           <ion-input type="text" id="full_name" formControlName="full_name" class="form-input"
@@ -95,6 +98,15 @@
           <span class="error-message">Full name must be at least 2 characters</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="person-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('full_name')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- Phone Number -->
@@ -102,6 +114,7 @@
         <label class="form-label" for="phone">
           Phone Number <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="call-outline" class="input-icon"></ion-icon>
           <ion-input type="tel" id="phone" formControlName="phone" class="form-input"
@@ -112,6 +125,15 @@
           <span class="error-message">Valid phone number of at least 10 digits is required</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="call-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('phone')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- WhatsApp -->
@@ -119,6 +141,7 @@
         <label class="form-label" for="whatsapp">
           WhatsApp Number
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="logo-whatsapp" class="input-icon"></ion-icon>
           <ion-input type="tel" id="whatsapp" formControlName="whatsapp" class="form-input"
@@ -129,6 +152,15 @@
           <span class="error-message">Please enter a valid 10-digit WhatsApp number</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="logo-whatsapp" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('whatsapp')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- Email Address -->
@@ -136,6 +168,7 @@
         <label class="form-label" for="email">
           Email Address <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="mail-outline" class="input-icon"></ion-icon>
           <ion-input type="email" id="email" formControlName="email" class="form-input"
@@ -146,6 +179,15 @@
           <span class="error-message">Please enter a valid email address</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="mail-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('email')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- State -->
@@ -153,6 +195,7 @@
         <label class="form-label" for="state_id">
           State <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="map-outline" class="input-icon"></ion-icon>
           <ion-select id="state_id" formControlName="state_id" placeholder="Select State" [disabled]="true" interface="action-sheet"
@@ -167,6 +210,15 @@
           <span class="error-message">State is required</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="map-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ getStateName(profileForm.get('state_id')?.value) || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- District -->
@@ -174,6 +226,7 @@
         <label class="form-label" for="district_id">
           District <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="location-outline" class="input-icon"></ion-icon>
           <ion-select id="district_id" formControlName="district_id" placeholder="Select District"
@@ -189,6 +242,42 @@
           <span class="error-message">District is required</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="location-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ getDistrictName(profileForm.get('district_id')?.value) || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
+      </div>
+
+      <!-- PIN Code -->
+      <div class="form-group">
+        <label class="form-label" for="pincode">
+          PIN Code <span class="required-star">*</span>
+        </label>
+        @if (isEditMode()) {
+        <div class="input-wrapper">
+          <ion-icon name="location-outline" class="input-icon"></ion-icon>
+          <ion-input type="text" inputmode="numeric" id="pincode" formControlName="pincode" class="form-input"
+            placeholder="Enter 6-digit PIN code" maxlength="6"></ion-input>
+        </div>
+        <div class="error-container">
+          @if (profileForm.get('pincode')?.touched && profileForm.get('pincode')?.invalid) {
+          <span class="error-message">Valid 6-digit PIN code is required</span>
+          }
+        </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="location-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('pincode')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- Physical Address -->
@@ -196,6 +285,7 @@
         <label class="form-label" for="address">
           Physical Address
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper textarea-wrapper">
           <ion-icon name="location-outline" class="input-icon textarea-icon"></ion-icon>
           <ion-textarea id="address" formControlName="address" class="form-input form-textarea" rows="3"
@@ -206,6 +296,15 @@
           <span class="error-message">Address is required</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="location-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('address')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
     </div>
 
@@ -222,12 +321,14 @@
           style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.5)); pointer-events: none;">
         </div>
 
+        @if (isEditMode()) {
         <label for="businessLogoFile"
           style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; background: var(--bizzdeal-primary, #1E88E5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1;">
           <ion-icon name="camera-outline" style="font-size: 18px;"></ion-icon>
           <input type="file" id="businessLogoFile" accept="image/*" (change)="onBusinessLogoSelected($event)"
             style="display: none;" />
         </label>
+        }
         <span
           style="position: absolute; bottom: 12px; left: 12px; color: white; font-size: 0.875rem; font-weight: 600; z-index: 1;">Brand
           Image</span>
@@ -238,6 +339,7 @@
         <label class="form-label" for="business_name">
           Business Name <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="business-outline" class="input-icon"></ion-icon>
           <ion-input type="text" id="business_name" formControlName="business_name" class="form-input"
@@ -248,6 +350,15 @@
           <span class="error-message">Business name is required</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="business-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('business_name')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- Business Category -->
@@ -255,6 +366,7 @@
         <label class="form-label" for="category_id">
           Business Category <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="business-outline" class="input-icon"></ion-icon>
           <ion-select id="category_id" formControlName="category_id" placeholder="Select Business Category"
@@ -269,6 +381,15 @@
           <span class="error-message">Business category is required</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="business-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ getCategoryName(profileForm.get('category_id')?.value) || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- Business Description -->
@@ -276,6 +397,7 @@
         <label class="form-label" for="business_description">
           Business Description <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper textarea-wrapper">
           <ion-icon name="document-text-outline" class="input-icon textarea-icon"></ion-icon>
           <ion-textarea id="business_description" formControlName="business_description"
@@ -286,6 +408,15 @@
           <span class="error-message">Business description is required</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="document-text-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('business_description')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- State -->
@@ -293,6 +424,7 @@
         <label class="form-label" for="state_id">
           State <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="map-outline" class="input-icon"></ion-icon>
           <ion-select id="state_id" formControlName="business_state_id" placeholder="Select State" [disabled]="true" interface="action-sheet"
@@ -307,6 +439,15 @@
           <span class="error-message">State is required</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="map-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ getStateName(profileForm.get('business_state_id')?.value) || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- District -->
@@ -314,6 +455,7 @@
         <label class="form-label" for="district_id">
           District <span class="required-star">*</span>
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="location-outline" class="input-icon"></ion-icon>
           <ion-select id="district_id" formControlName="business_district_id" placeholder="Select District"
@@ -329,6 +471,42 @@
           <span class="error-message">District is required</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="location-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ getDistrictName(profileForm.get('business_district_id')?.value) || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
+      </div>
+
+      <!-- Business PIN Code -->
+      <div class="form-group">
+        <label class="form-label" for="business_pincode">
+          Business PIN Code <span class="required-star">*</span>
+        </label>
+        @if (isEditMode()) {
+        <div class="input-wrapper">
+          <ion-icon name="location-outline" class="input-icon"></ion-icon>
+          <ion-input type="text" inputmode="numeric" id="business_pincode" formControlName="business_pincode" class="form-input"
+            placeholder="Enter 6-digit PIN code" maxlength="6"></ion-input>
+        </div>
+        <div class="error-container">
+          @if (profileForm.get('business_pincode')?.touched && profileForm.get('business_pincode')?.invalid) {
+          <span class="error-message">Valid 6-digit PIN code is required</span>
+          }
+        </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="location-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('business_pincode')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- Business Address -->
@@ -336,6 +514,7 @@
         <label class="form-label" for="business_address">
           Business Address
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper textarea-wrapper">
           <ion-icon name="location-outline" class="input-icon textarea-icon"></ion-icon>
           <ion-textarea id="business_address" formControlName="business_address" class="form-input form-textarea"
@@ -346,6 +525,15 @@
           <span class="error-message">Business address must be at least 5 characters</span>
           }
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="location-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('business_address')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- Video URL -->
@@ -353,6 +541,7 @@
         <label class="form-label" for="video_url">
           Video URL (YouTube, Instagram)
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="globe-outline" class="input-icon"></ion-icon>
           <ion-input type="url" id="video_url" formControlName="video_url" class="form-input"
@@ -360,6 +549,15 @@
         </div>
         <div class="error-container">
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="globe-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('video_url')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- Website -->
@@ -367,6 +565,7 @@
         <label class="form-label" for="website">
           Website URL
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="globe-outline" class="input-icon"></ion-icon>
           <ion-input type="url" id="website" formControlName="website" class="form-input"
@@ -374,6 +573,15 @@
         </div>
         <div class="error-container">
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="globe-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('website')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
 
       <!-- GST Number -->
@@ -381,6 +589,7 @@
         <label class="form-label" for="gst_number">
           GST Number
         </label>
+        @if (isEditMode()) {
         <div class="input-wrapper">
           <ion-icon name="document-text-outline" class="input-icon"></ion-icon>
           <ion-input type="text" id="gst_number" formControlName="gst_number" class="form-input"
@@ -388,6 +597,15 @@
         </div>
         <div class="error-container">
         </div>
+        } @else {
+        <div class="view-mode-value">
+          <ion-icon name="document-text-outline" class="view-icon"></ion-icon>
+          <span class="value-text">{{ profileForm.get('gst_number')?.value || 'N/A' }}</span>
+          <button type="button" class="edit-trigger-btn" (click)="toggleEditMode(true)" title="Edit Profile">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+        }
       </div>
     </div>
     }
@@ -534,6 +752,7 @@
     <!-- 4. Action Buttons -->
 
     <div class="action-buttons">
+      @if (isEditMode()) {
       <button type="submit" class="bd-btn-primary save-btn" [disabled]="updating() || profileForm.invalid">
         @if (updating()) {
         <ion-spinner name="crescent" size="small" class="btn-spinner"></ion-spinner>
@@ -542,11 +761,15 @@
         Save Profile
         }
       </button>
-
+      <button type="button" class="cancel-btn" (click)="toggleEditMode(false)">
+        Cancel
+      </button>
+      } @else {
       <button type="button" class="logout-btn" (click)="onLogout()">
         <ion-icon name="log-out-outline" class="btn-icon"></ion-icon>
         Logout Account
       </button>
+      }
     </div>
   </form>
   }

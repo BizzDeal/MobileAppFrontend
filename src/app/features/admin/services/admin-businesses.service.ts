@@ -176,7 +176,7 @@ export class AdminBusinessesService {
     );
   }
 
-  createCategory(data: { name: string, description?: string | null, is_active?: boolean }): Observable<ApiResponse<any>> {
+  createCategory(data: { name: string, description?: string | null, icon?: string | null, is_active?: boolean }): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/businesses/categories`, data, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       catchError(err => {
         throw new Error(extractFriendlyErrorMessage(err, 'Failed to create category'));
@@ -184,7 +184,7 @@ export class AdminBusinessesService {
     );
   }
 
-  updateCategory(id: string, data: { name?: string, description?: string | null, is_active?: boolean }): Observable<ApiResponse<any>> {
+  updateCategory(id: string, data: { name?: string, description?: string | null, icon?: string | null, is_active?: boolean }): Observable<ApiResponse<any>> {
     return this.http.put<ApiResponse<any>>(`${this.apiUrl}/businesses/categories/${id}`, data, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       catchError(err => {
         throw new Error(extractFriendlyErrorMessage(err, 'Failed to update category'));

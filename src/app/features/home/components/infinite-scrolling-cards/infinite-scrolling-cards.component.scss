@@ -5,6 +5,13 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   contain: content;
 
+  &.is-combined {
+    padding-top: 0;
+    margin-bottom: 0;
+    background: transparent;
+    border-bottom: none;
+  }
+
   .section-header-row {
     display: flex;
     align-items: center;
@@ -94,50 +101,18 @@
   }
 
   .infinite-scroll-container {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-padding-left: 16px;
-    scroll-padding-right: 16px;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
+    overflow: hidden;
     transform: translateZ(0);
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      display: none !important;
-      width: 0 !important;
-      height: 0 !important;
-    }
 
     .cards-rail {
       display: flex;
-      gap: 12px;
+      gap: 16px;
       padding: 4px 16px 14px 16px;
       width: max-content;
     }
   }
 
-  /* TranslateX-based carousel viewport for business cards */
-  .business-carousel-viewport {
-    overflow: hidden;
-    position: relative;
-    padding: 4px 0 14px 0;
-    touch-action: pan-y;
-  }
 
-  .business-carousel-track {
-    display: flex;
-    gap: 16px;
-    will-change: transform;
-    padding: 0 16px;
-  }
 }
 
 .flipkart-card {
@@ -163,22 +138,33 @@
 
   /* Single Full-Width Card for Top Businesses */
   &.business-card {
-    scroll-snap-align: center;
+    height: 100px;
     border-radius: 20px;
+    width: calc(50vw - 22px);
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 
-    .card-media-box {
-      height: 150px;
+    &:hover {
+      box-shadow: none;
     }
 
-    .biz-header-inline {
+    .card-media-box {
+      height: 100px;
+      position: relative;
+      
       .biz-mini-logo {
-        width: 26px;
-        height: 26px;
-      }
-
-      .card-title.biz-title {
-        font-size: 15px;
-        font-weight: 800;
+        position: absolute;
+        bottom: 8px;
+        left: 8px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ffffff;
+        z-index: 10;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       }
     }
   }

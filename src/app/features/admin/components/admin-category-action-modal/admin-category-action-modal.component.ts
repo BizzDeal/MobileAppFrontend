@@ -30,6 +30,7 @@ export class AdminCategoryActionModalComponent implements OnInit {
     
     this.categoryForm = this.fb.group({
       name: [this.category?.name || '', [Validators.required, Validators.minLength(2)]],
+      icon: [this.category?.icon || '🏷️'],
       description: [this.category?.description || ''],
       is_active: [this.category ? this.category.is_active : true]
     });

@@ -28,6 +28,7 @@ export interface AdminBusiness {
   state_name?: string | null;
   district_id?: string | null;
   district_name?: string | null;
+  pincode?: string | null;
   created_at: Date;
   updated_at: Date;
   logo_url: string | null;

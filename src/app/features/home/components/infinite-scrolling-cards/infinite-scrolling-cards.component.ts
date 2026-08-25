@@ -34,6 +34,7 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
   readonly isMemberView = input<boolean>(false);
   readonly autoScroll = input<boolean>(false);
   readonly autoScrollInterval = input<number>(3000);
+  readonly hideHeader = input<boolean>(false);
 
   readonly itemClick = output<any>();
   readonly claimClick = output<OfferDTO>();
@@ -47,10 +48,7 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
   readonly displayItems = computed(() => {
     const list = this.items();
     if (!list || list.length <= 1) return list || [];
-    if (this.cardType() === 'business') {
-      return [...list, ...list, ...list];
-    }
-    return list;
+    return [...list, ...list, ...list];
   });
 
   @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
@@ -73,12 +71,8 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
   constructor(private ngZone: NgZone) {
     effect(() => {
       const len = this.items().length;
-      if (this.cardType() === 'business' && len > 1) {
-        this.currentIndex.set(len);
-        setTimeout(() => this.jumpToIndex(len), 0);
-      } else {
-        this.currentIndex.set(0);
-      }
+      this.currentIndex.set(0);
+      setTimeout(() => this.jumpToIndex(0), 0);
     });
   }
 
@@ -89,11 +83,10 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
   }
 
   ngAfterViewInit(): void {
-    if (this.cardType() === 'business' && this.items().length > 1) {
+    if (this.items().length > 1) {
       setTimeout(() => {
-        this.measureCard();
-        this.jumpToIndex(this.items().length);
-      }, 150);
+        this.jumpToIndex(0);
+      }, 100);
     }
   }
 
@@ -101,25 +94,21 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
     this.stopAutoScroll();
   }
 
-  // --- Business carousel: translateX methods ---
-
-  private measureCard(): void {
-    const viewport = this.viewportEl?.nativeElement;
-    if (!viewport) return;
-    this.cardWidth.set(viewport.clientWidth - 32);
-  }
+  // --- TranslateX carousel methods using exact DOM offsetLeft ---
 
   private getOffset(index: number): number {
-    const viewportWidth = this.viewportEl?.nativeElement?.clientWidth || 0;
-    const w = this.cardWidth();
-    const step = w + this.gap;
-    const trackPaddingLeft = 16;
-    const cardLeft = trackPaddingLeft + index * step;
-    return -(cardLeft - (viewportWidth - w) / 2);
+    const track = this.trackEl?.nativeElement;
+    if (!track) return 0;
+    const cards = track.querySelectorAll<HTMLElement>('.flipkart-card');
+    if (!cards || cards.length === 0 || !cards[index] || !cards[0]) {
+      return 0;
+    }
+    const baseLeft = cards[0].offsetLeft;
+    const targetLeft = cards[index].offsetLeft;
+    return -(targetLeft - baseLeft);
   }
 
   private slideToIndex(index: number): void {
-    this.measureCard();
     this.currentIndex.set(index);
     const offset = this.getOffset(index);
     this.trackTransition.set('transform 0.45s cubic-bezier(0.25, 1, 0.5, 1)');
@@ -127,7 +116,6 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
   }
 
   private jumpToIndex(index: number): void {
-    this.measureCard();
     this.currentIndex.set(index);
     const offset = this.getOffset(index);
     this.trackTransition.set('none');
@@ -138,16 +126,23 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
     const originalLen = this.items().length;
     if (originalLen <= 1) return;
     const idx = this.currentIndex();
-    if (idx >= 2 * originalLen) {
-      this.jumpToIndex(idx - originalLen);
-    } else if (idx < originalLen) {
-      this.jumpToIndex(idx + originalLen);
+    if (idx >= originalLen) {
+      this.jumpToIndex(idx % originalLen);
+    } else if (idx < 0) {
+      this.jumpToIndex(((idx % originalLen) + originalLen) % originalLen);
     }
   }
 
-  // --- Touch/swipe for business carousel ---
+  // --- Touch/swipe for carousel ---
 
-  onBizTouchStart(event: TouchEvent): void {
+  onTouchStart(event: TouchEvent): void {
+    const originalLen = this.items().length;
+    if (originalLen <= 1) return;
+
+    if (this.currentIndex() === 0) {
+      this.jumpToIndex(originalLen);
+    }
+
     this.isInteracting = true;
     this.isSwiping = false;
     this.touchStartX = event.touches[0].clientX;
@@ -156,7 +151,8 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
     this.trackTransition.set('none');
   }
 
-  onBizTouchMove(event: TouchEvent): void {
+  onTouchMove(event: TouchEvent): void {
+    if (this.items().length <= 1) return;
     const dx = event.touches[0].clientX - this.touchStartX;
     const dy = event.touches[0].clientY - this.touchStartY;
     if (!this.isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
@@ -170,10 +166,15 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
     }
   }
 
-  onBizTouchEnd(): void {
+  onTouchEnd(): void {
+    const originalLen = this.items().length;
+    if (originalLen <= 1) return;
     this.isInteracting = false;
     if (this.isSwiping) {
-      const threshold = this.cardWidth() * 0.25;
+      const track = this.trackEl?.nativeElement;
+      const card = track?.querySelector<HTMLElement>('.flipkart-card');
+      const cardW = card ? card.offsetWidth : 260;
+      const threshold = cardW * 0.25;
       if (this.touchDeltaX < -threshold) {
         this.slideToIndex(this.currentIndex() + 1);
       } else if (this.touchDeltaX > threshold) {
@@ -207,27 +208,11 @@ export class InfiniteScrollingCardsComponent implements OnInit, AfterViewInit, O
   }
 
   scrollPrev(): void {
-    if (this.cardType() === 'business') {
-      this.slideToIndex(this.currentIndex() - 1);
-    } else {
-      const container = this.scrollContainer?.nativeElement;
-      if (!container) return;
-      const card = container.querySelector('.flipkart-card') as HTMLElement;
-      const scrollAmount = card ? card.offsetWidth + 12 : 240;
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    }
+    this.slideToIndex(this.currentIndex() - 1);
   }
 
   scrollNext(): void {
-    if (this.cardType() === 'business') {
-      this.slideToIndex(this.currentIndex() + 1);
-    } else {
-      const container = this.scrollContainer?.nativeElement;
-      if (!container) return;
-      const card = container.querySelector('.flipkart-card') as HTMLElement;
-      const scrollAmount = card ? card.offsetWidth + 12 : 240;
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
+    this.slideToIndex(this.currentIndex() + 1);
   }
 
   onMouseEnter(): void {

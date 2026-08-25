@@ -99,6 +99,9 @@ export interface CustomerProfileDTO {
   name: string;
   phone: string;
   address?: string;
+  district_name?: string | null;
+  pincode?: string | null;
+  profile_pic_url?: string | null;
 }
 
 export interface CustomerHomeFeedDTO {

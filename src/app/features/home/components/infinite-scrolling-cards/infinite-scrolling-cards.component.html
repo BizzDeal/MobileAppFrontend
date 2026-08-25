@@ -1,5 +1,6 @@
 @if (items().length > 0) {
-<section class="infinite-cards-section" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+<section class="infinite-cards-section" [class.is-combined]="hideHeader()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+  @if (!hideHeader()) {
   <!-- Header Row with Flipkart-Style Title & Nav Controls -->
   <div class="section-header-row">
     <div class="title-group">
@@ -48,54 +49,24 @@
       </button>
     </div>
   </div>
+  }
 
-  @if (cardType() === 'business') {
-    <!-- TranslateX-based Carousel for Business Cards -->
-    <div class="business-carousel-viewport" #viewportEl
-      (touchstart)="onBizTouchStart($event)"
-      (touchmove)="onBizTouchMove($event)"
-      (touchend)="onBizTouchEnd()">
-      <div class="business-carousel-track" #trackEl
-        [style.transform]="trackTransform()"
-        [style.transition]="trackTransition()"
-        (transitionend)="onTransitionEnd()">
-        @for (item of displayItems(); track (item.id || '') + '-' + $index) {
-          <div class="flipkart-card business-card" 
-            [style.width.px]="cardWidth()"
-            [style.min-width.px]="cardWidth()"
-            (click)="businessClick.emit(item)">
+  <!-- Unified Scroll Container for Both Deals and Businesses -->
+  <div class="infinite-scroll-container" #viewportEl (touchstart)="onTouchStart($event)" (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd()">
+    <div class="cards-rail" #trackEl [style.transform]="trackTransform()" [style.transition]="trackTransition()" (transitionend)="onTransitionEnd()">
+      @for (item of displayItems(); track (item.id || '') + '-' + $index) {
+        
+        @if (cardType() === 'business') {
+          <div class="flipkart-card business-card" (click)="businessClick.emit(item)">
             <div class="card-media-box" [style.background]="getAvatarColor(item.name)">
               <span class="avatar-initials">{{ getInitials(item.name) }}</span>
               @if (item.bannerUrl) {
                 <img loading="lazy" [appCachedImg]="item.bannerUrl" [alt]="item.name" class="media-img" />
               }
-              <span class="cat-tag">{{ item.categoryName || 'Partner' }}</span>
-              @if (item.hasBizzCoinOffer || item.has_bizz_coin_offer) {
-                <span class="coin-offer-tag">🪙 Bizz Coin</span>
-              }
-            </div>
-
-            <div class="card-body">
-              <div class="biz-header-inline">
-                <img loading="lazy" [appCachedImg]="item.logoUrl" [fallbackName]="item.name" alt="logo" class="biz-mini-logo" />
-                <h3 class="card-title biz-title">{{ item.name }}</h3>
-              </div>
-              <p class="card-desc">{{ item.description }}</p>
-
-              <div class="card-footer">
-                <span class="store-web-text">🌐 {{ item.website || 'Verified Partner' }}</span>
-                <span class="fk-view-link">View Store &rarr;</span>
-              </div>
+              <img loading="lazy" [appCachedImg]="item.logoUrl" [fallbackName]="item.name" alt="logo" class="biz-mini-logo" />
             </div>
           </div>
-        }
-      </div>
-    </div>
-  } @else {
-    <!-- Native Scroll Container for Deal Cards -->
-    <div class="infinite-scroll-container" #scrollContainer>
-      <div class="cards-rail">
-        @for (item of displayItems(); track (item.id || '') + '-' + $index) {
+        } @else {
           <div class="flipkart-card deal-card" (click)="itemClick.emit(item)">
             <div class="card-media-box" [style.background]="getAvatarColor(item.businessName || item.title)">
               <span class="avatar-initials">{{ getInitials(item.businessName || item.title) }}</span>
@@ -139,9 +110,10 @@
             </div>
           </div>
         }
-      </div>
+        
+      }
     </div>
-  }
+  </div>
 </section>
 }
 

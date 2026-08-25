@@ -49,11 +49,11 @@
       </div>
       <span class="nav-label">Vouchers</span>
     </button>
-    <button type="button" class="nav-item" [class.active]="activeTab() === 'wallet'" (click)="tabSelect.emit('wallet')" aria-label="Wallet">
+    <button type="button" class="nav-item" [class.active]="activeTab() === 'categories'" (click)="tabSelect.emit('categories')" aria-label="Categories">
       <div class="icon-box">
-        <ion-icon [name]="activeTab() === 'wallet' ? 'wallet' : 'wallet-outline'" />
+        <ion-icon [name]="activeTab() === 'categories' ? 'grid' : 'grid-outline'" />
       </div>
-      <span class="nav-label">Wallet</span>
+      <span class="nav-label">Categories</span>
     </button>
     <button type="button" class="nav-item" [class.active]="activeTab() === 'profile'" (click)="tabSelect.emit('profile')" aria-label="Profile">
       <div class="icon-box">

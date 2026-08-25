@@ -41,6 +41,7 @@ export class MemberRegistrationService {
     email: ['', [Validators.required, Validators.email]],
     stateId: ['', [Validators.required]],
     districtId: ['', [Validators.required]],
+    pincode: ['', [Validators.required, Validators.pattern(/^[1-9][0-9]{5}$/)]],
     address: ['', [Validators.minLength(5)]],
     businessName: ['', [Validators.required, Validators.minLength(2)]],
     businessCategory: ['', [Validators.required]],
@@ -49,6 +50,7 @@ export class MemberRegistrationService {
     gstNumber: ['', [Validators.minLength(5)]],
     businessStateId: ['', [Validators.required]],
     businessDistrictId: ['', [Validators.required]],
+    businessPincode: ['', [Validators.required, Validators.pattern(/^[1-9][0-9]{5}$/)]],
     businessAddress: ['', [Validators.minLength(5)]],
     referenceCode: [''],
   });
@@ -200,6 +202,7 @@ export class MemberRegistrationService {
         address: val.address,
         state_id: val.stateId,
         district_id: val.districtId,
+        pincode: val.pincode,
         business_name: val.businessName,
         category_id: val.businessCategory,
         business_description: val.businessDescription,
@@ -208,6 +211,7 @@ export class MemberRegistrationService {
         business_address: val.businessAddress || undefined,
         business_state_id: val.businessStateId || undefined,
         business_district_id: val.businessDistrictId || undefined,
+        business_pincode: val.businessPincode || undefined,
         reference_code: val.referenceCode || undefined,
       };
 

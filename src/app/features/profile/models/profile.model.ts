@@ -6,7 +6,10 @@ export interface ProfileDTO {
   email: string | null;
   address: string | null;
   state_id?: string | null;
+  state_name?: string | null;
   district_id: string;
+  district_name?: string | null;
+  pincode?: string | null;
   role: 'ADMIN' | 'MEMBER' | 'CUSTOMER';
   status: 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED';
   profile_pic_url: string | null;
@@ -21,6 +24,7 @@ export interface ProfileDTO {
   business_address?: string | null;
   business_state_id?: string | null;
   business_district_id: string;
+  business_pincode?: string | null;
   video_url?: string | null;
   is_featured?: boolean;
   primary_business_name?: string | null;

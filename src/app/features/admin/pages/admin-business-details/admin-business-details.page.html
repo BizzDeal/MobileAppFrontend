@@ -171,8 +171,18 @@
                   @for (offer of offers; track offer) {
                     <div class="custom-card clickable" (click)="openOfferModal(offer)">
                       <div class="card-header">
-                        <h3>{{ offer.title }}</h3>
-                        <span class="badge" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">{{ offer.status }}</span>
+                        <h3 class="flex items-center">
+                          {{ offer.title }}
+                          @if (offer.is_featured) {
+                            <ion-icon name="star" color="warning" class="ml-1" title="Top / Featured Deal"></ion-icon>
+                          }
+                        </h3>
+                        <div class="flex items-center gap-1">
+                          @if (offer.is_featured) {
+                            <span class="badge badge-warning" style="background: rgba(255, 193, 7, 0.15); color: #b78103; font-weight: 600;">Top Deal</span>
+                          }
+                          <span class="badge" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">{{ offer.status }}</span>
+                        </div>
                       </div>
                       <div class="card-body">
                         <div class="detail-pill-group">
@@ -187,8 +197,21 @@
                             </span>
                           }
                         </div>
-                        <div class="card-footer-text mt-3">
-                          <ion-icon name="time-outline"></ion-icon> Ends: {{ offer.end_date | date:'mediumDate' }}
+                        <div class="card-footer-split mt-3">
+                          <div class="date-text">
+                            <ion-icon name="time-outline"></ion-icon> Ends: {{ offer.end_date | date:'mediumDate' }}
+                          </div>
+                          @if (offer.status === 'ACTIVE' || offer.status === 'APPROVED') {
+                            <button
+                              class="action-btn"
+                              [ngClass]="offer.is_featured ? 'btn-outline-warning' : 'btn-outline-secondary'"
+                              style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;"
+                              (click)="$event.stopPropagation(); toggleFeatureOffer(offer, $event)"
+                              title="Toggle Top Deal">
+                              <ion-icon [name]="offer.is_featured ? 'star' : 'star-outline'"></ion-icon>
+                              {{ offer.is_featured ? 'Top Deal' : 'Mark Top' }}
+                            </button>
+                          }
                         </div>
                       </div>
                     </div>

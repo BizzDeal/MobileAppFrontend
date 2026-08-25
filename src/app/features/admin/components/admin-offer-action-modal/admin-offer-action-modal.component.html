@@ -41,13 +41,18 @@
           </ion-badge>
         </span>
       </div>
-      <div class="detail-item w-full flex items-center justify-between" style="padding-top: 8px; border-top: 1px dashed #e2e8f0;">
-        <div>
-          <span class="label font-bold" style="color: #1e293b;">Top Deal / Mega Deal</span>
-          <span class="value block text-xs text-muted" style="font-size: 11px;">Feature in Top Deals horizontal & grid feeds</span>
+      @if (offer.status === 'ACTIVE' || offer.status === 'APPROVED') {
+        <div class="detail-item w-full flex items-center justify-between" style="padding-top: 12px; padding-bottom: 4px; border-top: 1px dashed #e2e8f0;">
+          <div class="flex items-center gap-2">
+            <ion-icon [name]="offer.is_featured ? 'star' : 'star-outline'" [color]="offer.is_featured ? 'warning' : 'medium'" style="font-size: 22px; flex-shrink: 0;"></ion-icon>
+            <div>
+              <span class="label font-bold" style="color: #1e293b; font-size: 13px;">Mark as Top Deal / Offer</span>
+              <span class="value block text-xs text-muted" style="font-size: 11px; margin-top: 2px;">Feature in Top Deals & Discounts carousels</span>
+            </div>
+          </div>
+          <ion-toggle [checked]="offer.is_featured" (ionChange)="toggleFeature()" color="warning"></ion-toggle>
         </div>
-        <ion-toggle [checked]="offer.is_featured" (ionChange)="toggleFeature()" color="warning"></ion-toggle>
-      </div>
+      }
       @if (offer.rejection_reason) {
         <div class="detail-item w-full">
           <span class="label text-danger">Rejection Reason</span>
@@ -120,6 +125,16 @@
   @if (offer.status === OfferStatus.PENDING) {
     <div class="action-section mt-6">
       @if (!showRejectInput) {
+        <div class="detail-item w-full flex items-center justify-between mb-4 p-3" style="background: rgba(255, 193, 7, 0.08); border: 1px solid rgba(255, 193, 7, 0.25); border-radius: 12px;">
+          <div class="flex items-center gap-2">
+            <ion-icon [name]="markAsTopOnApprove ? 'star' : 'star-outline'" [color]="markAsTopOnApprove ? 'warning' : 'medium'" style="font-size: 20px; flex-shrink: 0;"></ion-icon>
+            <div>
+              <span class="label font-bold" style="color: #1e293b; font-size: 13px;">Mark as Top Deal upon approval</span>
+              <span class="value block text-xs text-muted" style="font-size: 11px; margin-top: 2px;">Feature in Top Deals & Discounts carousels</span>
+            </div>
+          </div>
+          <ion-toggle [(ngModel)]="markAsTopOnApprove" color="warning"></ion-toggle>
+        </div>
         <ion-button expand="block" color="success" (click)="approve()" class="mb-3">
           <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
           Approve Offer

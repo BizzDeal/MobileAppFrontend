@@ -96,10 +96,18 @@
                   <ion-icon name="time-outline"></ion-icon>
                   <span>Ends: {{ offer.end_date | date:'mediumDate' }}</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <ion-button fill="clear" size="small" [color]="offer.is_featured ? 'warning' : 'medium'" (click)="toggleFeatureOffer(offer, $event)">
-                    <ion-icon slot="icon-only" [name]="offer.is_featured ? 'star' : 'star-outline'"></ion-icon>
-                  </ion-button>
+                <div class="footer-actions">
+                  @if (offer.status === 'ACTIVE' || offer.status === 'APPROVED') {
+                    <button
+                      type="button"
+                      class="top-deal-pill-btn"
+                      [class.active]="offer.is_featured"
+                      (click)="$event.stopPropagation(); toggleFeatureOffer(offer, $event)"
+                      title="Toggle Top Deal">
+                      <ion-icon [name]="offer.is_featured ? 'star' : 'star-outline'"></ion-icon>
+                      <span>{{ offer.is_featured ? 'Top Deal' : 'Mark Top' }}</span>
+                    </button>
+                  }
                   <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
                 </div>
               </div>
@@ -179,10 +187,14 @@
                     </ion-badge>
                   </td>
                   <td>
-                    <button class="table-action-btn" [ngClass]="offer.is_featured ? 'warning-btn' : ''" (click)="$event.stopPropagation(); toggleFeatureOffer(offer, $event)" title="Toggle Top Deal">
-                      <ion-icon [name]="offer.is_featured ? 'star' : 'star-outline'"></ion-icon>
-                      <span>{{ offer.is_featured ? 'Top Deal' : 'Mark Top' }}</span>
-                    </button>
+                    @if (offer.status === 'ACTIVE' || offer.status === 'APPROVED') {
+                      <button class="table-action-btn" [ngClass]="offer.is_featured ? 'warning-btn' : ''" (click)="$event.stopPropagation(); toggleFeatureOffer(offer, $event)" title="Toggle Top Deal">
+                        <ion-icon [name]="offer.is_featured ? 'star' : 'star-outline'"></ion-icon>
+                        <span>{{ offer.is_featured ? 'Top Deal' : 'Mark Top' }}</span>
+                      </button>
+                    } @else {
+                      <span class="text-muted" style="color: #9ca3af; font-size: 13px;">—</span>
+                    }
                   </td>
                 </tr>
               }

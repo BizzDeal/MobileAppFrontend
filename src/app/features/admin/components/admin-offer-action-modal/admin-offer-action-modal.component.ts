@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { AdminOffer, OfferStatus, AdminBusiness } from '../../models/admin-business.model';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
@@ -20,12 +20,14 @@ export class AdminOfferActionModalComponent implements OnInit {
   OfferStatus = OfferStatus;
   rejectionReason: string = '';
   showRejectInput: boolean = false;
+  markAsTopOnApprove: boolean = false;
   
   business: AdminBusiness | null = null;
   loadingBusiness: boolean = true;
 
   constructor(
     private modalCtrl: ModalController,
+    private alertController: AlertController,
     private adminBusinessesService: AdminBusinessesService
   ) {
     addIcons({
@@ -52,24 +54,51 @@ export class AdminOfferActionModalComponent implements OnInit {
   }
 
   dismiss() {
-    this.modalCtrl.dismiss();
+    this.modalCtrl.dismiss({
+      updatedOffer: this.offer
+    });
   }
 
-  toggleFeature() {
+  async toggleFeature() {
+    // Only allowed for active or approved offers
+    if (this.offer.status !== 'ACTIVE' && this.offer.status !== 'APPROVED') {
+      return;
+    }
+
     const newStatus = !this.offer.is_featured;
-    this.adminBusinessesService.featureOffer(this.offer.id, newStatus).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.offer.is_featured = newStatus;
+    const actionText = newStatus ? 'mark' : 'unmark';
+
+    const alert = await this.alertController.create({
+      header: 'Confirm Action',
+      message: `Are you sure you want to ${actionText} "${this.offer.title}" ${newStatus ? 'as a Top Deal' : 'from Top Deals'}?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.adminBusinessesService.featureOffer(this.offer.id, newStatus).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  this.offer.is_featured = newStatus;
+                }
+              }
+            });
+          }
         }
-      }
+      ]
     });
+
+    await alert.present();
   }
 
   approve() {
     this.modalCtrl.dismiss({
       action: 'approve',
-      offerId: this.offer.id
+      offerId: this.offer.id,
+      markAsTop: this.markAsTopOnApprove
     });
   }
 

@@ -142,6 +142,26 @@
   }
 }
 
+.btn-outline-warning {
+  background: rgba(var(--ion-color-warning-rgb), 0.12);
+  color: #b78103;
+  border: 1px solid rgba(var(--ion-color-warning-rgb), 0.3);
+  
+  &:hover {
+    background: rgba(var(--ion-color-warning-rgb), 0.22);
+  }
+}
+
+.btn-outline-secondary {
+  background: #f4f5f8;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+
 .tabs-container {
   display: flex;
   border-bottom: 1px solid #eaeaea;

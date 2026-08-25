@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminOffer, OfferStatus } from '../../models/admin-business.model';
 import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
@@ -43,7 +43,8 @@ export class AdminOffersPage implements OnInit {
 
   constructor(
     private adminBusinessesService: AdminBusinessesService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private alertController: AlertController
   ) {
     addIcons({
       pricetagOutline,
@@ -195,11 +196,16 @@ export class AdminOffersPage implements OnInit {
 
     const { data } = await modal.onDidDismiss();
     if (data && data.action) {
-      this.handleOfferAction(data.offerId, data.action, data.reason);
+      this.handleOfferAction(data.offerId, data.action, data.reason, data.markAsTop);
+    } else if (data && data.updatedOffer) {
+      const index = this.offers.findIndex(o => o.id === data.updatedOffer.id);
+      if (index > -1) {
+        this.offers[index] = { ...this.offers[index], ...data.updatedOffer };
+      }
     }
   }
 
-  handleOfferAction(offerId: string, action: 'approve' | 'reject' | 'feature' | 'unfeature', reason?: string) {
+  handleOfferAction(offerId: string, action: 'approve' | 'reject' | 'feature' | 'unfeature', reason?: string, markAsTop?: boolean) {
     if (action === 'feature' || action === 'unfeature') {
       const isFeatured = action === 'feature';
       this.adminBusinessesService.featureOffer(offerId, isFeatured).subscribe(async (res: any) => {
@@ -219,12 +225,24 @@ export class AdminOffersPage implements OnInit {
       if (res) {
         const updatedOffer = res.success ? res.data : res;
         if (updatedOffer && typeof updatedOffer === 'object') {
+          // If markAsTop is requested during approval, also trigger featureOffer
+          if (action === 'approve' && markAsTop) {
+            this.adminBusinessesService.featureOffer(offerId, true).subscribe({
+              next: (featRes) => {
+                const index = this.offers.findIndex(o => o.id === offerId);
+                if (index > -1) {
+                  this.offers[index] = { ...this.offers[index], ...updatedOffer, is_featured: true };
+                }
+              }
+            });
+          }
+
           // Update local array
           const index = this.offers.findIndex(o => o.id === offerId);
           if (index > -1) {
-            this.offers[index] = { ...this.offers[index], ...updatedOffer };
+            this.offers[index] = { ...this.offers[index], ...updatedOffer, is_featured: markAsTop ? true : this.offers[index].is_featured };
             
-            // If the segment is filtering by status and it no longer matches, we might want to remove it from view
+            // If the segment is filtering by status and it no longer matches, remove it from view
             if (this.selectedStatus !== 'ALL' && this.selectedStatus !== newStatus) {
                this.offers.splice(index, 1);
             }
@@ -234,14 +252,41 @@ export class AdminOffersPage implements OnInit {
     });
   }
 
-  toggleFeatureOffer(offer: AdminOffer, event?: Event) {
+  async toggleFeatureOffer(offer: AdminOffer, event?: Event) {
     if (event) event.stopPropagation();
+    
+    // Only allow for active or approved offers
+    if (offer.status !== 'ACTIVE' && offer.status !== 'APPROVED') {
+      return;
+    }
+
     const newStatus = !offer.is_featured;
-    this.adminBusinessesService.featureOffer(offer.id, newStatus).subscribe((res: any) => {
-      if (res.success) {
-        offer.is_featured = newStatus;
-      }
+    const actionText = newStatus ? 'mark' : 'unmark';
+
+    const alert = await this.alertController.create({
+      header: 'Confirm Action',
+      message: `Are you sure you want to ${actionText} "${offer.title}" ${newStatus ? 'as a Top Deal' : 'from Top Deals'}?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.adminBusinessesService.featureOffer(offer.id, newStatus).subscribe({
+              next: (res: any) => {
+                if (res.success) {
+                  offer.is_featured = newStatus;
+                }
+              }
+            });
+          }
+        }
+      ]
     });
+
+    await alert.present();
   }
 
   getOfferStatusColor(status: string): string {

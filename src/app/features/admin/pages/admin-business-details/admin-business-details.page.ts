@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController, NavController } from '@ionic/angular';
+import { IonicModule, ModalController, NavController, AlertController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminBusiness, AdminOffer, AdminVoucher, BusinessStatus, OfferStatus } from '../../models/admin-business.model';
@@ -39,7 +39,8 @@ export class AdminBusinessDetailsPage implements OnInit {
     private route: ActivatedRoute,
     private adminBusinessesService: AdminBusinessesService,
     private modalCtrl: ModalController,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private alertController: AlertController
   ) {
     addIcons({
       businessOutline, globeOutline, documentTextOutline,
@@ -105,34 +106,137 @@ export class AdminBusinessDetailsPage implements OnInit {
 
   async toggleFeatured() {
     if (!this.business) return;
+    if (this.business.status !== BusinessStatus.ACTIVE) return;
     
     const newStatus = !this.business.is_featured;
-    this.adminBusinessesService.featureBusiness(this.business.id, newStatus).subscribe(async res => {
-      if (res.success) {
-        this.business!.is_featured = newStatus;
-      }
+    const actionText = newStatus ? 'feature' : 'unfeature';
+
+    const alert = await this.alertController.create({
+      header: 'Confirm Action',
+      message: `Are you sure you want to ${actionText} "${this.business.name}"?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.adminBusinessesService.featureBusiness(this.business!.id, newStatus).subscribe(res => {
+              if (res.success) {
+                this.business!.is_featured = newStatus;
+              }
+            });
+          }
+        }
+      ]
     });
+
+    await alert.present();
   }
 
   async toggleTop() {
     if (!this.business) return;
+    if (this.business.status !== BusinessStatus.ACTIVE) return;
 
     const newStatus = !this.business.is_top;
-    this.adminBusinessesService.topBusiness(this.business.id, newStatus).subscribe(async res => {
-      if (res.success) {
-        this.business!.is_top = newStatus;
-      }
+    const actionText = newStatus ? 'mark as Top Business' : 'unmark from Top Businesses';
+
+    const alert = await this.alertController.create({
+      header: 'Confirm Action',
+      message: `Are you sure you want to ${actionText} "${this.business.name}"?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.adminBusinessesService.topBusiness(this.business!.id, newStatus).subscribe(res => {
+              if (res.success) {
+                this.business!.is_top = newStatus;
+              }
+            });
+          }
+        }
+      ]
     });
+
+    await alert.present();
   }
 
-  updateStatus(newStatus: BusinessStatus) {
+  async updateStatus(newStatus: BusinessStatus) {
     if (!this.business) return;
-    this.adminBusinessesService.updateBusinessStatus(this.business.id, newStatus).subscribe(res => {
-      if (res.success) {
-        this.business!.status = newStatus;
-        this.navCtrl.back();
-      }
+
+    if (newStatus === BusinessStatus.ACTIVE) {
+      // Approving business: provide options to mark as Top / Featured
+      const alert = await this.alertController.create({
+        header: 'Approve Business',
+        message: `Approve "${this.business.name}" to make it active on the platform.`,
+        inputs: [
+          {
+            name: 'is_top',
+            type: 'checkbox',
+            label: 'Mark as Top Business',
+            value: 'is_top',
+            checked: false
+          },
+          {
+            name: 'is_featured',
+            type: 'checkbox',
+            label: 'Mark as Featured Business',
+            value: 'is_featured',
+            checked: false
+          }
+        ],
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          {
+            text: 'Approve',
+            handler: (data: string[]) => {
+              const markTop = data && data.includes('is_top');
+              const markFeatured = data && data.includes('is_featured');
+
+              this.adminBusinessesService.updateBusinessStatus(this.business!.id, BusinessStatus.ACTIVE).subscribe(res => {
+                if (res.success) {
+                  this.business!.status = BusinessStatus.ACTIVE;
+                  if (markTop) {
+                    this.adminBusinessesService.topBusiness(this.business!.id, true).subscribe(topRes => {
+                      if (topRes.success) this.business!.is_top = true;
+                    });
+                  }
+                  if (markFeatured) {
+                    this.adminBusinessesService.featureBusiness(this.business!.id, true).subscribe(featRes => {
+                      if (featRes.success) this.business!.is_featured = true;
+                    });
+                  }
+                  this.navCtrl.back();
+                }
+              });
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+      return;
+    }
+
+    const alert = await this.alertController.create({
+      header: 'Confirm Status Change',
+      message: `Are you sure you want to change the status of "${this.business.name}" to ${newStatus}?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.adminBusinessesService.updateBusinessStatus(this.business!.id, newStatus).subscribe(res => {
+              if (res.success) {
+                this.business!.status = newStatus;
+                this.navCtrl.back();
+              }
+            });
+          }
+        }
+      ]
     });
+
+    await alert.present();
   }
 
   async openOfferModal(offer: AdminOffer) {
@@ -148,19 +252,63 @@ export class AdminBusinessDetailsPage implements OnInit {
 
     const { data } = await modal.onDidDismiss();
     if (data && data.action) {
-      this.handleOfferAction(data.offerId, data.action, data.reason);
+      this.handleOfferAction(data.offerId, data.action, data.reason, data.markAsTop);
+    } else if (data && data.updatedOffer) {
+      const index = this.offers.findIndex(o => o.id === data.updatedOffer.id);
+      if (index > -1) {
+        this.offers[index] = { ...this.offers[index], ...data.updatedOffer };
+      }
     }
   }
 
-  handleOfferAction(offerId: string, action: 'approve' | 'reject', reason?: string) {
+  async toggleFeatureOffer(offer: AdminOffer, event?: Event) {
+    if (event) event.stopPropagation();
+    if (offer.status !== 'ACTIVE' && offer.status !== 'APPROVED') return;
+
+    const newStatus = !offer.is_featured;
+    const actionText = newStatus ? 'mark' : 'unmark';
+
+    const alert = await this.alertController.create({
+      header: 'Confirm Action',
+      message: `Are you sure you want to ${actionText} "${offer.title}" ${newStatus ? 'as a Top Deal' : 'from Top Deals'}?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.adminBusinessesService.featureOffer(offer.id, newStatus).subscribe(res => {
+              if (res.success) {
+                offer.is_featured = newStatus;
+              }
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  handleOfferAction(offerId: string, action: 'approve' | 'reject', reason?: string, markAsTop?: boolean) {
     const newStatus = action === 'approve' ? OfferStatus.APPROVED : OfferStatus.REJECTED;
     
     this.adminBusinessesService.updateOfferStatus(offerId, newStatus, reason).subscribe(async res => {
       if (res.success) {
+        if (action === 'approve' && markAsTop) {
+          this.adminBusinessesService.featureOffer(offerId, true).subscribe({
+            next: () => {
+              const index = this.offers.findIndex(o => o.id === offerId);
+              if (index > -1) {
+                this.offers[index] = { ...this.offers[index], is_featured: true };
+              }
+            }
+          });
+        }
+
         // Update local array
         const index = this.offers.findIndex(o => o.id === offerId);
         if (index > -1) {
-          this.offers[index] = res.data;
+          this.offers[index] = { ...res.data, is_featured: markAsTop ? true : res.data.is_featured };
         }
       }
     });

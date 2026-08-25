@@ -202,6 +202,67 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
   }
 
   async updateStatus(business: AdminBusiness, status: BusinessStatus) {
+    if (status === BusinessStatus.ACTIVE) {
+      const alert = await this.alertController.create({
+        header: 'Approve Business',
+        message: `Approve "${business.name}" to make it active on the platform.`,
+        inputs: [
+          {
+            name: 'is_top',
+            type: 'checkbox',
+            label: 'Mark as Top Business',
+            value: 'is_top',
+            checked: false
+          },
+          {
+            name: 'is_featured',
+            type: 'checkbox',
+            label: 'Mark as Featured Business',
+            value: 'is_featured',
+            checked: false
+          }
+        ],
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          },
+          {
+            text: 'Approve',
+            handler: (data: string[]) => {
+              const markTop = data && data.includes('is_top');
+              const markFeatured = data && data.includes('is_featured');
+
+              this.adminBusinessesService.updateBusinessStatus(business.id, BusinessStatus.ACTIVE).subscribe({
+                next: (res) => {
+                  if (res.success) {
+                    business.status = BusinessStatus.ACTIVE;
+                    if (markTop) {
+                      this.adminBusinessesService.topBusiness(business.id, true).subscribe(topRes => {
+                        if (topRes.success) business.is_top = true;
+                      });
+                    }
+                    if (markFeatured) {
+                      this.adminBusinessesService.featureBusiness(business.id, true).subscribe(featRes => {
+                        if (featRes.success) business.is_featured = true;
+                      });
+                    }
+                    this.filterBusinesses();
+                  }
+                },
+                error: (err) => {
+                  // Handled by interceptor
+                }
+              });
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+      return;
+    }
+
     const alert = await this.alertController.create({
       header: 'Confirm Status Change',
       message: `Are you sure you want to change the status of ${business.name} to ${status}?`,

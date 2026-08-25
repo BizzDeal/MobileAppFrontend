@@ -72,7 +72,7 @@ export class AdminMeetingsPage implements OnInit {
     });
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize() {
     const wasDesktop = this.isDesktop;
     this.isDesktop = window.innerWidth >= 992;

@@ -12,7 +12,10 @@
               <h2 class="font-bold text-dark flex items-center">
                 {{ business.name }}
                 @if (business.is_featured) {
-                  <ion-icon name="star" color="warning" class="ml-1 text-base"></ion-icon>
+                  <ion-icon name="star" color="warning" class="ml-1 text-base" title="Featured Store"></ion-icon>
+                }
+                @if (business.is_top) {
+                  <ion-icon name="trophy" color="primary" class="ml-1 text-base" title="Top Business"></ion-icon>
                 }
               </h2>
               <p class="text-medium mt-1">Owner: {{ business.owner_name }}</p>
@@ -21,6 +24,9 @@
                 <span class="status-badge" [ngClass]="'status-' + business.status.toLowerCase()">
                   {{ business.status }}
                 </span>
+                @if (business.is_top) {
+                  <span class="category-badge" style="background: rgba(33, 150, 243, 0.12); color: #1976D2; font-weight: 600;">Top Biz</span>
+                }
               </div>
             </div>
             <div class="business-action">
@@ -46,6 +52,9 @@
               </ion-button>
             }
             @if (business.status === BusinessStatus.ACTIVE) {
+              <ion-button fill="clear" color="primary" size="small" (click)="toggleTop(business)">
+                <ion-icon slot="start" [name]="business.is_top ? 'trophy-outline' : 'trophy'"></ion-icon> {{ business.is_top ? 'Unmark Top' : 'Top Biz' }}
+              </ion-button>
               <ion-button fill="clear" color="warning" size="small" (click)="toggleFeature(business)">
                 <ion-icon slot="start" [name]="business.is_featured ? 'star-outline' : 'star'"></ion-icon> Feature
               </ion-button>
@@ -116,7 +125,10 @@
                     <span class="table-user-name">
                       {{ business.name }}
                       @if (business.is_featured) {
-                        <ion-icon name="star" color="warning" class="ml-1 text-base"></ion-icon>
+                        <ion-icon name="star" color="warning" class="ml-1 text-base" title="Featured Store"></ion-icon>
+                      }
+                      @if (business.is_top) {
+                        <ion-icon name="trophy" color="primary" class="ml-1 text-base" title="Top Business"></ion-icon>
                       }
                     </span>
                   </div>
@@ -126,6 +138,9 @@
                 </td>
                 <td>
                   <span class="category-badge">{{ business.category_name }}</span>
+                  @if (business.is_top) {
+                    <span class="category-badge ml-1" style="background: rgba(33, 150, 243, 0.12); color: #1976D2; font-weight: 600;">Top Biz</span>
+                  }
                 </td>
                 <td>
                   <span class="status-badge" [ngClass]="'status-' + business.status.toLowerCase()">
@@ -148,6 +163,10 @@
                       <button class="table-action-btn danger-btn" (click)="$event.stopPropagation(); updateStatus(business, BusinessStatus.SUSPENDED)" title="Suspend">
                         <ion-icon name="ban-outline"></ion-icon>
                         <span>Suspend</span>
+                      </button>
+                      <button class="table-action-btn primary-btn" (click)="$event.stopPropagation(); toggleTop(business)" title="Top Business">
+                        <ion-icon [name]="business.is_top ? 'trophy-outline' : 'trophy'"></ion-icon>
+                        <span>{{ business.is_top ? 'Unmark Top' : 'Top Biz' }}</span>
                       </button>
                       <button class="table-action-btn warning-btn" (click)="$event.stopPropagation(); toggleFeature(business)" title="Feature">
                         <ion-icon [name]="business.is_featured ? 'star-outline' : 'star'"></ion-icon>

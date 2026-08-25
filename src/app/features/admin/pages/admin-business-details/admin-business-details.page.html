@@ -68,11 +68,23 @@
           @if (activeTab === 'details') {
             <div class="compact-grid">
               
+              <!-- Top Business Toggle Custom Checkbox -->
+              <div class="data-group full-width featured-group" style="margin-bottom: 12px;">
+                <div class="featured-info">
+                  <span class="label">Top Business</span>
+                  <span class="sub-label">Display in Top Businesses horizontal and grid feeds</span>
+                </div>
+                <label class="custom-toggle">
+                  <input type="checkbox" [checked]="business.is_top" (change)="toggleTop()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
               <!-- Featured Toggle Custom Checkbox -->
               <div class="data-group full-width featured-group">
                 <div class="featured-info">
                   <span class="label">Featured Business</span>
-                  <span class="sub-label">Display in featured sections</span>
+                  <span class="sub-label">Display in featured hero banner sections</span>
                 </div>
                 <label class="custom-toggle">
                   <input type="checkbox" [checked]="business.is_featured" (change)="toggleFeatured()">

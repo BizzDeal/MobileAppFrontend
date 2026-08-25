@@ -14,6 +14,7 @@ export interface AdminBusiness {
   website: string | null;
   gst_number: string | null;
   is_featured: boolean;
+  is_top?: boolean;
   status: BusinessStatus;
   category_id: string;
   category_name?: string;
@@ -75,6 +76,7 @@ export interface AdminOffer {
   start_date: Date | string;
   end_date: Date | string;
   status: OfferStatus;
+  is_featured?: boolean;
   rejection_reason?: string | null;
   offer_image?: string | null;
   created_at?: Date | string;

@@ -48,6 +48,22 @@ export class AdminBusinessesService {
     );
   }
 
+  topBusiness(id: string, isTop: boolean): Observable<ApiResponse<AdminBusiness>> {
+    return this.http.put<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/top`, { businessId: id, is_top: isTop }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
+      catchError(err => {
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to update top business status'));
+      })
+    );
+  }
+
+  featureOffer(id: string, isFeatured: boolean): Observable<ApiResponse<AdminOffer>> {
+    return this.http.put<ApiResponse<AdminOffer>>(`${this.apiUrl}/offers/feature`, { offer_id: id, is_featured: isFeatured }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
+      catchError(err => {
+        throw new Error(extractFriendlyErrorMessage(err, 'Failed to update top deal status'));
+      })
+    );
+  }
+
   getBusinessById(id: string): Observable<ApiResponse<AdminBusiness>> {
     return this.http.get<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/${id}`).pipe(
       catchError(err => {

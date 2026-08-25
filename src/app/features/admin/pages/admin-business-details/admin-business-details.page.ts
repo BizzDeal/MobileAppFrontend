@@ -12,7 +12,7 @@ import { AdminLogoutButtonComponent } from '../../components/admin-logout-button
 import { addIcons } from 'ionicons';
 import { 
   businessOutline, globeOutline, documentTextOutline, 
-  starOutline, star, pricetagOutline, ticketOutline,
+  starOutline, star, trophyOutline, trophy, pricetagOutline, ticketOutline,
   personOutline, callOutline, pricetag, flashOutline, timeOutline, 
   ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline,
   mapOutline, navigateOutline
@@ -43,7 +43,7 @@ export class AdminBusinessDetailsPage implements OnInit {
   ) {
     addIcons({
       businessOutline, globeOutline, documentTextOutline,
-      starOutline, star, pricetagOutline, ticketOutline,
+      starOutline, star, trophyOutline, trophy, pricetagOutline, ticketOutline,
       personOutline, callOutline, pricetag, flashOutline, timeOutline,
       ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline,
       mapOutline, navigateOutline
@@ -110,6 +110,17 @@ export class AdminBusinessDetailsPage implements OnInit {
     this.adminBusinessesService.featureBusiness(this.business.id, newStatus).subscribe(async res => {
       if (res.success) {
         this.business!.is_featured = newStatus;
+      }
+    });
+  }
+
+  async toggleTop() {
+    if (!this.business) return;
+
+    const newStatus = !this.business.is_top;
+    this.adminBusinessesService.topBusiness(this.business.id, newStatus).subscribe(async res => {
+      if (res.success) {
+        this.business!.is_top = newStatus;
       }
     });
   }

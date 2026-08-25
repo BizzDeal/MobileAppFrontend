@@ -83,7 +83,7 @@ export class AdminCustomersListComponent implements OnInit, OnChanges {
     this.loadCustomers();
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize() {
     const wasDesktop = this.isDesktop;
     this.isDesktop = window.innerWidth >= 992;

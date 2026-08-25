@@ -32,6 +32,7 @@ export interface BusinessDTO {
   video_url?: string | null;
   status: BusinessStatus;
   is_featured: boolean;
+  is_top?: boolean;
   created_at: string;
   updated_at: string;
   // UI presentation fields joined in API response
@@ -55,6 +56,7 @@ export interface OfferDTO {
   image_id: string | null;
   video_url?: string | null;
   status: OfferStatus;
+  is_featured?: boolean;
   approved_by_id: string | null;
   approved_at: string | null;
   created_at: string;

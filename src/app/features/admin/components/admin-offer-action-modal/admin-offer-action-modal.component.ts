@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AdminOffer, OfferStatus, AdminBusiness } from '../../models/admin-business.model';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { addIcons } from 'ionicons';
-import { closeOutline, checkmarkCircleOutline, closeCircleOutline } from 'ionicons/icons';
+import { closeOutline, checkmarkCircleOutline, closeCircleOutline, starOutline, star } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-offer-action-modal',
@@ -31,7 +31,9 @@ export class AdminOfferActionModalComponent implements OnInit {
     addIcons({
       closeOutline,
       checkmarkCircleOutline,
-      closeCircleOutline
+      closeCircleOutline,
+      starOutline,
+      star
     });
   }
 
@@ -51,6 +53,17 @@ export class AdminOfferActionModalComponent implements OnInit {
 
   dismiss() {
     this.modalCtrl.dismiss();
+  }
+
+  toggleFeature() {
+    const newStatus = !this.offer.is_featured;
+    this.adminBusinessesService.featureOffer(this.offer.id, newStatus).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.offer.is_featured = newStatus;
+        }
+      }
+    });
   }
 
   approve() {

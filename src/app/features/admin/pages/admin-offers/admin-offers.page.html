@@ -56,10 +56,20 @@
                 <!-- Content -->
                 <div class="offer-details">
                   <div class="offer-header">
-                    <h3 class="offer-title">{{ offer.title }}</h3>
-                    <span class="custom-badge shrink-0" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
-                      {{ offer.status }}
-                    </span>
+                    <h3 class="offer-title flex items-center">
+                      {{ offer.title }}
+                      @if (offer.is_featured) {
+                        <ion-icon name="star" color="warning" class="ml-1" title="Top / Featured Deal"></ion-icon>
+                      }
+                    </h3>
+                    <div class="flex items-center gap-1 shrink-0">
+                      @if (offer.is_featured) {
+                        <span class="custom-badge" style="background: rgba(255, 193, 7, 0.15); color: #b78103; font-weight: 600;">Top Deal</span>
+                      }
+                      <span class="custom-badge" [ngClass]="'badge-' + getOfferStatusColor(offer.status)">
+                        {{ offer.status }}
+                      </span>
+                    </div>
                   </div>
                   <div class="offer-business">
                     <ion-icon name="business-outline" class="icon-primary"></ion-icon>
@@ -86,7 +96,12 @@
                   <ion-icon name="time-outline"></ion-icon>
                   <span>Ends: {{ offer.end_date | date:'mediumDate' }}</span>
                 </div>
-                <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
+                <div class="flex items-center gap-2">
+                  <ion-button fill="clear" size="small" [color]="offer.is_featured ? 'warning' : 'medium'" (click)="toggleFeatureOffer(offer, $event)">
+                    <ion-icon slot="icon-only" [name]="offer.is_featured ? 'star' : 'star-outline'"></ion-icon>
+                  </ion-button>
+                  <ion-icon name="chevron-forward" class="footer-chevron"></ion-icon>
+                </div>
               </div>
             </div>
           }
@@ -109,12 +124,13 @@
               <th>Details</th>
               <th>Duration</th>
               <th>Status</th>
+              <th>Top Deal</th>
             </tr>
           </thead>
           <tbody>
             @if (!loading && offers.length === 0) {
               <tr>
-                <td colspan="5" class="text-center py-8 text-muted">No offers found for the selected status.</td>
+                <td colspan="6" class="text-center py-8 text-muted">No offers found for the selected status.</td>
               </tr>
             }
             @if (!loading && offers.length > 0) {
@@ -122,7 +138,12 @@
                 <tr (click)="openOfferModal(offer)">
                   <td>
                     <div class="table-offer-info">
-                      <span class="table-offer-title">{{ offer.title }}</span>
+                      <span class="table-offer-title flex items-center">
+                        {{ offer.title }}
+                        @if (offer.is_featured) {
+                          <ion-icon name="star" color="warning" class="ml-1" title="Top / Featured Deal"></ion-icon>
+                        }
+                      </span>
                     </div>
                   </td>
                   <td>
@@ -157,12 +178,18 @@
                       {{ offer.status }}
                     </ion-badge>
                   </td>
+                  <td>
+                    <button class="table-action-btn" [ngClass]="offer.is_featured ? 'warning-btn' : ''" (click)="$event.stopPropagation(); toggleFeatureOffer(offer, $event)" title="Toggle Top Deal">
+                      <ion-icon [name]="offer.is_featured ? 'star' : 'star-outline'"></ion-icon>
+                      <span>{{ offer.is_featured ? 'Top Deal' : 'Mark Top' }}</span>
+                    </button>
+                  </td>
                 </tr>
               }
             } @else if (loading) {
               @for (i of [1,2,3,4,5]; track i) {
                 <tr>
-                  <td colspan="5">
+                  <td colspan="6">
                     <ion-skeleton-text animated style="width: 100%; height: 30px;"></ion-skeleton-text>
                   </td>
                 </tr>

@@ -13,6 +13,8 @@ import {
   banOutline, 
   starOutline, 
   star, 
+  trophyOutline,
+  trophy,
   refreshOutline,
   businessOutline,
   chevronBackOutline,
@@ -76,6 +78,8 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
       banOutline,
       starOutline,
       star,
+      trophyOutline,
+      trophy,
       refreshOutline,
       businessOutline,
       chevronBackOutline,
@@ -107,7 +111,7 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     this.loadBusinesses();
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize() {
     const wasDesktop = this.isDesktop;
     this.isDesktop = window.innerWidth >= 992;
@@ -257,6 +261,40 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
           }
         }
       ]
+    });
+
+    await alert.present();
+  }
+
+  async toggleTop(business: AdminBusiness) {
+    const newTopStatus = !business.is_top;
+    const actionText = newTopStatus ? 'mark as top business' : 'unmark from top businesses';
+
+    const alert = await this.alertController.create({
+      header: 'Confirm Action',
+      message: `Are you sure you want to ${actionText} ${business.name}?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.adminBusinessesService.topBusiness(business.id, newTopStatus).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  business.is_top = newTopStatus;
+                  this.loadBusinesses();
+                }
+              },
+              error: (err) => {
+                // Handled by interceptor
+              },
+            });
+          },
+        },
+      ],
     });
 
     await alert.present();

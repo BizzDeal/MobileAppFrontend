@@ -41,6 +41,13 @@
           </ion-badge>
         </span>
       </div>
+      <div class="detail-item w-full flex items-center justify-between" style="padding-top: 8px; border-top: 1px dashed #e2e8f0;">
+        <div>
+          <span class="label font-bold" style="color: #1e293b;">Top Deal / Mega Deal</span>
+          <span class="value block text-xs text-muted" style="font-size: 11px;">Feature in Top Deals horizontal & grid feeds</span>
+        </div>
+        <ion-toggle [checked]="offer.is_featured" (ionChange)="toggleFeature()" color="warning"></ion-toggle>
+      </div>
       @if (offer.rejection_reason) {
         <div class="detail-item w-full">
           <span class="label text-danger">Rejection Reason</span>

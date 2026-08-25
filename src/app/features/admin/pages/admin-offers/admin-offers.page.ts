@@ -10,7 +10,11 @@ import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { addIcons } from 'ionicons';
-import { pricetagOutline, timeOutline, flashOutline, businessOutline, filterOutline, flash, chevronForward, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { 
+  pricetagOutline, timeOutline, flashOutline, businessOutline, 
+  filterOutline, flash, chevronForward, chevronBackOutline, 
+  chevronForwardOutline, starOutline, star 
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-offers',
@@ -50,7 +54,9 @@ export class AdminOffersPage implements OnInit {
       flash,
       chevronForward,
       chevronBackOutline,
-      chevronForwardOutline
+      chevronForwardOutline,
+      starOutline,
+      star
     });
   }
 
@@ -70,7 +76,7 @@ export class AdminOffersPage implements OnInit {
     this.searchSubscription?.unsubscribe();
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize() {
     const wasDesktop = this.isDesktop;
     this.isDesktop = window.innerWidth >= 992;
@@ -193,7 +199,20 @@ export class AdminOffersPage implements OnInit {
     }
   }
 
-  handleOfferAction(offerId: string, action: 'approve' | 'reject', reason?: string) {
+  handleOfferAction(offerId: string, action: 'approve' | 'reject' | 'feature' | 'unfeature', reason?: string) {
+    if (action === 'feature' || action === 'unfeature') {
+      const isFeatured = action === 'feature';
+      this.adminBusinessesService.featureOffer(offerId, isFeatured).subscribe(async (res: any) => {
+        if (res) {
+          const index = this.offers.findIndex(o => o.id === offerId);
+          if (index > -1) {
+            this.offers[index] = { ...this.offers[index], is_featured: isFeatured };
+          }
+        }
+      });
+      return;
+    }
+
     const newStatus = action === 'approve' ? OfferStatus.APPROVED : OfferStatus.REJECTED;
     
     this.adminBusinessesService.updateOfferStatus(offerId, newStatus, reason).subscribe(async (res: any) => {
@@ -211,6 +230,16 @@ export class AdminOffersPage implements OnInit {
             }
           }
         }
+      }
+    });
+  }
+
+  toggleFeatureOffer(offer: AdminOffer, event?: Event) {
+    if (event) event.stopPropagation();
+    const newStatus = !offer.is_featured;
+    this.adminBusinessesService.featureOffer(offer.id, newStatus).subscribe((res: any) => {
+      if (res.success) {
+        offer.is_featured = newStatus;
       }
     });
   }

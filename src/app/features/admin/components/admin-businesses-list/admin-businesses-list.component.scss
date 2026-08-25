@@ -276,6 +276,12 @@
       color: var(--ion-color-warning, #ffc409);
       &:hover { background: rgba(var(--ion-color-warning-rgb), 0.2); }
     }
+
+    &.primary-btn {
+      background: rgba(var(--ion-color-primary-rgb), 0.1);
+      color: var(--ion-color-primary, #3880ff);
+      &:hover { background: rgba(var(--ion-color-primary-rgb), 0.2); }
+    }
   }
 }
 

@@ -86,6 +86,16 @@
           }
 
           @if (authService.authStep() === 'otp_register') {
+          <div class="welcome-bonus-banner">
+            <div class="bonus-badge">
+              <span class="bonus-emoji">🎁</span>
+              <div class="bonus-text">
+                <span class="bonus-title">Welcome Gift!</span>
+                <span class="bonus-subtitle">Get <strong>{{ authService.signupBonusPoints() }} Bizz Points</strong> immediately on signup.</span>
+              </div>
+            </div>
+          </div>
+
           <!-- OTP Field -->
           <label class="input-label pin-label" for="otpInput">OTP Code (from Email) <span
               class="required-star">*</span></label>

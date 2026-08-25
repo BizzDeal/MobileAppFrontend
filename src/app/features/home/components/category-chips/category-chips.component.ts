@@ -12,6 +12,7 @@ import { BusinessCategoryDTO } from '../../models/home.model';
 export class CategoryChipsComponent {
   readonly categories = input.required<BusinessCategoryDTO[]>();
   readonly selectedCategoryId = input.required<string>();
+  readonly districtName = input<string>('Srikakulam');
   readonly isScrolled = input<boolean>(false);
 
   readonly categorySelect = output<string>();

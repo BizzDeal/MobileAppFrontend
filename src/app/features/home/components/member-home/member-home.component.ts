@@ -13,6 +13,7 @@ import { MeetingCardComponent } from '../../../meetings/components/meeting-card/
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { NotificationService } from '../../../notifications/services/notification.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { WalletService } from '../../../wallet/services/wallet.service';
 
 import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
 import { DashboardSkeletonComponent } from '../../../../shared/components/skeletons/dashboard-skeleton/dashboard-skeleton.component';
@@ -35,11 +36,13 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Output() notificationClick = new EventEmitter<void>();
   @Output() referralsClick = new EventEmitter<void>();
+  @Output() walletClick = new EventEmitter<void>();
 
   private readonly dashboardService = inject(MemberDashboardService);
   private readonly profileService = inject(ProfileService);
   private readonly meetingsService = inject(MeetingsService);
   private readonly notificationService = inject(NotificationService);
+  readonly walletService = inject(WalletService);
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
   private readonly appSocket = inject(AppSocketService);
@@ -58,6 +61,7 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.dashboardService.loadDashboardData().subscribe();
     this.meetingsService.loadMeetings().subscribe();
+    this.walletService.loadWalletData().subscribe();
     this.appSocket.connect();
 
     this.appSocket.onEvent('OFFER_STATUS_UPDATED')
@@ -214,10 +218,6 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onIssueVoucher() {
     this.router.navigate(['/vouchers/issue']);
-  }
-
-  onIssueBizzCoins() {
-    this.router.navigate(['/vouchers/issue-bizz-coins']);
   }
 
   onRedeemVoucher() {

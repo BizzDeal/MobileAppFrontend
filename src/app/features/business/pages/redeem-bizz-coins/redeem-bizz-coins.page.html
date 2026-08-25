@@ -277,6 +277,12 @@
             <span class="detail-label">Coins Redeemed</span>
             <span class="detail-value text-debit">- 🪙 {{ redemptionResult.coins_redeemed }}</span>
           </div>
+          @if (redemptionResult.bonus_points_awarded && redemptionResult.bonus_points_awarded > 0) {
+            <div class="detail-item">
+              <span class="detail-label">Return Reward Bonus</span>
+              <span class="detail-value text-success" style="color: #16a34a; font-weight: 700;">+ 🪙 {{ redemptionResult.bonus_points_awarded }}</span>
+            </div>
+          }
           <div class="detail-item">
             <span class="detail-label">New Customer Balance</span>
             <span class="detail-value text-primary">🪙 {{ redemptionResult.new_balance }}</span>

@@ -37,7 +37,10 @@ export class AdminSettingsPage implements OnInit {
     mega_deals_percent_threshold: 30,
     mega_deals_fixed_threshold: 500,
     home_feed_limit: 20,
-    bizz_coin_value: 1
+    bizz_coin_value: 1,
+    customer_signup_bizz_points: 100,
+    customer_redemption_reward_bizz_points: 75,
+    member_referral_bizz_points: 100
   };
 
   isLoading = true;

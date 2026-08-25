@@ -84,6 +84,48 @@
           <div class="ion-padding-start ion-padding-bottom ion-text-muted">
             <small>Set the platform monetary value of 1 Bizz Coin in Rupees (₹).</small>
           </div>
+          <ion-input
+            type="number"
+            step="1"
+            min="0"
+            labelPlacement="stacked"
+            fill="outline"
+            [(ngModel)]="settings.customer_signup_bizz_points"
+            placeholder="e.g., 100"
+            style="margin-bottom: 8px;">
+            <div slot="label">Customer Signup Welcome Points <span class="required-star">*</span></div>
+          </ion-input>
+          <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+            <small>Number of welcome Bizz Points credited automatically to a customer immediately upon signup.</small>
+          </div>
+          <ion-input
+            type="number"
+            step="1"
+            min="0"
+            labelPlacement="stacked"
+            fill="outline"
+            [(ngModel)]="settings.customer_redemption_reward_bizz_points"
+            placeholder="e.g., 75"
+            style="margin-bottom: 8px;">
+            <div slot="label">Customer Redemption Reward Points <span class="required-star">*</span></div>
+          </ion-input>
+          <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+            <small>Number of bonus Bizz Points credited automatically to a customer whenever they redeem coins at a store.</small>
+          </div>
+          <ion-input
+            type="number"
+            step="1"
+            min="0"
+            labelPlacement="stacked"
+            fill="outline"
+            [(ngModel)]="settings.member_referral_bizz_points"
+            placeholder="e.g., 100"
+            style="margin-bottom: 8px;">
+            <div slot="label">Member Referral Appreciation Bizz Coins <span class="required-star">*</span></div>
+          </ion-input>
+          <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+            <small>Number of Bizz Coins credited automatically to a member whenever a referral they sent is appreciated by the recipient member.</small>
+          </div>
         </div>
               </div>
             </div>

@@ -73,6 +73,7 @@ export class RedeemBizzCoinsPage implements OnInit {
 
   redemptionResult: {
     coins_redeemed: number;
+    bonus_points_awarded?: number;
     new_balance: number;
     customer_name: string;
     message: string;
@@ -314,6 +315,7 @@ export class RedeemBizzCoinsPage implements OnInit {
         this.isRedeeming = false;
         this.redemptionResult = {
           coins_redeemed: coinsToRedeem,
+          bonus_points_awarded: res.bonus_points_awarded,
           new_balance: Number(res.new_balance ?? (this.searchedCustomer!.coins_balance - coinsToRedeem)),
           customer_name: this.searchedCustomer!.name,
           message: res.message || `${coinsToRedeem} Bizz Coins successfully redeemed!`

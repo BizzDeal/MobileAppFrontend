@@ -125,6 +125,28 @@
         box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
       }
     }
+
+    &.wallet-btn {
+      .badge.coin-badge {
+        position: absolute;
+        top: -4px;
+        right: -6px;
+        width: auto;
+        min-width: 22px;
+        height: 18px;
+        padding: 0 5px;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border-radius: 10px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+        border: 2px solid var(--bizzdeal-bg-surface);
+      }
+    }
   }
 }
 

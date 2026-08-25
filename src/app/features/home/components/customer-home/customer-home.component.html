@@ -15,6 +15,7 @@
   <app-category-chips 
     [categories]="feed.categories" 
     [selectedCategoryId]="selectedCategory"
+    [districtName]="customer.district_name || 'Srikakulam'"
     (categorySelect)="categorySelect.emit($event)" 
     [isScrolled]="isScrolled"
   />

@@ -9,7 +9,7 @@
   <div class="home-layout">
     @if (activeNavTab() === 'home') {
     @if (userRole() === 'MEMBER') {
-    <app-member-home (notificationClick)="onNotificationClick()" (referralsClick)="onTabSelect('referrals')" />
+    <app-member-home (notificationClick)="onNotificationClick()" (referralsClick)="onTabSelect('referrals')" (walletClick)="onWalletClick()" />
     } @else {
     @if (loading() && !homeFeed()) {
     <!-- Loading State -->

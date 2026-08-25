@@ -1,4 +1,10 @@
 <section class="categories-filter-bar" [class.scrolled-mode]="isScrolled()">
+  <div class="category-section-title-row">
+    <h3 class="category-heading">
+      Top Business in <span class="highlight-district">{{ districtName() || 'Srikakulam' }}</span>
+    </h3>
+  </div>
+
   <div class="chips-scroll-wrapper">
     <!-- All Deals / For You Tab -->
     <button 

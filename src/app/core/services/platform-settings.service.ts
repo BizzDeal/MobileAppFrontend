@@ -12,6 +12,9 @@ export interface PlatformSettings {
   mega_deals_fixed_threshold: number;
   home_feed_limit: number;
   bizz_coin_value: number;
+  customer_signup_bizz_points?: number;
+  customer_redemption_reward_bizz_points?: number;
+  member_referral_bizz_points?: number;
 }
 
 @Injectable({

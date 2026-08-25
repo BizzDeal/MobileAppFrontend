@@ -47,12 +47,6 @@ export const routes: Routes = [
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
-    path: 'vouchers/issue-bizz-coins',
-    loadComponent: () => import('./features/business/pages/issue-bizz-coins/issue-bizz-coins.page').then(m => m.IssueBizzCoinsPage),
-    canActivate: [authGuard],
-    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
-  },
-  {
     path: 'vouchers/redeem',
     loadComponent: () => import('./features/business/pages/redeem-voucher/redeem-voucher.page').then(m => m.RedeemVoucherPage),
     canActivate: [authGuard],

@@ -12,6 +12,12 @@
       <h1 class="business-name"><span class="truncate-name">Hi {{ getFirstName(profile()?.full_name) }}</span></h1>
     </div>
     <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="notification-btn wallet-btn" (click)="walletClick.emit()" type="button" aria-label="Wallet">
+        <ion-icon name="wallet-outline" class="notif-icon" />
+        @if ((walletService.bizzCoinsBalance() || 0) > 0) {
+        <span class="badge coin-badge">{{ walletService.bizzCoinsBalance() }} 🪙</span>
+        }
+      </button>
       <button class="notification-btn" (click)="showSupportInfo()" type="button" aria-label="Support">
         <ion-icon name="headset-outline" class="notif-icon" />
       </button>
@@ -181,14 +187,6 @@
           <span class="item-label">Bizz Coins Offer</span>
         </button>
 
-        <button type="button" class="fab-slide-item bizz-coins-issue-item"
-          (click)="onIssueBizzCoins(); closeActionsMenu()">
-          <div class="icon-bubble">
-            <ion-icon name="sparkles-outline"></ion-icon>
-          </div>
-          <span class="item-label">Issue Bizz Coin</span>
-        </button>
-
         <button type="button" class="fab-slide-item" (click)="onIssueVoucher(); closeActionsMenu()">
           <div class="icon-bubble">
             <ion-icon name="ticket-outline"></ion-icon>
@@ -212,6 +210,13 @@
           <span class="item-label">Redeem Bizz Coins</span>
         </button>
         }
+
+        <button type="button" class="fab-slide-item" (click)="walletClick.emit(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="wallet-outline"></ion-icon>
+          </div>
+          <span class="item-label">My Wallet & Bizz Coins</span>
+        </button>
 
         <button type="button" class="fab-slide-item" (click)="onViewAnalytics(); closeActionsMenu()">
           <div class="icon-bubble">

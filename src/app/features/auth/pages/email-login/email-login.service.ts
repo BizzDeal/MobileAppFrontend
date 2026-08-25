@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, computed } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfirmationResult } from '@angular/fire/auth';
@@ -8,6 +8,7 @@ import { AuthApiService } from '../../services/auth-api.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 import { FirebasePhoneAuthService } from '../../../../core/services/firebase-phone-auth.service';
 import { ProfileService } from '../../../profile/services/profile.service';
+import { PlatformSettingsService } from '../../../../core/services/platform-settings.service';
 import { UserRole } from '../../models/auth.model';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 
@@ -20,6 +21,15 @@ export class EmailLoginService {
   private readonly firebasePhoneAuth = inject(FirebasePhoneAuthService);
   private readonly profileService = inject(ProfileService);
   private readonly alertController = inject(AlertController);
+  private readonly platformSettingsService = inject(PlatformSettingsService);
+
+  readonly signupBonusPoints = computed(
+    () => this.platformSettingsService.platformSettings()?.customer_signup_bizz_points ?? 100,
+  );
+
+  constructor() {
+    this.platformSettingsService.loadSettings().subscribe();
+  }
 
   private readonly _authStep = signal<'phone' | 'pin' | 'otp_register'>('phone');
   private readonly _isSubmitting = signal(false);

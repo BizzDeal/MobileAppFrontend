@@ -11,16 +11,37 @@
   z-index: 1;
 }
 
-/* Left Rail: Categories Side Menu (Scrolls independently) */
+/* =========================================================
+   Left Rail: Categories Side Menu
+   ========================================================= */
 .cat-side-menu {
   width: 84px;
   flex-shrink: 0;
   height: 100%;
   background: var(--bizzdeal-surface, #ffffff);
   border-right: 1px solid var(--bizzdeal-border, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Fixed "All" Category Item at Top */
+.fixed-all-item-wrap {
+  flex-shrink: 0;
+  padding-top: max(16px, env(safe-area-inset-top, 16px));
+  padding-bottom: 6px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--bizzdeal-border, #e2e8f0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  z-index: 2;
+}
+
+/* Scrollable Categories List Underneath */
+.cat-side-menu-scroll {
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: max(16px, env(safe-area-inset-top, 16px));
+  padding-top: 6px;
   padding-bottom: 24px;
   display: flex;
   flex-direction: column;
@@ -132,22 +153,47 @@
   }
 }
 
-/* Right Rail: Deals & Offers Column (Scrolls independently) */
+/* =========================================================
+   Right Rail: Deals & Offers Column
+   ========================================================= */
 .cat-deals-column {
   flex: 1;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bizzdeal-background, #f1f5f9);
+}
+
+/* Fixed Top Header (Filter Pills + Category Promo Banner) */
+.fixed-deals-header {
+  flex-shrink: 0;
+  padding-top: max(16px, env(safe-area-inset-top, 16px));
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 2px;
+  background: var(--bizzdeal-background, #f1f5f9);
+  z-index: 2;
+}
+
+/* Scrollable Deals Grid Body */
+.deals-content-scroll {
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: max(16px, env(safe-area-inset-top, 16px));
   padding-left: 10px;
   padding-right: 10px;
   padding-bottom: 32px;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  background: var(--bizzdeal-background, #f1f5f9);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-/* Filter / Sort Pills Bar (Inside deals column) */
+/* Filter / Sort Pills Bar */
 .filter-pills-bar {
   display: flex;
   align-items: center;
@@ -211,7 +257,7 @@
   border-radius: var(--bizzdeal-radius-md, 14px);
   padding: 12px 14px;
   color: #ffffff;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   box-shadow: 0 4px 14px rgba(21, 101, 192, 0.18);
 
   .promo-text-wrap {

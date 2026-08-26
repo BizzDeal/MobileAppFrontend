@@ -54,6 +54,7 @@ import { ProfileService } from '../../../profile/services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ReferralDTO, ReferralType, CreateReferralSlipDto, MemberBusinessDTO } from '../../models/referral.model';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
+import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -85,7 +86,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     IonFooter,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
-    ListSkeletonComponent
+    ListSkeletonComponent,
+    CachedImgDirective
   ],
   templateUrl: './referrals-page.component.html',
   styleUrl: './referrals-page.component.scss',

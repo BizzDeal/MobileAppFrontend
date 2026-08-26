@@ -128,7 +128,7 @@
               <ion-icon name="people-outline" />
             </div>
           } @else if (conv.partner?.profile_pic_url) {
-            <img loading="lazy" [src]="conv.partner!.profile_pic_url" class="zoomed-img" alt="zoom view" />
+            <img loading="lazy" [appCachedImg]="conv.partner!.profile_pic_url" [fallbackName]="conv.partner?.full_name" class="zoomed-img" alt="zoom view" />
           } @else {
             <div class="zoomed-placeholder initials-avatar" [style.background]="getAvatarColor(conv.partner?.full_name)">
               {{ getInitials(conv.partner?.full_name) }}

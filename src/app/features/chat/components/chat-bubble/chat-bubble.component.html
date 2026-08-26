@@ -107,7 +107,7 @@
     </ion-header>
     <ion-content class="image-viewer-content">
       <div class="zoomed-image-container">
-        <img loading="lazy" [src]="message().media_url" class="zoomed-img" alt="zoom view" />
+        <img loading="lazy" [appCachedImg]="message().media_url" class="zoomed-img" alt="zoom view" />
         @if (message().message) {
           <div class="zoomed-caption-box">
             <p>{{ message().message }}</p>

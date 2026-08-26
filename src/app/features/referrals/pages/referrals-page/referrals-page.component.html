@@ -284,7 +284,7 @@
               <div class="contact-profile ion-margin-bottom">
                 <div class="avatar-circle">
                   @if (ref.referrer?.profile_pic_url) {
-                    <img loading="lazy" [src]="ref.referrer?.profile_pic_url" [alt]="ref.referrer?.full_name" />
+                    <img loading="lazy" [appCachedImg]="ref.referrer?.profile_pic_url" [fallbackName]="ref.referrer?.full_name" [alt]="ref.referrer?.full_name" />
                   } @else {
                     <ion-icon name="person-outline"></ion-icon>
                   }

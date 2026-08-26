@@ -48,15 +48,17 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   }
 
   private updateRouteState(url: string): void {
-    this.isDetailPage = /\/admin\/(users|businesses|notifications)\/.+/.test(url);
+    this.isDetailPage = /\/admin\/(users|businesses|notifications|offers|member-applications)\/.+/.test(url);
     this.currentTitle = this.getPageTitle(url);
   }
 
   private getPageTitle(url: string): string {
+    if (/\/admin\/member-applications\/.+/.test(url)) return 'Member Application Details';
     if (/\/admin\/users\/.+/.test(url)) return 'User Details';
     if (url.includes('/admin/users')) return 'Manage Users';
     if (/\/admin\/businesses\/.+/.test(url)) return 'Business Details';
     if (url.includes('/admin/businesses')) return 'Manage Businesses';
+    if (/\/admin\/offers\/.+/.test(url)) return 'Offer Details';
     if (url.includes('/admin/offers')) return 'Offers & Deals';
     if (url.includes('/admin/notifications')) return 'Push Notifications';
     if (url.includes('/admin/analytics')) return 'Analytics & Insights';

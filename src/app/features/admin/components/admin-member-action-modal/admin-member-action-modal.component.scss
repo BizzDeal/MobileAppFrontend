@@ -20,6 +20,24 @@
     }
   }
 
+  .member-avatar-initials {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+  }
+
   .profile-meta {
     h2 {
       margin: 0;
@@ -28,6 +46,25 @@
       margin: 4px 0 0 0;
       color: var(--ion-color-medium);
     }
+  }
+}
+
+.action-buttons-row {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+
+  .action-btn-row {
+    flex: 1;
+    margin: 0;
+    --border-radius: var(--bizzdeal-radius-md, 14px);
+    font-weight: 600;
+    font-size: 0.95rem;
+    height: 48px;
+    letter-spacing: 0.3px;
+    text-transform: none;
   }
 }
 

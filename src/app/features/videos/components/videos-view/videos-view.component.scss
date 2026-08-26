@@ -1,0 +1,672 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100%;
+  background: var(--bizzdeal-surface-ground, #f8fafc);
+  color: var(--bizzdeal-text-primary, #0f172a);
+}
+
+.videos-view-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: 96px;
+  background: var(--bizzdeal-surface-ground, #f8fafc);
+}
+
+/* ==========================================================================
+   1. Flipkart-Style Sticky Header (Light Theme with Safe Area Inset)
+   ========================================================================== */
+.fk-videos-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+
+  .fk-header-content {
+    /* Critical: Respect device status bar (notches, camera cutouts) */
+    padding-top: calc(env(safe-area-inset-top, 28px) + 10px);
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+.fk-header-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .fk-post-video-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--bizzdeal-gradient-primary, linear-gradient(135deg, #1565c0 0%, #2196f3 100%));
+    color: #ffffff;
+    border: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    ion-icon {
+      font-size: 1.1rem;
+    }
+  }
+
+  .fk-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .fk-brand-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--bizzdeal-gradient-primary, linear-gradient(135deg, #1565c0 0%, #2196f3 100%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--bizzdeal-shadow-primary, 0 4px 12px rgba(33, 150, 243, 0.35));
+
+    .fk-brand-icon {
+      font-size: 20px;
+      color: #ffffff;
+      margin-left: 2px;
+    }
+  }
+
+  .fk-title-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .fk-page-title {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--bizzdeal-text-primary, #0f172a);
+    font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
+    letter-spacing: -0.3px;
+  }
+
+  .fk-live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    background: #e0f2fe;
+    border: 1px solid rgba(2, 132, 199, 0.3);
+    border-radius: 20px;
+    color: #0284c7;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+
+    .fk-live-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #0284c7;
+      box-shadow: 0 0 6px rgba(2, 132, 199, 0.6);
+      animation: pulse-dot 1.5s infinite;
+    }
+  }
+
+  .fk-page-subtitle {
+    margin: 1px 0 0;
+    font-size: 11px;
+    color: var(--bizzdeal-text-secondary, #64748b);
+  }
+}
+
+@keyframes pulse-dot {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}
+
+.fk-searchbar-container {
+  width: 100%;
+
+  .fk-searchbar {
+    --background: #f1f5f9;
+    --border-radius: 12px;
+    --color: #0f172a;
+    --placeholder-color: #94a3b8;
+    --icon-color: #64748b;
+    --clear-button-color: #64748b;
+    --box-shadow: none;
+    padding: 0;
+    min-height: 42px;
+    font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
+  }
+}
+
+.fk-filter-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fk-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: var(--bizzdeal-text-secondary, #475569);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
+
+    .pill-ico {
+      font-size: 13px;
+    }
+
+    .pill-badge {
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.08);
+      font-size: 10px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    &:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    &.active {
+      background: var(--bizzdeal-primary, #1565c0);
+      border-color: rgba(21, 101, 192, 0.4);
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(21, 101, 192, 0.3);
+
+      .pill-ico {
+        color: #ffffff;
+      }
+
+      .pill-badge {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   2. Main Feed Container (Light Theme)
+   ========================================================================== */
+.fk-feed-main {
+  padding: 14px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Section Header Bar */
+.fk-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+
+  .fk-section-title-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .fk-section-flame-ico {
+    font-size: 18px;
+    color: #f97316;
+  }
+
+  .fk-section-ico {
+    font-size: 18px;
+    color: var(--bizzdeal-primary, #1565c0);
+  }
+
+  .fk-section-heading {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--bizzdeal-text-primary, #0f172a);
+    letter-spacing: -0.2px;
+    font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
+  }
+
+  .fk-section-sub {
+    font-size: 11px;
+    color: var(--bizzdeal-text-secondary, #64748b);
+    font-weight: 600;
+  }
+}
+
+/* ==========================================================================
+   3. Hero Spotlight Section
+   ========================================================================== */
+.fk-hero-section {
+  width: 100%;
+}
+
+.fk-hero-card {
+  position: relative;
+  width: 100%;
+  border-radius: var(--bizzdeal-card-radius, 20px);
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  background: #ffffff;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(21, 101, 192, 0.18);
+
+    .fk-hero-play-btn {
+      transform: translate(-50%, -50%) scale(1.12);
+      background: var(--bizzdeal-gradient-primary, linear-gradient(135deg, #1565c0 0%, #2196f3 100%));
+      color: #ffffff;
+    }
+  }
+}
+
+.fk-hero-thumb-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fk-hero-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fk-hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.05) 40%, rgba(15, 23, 42, 0.92) 100%);
+  pointer-events: none;
+}
+
+.fk-hero-top-bar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .fk-spotlight-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border-radius: 20px;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+
+    ion-icon {
+      font-size: 12px;
+    }
+  }
+
+  .fk-hero-duration {
+    padding: 3px 8px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+  }
+}
+
+.fk-hero-play-btn {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1565c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  ion-icon {
+    font-size: 26px;
+    margin-left: 3px;
+  }
+}
+
+.fk-hero-bottom-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .fk-hero-store-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .fk-hero-store-logo {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .fk-hero-store-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fk-hero-store-meta {
+      display: flex;
+      flex-direction: column;
+
+      .fk-hero-store-name-line {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .fk-hero-store-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+
+      .fk-verified-ico {
+        font-size: 12px;
+        color: #38bdf8;
+      }
+
+      .fk-hero-category {
+        font-size: 10px;
+        color: #cbd5e1;
+      }
+    }
+  }
+
+  .fk-hero-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
+  }
+
+  .fk-hero-deal-pill {
+    align-self: flex-start;
+    padding: 2px 8px;
+    background: linear-gradient(135deg, #e11d48 0%, #ea580c 100%);
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+  }
+}
+
+/* ==========================================================================
+   4. Flipkart Shorts Section (Horizontal Reel Track — Fixed Dimensions)
+   ========================================================================== */
+.fk-shorts-section {
+  width: 100%;
+}
+
+.fk-shorts-scroll-track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 16px 14px;
+  margin: 0 -16px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Critical fix: Force fixed width on child host cards so they never shrink */
+  app-video-card {
+    flex: 0 0 140px !important;
+    width: 140px !important;
+    min-width: 140px !important;
+    max-width: 140px !important;
+    flex-shrink: 0 !important;
+    height: 230px;
+  }
+}
+
+/* ==========================================================================
+   5. Discovery Grid Section (2-Column Feed)
+   ========================================================================== */
+.fk-grid-section {
+  width: 100%;
+}
+
+.fk-videos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ==========================================================================
+   6. Skeletons, Error & Empty States (Light Theme)
+   ========================================================================== */
+.fk-skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .fk-skeleton-hero {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: fk-shimmer 1.5s infinite;
+  }
+
+  .fk-skeleton-shorts-row {
+    display: flex;
+    gap: 12px;
+
+    .fk-skeleton-short {
+      flex: 0 0 140px;
+      height: 230px;
+      border-radius: 16px;
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: fk-shimmer 1.5s infinite;
+    }
+  }
+
+  .fk-skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+
+    .fk-skeleton-card {
+      height: 200px;
+      border-radius: 18px;
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: fk-shimmer 1.5s infinite;
+    }
+  }
+}
+
+@keyframes fk-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.fk-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+
+  .error-ico {
+    font-size: 48px;
+    color: #ef4444;
+    margin-bottom: 12px;
+  }
+
+  .error-title {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--bizzdeal-text-primary, #0f172a);
+  }
+
+  .error-msg {
+    margin: 0 0 20px;
+    font-size: 13px;
+    color: var(--bizzdeal-text-secondary, #64748b);
+    max-width: 320px;
+  }
+
+  .fk-retry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+}
+
+.fk-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px;
+  text-align: center;
+
+  .empty-ico {
+    font-size: 50px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+  }
+
+  .empty-title {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--bizzdeal-text-primary, #0f172a);
+  }
+
+  .empty-msg {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--bizzdeal-text-secondary, #64748b);
+    max-width: 320px;
+  }
+}

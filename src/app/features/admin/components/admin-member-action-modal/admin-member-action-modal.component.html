@@ -12,9 +12,15 @@
 <ion-content class="ion-padding">
   <div class="member-details">
     <div class="header-profile">
-      <ion-avatar class="member-avatar">
-        <img loading="lazy" [appCachedImg]="member.profile_pic_url " defaultFallback="assets/default-avatar.png"  alt="Member Photo">
-      </ion-avatar>
+      @if (member.profile_pic_url) {
+        <ion-avatar class="member-avatar">
+          <img loading="lazy" [appCachedImg]="member.profile_pic_url" [fallbackName]="member.full_name" alt="Member Photo">
+        </ion-avatar>
+      } @else {
+        <div class="member-avatar-initials" [style.background]="getAvatarColor(member.full_name)">
+          <span>{{ getInitials(member.full_name) }}</span>
+        </div>
+      }
       <div class="profile-meta">
         <h2 class="font-bold text-dark text-lg">{{ member.full_name }}</h2>
         <p class="text-medium">{{ member.phone }}</p>
@@ -91,14 +97,16 @@
   @if (member.status === UserStatus.PENDING) {
     <div class="action-section mt-6">
       @if (!showRejectInput) {
-        <ion-button expand="block" color="success" (click)="approve()" class="mb-3">
-          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-          Approve Member
-        </ion-button>
-        <ion-button expand="block" color="danger" fill="outline" (click)="toggleRejectInput()">
-          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-          Reject Member
-        </ion-button>
+        <div class="action-buttons-row">
+          <ion-button color="success" class="action-btn-row" (click)="approve()">
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            Approve Member
+          </ion-button>
+          <ion-button color="danger" fill="outline" class="action-btn-row" (click)="toggleRejectInput()">
+            <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+            Reject Member
+          </ion-button>
+        </div>
       }
       @if (showRejectInput) {
         <div class="reject-input-container">

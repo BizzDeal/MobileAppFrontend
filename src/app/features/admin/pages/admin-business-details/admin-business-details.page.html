@@ -169,7 +169,7 @@
               @if (offers.length > 0) {
                 <div class="cards-grid">
                   @for (offer of offers; track offer) {
-                    <div class="custom-card clickable" (click)="openOfferModal(offer)">
+                    <div class="custom-card clickable" (click)="viewOfferDetails(offer)">
                       <div class="card-header">
                         <h3 class="flex items-center">
                           {{ offer.title }}
@@ -203,13 +203,13 @@
                           </div>
                           @if (offer.status === 'ACTIVE' || offer.status === 'APPROVED') {
                             <button
-                              class="action-btn"
-                              [ngClass]="offer.is_featured ? 'btn-outline-warning' : 'btn-outline-secondary'"
-                              style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;"
+                              type="button"
+                              class="top-deal-pill-btn"
+                              [class.active]="offer.is_featured"
                               (click)="$event.stopPropagation(); toggleFeatureOffer(offer, $event)"
                               title="Toggle Top Deal">
                               <ion-icon [name]="offer.is_featured ? 'star' : 'star-outline'"></ion-icon>
-                              {{ offer.is_featured ? 'Top Deal' : 'Mark Top' }}
+                              <span>{{ offer.is_featured ? 'Top Deal' : 'Mark Top' }}</span>
                             </button>
                           }
                         </div>

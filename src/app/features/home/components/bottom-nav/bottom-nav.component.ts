@@ -24,10 +24,14 @@ import {
   ticket,
   ticketOutline,
   grid,
-  gridOutline
+  gridOutline,
+  play,
+  playOutline,
+  playCircle,
+  playCircleOutline,
 } from 'ionicons/icons';
 
-export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile' | 'meetings' | 'menu' | 'referrals' | 'vouchers' | 'categories';
+export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile' | 'meetings' | 'menu' | 'referrals' | 'vouchers' | 'categories' | 'videos';
 
 @Component({
   selector: 'app-bottom-nav',
@@ -66,7 +70,11 @@ export class BottomNavComponent {
       ticket,
       ticketOutline,
       grid,
-      gridOutline
+      gridOutline,
+      play,
+      playOutline,
+      playCircle,
+      playCircleOutline,
     });
   }
 }

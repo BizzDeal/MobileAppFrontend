@@ -23,6 +23,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./pages/admin-user-details/admin-user-details.page').then(m => m.AdminUserDetailsPage),
       },
       {
+        path: 'member-applications/:id',
+        loadComponent: () => import('./pages/admin-member-application-details/admin-member-application-details.page').then(m => m.AdminMemberApplicationDetailsPage),
+      },
+      {
         path: 'businesses',
         loadComponent: () => import('./pages/admin-businesses/admin-businesses.page').then(m => m.AdminBusinessesPage),
       },
@@ -33,6 +37,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'offers',
         loadComponent: () => import('./pages/admin-offers/admin-offers.page').then(m => m.AdminOffersPage),
+      },
+      {
+        path: 'offers/:id',
+        loadComponent: () => import('./pages/admin-offer-details/admin-offer-details.page').then(m => m.AdminOfferDetailsPage),
       },
       {
         path: 'categories',

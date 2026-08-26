@@ -42,14 +42,6 @@
     </div>
   </div>
 
-  <!-- Pagination Dot Indicators -->
-  @if (stores().length > 1) {
-    <div class="banner-dots">
-      @for (store of stores(); track store.id || $index; let idx = $index) {
-        <span class="dot" [class.active]="activeSlide() === idx" (click)="goToDot(idx)"></span>
-      }
-    </div>
-  }
 </section>
 }
 

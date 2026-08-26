@@ -51,7 +51,7 @@
       @if (offers.length > 0) {
         <ion-list class="bg-transparent p-0 m-0" lines="none">
           @for (offer of offers; track offer) {
-            <div class="premium-offer-card" (click)="openOfferModal(offer)" style="cursor: pointer;">
+            <div class="premium-offer-card" (click)="viewOfferDetails(offer)" style="cursor: pointer;">
               <div class="card-body">
                 <!-- Content -->
                 <div class="offer-details">
@@ -143,7 +143,7 @@
             }
             @if (!loading && offers.length > 0) {
               @for (offer of offers; track offer) {
-                <tr (click)="openOfferModal(offer)">
+                <tr (click)="viewOfferDetails(offer)">
                   <td>
                     <div class="table-offer-info">
                       <span class="table-offer-title flex items-center">

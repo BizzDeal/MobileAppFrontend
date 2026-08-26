@@ -6,6 +6,7 @@ import { User, UserStatus } from '../../services/admin-dashboard.service';
 import { addIcons } from 'ionicons';
 import { closeOutline, checkmarkCircleOutline, closeCircleOutline, callOutline, mailOutline, locationOutline, logoWhatsapp, businessOutline } from 'ionicons/icons';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'app-admin-member-action-modal',
@@ -20,6 +21,14 @@ export class AdminMemberActionModalComponent implements OnInit {
   UserStatus = UserStatus;
   rejectionReason: string = '';
   showRejectInput: boolean = false;
+
+  getInitials(name: string | null | undefined): string {
+    return getInitials(name);
+  }
+
+  getAvatarColor(name: string | null | undefined): string {
+    return getAvatarColor(name);
+  }
 
   constructor(private modalCtrl: ModalController) {
     addIcons({

@@ -1,0 +1,272 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear" aria-label="Go Back" class="header-back-btn">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="font-bold">Offer Details</ion-title>
+    <ion-buttons slot="end">
+      <app-admin-logout-button></app-admin-logout-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding offer-details-content">
+  <main class="web-content">
+    @if (loading) {
+      <div class="loading-container">
+        <app-card-skeleton [count]="2"></app-card-skeleton>
+      </div>
+    }
+
+    @if (!loading && !offer) {
+      <div class="error-card">
+        <p>Offer not found.</p>
+        <ion-button fill="outline" color="primary" (click)="goBack()">Go Back</ion-button>
+      </div>
+    }
+
+    @if (!loading && offer) {
+      <div class="content-wrapper">
+        
+        <!-- Header Profile Card -->
+        <div class="header-profile-card">
+          <div class="avatar-wrapper">
+            @if (offer.image_url || offer.offer_image) {
+              <div class="offer-avatar">
+                <img 
+                  loading="lazy" 
+                  [appCachedImg]="offer.image_url || offer.offer_image" 
+                  [fallbackName]="offer.title" 
+                  alt="Offer Image">
+              </div>
+            } @else {
+              <div class="offer-avatar-initials" [style.background]="getAvatarColor(offer.title)">
+                <span>{{ getInitials(offer.title) }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="profile-meta">
+            <h2 class="profile-name font-bold">{{ offer.title }}</h2>
+            <div class="badge-row mt-2">
+              @if (offer.offer_type) {
+                <span class="role-badge">{{ offer.offer_type }}</span>
+              }
+              <ion-badge [color]="getStatusColor(offer.status)" class="status-badge">
+                {{ offer.status }}
+              </ion-badge>
+              @if (offer.is_featured) {
+                <span class="top-deal-indicator-badge">
+                  <ion-icon name="star"></ion-icon> Top Deal
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Rejection Reason if already rejected -->
+        @if (offer.rejection_reason) {
+          <div class="rejection-card mt-4">
+            <ion-icon name="close-circle-outline" color="danger"></ion-icon>
+            <div>
+              <span class="label text-danger font-bold">Rejection Reason</span>
+              <p class="value text-danger mt-1">{{ offer.rejection_reason }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- Offer Information Section -->
+        <div class="section-title-wrapper">
+          <h3 class="section-title">Offer Information</h3>
+        </div>
+
+        <div class="details-grid premium-info-card">
+          <div class="detail-item">
+            <span class="label">Discount Type</span>
+            <span class="value">{{ offer.discount_type || 'N/A' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Discount Value</span>
+            <span class="value font-bold" style="color: var(--ion-color-primary, #2196f3);">
+              {{ offer.discount_type === 'PERCENTAGE' ? offer.discount_value + '%' : '₹' + offer.discount_value }} OFF
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Valid From</span>
+            <span class="value">{{ offer.start_date | date:'mediumDate' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Valid Until</span>
+            <span class="value">{{ offer.end_date | date:'mediumDate' }}</span>
+          </div>
+
+          @if (offer.description) {
+            <div class="detail-item full-width">
+              <span class="label">Description</span>
+              <span class="value">{{ offer.description }}</span>
+            </div>
+          }
+
+          @if (offer.terms_and_conditions) {
+            <div class="detail-item full-width">
+              <span class="label">Terms & Conditions</span>
+              <span class="value">{{ offer.terms_and_conditions }}</span>
+            </div>
+          }
+
+          <!-- Top Deal Checkbox (Placed below offer details) -->
+          <div class="checkboxes-section full-width mt-3">
+            <div class="checkbox-option">
+              <ion-checkbox 
+                [checked]="isTopDeal"
+                (ionChange)="onTopDealCheckboxChange($event)"
+                labelPlacement="end"
+                color="warning">
+                <div class="checkbox-label-content">
+                  <span class="checkbox-text font-semibold">
+                    <ion-icon name="star" class="star-icon"></ion-icon> Mark as Top Deal
+                  </span>
+                </div>
+              </ion-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <!-- Business Information Section -->
+        @if (business) {
+          <div class="section-title-wrapper">
+            <h3 class="section-title">Business Information</h3>
+          </div>
+
+          <div class="details-grid premium-info-card">
+            <div class="detail-item full-width">
+              <span class="label">Business Name</span>
+              <span class="value font-bold">{{ business.name }}</span>
+            </div>
+
+            <div class="detail-item">
+              <span class="label">Owner Name</span>
+              <span class="value">{{ business.owner_name || 'N/A' }}</span>
+            </div>
+
+            <div class="detail-item">
+              <span class="label">Phone</span>
+              <span class="value">{{ business.owner_phone || business.phone || 'N/A' }}</span>
+            </div>
+
+            @if (business.owner_email) {
+              <div class="detail-item">
+                <span class="label">Email</span>
+                <span class="value">{{ business.owner_email }}</span>
+              </div>
+            }
+
+            @if (business.category_name) {
+              <div class="detail-item">
+                <span class="label">Category</span>
+                <span class="value">{{ business.category_name }}</span>
+              </div>
+            }
+
+            @if (business.gst_number) {
+              <div class="detail-item">
+                <span class="label">GST Number</span>
+                <span class="value font-mono">{{ business.gst_number }}</span>
+              </div>
+            }
+
+            @if (business.state_name) {
+              <div class="detail-item">
+                <span class="label">State</span>
+                <span class="value">{{ business.state_name }}</span>
+              </div>
+            }
+
+            @if (business.district_name) {
+              <div class="detail-item">
+                <span class="label">District</span>
+                <span class="value">{{ business.district_name }}</span>
+              </div>
+            }
+
+            @if (business.address) {
+              <div class="detail-item full-width">
+                <span class="label">Address</span>
+                <span class="value">{{ business.address }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Actions Section (for Pending status) -->
+        @if (offer.status === OfferStatus.PENDING) {
+          <div class="action-section">
+            @if (!showRejectInput) {
+              <div class="action-buttons-row">
+                <ion-button 
+                  color="success" 
+                  class="action-btn-row approve-btn" 
+                  [disabled]="actionLoading"
+                  (click)="approve()">
+                  <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                  Approve Offer
+                </ion-button>
+
+                <ion-button 
+                  color="danger" 
+                  fill="outline" 
+                  class="action-btn-row reject-btn" 
+                  [disabled]="actionLoading"
+                  (click)="toggleRejectInput()">
+                  <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                  Reject Offer
+                </ion-button>
+              </div>
+            }
+
+            @if (showRejectInput) {
+              <div class="reject-card">
+                <div class="reject-input-wrapper">
+                  <ion-item lines="none" class="premium-input-item">
+                    <ion-label position="stacked">
+                      Rejection Reason <span class="required-star">*</span>
+                    </ion-label>
+                    <ion-textarea
+                      [(ngModel)]="rejectionReason"
+                      placeholder="Please provide a reason for rejecting this offer..."
+                      rows="3">
+                    </ion-textarea>
+                  </ion-item>
+                  <div class="error-container">
+                    @if (!rejectionReason.trim()) {
+                      <span class="error-text">Rejection reason is required.</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="action-buttons-row mt-3">
+                  <ion-button color="medium" fill="clear" class="action-btn-row" (click)="cancelReject()" [disabled]="actionLoading">
+                    Cancel
+                  </ion-button>
+                  <ion-button 
+                    color="danger" 
+                    class="action-btn-row" 
+                    [disabled]="!rejectionReason.trim() || actionLoading" 
+                    (click)="reject()">
+                    Confirm Rejection
+                  </ion-button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+    }
+  </main>
+</ion-content>

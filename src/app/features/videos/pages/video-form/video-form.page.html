@@ -1,0 +1,573 @@
+<ion-header class="ion-no-border premium-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="" color="dark"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEditMode() ? 'Edit Video' : 'Save & Post Video' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="video-form-content">
+  <div class="page-container">
+
+    <!-- Top Segment Switcher (Only in create mode) -->
+    @if (!isEditMode()) {
+      <div class="segment-wrapper">
+        <ion-segment [value]="activeSegment()" (ionChange)="onSegmentChange($event)" mode="ios" class="custom-segment">
+          <ion-segment-button value="form">
+            <div class="seg-btn-content">
+              <ion-icon name="videocam-outline"></ion-icon>
+              <span>Post New Video</span>
+            </div>
+          </ion-segment-button>
+          <ion-segment-button value="my-videos">
+            <div class="seg-btn-content">
+              <ion-icon name="film-outline"></ion-icon>
+              <span>My Videos ({{ myVideos().length }})</span>
+            </div>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+    }
+
+    <!-- TAB 1: POST / EDIT VIDEO FORM -->
+    @if (activeSegment() === 'form') {
+      <div class="form-wrapper">
+
+        <!-- Live Interactive Preview Box -->
+        <section class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title-row">
+              <ion-icon name="sparkles-outline" class="spark-icon"></ion-icon>
+              <span class="preview-title">Live Video Preview</span>
+            </div>
+            <span class="aspect-pill">
+              @if (formVideoType === 'SHORT_PORTRAIT') {
+                📱 9:16 Portrait Reel
+              } @else if (formVideoType === 'LANDSCAPE') {
+                🖥️ 16:9 Landscape
+              } @else {
+                ⏹️ 1:1 Square
+              }
+            </span>
+          </div>
+
+          <div
+            class="preview-card"
+            [class.portrait]="formVideoType === 'SHORT_PORTRAIT'"
+            [class.landscape]="formVideoType === 'LANDSCAPE'"
+            [class.square]="formVideoType === 'SQUARE'"
+          >
+            @if (formVideoUrl && !isFieldInvalid('video_url')) {
+              <div class="media-frame">
+                @if (isDirectVideo(formVideoUrl)) {
+                  <video
+                    [src]="formVideoUrl"
+                    controls
+                    playsinline
+                    class="live-player"
+                  ></video>
+                } @else {
+                  <iframe
+                    [src]="formVideoUrl | safeVideo:false:true:false"
+                    class="live-player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                }
+
+                <!-- Simulated Social/Deal Overlay on Video -->
+                <div class="preview-overlay">
+                  <div class="overlay-top">
+                    <span class="cat-badge">{{ formCategory.replace('_', ' ') }}</span>
+                    @if (formCtaTitle) {
+                      <span class="cta-pill">{{ formCtaTitle }}</span>
+                    }
+                  </div>
+
+                  <div class="overlay-bottom">
+                    <div class="creator-row">
+                      <div
+                        class="creator-avatar"
+                        [style.background]="getAvatarColor(profile()?.business_name || profile()?.full_name || 'BizzDeal')"
+                      >
+                        {{ getInitials(profile()?.business_name || profile()?.full_name) }}
+                      </div>
+                      <span class="creator-name">
+                        {{ profile()?.business_name || profile()?.full_name || 'My Store' }}
+                      </span>
+                    </div>
+
+                    <h4 class="preview-video-title">
+                      {{ formTitle || 'Your video title will appear here...' }}
+                    </h4>
+
+                    @if (tagsList().length > 0) {
+                      <div class="overlay-tags">
+                        @for (tag of tagsList(); track tag) {
+                          <span class="tag-chip-preview">#{{ tag }}</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <!-- Empty Preview Placeholder -->
+              <div class="preview-placeholder">
+                <div class="placeholder-icon-circle">
+                  <ion-icon name="play-circle-outline" class="placeholder-icon"></ion-icon>
+                </div>
+                <h4 class="placeholder-title">Real-Time Video Preview</h4>
+                <p class="placeholder-desc">
+                  Paste any YouTube (Standard or Shorts), Instagram Reel, TikTok, Vimeo, or direct MP4 link below to test playback and view formatting.
+                </p>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Error Banner -->
+        @if (errorMessage()) {
+          <div class="error-banner">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <!-- Main Form -->
+        <form [formGroup]="videoForm" (ngSubmit)="onSubmit()" class="bizz-form">
+
+          <!-- 1. Video URL Field -->
+          <div class="form-group">
+            <label class="form-label" for="video_url">
+              Video URL <span class="required-star">*</span>
+            </label>
+            <div class="input-wrapper" [class.invalid]="isFieldInvalid('video_url')">
+              <ion-icon name="globe-outline" class="field-icon"></ion-icon>
+              <input
+                id="video_url"
+                type="url"
+                formControlName="video_url"
+                (input)="onUrlChange($event)"
+                placeholder="e.g. https://www.youtube.com/shorts/... or https://instagram.com/reel/..."
+                class="custom-input"
+              />
+            </div>
+            <div class="field-hint">
+              <span>Supports YouTube (Standard & Shorts), Instagram Reels, TikTok, Vimeo, or direct .mp4 URLs</span>
+            </div>
+            <div class="error-container">
+              @if (isFieldInvalid('video_url')) {
+                <span class="error-text">Please enter a valid video URL (e.g. https://...).</span>
+              }
+            </div>
+          </div>
+
+          <!-- 2. Video Orientation / Format Selection -->
+          <div class="form-group">
+            <label class="form-label">
+              Video Format / Aspect Ratio <span class="required-star">*</span>
+            </label>
+            <div class="orientation-grid">
+              <button
+                type="button"
+                class="orientation-card"
+                [class.selected]="formVideoType === 'SHORT_PORTRAIT'"
+                (click)="setVideoType('SHORT_PORTRAIT')"
+              >
+                <div class="orient-icon-box">
+                  <ion-icon name="phone-portrait-outline"></ion-icon>
+                </div>
+                <div class="orient-text">
+                  <span class="orient-title">📱 Short / Reel</span>
+                  <span class="orient-sub">9:16 Portrait (Shorts, Reels)</span>
+                </div>
+                <div class="check-dot"></div>
+              </button>
+
+              <button
+                type="button"
+                class="orientation-card"
+                [class.selected]="formVideoType === 'LANDSCAPE'"
+                (click)="setVideoType('LANDSCAPE')"
+              >
+                <div class="orient-icon-box">
+                  <ion-icon name="tv-outline"></ion-icon>
+                </div>
+                <div class="orient-text">
+                  <span class="orient-title">🖥️ Landscape Video</span>
+                  <span class="orient-sub">16:9 Widescreen (Tours, Offers)</span>
+                </div>
+                <div class="check-dot"></div>
+              </button>
+
+              <button
+                type="button"
+                class="orientation-card"
+                [class.selected]="formVideoType === 'SQUARE'"
+                (click)="setVideoType('SQUARE')"
+              >
+                <div class="orient-icon-box">
+                  <ion-icon name="square-outline"></ion-icon>
+                </div>
+                <div class="orient-text">
+                  <span class="orient-title">⏹️ Square Video</span>
+                  <span class="orient-sub">1:1 Standard Feed Post</span>
+                </div>
+                <div class="check-dot"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Category Selection -->
+          <div class="form-group">
+            <label class="form-label">
+              Video Category / Purpose <span class="required-star">*</span>
+            </label>
+            <div class="category-pills-row">
+              <button
+                type="button"
+                class="cat-choice-btn"
+                [class.active]="formCategory === 'OFFER'"
+                (click)="setCategory('OFFER')"
+              >
+                <ion-icon name="pricetag-outline"></ion-icon>
+                <span>🔥 Deals & Offers</span>
+              </button>
+
+              <button
+                type="button"
+                class="cat-choice-btn"
+                [class.active]="formCategory === 'BUSINESS_TOUR'"
+                (click)="setCategory('BUSINESS_TOUR')"
+              >
+                <ion-icon name="storefront-outline"></ion-icon>
+                <span>🏬 Store Tour</span>
+              </button>
+
+              <button
+                type="button"
+                class="cat-choice-btn"
+                [class.active]="formCategory === 'PRODUCT_DEMO'"
+                (click)="setCategory('PRODUCT_DEMO')"
+              >
+                <ion-icon name="sparkles-outline"></ion-icon>
+                <span>📦 Product Demo</span>
+              </button>
+
+              <button
+                type="button"
+                class="cat-choice-btn"
+                [class.active]="formCategory === 'TESTIMONIAL'"
+                (click)="setCategory('TESTIMONIAL')"
+              >
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                <span>💬 Testimonial</span>
+              </button>
+
+              <button
+                type="button"
+                class="cat-choice-btn"
+                [class.active]="formCategory === 'GENERAL'"
+                (click)="setCategory('GENERAL')"
+              >
+                <ion-icon name="film-outline"></ion-icon>
+                <span>📢 General Promo</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. Video Title -->
+          <div class="form-group">
+            <label class="form-label" for="title">
+              Video Title <span class="required-star">*</span>
+            </label>
+            <div class="input-wrapper" [class.invalid]="isFieldInvalid('title')">
+              <ion-icon name="pricetag-outline" class="field-icon"></ion-icon>
+              <input
+                id="title"
+                type="text"
+                formControlName="title"
+                placeholder="e.g. 50% Weekend Flash Sale & Store Tour"
+                class="custom-input"
+              />
+            </div>
+            <div class="error-container">
+              @if (isFieldInvalid('title')) {
+                <span class="error-text">Title is required and must be at least 3 characters.</span>
+              }
+            </div>
+          </div>
+
+          <!-- 5. Description -->
+          <div class="form-group">
+            <label class="form-label" for="description">
+              Description <span class="optional-text">(Optional)</span>
+            </label>
+            <div class="input-wrapper textarea-wrapper">
+              <ion-icon name="document-text-outline" class="field-icon"></ion-icon>
+              <textarea
+                id="description"
+                formControlName="description"
+                rows="3"
+                placeholder="Describe key highlights, featured items, discount details, or visiting hours..."
+                class="custom-textarea"
+              ></textarea>
+            </div>
+            <div class="error-container"></div>
+          </div>
+
+          <!-- 6. Tags / Keywords Input -->
+          <div class="form-group">
+            <label class="form-label" for="tags_input">
+              Tags & Keywords <span class="optional-text">(Press Enter or Comma to add)</span>
+            </label>
+
+            <!-- Active Tag Chips -->
+            @if (tagsList().length > 0) {
+              <div class="active-tags-list">
+                @for (t of tagsList(); track t) {
+                  <span class="tag-chip">
+                    #{{ t }}
+                    <button type="button" class="remove-tag-btn" (click)="removeTag(t)" aria-label="Remove tag">
+                      <ion-icon name="close-circle-outline"></ion-icon>
+                    </button>
+                  </span>
+                }
+              </div>
+            }
+
+            <div class="tag-input-row">
+              <div class="input-wrapper tag-wrapper">
+                <ion-icon name="pricetag-outline" class="field-icon"></ion-icon>
+                <input
+                  id="tags_input"
+                  type="text"
+                  [value]="tagInputText()"
+                  (input)="onTagInputChange($event)"
+                  (keydown)="onTagKeyDown($event)"
+                  placeholder="e.g. Sale, Discount, StoreTour"
+                  class="custom-input"
+                />
+              </div>
+              <button
+                type="button"
+                class="add-tag-btn"
+                [disabled]="!tagInputText().trim()"
+                (click)="addCurrentTag()"
+              >
+                Add Tag
+              </button>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="quick-tags-container">
+              <span class="quick-label">Suggested:</span>
+              <div class="quick-chips">
+                @for (pt of popularTags; track pt) {
+                  <button
+                    type="button"
+                    class="quick-chip-btn"
+                    [class.added]="tagsList().includes(pt.toLowerCase())"
+                    (click)="addTag(pt)"
+                  >
+                    + #{{ pt }}
+                  </button>
+                }
+              </div>
+            </div>
+            <div class="error-container"></div>
+          </div>
+
+          <!-- 7. Call To Action (Optional) -->
+          <div class="form-group">
+            <label class="form-label">
+              Call-To-Action Button <span class="optional-text">(Optional)</span>
+            </label>
+            <div class="form-row">
+              <div class="half-width">
+                <div class="input-wrapper">
+                  <ion-icon name="flash-outline" class="field-icon"></ion-icon>
+                  <input
+                    type="text"
+                    formControlName="cta_title"
+                    placeholder="Button Text (e.g. Claim Offer)"
+                    class="custom-input"
+                  />
+                </div>
+              </div>
+              <div class="half-width">
+                <div class="input-wrapper">
+                  <ion-icon name="link-outline" class="field-icon"></ion-icon>
+                  <input
+                    type="url"
+                    formControlName="cta_url"
+                    placeholder="Action Link (e.g. https://wa.me/...)"
+                    class="custom-input"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="error-container"></div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons-group">
+            <button
+              type="submit"
+              class="btn-apply bd-btn-primary"
+              [disabled]="submitting()"
+            >
+              @if (submitting()) {
+                <ion-spinner name="crescent"></ion-spinner>
+              } @else {
+                <ion-icon [name]="isEditMode() ? 'create-outline' : 'videocam-outline'"></ion-icon>
+                <span>{{ isEditMode() ? 'Update Video' : 'Publish to Video Feed' }}</span>
+              }
+            </button>
+
+            @if (!isEditMode()) {
+              <button
+                type="button"
+                class="btn-clear secondary-btn"
+                (click)="resetForm()"
+                [disabled]="submitting()"
+              >
+                <ion-icon name="refresh-outline"></ion-icon>
+                <span>Clear Form</span>
+              </button>
+            }
+          </div>
+
+        </form>
+      </div>
+    }
+
+    <!-- TAB 2: MY SAVED VIDEOS -->
+    @if (activeSegment() === 'my-videos') {
+      <div class="my-videos-wrapper">
+        <div class="section-title-row">
+          <div>
+            <h3 class="section-heading">My Uploaded Videos</h3>
+            <p class="section-sub">Manage your saved promotional videos and track views</p>
+          </div>
+          <button type="button" class="btn-refresh" (click)="loadMyVideos()">
+            <ion-icon name="refresh-outline"></ion-icon>
+          </button>
+        </div>
+
+        @if (loadingMyVideos()) {
+          <div class="loading-box">
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+            <p>Loading your videos...</p>
+          </div>
+        } @else if (myVideos().length === 0) {
+          <div class="empty-videos-state">
+            <div class="empty-icon-circle">
+              <ion-icon name="videocam-outline"></ion-icon>
+            </div>
+            <h4>No Videos Saved Yet</h4>
+            <p>Share your store reels, special discounts, or product demos to get featured on BizzDeal.</p>
+            <button type="button" class="btn-create-first bd-btn-primary" (click)="activeSegment.set('form')">
+              <ion-icon name="add-circle-outline"></ion-icon>
+              <span>Post Your First Video</span>
+            </button>
+          </div>
+        } @else {
+          <div class="videos-list-grid">
+            @for (vid of myVideos(); track vid.id) {
+              <div class="my-video-card" [class.inactive]="vid.status === 'INACTIVE'">
+                <!-- Thumbnail / Media Header -->
+                <div class="card-thumb-box">
+                  @if (vid.thumbnail_url) {
+                    <img [src]="vid.thumbnail_url" [alt]="vid.title" class="thumb-img" />
+                  } @else {
+                    <div class="thumb-fallback">
+                      <ion-icon name="play" class="thumb-play-ico"></ion-icon>
+                    </div>
+                  }
+                  <div class="badge-overlay">
+                    <span class="type-pill">
+                      {{ vid.video_type === 'SHORT_PORTRAIT' ? '📱 Short' : '🖥️ Landscape' }}
+                    </span>
+                    <span class="status-pill" [class.active]="vid.status === 'ACTIVE'">
+                      {{ vid.status }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-info-box">
+                  <div class="card-cat-line">
+                    <span class="card-cat">{{ vid.category.replace('_', ' ') }}</span>
+                    <span class="card-date">{{ vid.created_at | date:'shortDate' }}</span>
+                  </div>
+
+                  <h4 class="card-title">{{ vid.title }}</h4>
+
+                  @if (vid.description) {
+                    <p class="card-desc">{{ vid.description }}</p>
+                  }
+
+                  <!-- Tags -->
+                  @if (vid.tags && vid.tags.length > 0) {
+                    <div class="card-tags">
+                      @for (tag of vid.tags; track tag) {
+                        <span class="card-tag-chip">#{{ tag }}</span>
+                      }
+                    </div>
+                  }
+
+                  <!-- Metrics & Actions -->
+                  <div class="card-footer-row">
+                    <div class="stats-group">
+                      <span class="stat-item">
+                        <ion-icon name="eye-outline"></ion-icon>
+                        {{ vid.views_count }} views
+                      </span>
+                      <span class="stat-item">
+                        <ion-icon name="heart-outline"></ion-icon>
+                        {{ vid.likes_count }} likes
+                      </span>
+                    </div>
+
+                    <div class="actions-group">
+                      <button
+                        type="button"
+                        class="action-btn toggle-btn"
+                        [title]="vid.status === 'ACTIVE' ? 'Hide from Feed' : 'Show on Feed'"
+                        (click)="toggleVideoStatus(vid)"
+                      >
+                        {{ vid.status === 'ACTIVE' ? 'Hide' : 'Show' }}
+                      </button>
+
+                      <button
+                        type="button"
+                        class="action-btn edit-btn"
+                        (click)="onEditVideo(vid)"
+                        aria-label="Edit Video"
+                      >
+                        <ion-icon name="create-outline"></ion-icon>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="action-btn delete-btn"
+                        (click)="onDeleteVideo(vid)"
+                        aria-label="Delete Video"
+                      >
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</ion-content>

@@ -63,6 +63,7 @@ import { MeetingsPageComponent } from '../features/meetings/pages/meetings-page/
 import { VouchersViewComponent } from '../features/vouchers/components/vouchers-view/vouchers-view.component';
 import { CustomerVouchersService } from '../features/vouchers/services/customer-vouchers.service';
 import { CategoriesViewComponent } from '../features/categories/components/categories-view/categories-view.component';
+import { VideosViewComponent } from '../features/videos/components/videos-view/videos-view.component';
 import { AuthSessionService } from '../core/services/auth-session.service';
 import { CachedImgDirective } from '../shared/directives/cached-img.directive';
 import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
@@ -100,6 +101,7 @@ import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
     MenuViewComponent,
     VouchersViewComponent,
     CategoriesViewComponent,
+    VideosViewComponent,
   ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
@@ -366,6 +368,80 @@ export class HomePage implements AfterViewInit, OnDestroy {
     this.fetchBizzCoinsOfferForBusiness(biz.id);
   }
 
+  onVideoBusinessClick(businessId: string): void {
+    const found = this.topBusinesses().find(b => b.id === businessId) || this.featuredBusinesses().find(b => b.id === businessId);
+    if (found) {
+      this.onBusinessClick(found);
+    } else {
+      this.http.get<any>(`${environment.apiUrl}/businesses/${businessId}`).subscribe({
+        next: (res) => {
+          const b = res?.data || res;
+          if (b) {
+            const bizDto: BusinessDTO = {
+              id: b.id,
+              owner_id: b.owner_id,
+              category_id: b.category_id,
+              name: b.name,
+              description: b.description || null,
+              website: b.website || null,
+              gst_number: b.gst_number || null,
+              logo_id: b.logo_id || null,
+              status: b.status || 'ACTIVE',
+              district_id: b.district_id || '',
+              is_featured: b.is_featured ?? false,
+              video_url: b.video_url || null,
+              created_at: b.created_at || new Date().toISOString(),
+              updated_at: b.updated_at || new Date().toISOString(),
+              categoryName: b.categoryName || b.category?.name || 'Partner Business',
+              logoUrl: b.logoUrl || b.business_logo_url || null,
+              bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
+            };
+            this.onBusinessClick(bizDto);
+          }
+        },
+        error: (err) => console.error('Error loading business from video:', err),
+      });
+    }
+  }
+
+  onVideoDealClick(dealId: string): void {
+    const found = this.allOffers().find(o => o.id === dealId);
+    if (found) {
+      this.onDealClick(found);
+    } else {
+      this.http.get<any>(`${environment.apiUrl}/offers/${dealId}`).subscribe({
+        next: (res) => {
+          const o = res?.data || res;
+          if (o) {
+            const offerDto: OfferDTO = {
+              id: o.id,
+              business_id: o.business_id,
+              title: o.title,
+              description: o.description || '',
+              offer_type: o.offer_type || 'DISCOUNT',
+              discount_value: o.discount_value ?? null,
+              discount_type: o.discount_type || null,
+              start_date: o.start_date || new Date().toISOString(),
+              end_date: o.end_date || new Date().toISOString(),
+              image_id: o.image_id || null,
+              status: o.status || 'APPROVED',
+              approved_by_id: o.approved_by_id || null,
+              approved_at: o.approved_at || null,
+              created_at: o.created_at || new Date().toISOString(),
+              updated_at: o.updated_at || new Date().toISOString(),
+              businessName: o.businessName || o.business?.name || 'Partner Business',
+              businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || null,
+              imageUrl: o.imageUrl || o.image_url || null,
+              isClaimed: this.customerVouchersService.vouchers().some(v => v.offer_id === o.id),
+            };
+            this.onDealClick(offerDto);
+          }
+        },
+        error: (err) => console.error('Error loading offer from video:', err),
+      });
+    }
+  }
+
   private fetchBizzCoinsOfferForBusiness(businessId: string): void {
     this.selectedBizCoinsOffer.set(null);
     this.loadingBizCoinsOffer.set(true);
@@ -409,6 +485,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
 
   getComingSoonIcon(tab: NavTab): string {
     switch (tab) {
+      case 'videos': return 'play-circle-outline';
       case 'chat': return 'chatbubble-outline';
       case 'wallet': return 'wallet-outline';
       case 'profile': return 'person-outline';

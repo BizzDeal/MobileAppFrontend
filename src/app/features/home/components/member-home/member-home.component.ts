@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, compu
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, headsetOutline, callOutline, mailOutline, globeOutline } from 'ionicons/icons';
+import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, headsetOutline, callOutline, mailOutline, globeOutline, videocamOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../services/member-dashboard.service';
 
 import { ProfileService } from '../../../profile/services/profile.service';
@@ -167,7 +167,7 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     
   constructor() {
-    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, headsetOutline, callOutline, mailOutline, globeOutline });
+    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, headsetOutline, callOutline, mailOutline, globeOutline, videocamOutline });
   }
 
   showSupportInfo() {
@@ -194,6 +194,10 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   getInitials(name?: string | null): string {
     if (!name || !name.trim()) return 'U';
     return name.trim().charAt(0).toUpperCase();
+  }
+
+  onPostVideo() {
+    this.router.navigate(['/videos/new']);
   }
 
   onCreateOffer() {

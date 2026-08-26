@@ -1,9 +1,9 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminOffer, OfferStatus } from '../../models/admin-business.model';
-import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
 import { AdminRegionFilterModalComponent } from '../../components/admin-region-filter-modal/admin-region-filter-modal.component';
 import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 import { Subject, Subscription } from 'rxjs';
@@ -23,7 +23,7 @@ import {
   templateUrl: './admin-offers.page.html',
   styleUrls: ['./admin-offers.page.scss']
 })
-export class AdminOffersPage implements OnInit {
+export class AdminOffersPage implements OnInit, OnDestroy {
   offers: AdminOffer[] = [];
   loading = true;
   selectedStatus: string = 'ALL';
@@ -43,7 +43,7 @@ export class AdminOffersPage implements OnInit {
 
   constructor(
     private adminBusinessesService: AdminBusinessesService,
-    private modalCtrl: ModalController,
+    private router: Router,
     private alertController: AlertController
   ) {
     addIcons({
@@ -71,6 +71,12 @@ export class AdminOffersPage implements OnInit {
       this.searchQuery = query;
       this.refresh();
     });
+  }
+
+  ionViewWillEnter() {
+    if (this.offers.length > 0) {
+      this.loadOffers();
+    }
   }
 
   ngOnDestroy() {
@@ -183,26 +189,8 @@ export class AdminOffersPage implements OnInit {
     this.searchSubject.next(query);
   }
 
-  async openOfferModal(offer: AdminOffer) {
-    const modal = await this.modalCtrl.create({
-      component: AdminOfferActionModalComponent,
-      componentProps: {
-        offer
-      },
-      cssClass: 'admin-modal-theme'
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onDidDismiss();
-    if (data && data.action) {
-      this.handleOfferAction(data.offerId, data.action, data.reason, data.markAsTop);
-    } else if (data && data.updatedOffer) {
-      const index = this.offers.findIndex(o => o.id === data.updatedOffer.id);
-      if (index > -1) {
-        this.offers[index] = { ...this.offers[index], ...data.updatedOffer };
-      }
-    }
+  viewOfferDetails(offer: AdminOffer): void {
+    this.router.navigate(['/admin/offers', offer.id]);
   }
 
   handleOfferAction(offerId: string, action: 'approve' | 'reject' | 'feature' | 'unfeature', reason?: string, markAsTop?: boolean) {

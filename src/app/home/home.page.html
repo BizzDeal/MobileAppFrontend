@@ -47,6 +47,10 @@
     <app-referrals-page />
     } @else if (activeNavTab() === 'menu') {
     <app-menu-view />
+    } @else if (activeNavTab() === 'videos') {
+    <app-videos-view
+      (businessClick)="onVideoBusinessClick($event)"
+      (dealClick)="onVideoDealClick($event)" />
     } @else if (activeNavTab() === 'search') {
     <!-- Search View Component -->
     <app-search-view [(searchQuery)]="searchQuery" 

@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AdminUsersService } from '../../services/admin-users.service';
+import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminMember, AdminCustomer, UserStatus, UserRole, AdminUser } from '../../models/admin-user.model';
 import { addIcons } from 'ionicons';
 import { 
@@ -10,7 +11,7 @@ import {
   personOutline, calendarOutline, checkmarkCircleOutline, 
   warningOutline, closeCircleOutline, trashOutline,
   businessOutline, documentTextOutline, globeOutline, imageOutline,
-  mapOutline, navigateOutline
+  mapOutline, navigateOutline, star, starOutline, trophy, trophyOutline
 } from 'ionicons/icons';
 import mediumZoom, { Zoom } from 'medium-zoom';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
@@ -26,7 +27,12 @@ import { AdminLogoutButtonComponent } from '../../components/admin-logout-button
   styleUrls: ['./admin-user-details.page.scss']
 })
 export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
+  private readonly adminBusinessesService = inject(AdminBusinessesService);
+  private readonly alertCtrl = inject(AlertController);
+
   activeTab: 'personal' | 'business' = 'personal';
+  toggleFeaturedLoading = false;
+  toggleTopLoading = false;
 
   goBack() {
     this.location.back();
@@ -51,7 +57,7 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
       personOutline, calendarOutline, checkmarkCircleOutline, 
       warningOutline, closeCircleOutline, trashOutline,
       businessOutline, documentTextOutline, globeOutline, imageOutline,
-      mapOutline, navigateOutline
+      mapOutline, navigateOutline, star, starOutline, trophy, trophyOutline
     });
   }
 
@@ -140,4 +146,77 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
     }
   }
 
+  async toggleFeatured(): Promise<void> {
+    const businessId = (this.user as any)?.business_id;
+    if (!businessId || this.toggleFeaturedLoading) return;
+
+    const currentFeatured = !!(this.user as any)?.is_featured;
+    const newFeatured = !currentFeatured;
+    const actionText = newFeatured ? 'mark as Featured' : 'unmark from Featured';
+    const businessName = (this.user as any)?.business_name || this.user?.full_name || 'Business';
+
+    const alert = await this.alertCtrl.create({
+      header: 'Confirm Action',
+      message: `Are you sure you want to ${actionText} for "${businessName}"?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.toggleFeaturedLoading = true;
+            this.adminBusinessesService.featureBusiness(businessId, newFeatured).subscribe({
+              next: () => {
+                this.toggleFeaturedLoading = false;
+                if (this.user) {
+                  (this.user as any).is_featured = newFeatured;
+                }
+              },
+              error: () => {
+                this.toggleFeaturedLoading = false;
+              }
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async toggleTop(): Promise<void> {
+    const businessId = (this.user as any)?.business_id;
+    if (!businessId || this.toggleTopLoading) return;
+
+    const currentTop = !!(this.user as any)?.is_top;
+    const newTop = !currentTop;
+    const actionText = newTop ? 'mark as Top Business' : 'unmark from Top Businesses';
+    const businessName = (this.user as any)?.business_name || this.user?.full_name || 'Business';
+
+    const alert = await this.alertCtrl.create({
+      header: 'Confirm Action',
+      message: `Are you sure you want to ${actionText} for "${businessName}"?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.toggleTopLoading = true;
+            this.adminBusinessesService.topBusiness(businessId, newTop).subscribe({
+              next: () => {
+                this.toggleTopLoading = false;
+                if (this.user) {
+                  (this.user as any).is_top = newTop;
+                }
+              },
+              error: () => {
+                this.toggleTopLoading = false;
+              }
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
 }

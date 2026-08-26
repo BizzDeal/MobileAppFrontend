@@ -80,7 +80,7 @@
             @if (members.length> 0) {
               <ion-list lines="full">
                 @for (member of members; track member) {
-                  <ion-item class="queue-item" button="true" detail="true" (click)="openMemberModal(member)">
+                  <ion-item class="queue-item" button="true" detail="true" (click)="viewMemberApplication(member)">
                     <ion-label>
                       <h3>{{ member.full_name || 'Unnamed Member' }}</h3>
                       <p>{{ member.phone }} &bull; Applied: {{ member.created_at | date:'shortDate' }}</p>
@@ -109,7 +109,7 @@
             @if (offers.length> 0) {
               <ion-list lines="full">
                 @for (offer of offers; track offer) {
-                  <ion-item class="queue-item" button="true" detail="true" (click)="openOfferModal(offer)">
+                  <ion-item class="queue-item" button="true" detail="true" (click)="viewOfferDetails(offer)">
                     <ion-label>
                       <h3>{{ offer.title || 'Untitled Offer' }}</h3>
                       <p>{{ offer.business?.name || offer.business_name || offer.businessName || 'Unknown Business' }} &bull; Submitted: {{ offer.created_at | date:'shortDate' }}</p>

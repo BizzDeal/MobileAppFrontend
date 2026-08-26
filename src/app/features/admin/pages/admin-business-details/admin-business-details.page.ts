@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController, NavController, AlertController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { IonicModule, NavController, AlertController } from '@ionic/angular';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AdminBusinessesService } from '../../services/admin-businesses.service';
 import { AdminBusiness, AdminOffer, AdminVoucher, BusinessStatus, OfferStatus } from '../../models/admin-business.model';
-import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 import { AdminLogoutButtonComponent } from '../../components/admin-logout-button/admin-logout-button.component';
@@ -37,8 +36,8 @@ export class AdminBusinessDetailsPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private adminBusinessesService: AdminBusinessesService,
-    private modalCtrl: ModalController,
     private navCtrl: NavController,
     private alertController: AlertController
   ) {
@@ -57,6 +56,13 @@ export class AdminBusinessDetailsPage implements OnInit {
       this.loadBusinessData(id);
     } else {
       this.loading = false;
+    }
+  }
+
+  ionViewWillEnter() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id && this.business) {
+      this.loadBusinessData(id);
     }
   }
 
@@ -239,26 +245,8 @@ export class AdminBusinessDetailsPage implements OnInit {
     await alert.present();
   }
 
-  async openOfferModal(offer: AdminOffer) {
-    const modal = await this.modalCtrl.create({
-      component: AdminOfferActionModalComponent,
-      componentProps: {
-        offer
-      },
-      cssClass: 'admin-modal-theme'
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onDidDismiss();
-    if (data && data.action) {
-      this.handleOfferAction(data.offerId, data.action, data.reason, data.markAsTop);
-    } else if (data && data.updatedOffer) {
-      const index = this.offers.findIndex(o => o.id === data.updatedOffer.id);
-      if (index > -1) {
-        this.offers[index] = { ...this.offers[index], ...data.updatedOffer };
-      }
-    }
+  viewOfferDetails(offer: AdminOffer): void {
+    this.router.navigate(['/admin/offers', offer.id]);
   }
 
   async toggleFeatureOffer(offer: AdminOffer, event?: Event) {

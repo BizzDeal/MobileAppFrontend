@@ -1,0 +1,134 @@
+<ion-modal
+  [isOpen]="isOpen()"
+  (didDismiss)="onDismiss()"
+  class="video-player-modal"
+  [initialBreakpoint]="1"
+  [breakpoints]="[0, 1]"
+>
+  <ng-template>
+    @if (video(); as v) {
+      <ion-header class="ion-no-border video-player-header">
+        <ion-toolbar>
+          <ion-title class="header-title">{{ v.business_name }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="onDismiss()" aria-label="Close video">
+              <ion-icon name="close-outline" slot="icon-only" />
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="video-modal-content">
+        <!-- Player Viewport (Adapts to Portrait if 9:16) -->
+        <div
+          class="cinema-player-viewport"
+          [class.portrait-viewport]="v.video_type === 'SHORT_PORTRAIT'"
+        >
+          @if (isNativeVideo(v.video_url)) {
+            <video
+              [src]="v.video_url"
+              class="native-video-screen"
+              controls
+              autoplay
+              playsinline
+              preload="metadata"
+            ></video>
+          } @else {
+            <iframe
+              [src]="v.video_url | safeVideo:true:true:false"
+              class="iframe-video-screen"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
+          }
+        </div>
+
+        <!-- Video Information & Store Branding Container -->
+        <div class="video-details-section">
+          <!-- Title & Badges -->
+          <div class="title-badge-row">
+            <h2 class="main-video-title">{{ v.title }}</h2>
+            <div class="pill-badge-group">
+              @if (v.discount_badge) {
+                <span class="video-pill-badge" [class.offer-pill]="v.source_type === 'OFFER'">
+                  {{ v.discount_badge }}
+                </span>
+              }
+              @if (v.video_type === 'SHORT_PORTRAIT') {
+                <span class="video-pill-badge short-pill">
+                  📱 Short
+                </span>
+              }
+            </div>
+          </div>
+
+          <!-- Tags -->
+          @if (v.tags && v.tags.length > 0) {
+            <div class="modal-tags-row">
+              @for (tag of v.tags; track tag) {
+                <span class="modal-tag-chip">#{{ tag }}</span>
+              }
+            </div>
+          }
+
+          <!-- Business Bar -->
+          <div class="biz-profile-card">
+            <div class="biz-left-group">
+              @if (v.business_logo_url) {
+                <img
+                  loading="lazy"
+                  [appCachedImg]="v.business_logo_url"
+                  [alt]="v.business_name"
+                  class="biz-avatar-img"
+                />
+              } @else {
+                <div class="biz-avatar-fallback" [style.background]="getAvatarColor(v.business_name)">
+                  {{ getInitials(v.business_name) }}
+                </div>
+              }
+              <div class="biz-text-meta">
+                <span class="biz-heading">{{ v.business_name }}</span>
+                @if (v.category_name) {
+                  <span class="biz-sub">{{ v.category_name }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- Share Button -->
+            <button type="button" class="icon-share-btn" (click)="onShareVideo()" aria-label="Share Video">
+              <ion-icon name="share-social-outline" />
+            </button>
+          </div>
+
+          <!-- Description -->
+          @if (v.description) {
+            <div class="description-box">
+              <p class="description-text">{{ v.description }}</p>
+            </div>
+          }
+
+          <!-- Action CTA Buttons -->
+          <div class="actions-wrapper">
+            <button
+              type="button"
+              class="bd-btn-primary action-btn-full"
+              (click)="onActionClick()"
+            >
+              @if (v.cta_title) {
+                <ion-icon name="open-outline" class="btn-icon" />
+                <span>{{ v.cta_title }}</span>
+              } @else if (v.source_type === 'OFFER') {
+                <ion-icon name="ticket-outline" class="btn-icon" />
+                <span>View Deal & Claim Voucher</span>
+              } @else {
+                <ion-icon name="storefront-outline" class="btn-icon" />
+                <span>View Store Profile</span>
+              }
+            </button>
+          </div>
+        </div>
+      </ion-content>
+    }
+  </ng-template>
+</ion-modal>

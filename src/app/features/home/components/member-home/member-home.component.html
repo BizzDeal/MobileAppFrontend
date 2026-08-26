@@ -173,6 +173,13 @@
       <div class="fab-backdrop" (click)="closeActionsMenu()"></div>
 
       <div class="fab-slide-menu">
+        <button type="button" class="fab-slide-item video-item" (click)="onPostVideo(); closeActionsMenu()">
+          <div class="icon-bubble video-bubble">
+            <ion-icon name="videocam-outline"></ion-icon>
+          </div>
+          <span class="item-label">Post / Save Video</span>
+        </button>
+
         <button type="button" class="fab-slide-item primary-item" (click)="onCreateOffer(); closeActionsMenu()">
           <div class="icon-bubble">
             <ion-icon name="add-circle-outline"></ion-icon>

@@ -1,0 +1,145 @@
+@if (isShort()) {
+  <!-- Flipkart-style Vertical Reel / Short Card (9:16) -->
+  <div class="short-card" (click)="onCardClick()" tabindex="0" role="button" [attr.aria-label]="video().title">
+    <div class="short-thumb-wrapper" [style.background]="getAvatarColor(video().business_name)">
+      @if (video().thumbnail_url) {
+        <img
+          loading="lazy"
+          [appCachedImg]="video().thumbnail_url!"
+          [alt]="video().title"
+          class="short-thumb-img"
+        />
+      } @else {
+        <div class="thumb-fallback">
+          <span>{{ getInitials(video().business_name) }}</span>
+        </div>
+      }
+
+      <!-- Dark Vignette Overlay -->
+      <div class="short-overlay"></div>
+
+      <!-- Top Badge -->
+      @if (video().discount_badge) {
+        <div class="short-discount-badge" [class.offer]="video().source_type === 'OFFER'">
+          <span>{{ video().discount_badge }}</span>
+        </div>
+      }
+
+      <!-- Center Play Icon with Glow -->
+      <div class="short-play-btn">
+        <ion-icon name="play" class="play-ico" />
+      </div>
+
+      <!-- Bottom Metadata -->
+      <div class="short-meta-content">
+        <div class="short-biz-row">
+          @if (video().business_logo_url) {
+            <img
+              loading="lazy"
+              [appCachedImg]="video().business_logo_url!"
+              [alt]="video().business_name"
+              class="short-biz-logo"
+            />
+          } @else {
+            <div class="short-biz-avatar" [style.background]="getAvatarColor(video().business_name)">
+              {{ getInitials(video().business_name) }}
+            </div>
+          }
+          <span class="short-biz-name">{{ video().business_name }}</span>
+        </div>
+
+        <h4 class="short-title">{{ video().title }}</h4>
+
+        <div class="short-stats-row">
+          <span class="stat-views"><ion-icon name="eye-outline" /> {{ video().views_count || '12.4k' }}</span>
+          <span class="stat-likes"><ion-icon name="heart-outline" /> {{ video().likes_count || '250' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <!-- Flipkart-style Standard Feed Card -->
+  <article class="fk-video-card" (click)="onCardClick()" tabindex="0" role="button" [attr.aria-label]="video().title">
+    <!-- Thumbnail Media Area -->
+    <div class="fk-thumb-container" [style.background]="getAvatarColor(video().business_name)">
+      @if (video().thumbnail_url) {
+        <img
+          loading="lazy"
+          [appCachedImg]="video().thumbnail_url!"
+          [alt]="video().title"
+          class="fk-thumb-img"
+        />
+      } @else {
+        <div class="fk-fallback-thumb">
+          <span>{{ getInitials(video().business_name) }}</span>
+        </div>
+      }
+
+      <div class="fk-thumb-gradient"></div>
+
+      <!-- Top Tag Badge -->
+      @if (video().discount_badge) {
+        <div class="fk-badge" [class.fk-badge-offer]="video().source_type === 'OFFER'">
+          <span>{{ video().discount_badge }}</span>
+        </div>
+      }
+
+      <!-- Duration Pill -->
+      <div class="fk-duration-pill">
+        <span>{{ video().duration_text || '1:30' }}</span>
+      </div>
+
+      <!-- Center Play Button with Soft Neon Glow -->
+      <div class="fk-play-btn">
+        <ion-icon name="play" class="fk-play-icon" />
+      </div>
+
+      <!-- Views floating bar -->
+      <div class="fk-views-bar">
+        <ion-icon name="eye-outline" />
+        <span>{{ video().views_count || '15.8k views' }}</span>
+      </div>
+    </div>
+
+    <!-- Card Content Body -->
+    <div class="fk-card-body">
+      <!-- Store Header -->
+      <div class="fk-store-row">
+        @if (video().business_logo_url) {
+          <img
+            loading="lazy"
+            [appCachedImg]="video().business_logo_url!"
+            [alt]="video().business_name"
+            class="fk-store-logo"
+          />
+        } @else {
+          <div class="fk-store-avatar" [style.background]="getAvatarColor(video().business_name)">
+            {{ getInitials(video().business_name) }}
+          </div>
+        }
+        <div class="fk-store-text">
+          <div class="fk-store-title-line">
+            <span class="fk-store-name">{{ video().business_name }}</span>
+            <ion-icon name="checkmark-circle" class="fk-verified-icon" />
+          </div>
+          <span class="fk-store-cat">{{ video().category_name || 'BizzDeal Partner' }}</span>
+        </div>
+      </div>
+
+      <!-- Video Title -->
+      <h3 class="fk-video-title">{{ video().title }}</h3>
+
+      <!-- Action Footer -->
+      <div class="fk-card-footer">
+        <button type="button" class="fk-watch-btn">
+          <ion-icon name="play" />
+          <span>Watch</span>
+        </button>
+        <span class="fk-like-stat">
+          <ion-icon name="heart-outline" />
+          <span>{{ video().likes_count || '320' }}</span>
+        </span>
+      </div>
+    </div>
+  </article>
+}

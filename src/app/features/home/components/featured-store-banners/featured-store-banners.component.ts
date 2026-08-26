@@ -38,13 +38,6 @@ export class FeaturedStoreBannersComponent implements OnInit, AfterViewInit, OnD
     return [...list, ...list, ...list];
   });
 
-  /** Which original-array dot is active */
-  readonly activeSlide = computed(() => {
-    const len = this.stores().length;
-    if (!len) return 0;
-    return ((this.currentIndex() % len) + len) % len;
-  });
-
   /** CSS transform for the track */
   readonly trackTransform = signal<string>('translateX(0px)');
   readonly trackTransition = signal<string>('transform 0.45s cubic-bezier(0.25, 1, 0.5, 1)');
@@ -67,10 +60,16 @@ export class FeaturedStoreBannersComponent implements OnInit, AfterViewInit, OnD
     effect(() => {
       const len = this.stores().length;
       if (len > 1) {
-        // Start in the middle segment
+        // Multiple featured stores (All categories) — start in the middle segment and auto-scroll
+        this.stopAutoScroll(); // always stop first to clear any existing timer
         this.currentIndex.set(len);
-        setTimeout(() => this.jumpToIndex(len), 0);
+        setTimeout(() => {
+          this.jumpToIndex(len);
+          this.startAutoScroll();
+        }, 0);
       } else {
+        // Single featured store (specific category selected) — stop scrolling entirely and reset to index 0
+        this.stopAutoScroll();
         this.currentIndex.set(0);
         setTimeout(() => this.jumpToIndex(0), 0);
       }
@@ -78,7 +77,7 @@ export class FeaturedStoreBannersComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit(): void {
-    this.startAutoScroll();
+    // Auto-scroll is managed entirely by the reactive effect above — no action needed here
   }
 
   ngAfterViewInit(): void {
@@ -135,6 +134,7 @@ export class FeaturedStoreBannersComponent implements OnInit, AfterViewInit, OnD
   /** After smooth transition ends, silently normalize to middle segment */
   onTransitionEnd(): void {
     const originalLen = this.stores().length;
+    // Only normalize if multiple stores; single store must remain still at 0
     if (originalLen <= 1) return;
     const idx = this.currentIndex();
     if (idx >= 2 * originalLen) {
@@ -145,23 +145,22 @@ export class FeaturedStoreBannersComponent implements OnInit, AfterViewInit, OnD
   }
 
   scrollNext(): void {
+    // Only scroll if multiple stores are present
+    if (this.stores().length <= 1) return;
     this.slideToIndex(this.currentIndex() + 1);
   }
 
   scrollPrev(): void {
+    // Only scroll if multiple stores are present
+    if (this.stores().length <= 1) return;
     this.slideToIndex(this.currentIndex() - 1);
-  }
-
-  goToDot(dotIndex: number): void {
-    const originalLen = this.stores().length;
-    // Target the middle segment copy of this dot
-    this.slideToIndex(originalLen + dotIndex);
   }
 
   startAutoScroll(): void {
     this.stopAutoScroll();
     this.ngZone.runOutsideAngular(() => {
       this.autoScrollTimer = setInterval(() => {
+        // Double-guard: don't scroll if stores.length dropped to 1 (e.g. category was selected)
         if (!this.isInteracting && this.stores().length > 1) {
           this.ngZone.run(() => this.scrollNext());
         }

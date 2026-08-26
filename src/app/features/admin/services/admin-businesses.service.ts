@@ -64,6 +64,22 @@ export class AdminBusinessesService {
     );
   }
 
+  getOfferById(id: string): Observable<ApiResponse<AdminOffer>> {
+    return this.http.get<any>(`${this.apiUrl}/offers/${id}`).pipe(
+      map(res => {
+        const actualData = res && res.data ? res.data : (res && res.success !== undefined ? res.data : res);
+        return {
+          success: res && res.success !== undefined ? res.success : true,
+          message: res && res.message ? res.message : 'Offer fetched successfully',
+          data: actualData
+        };
+      }),
+      catchError(err => {
+        throw new Error(extractFriendlyErrorMessage(err, 'Offer not found'));
+      })
+    );
+  }
+
   getBusinessById(id: string): Observable<ApiResponse<AdminBusiness>> {
     return this.http.get<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/${id}`).pipe(
       catchError(err => {

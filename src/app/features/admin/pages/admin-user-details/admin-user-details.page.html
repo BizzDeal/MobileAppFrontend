@@ -117,11 +117,43 @@
               <div class="business-banner">
                 <img loading="lazy" [appCachedImg]="$any(user).business_logo_url" [fallbackName]="$any(user).business_name" alt="Business Logo">
               </div>
+
+              @if ($any(user).business_id) {
+                <div class="business-controls-bar mb-3">
+                  <div class="flex gap-2">
+                    <button 
+                      type="button" 
+                      class="action-btn"
+                      [ngClass]="$any(user).is_featured ? 'btn-warning' : 'btn-outline-warning'"
+                      [disabled]="toggleFeaturedLoading"
+                      (click)="toggleFeatured()">
+                      <ion-icon [name]="$any(user).is_featured ? 'star' : 'star-outline'"></ion-icon>
+                      {{ $any(user).is_featured ? 'Featured Business' : 'Mark as Featured' }}
+                    </button>
+                    <button 
+                      type="button" 
+                      class="action-btn"
+                      [ngClass]="$any(user).is_top ? 'btn-primary' : 'btn-outline-primary'"
+                      [disabled]="toggleTopLoading"
+                      (click)="toggleTop()">
+                      <ion-icon [name]="$any(user).is_top ? 'trophy' : 'trophy-outline'"></ion-icon>
+                      {{ $any(user).is_top ? 'Top Business' : 'Mark as Top Business' }}
+                    </button>
+                  </div>
+                </div>
+              }
+
               <div class="compact-grid">
                 <div class="data-group">
                   <span class="label">Business Name</span>
                   <span class="value">{{ $any(user).business_name || 'N/A' }}</span>
                 </div>
+                @if ($any(user).business_category_name) {
+                  <div class="data-group">
+                    <span class="label">Category</span>
+                    <span class="value">{{ $any(user).business_category_name }}</span>
+                  </div>
+                }
                 <div class="data-group">
                   <span class="label">GST Number</span>
                   <span class="value">{{ $any(user).gst_number || 'N/A' }}</span>
@@ -137,6 +169,12 @@
                     }
                   </span>
                 </div>
+                @if ($any(user).business_address) {
+                  <div class="data-group full-width">
+                    <span class="label">Business Address</span>
+                    <span class="value">{{ $any(user).business_address }}</span>
+                  </div>
+                }
                 <div class="data-group full-width">
                   <span class="label">Description</span>
                   <span class="value">{{ $any(user).business_description || 'N/A' }}</span>

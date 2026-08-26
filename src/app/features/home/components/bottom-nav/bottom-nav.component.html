@@ -37,11 +37,11 @@
       </div>
       <span class="nav-label">Home</span>
     </button>
-    <button type="button" class="nav-item" [class.active]="activeTab() === 'search'" (click)="tabSelect.emit('search')" aria-label="Search">
+    <button type="button" class="nav-item" [class.active]="activeTab() === 'videos'" (click)="tabSelect.emit('videos')" aria-label="Videos">
       <div class="icon-box">
-        <ion-icon [name]="activeTab() === 'search' ? 'search' : 'search-outline'" />
+        <ion-icon [name]="activeTab() === 'videos' ? 'play-circle' : 'play-circle-outline'" />
       </div>
-      <span class="nav-label">Search</span>
+      <span class="nav-label">Videos</span>
     </button>
     <button type="button" class="nav-item" [class.active]="activeTab() === 'vouchers'" (click)="tabSelect.emit('vouchers')" aria-label="Vouchers">
       <div class="icon-box">

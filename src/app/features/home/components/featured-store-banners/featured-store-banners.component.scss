@@ -90,10 +90,9 @@
 .fk-banners-viewport {
   overflow: hidden;
   position: relative;
-  padding: 4px 0 14px 0;
+  padding: 4px 0 6px 0;
   touch-action: pan-y;
 }
-
 /* Track — moves via translateX, holds all cards in a row */
 .fk-banners-track {
   display: flex;
@@ -302,30 +301,6 @@
 
     &:active {
       transform: scale(0.96);
-    }
-  }
-}
-
-/* Pagination Dots */
-.banner-dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 6px;
-
-  .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #cbd5e1;
-    cursor: pointer;
-    transition: all 0.25s ease;
-
-    &.active {
-      width: 20px;
-      border-radius: 10px;
-      background: var(--bizzdeal-primary, #1e3a8a);
     }
   }
 }

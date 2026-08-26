@@ -70,6 +70,7 @@ export interface AdminOffer {
   business_name?: string;
   title: string;
   description: string;
+  terms_and_conditions?: string | null;
   offer_type: OfferType;
   discount_value?: number | null;
   discount_type?: DiscountType | null;
@@ -79,6 +80,7 @@ export interface AdminOffer {
   is_featured?: boolean;
   rejection_reason?: string | null;
   offer_image?: string | null;
+  image_url?: string | null;
   created_at?: Date | string;
 }
 

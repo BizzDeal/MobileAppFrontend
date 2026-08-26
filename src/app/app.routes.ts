@@ -41,6 +41,18 @@ export const routes: Routes = [
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
+    path: 'videos/new',
+    loadComponent: () => import('./features/videos/pages/video-form/video-form.page').then(m => m.VideoFormPage),
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
+  },
+  {
+    path: 'videos/:id/edit',
+    loadComponent: () => import('./features/videos/pages/video-form/video-form.page').then(m => m.VideoFormPage),
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
+  },
+  {
     path: 'vouchers/issue',
     loadComponent: () => import('./features/business/pages/issue-voucher/issue-voucher.page').then(m => m.IssueVoucherPage),
     canActivate: [authGuard],

@@ -168,34 +168,37 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    padding: 4px 10px;
+    gap: 6px;
+    padding: 6px 14px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.5px;
     cursor: pointer;
     transition: all 0.2s ease;
-    border: 1px solid #e2e8f0;
-    background: #f4f5f8;
-    color: #4b5563;
+    border: none;
+    background: var(--bizzdeal-gradient-primary, linear-gradient(90deg, #1565C0 0%, #2196F3 100%));
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(33, 150, 243, 0.35);
 
     ion-icon {
-      font-size: 14px;
+      font-size: 15px;
+      color: #ffffff;
     }
 
     &:active {
-      transform: scale(0.96);
+      transform: scale(0.95);
+      box-shadow: 0 1px 4px rgba(33, 150, 243, 0.2);
     }
 
     &.active {
-      background: rgba(var(--ion-color-warning-rgb), 0.15);
-      color: #b78103;
-      border-color: rgba(var(--ion-color-warning-rgb), 0.35);
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(245, 158, 11, 0.4);
 
       ion-icon {
-        color: #b78103;
+        color: #ffffff;
       }
     }
   }
@@ -380,34 +383,40 @@ ion-toolbar {
   }
 
   .table-action-btn {
-    background: transparent;
     border: none;
     cursor: pointer;
-    color: #666;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 12px;
+    padding: 6px 14px;
     gap: 6px;
-    border-radius: 8px;
+    border-radius: 20px;
     transition: all 0.2s ease;
-    font-weight: 600;
-    font-size: 13px;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--bizzdeal-gradient-primary, linear-gradient(90deg, #1565C0 0%, #2196F3 100%));
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
 
     ion-icon {
-      font-size: 16px;
+      font-size: 14px;
+      color: #ffffff;
+    }
+
+    &:active {
+      transform: scale(0.95);
     }
 
     &.warning-btn {
-      background: rgba(var(--ion-color-warning-rgb), 0.12);
-      color: #b78103;
-      &:hover { background: rgba(var(--ion-color-warning-rgb), 0.22); }
-    }
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 
-    &:not(.warning-btn) {
-      background: #f4f5f8;
-      color: #666;
-      &:hover { background: #e5e7eb; }
+      ion-icon {
+        color: #ffffff;
+      }
     }
   }
 }

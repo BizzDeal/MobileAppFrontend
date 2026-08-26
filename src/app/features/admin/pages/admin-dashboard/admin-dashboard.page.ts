@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
@@ -45,7 +46,8 @@ export class AdminDashboardPage implements OnInit {
 
   constructor(
     private dashboardService: AdminDashboardService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private router: Router
   ) {
     addIcons({
       peopleOutline,
@@ -92,6 +94,13 @@ export class AdminDashboardPage implements OnInit {
     });
   }
 
+  viewMemberApplication(member: User) {
+    this.router.navigate(['/admin/member-applications', member.id]);
+  }
+
+  viewOfferDetails(offer: Offer) {
+    this.router.navigate(['/admin/offers', offer.id]);
+  }
 
   async openMemberModal(member: User) {
     const modal = await this.modalCtrl.create({

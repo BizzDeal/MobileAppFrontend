@@ -41,9 +41,15 @@ export interface AdminMember extends AdminUser {
   business_id: string | null;
   business_name?: string | null;
   business_description?: string | null;
+  business_category_id?: string | null;
+  business_category_name?: string | null;
   website?: string | null;
   gst_number?: string | null;
   business_logo_url?: string | null;
+  business_address?: string | null;
+  business_pincode?: string | null;
+  is_featured?: boolean;
+  is_top?: boolean;
   businessProfile?: {
     business_name: string;
     description: string;

@@ -18,14 +18,20 @@
       <!-- Dark Vignette Overlay -->
       <div class="short-overlay"></div>
 
-      <!-- Top Badge -->
-      @if (video().discount_badge) {
-        <div class="short-discount-badge" [class.offer]="video().source_type === 'OFFER'">
-          <span>{{ video().discount_badge }}</span>
-        </div>
-      }
+      <!-- Top Badges -->
+      <div class="short-top-row">
+        @if (video().discount_badge) {
+          <div class="short-discount-badge" [class.offer]="video().source_type === 'OFFER' || video().category === 'OFFER'">
+            <span>{{ video().discount_badge }}</span>
+          </div>
+        } @else {
+          <div class="short-discount-badge short-type">
+            <span>⚡ Reel</span>
+          </div>
+        }
+      </div>
 
-      <!-- Center Play Icon with Glow -->
+      <!-- Center Play Icon with Ambient Glow -->
       <div class="short-play-btn">
         <ion-icon name="play" class="play-ico" />
       </div>
@@ -51,14 +57,20 @@
         <h4 class="short-title">{{ video().title }}</h4>
 
         <div class="short-stats-row">
-          <span class="stat-views"><ion-icon name="eye-outline" /> {{ video().views_count || '12.4k' }}</span>
-          <span class="stat-likes"><ion-icon name="heart-outline" /> {{ video().likes_count || '250' }}</span>
+          <span class="stat-views">
+            <ion-icon name="eye-outline" />
+            <span>{{ video().views_count || '12.4k' }}</span>
+          </span>
+          <button type="button" class="stat-likes-btn" [class.is-liked]="video().is_liked" (click)="onLikeClick($event)" aria-label="Like video">
+            <ion-icon [name]="video().is_liked ? 'heart' : 'heart-outline'" class="heart-icon" [class.active-heart]="video().is_liked" />
+            <span>{{ video().likes_count ?? 0 }}</span>
+          </button>
         </div>
       </div>
     </div>
   </div>
 } @else {
-  <!-- Flipkart-style Standard Feed Card -->
+  <!-- Flipkart-style Standard Feed Card (16:9) -->
   <article class="fk-video-card" (click)="onCardClick()" tabindex="0" role="button" [attr.aria-label]="video().title">
     <!-- Thumbnail Media Area -->
     <div class="fk-thumb-container" [style.background]="getAvatarColor(video().business_name)">
@@ -79,8 +91,12 @@
 
       <!-- Top Tag Badge -->
       @if (video().discount_badge) {
-        <div class="fk-badge" [class.fk-badge-offer]="video().source_type === 'OFFER'">
+        <div class="fk-badge" [class.fk-badge-offer]="video().source_type === 'OFFER' || video().category === 'OFFER'">
           <span>{{ video().discount_badge }}</span>
+        </div>
+      } @else if (video().category; as cat) {
+        <div class="fk-badge">
+          <span>{{ cat.replace('_', ' ') | titlecase }}</span>
         </div>
       }
 
@@ -97,7 +113,7 @@
       <!-- Views floating bar -->
       <div class="fk-views-bar">
         <ion-icon name="eye-outline" />
-        <span>{{ video().views_count || '15.8k views' }}</span>
+        <span>{{ video().views_count || '15.8k' }} views</span>
       </div>
     </div>
 
@@ -129,16 +145,25 @@
       <!-- Video Title -->
       <h3 class="fk-video-title">{{ video().title }}</h3>
 
+      <!-- Tags Pills Row -->
+      @if (video().tags && video().tags!.length > 0) {
+        <div class="fk-card-tags-row">
+          @for (tag of (video().tags || []).slice(0, 3); track tag) {
+            <span class="fk-card-tag" (click)="onTagClick($event, tag)">#{{ tag }}</span>
+          }
+        </div>
+      }
+
       <!-- Action Footer -->
       <div class="fk-card-footer">
         <button type="button" class="fk-watch-btn">
           <ion-icon name="play" />
           <span>Watch</span>
         </button>
-        <span class="fk-like-stat">
-          <ion-icon name="heart-outline" />
-          <span>{{ video().likes_count || '320' }}</span>
-        </span>
+        <button type="button" class="fk-like-btn" [class.is-liked]="video().is_liked" (click)="onLikeClick($event)" aria-label="Like video">
+          <ion-icon [name]="video().is_liked ? 'heart' : 'heart-outline'" class="heart-ico" [class.active-heart]="video().is_liked" />
+          <span>{{ video().likes_count ?? 0 }}</span>
+        </button>
       </div>
     </div>
   </article>

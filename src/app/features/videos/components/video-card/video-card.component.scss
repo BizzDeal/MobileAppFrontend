@@ -251,9 +251,37 @@
   font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
 }
 
+.fk-card-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+
+  .fk-card-tag {
+    font-size: 10px;
+    font-weight: 600;
+    color: #2563eb;
+    background: #eff6ff;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      background: #2563eb;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: scale(0.94);
+    }
+  }
+}
+
 .fk-card-footer {
   margin-top: auto;
-  padding-top: 4px;
+  padding-top: 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -262,35 +290,74 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 8px;
     background: #e0f2fe;
     border: 1px solid rgba(2, 132, 199, 0.25);
     color: #0284c7;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
 
     &:hover {
-      background: #bae6fd;
+      background: #0284c7;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+    }
+
+    &:active {
+      transform: scale(0.95);
     }
 
     ion-icon {
-      font-size: 10px;
+      font-size: 11px;
     }
   }
 
-  .fk-like-stat {
-    display: flex;
+  .fk-like-btn {
+    display: inline-flex;
     align-items: center;
-    gap: 3px;
-    color: var(--bizzdeal-text-secondary, #64748b);
-    font-size: 10px;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 11px;
     font-weight: 600;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 
-    ion-icon {
-      font-size: 12px;
+    .heart-ico {
+      font-size: 14px;
+      color: #ef4444;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    &.is-liked {
+      color: #e11d48;
+      background: #ffe4e6;
+
+      .heart-ico,
+      .active-heart {
+        color: #e11d48;
+        transform: scale(1.15);
+      }
+    }
+
+    &:hover {
+      background: #fee2e2;
+      color: #ef4444;
+
+      .heart-ico {
+        transform: scale(1.2);
+      }
+    }
+
+    &:active {
+      transform: scale(0.9);
     }
   }
 }
@@ -354,11 +421,18 @@
   pointer-events: none;
 }
 
-.short-discount-badge {
+.short-top-row {
   position: absolute;
   top: 8px;
   left: 8px;
+  right: 8px;
   z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.short-discount-badge {
   padding: 2px 6px;
   border-radius: 6px;
   background: rgba(15, 23, 42, 0.85);
@@ -369,6 +443,11 @@
 
   &.offer {
     background: linear-gradient(135deg, #e11d48 0%, #ea580c 100%);
+    color: #ffffff;
+  }
+
+  &.short-type {
+    background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
     color: #ffffff;
   }
 }
@@ -389,6 +468,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease;
 
   .play-ico {
     font-size: 20px;
@@ -463,13 +543,54 @@
   font-size: 9px;
   font-weight: 600;
 
-  span {
+  .stat-views {
     display: flex;
     align-items: center;
     gap: 3px;
+
+    ion-icon {
+      font-size: 10px;
+    }
   }
 
-  ion-icon {
-    font-size: 10px;
+  .stat-likes-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 2px 6px;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .heart-icon {
+      font-size: 10px;
+      color: #f43f5e;
+    }
+
+    &.is-liked {
+      background: rgba(244, 63, 94, 0.45);
+      border-color: #f43f5e;
+      color: #ffffff;
+
+      .heart-icon,
+      .active-heart {
+        color: #f43f5e;
+        transform: scale(1.2);
+      }
+    }
+
+    &:hover {
+      background: rgba(244, 63, 94, 0.3);
+      border-color: #f43f5e;
+    }
+
+    &:active {
+      transform: scale(0.9);
+    }
   }
 }

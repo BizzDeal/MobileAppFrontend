@@ -1,0 +1,219 @@
+<ion-header class="ion-no-border category-header">
+  <ion-toolbar class="category-toolbar">
+    <div class="category-header-inner">
+      <div class="category-top-row">
+        <button type="button" class="back-btn" (click)="onGoBack()" aria-label="Go back">
+          <ion-icon name="arrow-back-outline" />
+        </button>
+
+        <div class="toolbar-title-container">
+          <div class="category-icon-bubble" [style.background]="categoryMeta().accentColor">
+            <ion-icon [name]="categoryMeta().icon" />
+          </div>
+          <div class="title-text-group">
+            <h1 class="category-main-title">{{ categoryMeta().title }}</h1>
+            <span class="category-item-count">{{ categoryVideos().length }} Videos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compact Search Box directly below title with zero gap -->
+      <div class="category-search-box">
+        <div class="search-bar-wrapper">
+          <ion-icon name="search-outline" class="search-ico" />
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+            placeholder="Search in {{ categoryMeta().title }}..."
+            class="cat-search-native-input"
+          />
+          @if (searchQuery()) {
+            <ion-icon name="close-circle-outline" class="clear-ico" (click)="clearSearch()" />
+          }
+        </div>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="category-list-content">
+  <!-- Loading State -->
+  @if (loading() && allVideos().length === 0) {
+    <div class="yt-skeleton-list">
+      @for (item of [1, 2, 3]; track item) {
+        <div class="yt-skeleton-card">
+          <div class="yt-skeleton-thumb"></div>
+          <div class="yt-skeleton-meta">
+            <div class="yt-skeleton-avatar"></div>
+            <div class="yt-skeleton-lines">
+              <div class="yt-skeleton-line title-line"></div>
+              <div class="yt-skeleton-line sub-line"></div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error() && allVideos().length === 0) {
+    <div class="cat-empty-state">
+      <ion-icon name="alert-circle-outline" class="empty-icon error-ico" />
+      <h3>Failed to load videos</h3>
+      <p>{{ error() }}</p>
+      <button type="button" class="bd-btn-primary" (click)="retryLoad()">
+        <ion-icon name="refresh-outline" />
+        <span>Try Again</span>
+      </button>
+    </div>
+  }
+
+  <!-- Empty Results -->
+  @else if (categoryVideos().length === 0) {
+    <div class="cat-empty-state">
+      <ion-icon name="videocam-outline" class="empty-icon" />
+      <h3>No videos found</h3>
+      <p>
+        @if (searchQuery()) {
+          No videos matching "{{ searchQuery() }}" in this category.
+        } @else {
+          No videos available under {{ categoryMeta().title }} right now.
+        }
+      </p>
+    </div>
+  }
+
+  <!-- YouTube-Style Vertical Feed -->
+  @else {
+    <div class="yt-feed-container">
+      @for (video of categoryVideos(); track video.id) {
+        <article class="yt-video-card" (click)="onVideoCardClick(video)" tabindex="0" role="button" [attr.aria-label]="video.title">
+          <!-- Thumbnail Media Container (16:9 for landscape, 9:16 for portrait) -->
+          <div
+            class="yt-thumb-wrapper"
+            [class.portrait-thumb]="categoryMeta().isPortrait"
+            [style.background]="getAvatarColor(video.business_name)"
+          >
+            @if (video.thumbnail_url) {
+              <img
+                loading="lazy"
+                [appCachedImg]="video.thumbnail_url!"
+                [alt]="video.title"
+                class="yt-thumb-image"
+              />
+            } @else {
+              <div class="yt-thumb-fallback">
+                <span>{{ getInitials(video.business_name) }}</span>
+              </div>
+            }
+
+            <div class="yt-thumb-gradient"></div>
+
+            <!-- Top Discount / Category Badge -->
+            @if (video.discount_badge) {
+              <div class="yt-badge" [class.badge-deal]="video.source_type === 'OFFER' || video.category === 'OFFER'">
+                <span>{{ video.discount_badge }}</span>
+              </div>
+            }
+
+            <!-- Duration Pill -->
+            <div class="yt-duration-pill">
+              <span>{{ video.duration_text || (categoryMeta().isPortrait ? '0:45' : '2:15') }}</span>
+            </div>
+
+            <!-- Center Neon Play Overlay -->
+            <div class="yt-play-overlay">
+              <ion-icon name="play" class="yt-play-icon" />
+            </div>
+
+            <!-- Views Counter Floating Pill -->
+            <div class="yt-views-tag">
+              <ion-icon name="eye-outline" />
+              <span>{{ video.views_count || '12.8k' }} views</span>
+            </div>
+          </div>
+
+          <!-- YouTube-Style Meta Section below Thumbnail -->
+          <div class="yt-info-section">
+            <div class="yt-avatar-col">
+              @if (video.business_logo_url) {
+                <img
+                  loading="lazy"
+                  [appCachedImg]="video.business_logo_url!"
+                  [alt]="video.business_name"
+                  class="yt-merchant-avatar"
+                />
+              } @else {
+                <div class="yt-merchant-avatar-fallback" [style.background]="getAvatarColor(video.business_name)">
+                  {{ getInitials(video.business_name) }}
+                </div>
+              }
+            </div>
+
+            <div class="yt-text-col">
+              <h3 class="yt-video-title">{{ video.title }}</h3>
+              
+              <div class="yt-merchant-line">
+                <span class="yt-merchant-name">{{ video.business_name }}</span>
+                <ion-icon name="checkmark-circle" class="yt-verified-ico" />
+                <span class="yt-meta-dot">•</span>
+                <span class="yt-category-tag">{{ video.category_name || 'BizzDeal Partner' }}</span>
+              </div>
+
+              <!-- Tags Chips -->
+              @if (video.tags && video.tags.length > 0) {
+                <div class="yt-tags-list">
+                  @for (t of video.tags.slice(0, 3); track t) {
+                    <span class="yt-tag-pill">#{{ t }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Engagement & Action Bar -->
+          <div class="yt-action-bar">
+            <div class="yt-left-actions">
+              <button
+                type="button"
+                class="yt-like-btn"
+                [class.is-liked]="video.is_liked"
+                (click)="onLikeVideo($event, video)"
+                aria-label="Like video"
+              >
+                <ion-icon [name]="video.is_liked ? 'heart' : 'heart-outline'" class="yt-heart-ico" [class.active-heart]="video.is_liked" />
+                <span>{{ video.likes_count ?? 0 }}</span>
+              </button>
+
+              <button type="button" class="yt-watch-pill">
+                <ion-icon name="play-circle-outline" />
+                <span>Watch</span>
+              </button>
+            </div>
+
+            @if (video.discount_badge) {
+              <button type="button" class="yt-deal-cta-btn" (click)="$event.stopPropagation(); onViewSource(video)">
+                <ion-icon name="ticket-outline" />
+                <span>Claim Deal</span>
+              </button>
+            } @else {
+              <button type="button" class="yt-store-cta-btn" (click)="$event.stopPropagation(); onViewSource(video)">
+                <ion-icon name="storefront-outline" />
+                <span>Store</span>
+              </button>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  <!-- Video Player Cinema Modal -->
+  <app-video-player-modal
+    [video]="selectedVideo()"
+    [isOpen]="isPlayerOpen()"
+    (closeModal)="onClosePlayer()"
+    (viewSource)="onViewSource($event)"
+  />
+</ion-content>

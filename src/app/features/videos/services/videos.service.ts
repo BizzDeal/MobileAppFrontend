@@ -9,6 +9,7 @@ import {
   CreateVideoRequest,
   MemberVideo,
   UpdateVideoRequest,
+  VideoCategorySection,
   VideoFilterType,
 } from '../models/video.model';
 
@@ -23,40 +24,175 @@ export class VideosService {
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
   private readonly _selectedFilter = signal<VideoFilterType>('ALL');
+  private readonly _selectedTag = signal<string | null>(null);
   private readonly _searchQuery = signal<string>('');
 
   readonly videos = this._videos.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
   readonly selectedFilter = this._selectedFilter.asReadonly();
+  readonly selectedTag = this._selectedTag.asReadonly();
   readonly searchQuery = this._searchQuery.asReadonly();
 
   /** Hero Spotlight video for Flipkart-style top banner */
   readonly spotlightVideo = computed(() => {
     const list = this._videos();
     if (list.length === 0) return null;
-    return list.find((v) => v.is_trending) || list[0];
+    return list.find((v) => v.is_trending && v.video_type !== 'SHORT_PORTRAIT') ||
+           list.find((v) => v.source_type === 'MEMBER_VIDEO') ||
+           list[0];
   });
 
-  /** Horizontal Shorts / Quick Reels */
+  /** Horizontal Shorts / Quick Reels (9:16 vertical) */
   readonly trendingShorts = computed(() => {
     const list = this._videos();
-    return list.filter((v) => v.video_type === 'SHORT_PORTRAIT' || v.is_trending).slice(0, 10);
+    return list.filter((v) => v.video_type === 'SHORT_PORTRAIT');
+  });
+
+  /** Section ribbons for multi-category infinite loop discovery */
+  readonly categorySections = computed<VideoCategorySection[]>(() => {
+    const list = this._videos();
+    if (list.length === 0) return [];
+
+    const sections: VideoCategorySection[] = [];
+
+    // 1. Trending Shorts & Reels (9:16 vertical)
+    const shorts = list.filter((v) => v.video_type === 'SHORT_PORTRAIT');
+    if (shorts.length > 0) {
+      sections.push({
+        id: 'sec_shorts',
+        filterType: 'SHORTS',
+        title: 'Trending Shorts & Reels',
+        subtitle: 'Watch quick 60-second video highlights',
+        icon: 'flame',
+        badge: `${shorts.length} Reels`,
+        accentColor: '#f43f5e',
+        cardType: 'portrait',
+        speedSeconds: 32,
+        direction: 'left',
+        videos: shorts,
+      });
+    }
+
+    // 2. Exclusive Deals & Offers
+    const offers = list.filter((v) => v.category === 'OFFER' || v.source_type === 'OFFER');
+    if (offers.length > 0) {
+      sections.push({
+        id: 'sec_offers',
+        filterType: 'OFFER',
+        title: 'Exclusive Deals & Live Discounts',
+        subtitle: 'Claim instant savings & discount vouchers',
+        icon: 'pricetag-outline',
+        badge: `${offers.length} Deals`,
+        accentColor: '#e11d48',
+        cardType: 'landscape',
+        speedSeconds: 38,
+        direction: 'left',
+        videos: offers,
+      });
+    }
+
+    // 3. Store & Showroom Walkthroughs
+    const tours = list.filter((v) => v.category === 'BUSINESS_TOUR' || v.source_type === 'BUSINESS');
+    if (tours.length > 0) {
+      sections.push({
+        id: 'sec_tours',
+        filterType: 'BUSINESS',
+        title: 'Store & Showroom Walkthroughs',
+        subtitle: 'Experience partner outlets before you visit',
+        icon: 'storefront-outline',
+        badge: `${tours.length} Tours`,
+        accentColor: '#1565c0',
+        cardType: 'landscape',
+        speedSeconds: 35,
+        direction: 'left',
+        videos: tours,
+      });
+    }
+
+    // 4. Live Product Demos & Unboxings
+    const demos = list.filter((v) => v.category === 'PRODUCT_DEMO');
+    if (demos.length > 0) {
+      sections.push({
+        id: 'sec_demos',
+        filterType: 'DEMO',
+        title: 'Product Demos & Unboxings',
+        subtitle: 'See products in action & reviews',
+        icon: 'cube-outline',
+        badge: `${demos.length} Demos`,
+        accentColor: '#8b5cf6',
+        cardType: 'portrait',
+        speedSeconds: 30,
+        direction: 'left',
+        videos: demos,
+      });
+    }
+
+    // 5. Customer Savings & Reviews
+    const testimonials = list.filter((v) => v.category === 'TESTIMONIAL');
+    if (testimonials.length > 0) {
+      sections.push({
+        id: 'sec_testimonials',
+        filterType: 'TESTIMONIAL',
+        title: 'Customer Savings & Testimonials',
+        subtitle: 'Real stories from verified BizzDeal users',
+        icon: 'star-outline',
+        badge: `${testimonials.length} Stories`,
+        accentColor: '#f59e0b',
+        cardType: 'portrait',
+        speedSeconds: 28,
+        direction: 'left',
+        videos: testimonials,
+      });
+    }
+
+    return sections;
+  });
+
+  /** Top popular tags aggregated dynamically from loaded videos */
+  readonly popularTags = computed(() => {
+    const list = this._videos();
+    const tagCountMap = new Map<string, number>();
+
+    for (const item of list) {
+      if (item.tags && Array.isArray(item.tags)) {
+        for (const t of item.tags) {
+          const cleanTag = t.trim().replace(/^#+/, '').toLowerCase();
+          if (cleanTag) {
+            tagCountMap.set(cleanTag, (tagCountMap.get(cleanTag) || 0) + 1);
+          }
+        }
+      }
+    }
+
+    return Array.from(tagCountMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([tag]) => tag);
   });
 
   /** Filtered video feed for discovery grid */
   readonly filteredVideos = computed(() => {
     const list = this._videos();
     const filter = this._selectedFilter();
+    const activeTag = this._selectedTag()?.trim().toLowerCase();
     const query = this._searchQuery().trim().toLowerCase();
 
     return list.filter((item) => {
-      // Filter by category / type
+      // 1. Filter by category / orientation
+      if (filter === 'SHORTS' && item.video_type !== 'SHORT_PORTRAIT') return false;
       if (filter === 'TRENDING' && !item.is_trending && item.video_type !== 'SHORT_PORTRAIT') return false;
-      if (filter === 'BUSINESS' && item.source_type !== 'BUSINESS' && item.category !== 'BUSINESS_TOUR') return false;
-      if (filter === 'OFFER' && item.source_type !== 'OFFER' && item.category !== 'OFFER') return false;
+      if (filter === 'OFFER' && item.category !== 'OFFER' && item.source_type !== 'OFFER') return false;
+      if (filter === 'BUSINESS' && item.category !== 'BUSINESS_TOUR' && item.source_type !== 'BUSINESS') return false;
+      if (filter === 'DEMO' && item.category !== 'PRODUCT_DEMO') return false;
+      if (filter === 'TESTIMONIAL' && item.category !== 'TESTIMONIAL') return false;
 
-      // Filter by search query
+      // 2. Filter by selected tag
+      if (activeTag) {
+        const hasTag = item.tags && item.tags.some((t) => t.toLowerCase() === activeTag);
+        if (!hasTag) return false;
+      }
+
+      // 3. Filter by search query
       if (query) {
         const matchesTitle = item.title.toLowerCase().includes(query);
         const matchesBiz = item.business_name.toLowerCase().includes(query);
@@ -133,7 +269,8 @@ export class VideosService {
                 cta_url: mv.cta_url || null,
                 views_count: mv.views_count ? `${mv.views_count}` : viewCounts[index % viewCounts.length],
                 duration_text: isPortrait ? '0:45' : durations[index % durations.length],
-                likes_count: mv.likes_count ?? 12,
+                likes_count: mv.likes_count ?? 0,
+                is_liked: !!mv.is_liked,
                 is_trending: isPortrait || index % 2 === 0,
                 user_id: mv.user_id,
                 created_at: mv.created_at || new Date().toISOString(),
@@ -261,8 +398,90 @@ export class VideosService {
     this._selectedFilter.set(filter);
   }
 
+  setSelectedTag(tag: string | null): void {
+    if (this._selectedTag() === tag) {
+      this._selectedTag.set(null); // Toggle off if already selected
+    } else {
+      this._selectedTag.set(tag);
+    }
+  }
+
   setSearchQuery(query: string): void {
     this._searchQuery.set(query);
+  }
+
+  clearAllFilters(): void {
+    this._selectedFilter.set('ALL');
+    this._selectedTag.set(null);
+    this._searchQuery.set('');
+  }
+
+  likeVideo(videoId: string): Observable<{ success: boolean; is_liked?: boolean; likes_count?: number }> {
+    const cleanId = videoId.startsWith('mv_') ? videoId.replace('mv_', '') : videoId;
+
+    // 1. Optimistic UI update (toggle is_liked and +/- count)
+    this._videos.update((list) =>
+      list.map((v) => {
+        if (v.id === videoId || v.source_id === videoId || v.id === `mv_${cleanId}` || v.source_id === cleanId) {
+          const currentlyLiked = !!v.is_liked;
+          const currentLikes = typeof v.likes_count === 'number' ? v.likes_count : 0;
+          return {
+            ...v,
+            is_liked: !currentlyLiked,
+            likes_count: currentlyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1,
+          };
+        }
+        return v;
+      })
+    );
+
+    // 2. Call backend toggle endpoint
+    return this.http.post<{ success: boolean; is_liked: boolean; likes_count: number }>(
+      `${this.apiUrl}/videos/${cleanId}/like`,
+      {}
+    ).pipe(
+      tap((res) => {
+        if (res && res.is_liked !== undefined) {
+          this._videos.update((list) =>
+            list.map((v) => {
+              if (v.id === videoId || v.source_id === videoId || v.id === `mv_${cleanId}` || v.source_id === cleanId) {
+                return {
+                  ...v,
+                  is_liked: res.is_liked,
+                  likes_count: res.likes_count,
+                };
+              }
+              return v;
+            })
+          );
+        }
+      }),
+      catchError((err) => {
+        // Rollback optimistic update on error
+        this._videos.update((list) =>
+          list.map((v) => {
+            if (v.id === videoId || v.source_id === videoId || v.id === `mv_${cleanId}` || v.source_id === cleanId) {
+              const currentlyLiked = !!v.is_liked;
+              const currentLikes = typeof v.likes_count === 'number' ? v.likes_count : 0;
+              return {
+                ...v,
+                is_liked: !currentlyLiked,
+                likes_count: currentlyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1,
+              };
+            }
+            return v;
+          })
+        );
+        return throwError(() => err);
+      })
+    );
+  }
+
+  incrementView(videoId: string): Observable<any> {
+    const cleanId = videoId.startsWith('mv_') ? videoId.replace('mv_', '') : videoId;
+    return this.http.post(`${this.apiUrl}/videos/${cleanId}/view`, {}).pipe(
+      catchError(() => of({ success: true }))
+    );
   }
 
   // Member CRUD Methods

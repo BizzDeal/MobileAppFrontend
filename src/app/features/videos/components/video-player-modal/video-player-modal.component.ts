@@ -20,12 +20,16 @@ import {
   checkmarkCircleOutline,
   openOutline,
   playCircleOutline,
+  heart,
+  heartOutline,
+  eyeOutline,
 } from 'ionicons/icons';
 import { BizzdealVideo } from '../../models/video.model';
 import { SafeVideoPipe } from '../../../../shared/pipes/safe-video.pipe';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
 import { ToastService } from '../../../../core/services/toast.service';
+import { VideosService } from '../../services/videos.service';
 
 @Component({
   selector: 'app-video-player-modal',
@@ -49,12 +53,14 @@ import { ToastService } from '../../../../core/services/toast.service';
 })
 export class VideoPlayerModalComponent {
   private readonly toastService = inject(ToastService);
+  private readonly videosService = inject(VideosService);
 
   readonly video = input<BizzdealVideo | null>(null);
   readonly isOpen = input<boolean>(false);
 
   readonly closeModal = output<void>();
   readonly viewSource = output<BizzdealVideo>();
+  readonly tagSelect = output<string>();
 
   readonly getAvatarColor = getAvatarColor;
   readonly getInitials = getInitials;
@@ -69,6 +75,9 @@ export class VideoPlayerModalComponent {
       checkmarkCircleOutline,
       openOutline,
       playCircleOutline,
+      heart,
+      heartOutline,
+      eyeOutline,
     });
   }
 
@@ -117,6 +126,25 @@ export class VideoPlayerModalComponent {
     } else {
       this.copyVideoLink(v.video_url);
     }
+  }
+
+  onLikeVideo(): void {
+    const v = this.video();
+    if (!v) return;
+    this.videosService.likeVideo(v.source_id).subscribe({
+      next: (res) => {
+        if (res?.is_liked) {
+          this.toastService.showSuccess('❤️ Added to Liked Videos!');
+        } else {
+          this.toastService.showInfo('🤍 Removed from Liked Videos');
+        }
+      },
+    });
+  }
+
+  onTagClick(tag: string): void {
+    this.tagSelect.emit(tag);
+    this.onDismiss();
   }
 
   private copyVideoLink(url: string): void {

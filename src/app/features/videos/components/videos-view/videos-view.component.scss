@@ -10,6 +10,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  width: 100%;
   padding-bottom: 96px;
   background: var(--bizzdeal-surface-ground, #f8fafc);
 }
@@ -20,16 +21,17 @@
 .fk-videos-header {
   position: sticky;
   top: 0;
-  z-index: 30;
+  z-index: 1000;
   background: #ffffff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+  width: 100%;
 
   .fk-header-content {
     /* Critical: Respect device status bar (notches, camera cutouts) */
-    padding-top: calc(env(safe-area-inset-top, 28px) + 10px);
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-top: calc(10px + var(--ion-safe-area-top, env(safe-area-inset-top, 0px)));
+    padding-left: 18px;
+    padding-right: 18px;
     padding-bottom: 12px;
     display: flex;
     flex-direction: column;
@@ -37,6 +39,7 @@
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -243,13 +246,14 @@
    2. Main Feed Container (Light Theme)
    ========================================================================== */
 .fk-feed-main {
-  padding: 14px 16px;
+  padding: 16px 0 24px;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 26px;
 }
 
 /* Section Header Bar */
@@ -258,16 +262,47 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
+  gap: 8px;
+  padding: 0 18px;
+  box-sizing: border-box;
 
   .fk-section-title-group {
     display: flex;
     align-items: center;
-    gap: 6px;
-  }
+    gap: 10px;
+    min-width: 0;
 
-  .fk-section-flame-ico {
-    font-size: 18px;
-    color: #f97316;
+    .fk-section-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      flex-shrink: 0;
+
+      .sec-icon {
+        font-size: 18px;
+      }
+    }
+
+    .fk-section-title-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .fk-section-badge {
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 800;
+      border: 1px solid currentColor;
+      background: rgba(255, 255, 255, 0.85);
+    }
   }
 
   .fk-section-ico {
@@ -277,25 +312,121 @@
 
   .fk-section-heading {
     margin: 0;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 800;
     color: var(--bizzdeal-text-primary, #0f172a);
     letter-spacing: -0.2px;
     font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .fk-section-sub {
+    margin: 1px 0 0;
     font-size: 11px;
     color: var(--bizzdeal-text-secondary, #64748b);
-    font-weight: 600;
+    font-weight: 500;
+  }
+
+  .fk-see-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border-radius: 16px;
+    background: #eff6ff;
+    border: 1px solid rgba(37, 99, 235, 0.25);
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
+
+    ion-icon {
+      font-size: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+
+      ion-icon {
+        transform: translateX(2px);
+      }
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+/* ==========================================================================
+   2b. Category Manual Horizontal Touch Scroll Track (Matching Customer Home)
+   ========================================================================== */
+.fk-category-section {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fk-category-scroll-track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 0 16px 0;
+  margin: 0;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 18px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > *:first-child,
+  app-video-card:first-child {
+    margin-left: 18px;
+  }
+
+  > *:last-child,
+  app-video-card:last-child {
+    margin-right: 18px;
+  }
+
+  app-video-card {
+    scroll-snap-align: start;
+    flex: 0 0 240px !important;
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+    flex-shrink: 0 !important;
+    display: block;
+  }
+
+  &.portrait-track app-video-card {
+    flex: 0 0 144px !important;
+    width: 144px !important;
+    min-width: 144px !important;
+    max-width: 144px !important;
+    flex-shrink: 0 !important;
+    height: 232px;
   }
 }
 
 /* ==========================================================================
    3. Hero Spotlight Section
    ========================================================================== */
-.fk-hero-section {
+.fk-spotlight-section {
   width: 100%;
+  padding: 0 18px;
+  box-sizing: border-box;
 }
 
 .fk-hero-card {
@@ -331,55 +462,49 @@
   justify-content: center;
 }
 
-.fk-hero-thumb-img {
+.fk-hero-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.fk-hero-gradient {
+.fk-hero-fallback-thumb {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.fk-hero-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.05) 40%, rgba(15, 23, 42, 0.92) 100%);
   pointer-events: none;
 }
 
-.fk-hero-top-bar {
+.fk-spotlight-badge {
   position: absolute;
   top: 12px;
   left: 12px;
-  right: 12px;
   z-index: 2;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 4px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-radius: 20px;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
 
-  .fk-spotlight-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    border-radius: 20px;
-    color: #ffffff;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
-
-    ion-icon {
-      font-size: 12px;
-    }
-  }
-
-  .fk-hero-duration {
-    padding: 3px 8px;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    border-radius: 6px;
-    color: #ffffff;
-    font-size: 10px;
-    font-weight: 700;
+  ion-icon {
+    font-size: 12px;
   }
 }
 
@@ -400,13 +525,13 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 
-  ion-icon {
+  .hero-play-ico {
     font-size: 26px;
     margin-left: 3px;
   }
 }
 
-.fk-hero-bottom-info {
+.fk-hero-meta {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -417,12 +542,12 @@
   flex-direction: column;
   gap: 6px;
 
-  .fk-hero-store-row {
+  .fk-hero-biz-row {
     display: flex;
     align-items: center;
     gap: 8px;
 
-    .fk-hero-store-logo {
+    .fk-hero-biz-logo {
       width: 26px;
       height: 26px;
       border-radius: 50%;
@@ -430,7 +555,7 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    .fk-hero-store-avatar {
+    .fk-hero-biz-avatar {
       width: 26px;
       height: 26px;
       border-radius: 50%;
@@ -442,17 +567,17 @@
       justify-content: center;
     }
 
-    .fk-hero-store-meta {
+    .fk-hero-biz-text {
       display: flex;
       flex-direction: column;
 
-      .fk-hero-store-name-line {
+      .fk-hero-biz-title-line {
         display: flex;
         align-items: center;
         gap: 4px;
       }
 
-      .fk-hero-store-name {
+      .fk-hero-biz-name {
         font-size: 12px;
         font-weight: 700;
         color: #ffffff;
@@ -483,8 +608,15 @@
     font-family: var(--bizzdeal-font-family, 'Roboto', sans-serif);
   }
 
+  .fk-hero-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
   .fk-hero-deal-pill {
-    align-self: flex-start;
     padding: 2px 8px;
     background: linear-gradient(135deg, #e11d48 0%, #ea580c 100%);
     border-radius: 6px;
@@ -492,58 +624,47 @@
     font-size: 10px;
     font-weight: 800;
   }
+
+  .fk-hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #e2e8f0;
+    font-size: 11px;
+    font-weight: 600;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .hero-heart {
+      color: #f43f5e;
+    }
+  }
 }
 
 /* ==========================================================================
-   4. Flipkart Shorts Section (Horizontal Reel Track — Fixed Dimensions)
+   4. Search Results Section (Vertical List Feed)
    ========================================================================== */
-.fk-shorts-section {
+.fk-search-section {
   width: 100%;
+  padding: 0 18px;
+  box-sizing: border-box;
 }
 
-.fk-shorts-scroll-track {
+.fk-search-feed-list {
   display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 4px 16px 14px;
-  margin: 0 -16px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Critical fix: Force fixed width on child host cards so they never shrink */
-  app-video-card {
-    flex: 0 0 140px !important;
-    width: 140px !important;
-    min-width: 140px !important;
-    max-width: 140px !important;
-    flex-shrink: 0 !important;
-    height: 230px;
-  }
-}
-
-/* ==========================================================================
-   5. Discovery Grid Section (2-Column Feed)
-   ========================================================================== */
-.fk-grid-section {
+  flex-direction: column;
+  gap: 16px;
+  max-width: 720px;
+  margin: 0 auto;
   width: 100%;
-}
 
-.fk-videos-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
+  app-video-card {
+    width: 100% !important;
+    display: block;
   }
 }
 
@@ -554,6 +675,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 0 18px;
+  box-sizing: border-box;
 
   .fk-skeleton-hero {
     width: 100%;
@@ -663,10 +786,20 @@
   }
 
   .empty-msg {
-    margin: 0;
+    margin: 0 0 16px;
     font-size: 13px;
     line-height: 1.5;
     color: var(--bizzdeal-text-secondary, #64748b);
     max-width: 320px;
+  }
+
+  .fk-clear-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
   }
 }

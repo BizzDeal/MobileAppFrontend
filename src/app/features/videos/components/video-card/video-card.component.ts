@@ -10,8 +10,13 @@ import {
   timeOutline,
   eyeOutline,
   heartOutline,
+  heart,
   sparkles,
   checkmarkCircle,
+  flashOutline,
+  openOutline,
+  ribbonOutline,
+  shareSocialOutline,
 } from 'ionicons/icons';
 import { BizzdealVideo } from '../../models/video.model';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
@@ -29,6 +34,8 @@ export class VideoCardComponent {
   readonly video = input.required<BizzdealVideo>();
   readonly isShort = input<boolean>(false);
   readonly videoClick = output<BizzdealVideo>();
+  readonly tagClick = output<string>();
+  readonly likeClick = output<BizzdealVideo>();
 
   readonly getAvatarColor = getAvatarColor;
   readonly getInitials = getInitials;
@@ -42,12 +49,27 @@ export class VideoCardComponent {
       timeOutline,
       eyeOutline,
       heartOutline,
+      heart,
       sparkles,
       checkmarkCircle,
+      flashOutline,
+      openOutline,
+      ribbonOutline,
+      shareSocialOutline,
     });
   }
 
   onCardClick(): void {
     this.videoClick.emit(this.video());
+  }
+
+  onTagClick(event: Event, tag: string): void {
+    event.stopPropagation();
+    this.tagClick.emit(tag);
+  }
+
+  onLikeClick(event: Event): void {
+    event.stopPropagation();
+    this.likeClick.emit(this.video());
   }
 }

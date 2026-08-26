@@ -41,6 +41,11 @@ export const routes: Routes = [
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
+    path: 'videos/category/:categoryKey',
+    loadComponent: () => import('./features/videos/pages/video-category-list/video-category-list.page').then(m => m.VideoCategoryListPage),
+    canActivate: [authGuard],
+  },
+  {
     path: 'videos/new',
     loadComponent: () => import('./features/videos/pages/video-form/video-form.page').then(m => m.VideoFormPage),
     canActivate: [authGuard],

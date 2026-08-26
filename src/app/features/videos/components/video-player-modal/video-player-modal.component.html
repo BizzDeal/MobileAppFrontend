@@ -11,6 +11,17 @@
         <ion-toolbar>
           <ion-title class="header-title">{{ v.business_name }}</ion-title>
           <ion-buttons slot="end">
+            <!-- Like Button -->
+            <ion-button (click)="onLikeVideo()" class="header-like-btn" [class.is-liked]="v.is_liked" aria-label="Like Video">
+              <ion-icon [name]="v.is_liked ? 'heart' : 'heart-outline'" class="like-heart-icon" [class.active-heart]="v.is_liked" slot="icon-only" />
+            </ion-button>
+
+            <!-- Share Button -->
+            <ion-button (click)="onShareVideo()" aria-label="Share Video">
+              <ion-icon name="share-social-outline" slot="icon-only" />
+            </ion-button>
+
+            <!-- Close Button -->
             <ion-button (click)="onDismiss()" aria-label="Close video">
               <ion-icon name="close-outline" slot="icon-only" />
             </ion-button>
@@ -51,7 +62,7 @@
             <h2 class="main-video-title">{{ v.title }}</h2>
             <div class="pill-badge-group">
               @if (v.discount_badge) {
-                <span class="video-pill-badge" [class.offer-pill]="v.source_type === 'OFFER'">
+                <span class="video-pill-badge" [class.offer-pill]="v.source_type === 'OFFER' || v.category === 'OFFER'">
                   {{ v.discount_badge }}
                 </span>
               }
@@ -63,11 +74,31 @@
             </div>
           </div>
 
-          <!-- Tags -->
+          <!-- Video Stats Strip -->
+          <div class="modal-stats-strip">
+            <span class="modal-stat-item">
+              <ion-icon name="eye-outline" />
+              <span>{{ v.views_count || '14.5k' }} views</span>
+            </span>
+            <span class="modal-stat-item" [class.stat-liked]="v.is_liked">
+              <ion-icon [name]="v.is_liked ? 'heart' : 'heart-outline'" class="heart-ico" [class.active-heart]="v.is_liked" />
+              <span>{{ v.likes_count ?? 0 }} likes</span>
+            </span>
+            @if (v.duration_text) {
+              <span class="modal-stat-item">
+                <ion-icon name="play-circle-outline" />
+                <span>{{ v.duration_text }}</span>
+              </span>
+            }
+          </div>
+
+          <!-- Clickable Tags -->
           @if (v.tags && v.tags.length > 0) {
             <div class="modal-tags-row">
               @for (tag of v.tags; track tag) {
-                <span class="modal-tag-chip">#{{ tag }}</span>
+                <button type="button" class="modal-tag-chip" (click)="onTagClick(tag)">
+                  #{{ tag }}
+                </button>
               }
             </div>
           }
@@ -118,7 +149,7 @@
               @if (v.cta_title) {
                 <ion-icon name="open-outline" class="btn-icon" />
                 <span>{{ v.cta_title }}</span>
-              } @else if (v.source_type === 'OFFER') {
+              } @else if (v.source_type === 'OFFER' || v.category === 'OFFER') {
                 <ion-icon name="ticket-outline" class="btn-icon" />
                 <span>View Deal & Claim Voucher</span>
               } @else {

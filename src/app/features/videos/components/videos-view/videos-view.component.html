@@ -34,13 +34,13 @@
           [value]="searchQuery()"
           (ionInput)="onSearchChange($event)"
           (ionClear)="onSearchChange($event)"
-          placeholder="Search video tours, offers & stores..."
+          placeholder="Search video tours, offers & tags..."
           class="fk-searchbar"
           [debounce]="200"
         />
       </div>
 
-      <!-- Flipkart-Style Filter Pills -->
+      <!-- Flipkart-Style Category Filter Pills -->
       <div class="fk-filter-pills-row">
         <button
           type="button"
@@ -56,21 +56,11 @@
         <button
           type="button"
           class="fk-pill"
-          [class.active]="selectedFilter() === 'TRENDING'"
-          (click)="onSelectFilter('TRENDING')"
+          [class.active]="selectedFilter() === 'SHORTS'"
+          (click)="onSelectFilter('SHORTS')"
         >
           <ion-icon name="flame" class="pill-ico" />
-          <span>Trending Shorts</span>
-        </button>
-
-        <button
-          type="button"
-          class="fk-pill"
-          [class.active]="selectedFilter() === 'BUSINESS'"
-          (click)="onSelectFilter('BUSINESS')"
-        >
-          <ion-icon name="storefront-outline" class="pill-ico" />
-          <span>Store Tours</span>
+          <span>📱 Shorts & Reels</span>
         </button>
 
         <button
@@ -80,7 +70,35 @@
           (click)="onSelectFilter('OFFER')"
         >
           <ion-icon name="pricetag-outline" class="pill-ico" />
-          <span>Deals & Offers</span>
+          <span>🔥 Deals & Offers</span>
+        </button>
+
+        <button
+          type="button"
+          class="fk-pill"
+          [class.active]="selectedFilter() === 'BUSINESS'"
+          (click)="onSelectFilter('BUSINESS')"
+        >
+          <ion-icon name="storefront-outline" class="pill-ico" />
+          <span>🏬 Store Tours</span>
+        </button>
+
+        <button
+          type="button"
+          class="fk-pill"
+          (click)="onSelectFilter('DEMO')"
+        >
+          <ion-icon name="cube-outline" class="pill-ico" />
+          <span>📦 Product Demos</span>
+        </button>
+
+        <button
+          type="button"
+          class="fk-pill"
+          (click)="onSelectFilter('TESTIMONIAL')"
+        >
+          <ion-icon name="star-outline" class="pill-ico" />
+          <span>⭐ Customer Reviews</span>
         </button>
       </div>
     </div>
@@ -121,72 +139,75 @@
       </div>
     }
 
-    <!-- Empty Search State -->
+    <!-- Empty Search / Filter State -->
     @else if (filteredVideos().length === 0) {
       <div class="fk-empty-state">
         <ion-icon name="film-outline" class="empty-ico" />
         <h3 class="empty-title">No videos found</h3>
         <p class="empty-msg">
           @if (searchQuery()) {
-            No videos matching "{{ searchQuery() }}". Try searching for another store or deal.
+            No videos matching "{{ searchQuery() }}". Try a different search keyword.
           } @else {
-            No videos available in this section right now.
+            No videos available in this category right now.
           }
         </p>
+        <button type="button" class="fk-clear-btn" (click)="onClearAllFilters()">
+          Show All Videos
+        </button>
       </div>
     }
 
-    <!-- Rich Flipkart-Style Content Feed -->
+    <!-- Loaded Content -->
     @else {
-      <!-- 1. Hero Spotlight Video Banner (Shown when not searching and on ALL tab) -->
-      @if (!searchQuery() && selectedFilter() === 'ALL' && spotlightVideo(); as spot) {
-        <section class="fk-hero-section">
-          <div class="fk-hero-card" (click)="onVideoCardClick(spot)">
+      <!-- 1. Spotlight Hero Banner (Only when no active search) -->
+      @if (!searchQuery() && spotlightVideo(); as spot) {
+        <section class="fk-spotlight-section">
+          <div class="fk-hero-card" (click)="onVideoCardClick(spot)" tabindex="0" role="button" [attr.aria-label]="spot.title">
             <div class="fk-hero-thumb-wrapper" [style.background]="getAvatarColor(spot.business_name)">
               @if (spot.thumbnail_url) {
                 <img
                   loading="lazy"
                   [appCachedImg]="spot.thumbnail_url"
                   [alt]="spot.title"
-                  class="fk-hero-thumb-img"
+                  class="fk-hero-thumb"
                 />
+              } @else {
+                <div class="fk-hero-fallback-thumb">
+                  <span>{{ getInitials(spot.business_name) }}</span>
+                </div>
               }
-              <div class="fk-hero-gradient"></div>
 
-              <!-- Top Badges -->
-              <div class="fk-hero-top-bar">
-                <div class="fk-spotlight-pill">
-                  <ion-icon name="sparkles" />
-                  <span>FEATURED SPOTLIGHT</span>
-                </div>
-                <div class="fk-hero-duration">
-                  <span>{{ spot.duration_text || '2:15' }}</span>
-                </div>
+              <div class="fk-hero-overlay"></div>
+
+              <!-- Top Spotlight Badge -->
+              <div class="fk-spotlight-badge">
+                <ion-icon name="sparkles" />
+                <span>SPOTLIGHT OF THE WEEK</span>
               </div>
 
-              <!-- Center Big Glowing Play Button -->
+              <!-- Hero Big Play Button -->
               <div class="fk-hero-play-btn">
-                <ion-icon name="play" />
+                <ion-icon name="play" class="hero-play-ico" />
               </div>
 
-              <!-- Bottom Hero Info -->
-              <div class="fk-hero-bottom-info">
-                <div class="fk-hero-store-row">
+              <!-- Hero Bottom Content Info -->
+              <div class="fk-hero-meta">
+                <div class="fk-hero-biz-row">
                   @if (spot.business_logo_url) {
                     <img
                       loading="lazy"
                       [appCachedImg]="spot.business_logo_url"
                       [alt]="spot.business_name"
-                      class="fk-hero-store-logo"
+                      class="fk-hero-biz-logo"
                     />
                   } @else {
-                    <div class="fk-hero-store-avatar" [style.background]="getAvatarColor(spot.business_name)">
+                    <div class="fk-hero-biz-avatar" [style.background]="getAvatarColor(spot.business_name)">
                       {{ getInitials(spot.business_name) }}
                     </div>
                   }
-                  <div class="fk-hero-store-meta">
-                    <div class="fk-hero-store-name-line">
-                      <span class="fk-hero-store-name">{{ spot.business_name }}</span>
+                  <div class="fk-hero-biz-text">
+                    <div class="fk-hero-biz-title-line">
+                      <span class="fk-hero-biz-name">{{ spot.business_name }}</span>
                       <ion-icon name="checkmark-circle" class="fk-verified-ico" />
                     </div>
                     <span class="fk-hero-category">{{ spot.category_name }}</span>
@@ -195,70 +216,96 @@
 
                 <h2 class="fk-hero-title">{{ spot.title }}</h2>
 
-                @if (spot.discount_badge) {
-                  <div class="fk-hero-deal-pill">
-                    <span>{{ spot.discount_badge }}</span>
+                <div class="fk-hero-footer-row">
+                  @if (spot.discount_badge) {
+                    <div class="fk-hero-deal-pill">
+                      <span>{{ spot.discount_badge }}</span>
+                    </div>
+                  }
+                  <div class="fk-hero-stats">
+                    <span><ion-icon name="eye-outline" /> {{ spot.views_count || '18.2k' }}</span>
+                    <span><ion-icon name="heart" class="hero-heart" /> {{ spot.likes_count || 450 }}</span>
                   </div>
-                }
+                </div>
               </div>
             </div>
           </div>
         </section>
       }
 
-      <!-- 2. Flipkart Shorts / Quick Reels Section (Horizontal Scroll) -->
-      @if (!searchQuery() && selectedFilter() !== 'OFFER' && trendingShorts().length > 0) {
-        <section class="fk-shorts-section">
+      <!-- 2. Manual Horizontal Touch Scroll Sections for Each Category (No Search Active) -->
+      @if (!searchQuery()) {
+        @for (sec of categorySections(); track sec.id) {
+          <section class="fk-category-section" [attr.data-section-id]="sec.id">
+            <!-- Section Header with View All Button -->
+            <div class="fk-section-header">
+              <div class="fk-section-title-group">
+                <div class="fk-section-icon-box" [style.background]="sec.accentColor">
+                  <ion-icon [name]="sec.icon" class="sec-icon" />
+                </div>
+                <div>
+                  <div class="fk-section-title-line">
+                    <h2 class="fk-section-heading">{{ sec.title }}</h2>
+                    <span class="fk-section-badge" [style.borderColor]="sec.accentColor" [style.color]="sec.accentColor">
+                      {{ sec.badge }}
+                    </span>
+                  </div>
+                  <p class="fk-section-sub">{{ sec.subtitle }}</p>
+                </div>
+              </div>
+
+              <!-- View All Category Page Button -->
+              <button
+                type="button"
+                class="fk-see-all-btn"
+                (click)="onSeeAllCategory(sec.filterType)"
+                [attr.aria-label]="'View all ' + sec.title"
+              >
+                <span>View All ({{ sec.videos.length }})</span>
+                <ion-icon name="arrow-forward-outline" />
+              </button>
+            </div>
+
+            <!-- Native Smooth Touch Horizontal Scroll Track (Matching Customer Homepage) -->
+            <div class="fk-category-scroll-track" [class.portrait-track]="sec.cardType === 'portrait'">
+              @for (item of sec.videos; track item.id) {
+                <app-video-card
+                  [video]="item"
+                  [isShort]="sec.cardType === 'portrait'"
+                  (videoClick)="onVideoCardClick($event)"
+                  (tagClick)="onSelectTag($event)"
+                  (likeClick)="onLikeVideo($event)"
+                />
+              }
+            </div>
+          </section>
+        }
+      }
+
+      <!-- 3. Search Results Vertical List Feed -->
+      @if (searchQuery()) {
+        <section class="fk-search-section">
           <div class="fk-section-header">
             <div class="fk-section-title-group">
-              <ion-icon name="flame" class="fk-section-flame-ico" />
-              <h2 class="fk-section-heading">Trending Shorts</h2>
+              <ion-icon name="search-outline" class="fk-section-ico" />
+              <h2 class="fk-section-heading">Search Results for "{{ searchQuery() }}"</h2>
             </div>
-            <span class="fk-section-sub">Swipe & Watch</span>
+            <span class="fk-section-sub">{{ filteredVideos().length }} videos found</span>
           </div>
 
-          <div class="fk-shorts-scroll-track">
-            @for (short of trendingShorts(); track short.id) {
+          <div class="fk-search-feed-list">
+            @for (video of filteredVideos(); track video.id) {
               <app-video-card
-                [video]="short"
-                [isShort]="true"
+                [video]="video"
+                [isShort]="video.video_type === 'SHORT_PORTRAIT'"
                 (videoClick)="onVideoCardClick($event)"
+                (tagClick)="onSelectTag($event)"
+                (likeClick)="onLikeVideo($event)"
               />
             }
           </div>
         </section>
       }
-
-      <!-- 3. All Shows & Video Deals Grid -->
-      <section class="fk-grid-section">
-        <div class="fk-section-header">
-          <div class="fk-section-title-group">
-            <ion-icon name="play-circle" class="fk-section-ico" />
-            <h2 class="fk-section-heading">
-              @if (searchQuery()) {
-                Search Results ({{ filteredVideos().length }})
-              } @else if (selectedFilter() === 'BUSINESS') {
-                Store Video Highlights
-              } @else if (selectedFilter() === 'OFFER') {
-                Promotional Deals & Discounts
-              } @else {
-                Explore All Videos
-              }
-            </h2>
-          </div>
-          <span class="fk-section-sub">{{ filteredVideos().length }} items</span>
-        </div>
-
-        <div class="fk-videos-grid">
-          @for (video of filteredVideos(); track video.id) {
-            <app-video-card
-              [video]="video"
-              [isShort]="false"
-              (videoClick)="onVideoCardClick($event)"
-            />
-          }
-        </div>
-      </section>
     }
   </main>
 
@@ -268,5 +315,6 @@
     [isOpen]="isPlayerOpen()"
     (closeModal)="onClosePlayer()"
     (viewSource)="onViewSource($event)"
+    (tagSelect)="onSelectTag($event)"
   />
 </div>

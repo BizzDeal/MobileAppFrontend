@@ -29,12 +29,34 @@ export interface BizzdealVideo {
   views_count?: string | number;
   duration_text?: string;
   likes_count?: number;
+  is_liked?: boolean;
   is_trending?: boolean;
   user_id?: string;
   created_at: string;
 }
 
-export type VideoFilterType = 'ALL' | 'TRENDING' | 'BUSINESS' | 'OFFER';
+export type VideoFilterType =
+  | 'ALL'
+  | 'SHORTS'
+  | 'TRENDING'
+  | 'OFFER'
+  | 'BUSINESS'
+  | 'DEMO'
+  | 'TESTIMONIAL';
+
+export interface VideoCategorySection {
+  id: string;
+  filterType: VideoFilterType;
+  title: string;
+  subtitle: string;
+  icon: string;
+  badge: string;
+  accentColor: string;
+  cardType: 'portrait' | 'landscape';
+  speedSeconds: number;
+  direction?: 'left' | 'right';
+  videos: BizzdealVideo[];
+}
 
 export interface MemberVideo {
   id: string;
@@ -53,6 +75,7 @@ export interface MemberVideo {
   status: 'ACTIVE' | 'INACTIVE';
   views_count: number;
   likes_count: number;
+  is_liked?: boolean;
   created_at: string;
   updated_at: string;
   business?: {

@@ -26,8 +26,16 @@ import {
   checkmarkCircle,
   eyeOutline,
   addCircleOutline,
+  closeCircleOutline,
+  ribbonOutline,
+  flashOutline,
+  starOutline,
+  cubeOutline,
+  heartOutline,
+  heart,
+  arrowForwardOutline,
 } from 'ionicons/icons';
-import { BizzdealVideo, VideoFilterType } from '../../models/video.model';
+import { BizzdealVideo, VideoFilterType, VideoCategorySection } from '../../models/video.model';
 import { VideosService } from '../../services/videos.service';
 import { VideoCardComponent } from '../video-card/video-card.component';
 import { VideoPlayerModalComponent } from '../video-player-modal/video-player-modal.component';
@@ -64,10 +72,13 @@ export class VideosViewComponent implements OnInit {
   readonly videos = this.videosService.videos;
   readonly spotlightVideo = this.videosService.spotlightVideo;
   readonly trendingShorts = this.videosService.trendingShorts;
+  readonly categorySections = this.videosService.categorySections;
+  readonly popularTags = this.videosService.popularTags;
   readonly filteredVideos = this.videosService.filteredVideos;
   readonly loading = this.videosService.loading;
   readonly error = this.videosService.error;
   readonly selectedFilter = this.videosService.selectedFilter;
+  readonly selectedTag = this.videosService.selectedTag;
   readonly searchQuery = this.videosService.searchQuery;
 
   readonly selectedVideo = signal<BizzdealVideo | null>(null);
@@ -98,6 +109,14 @@ export class VideosViewComponent implements OnInit {
       checkmarkCircle,
       eyeOutline,
       addCircleOutline,
+      closeCircleOutline,
+      ribbonOutline,
+      flashOutline,
+      starOutline,
+      cubeOutline,
+      heartOutline,
+      heart,
+      arrowForwardOutline,
     });
   }
 
@@ -121,7 +140,31 @@ export class VideosViewComponent implements OnInit {
   }
 
   onSelectFilter(filter: VideoFilterType): void {
-    this.videosService.setFilter(filter);
+    if (filter === 'ALL') {
+      this.videosService.clearAllFilters();
+    } else {
+      this.onOpenCategory(filter);
+    }
+  }
+
+  onSeeAllCategory(filterType: VideoFilterType): void {
+    this.onOpenCategory(filterType);
+  }
+
+  onOpenCategory(filterType: VideoFilterType): void {
+    if (filterType === 'ALL') {
+      this.videosService.clearAllFilters();
+      return;
+    }
+    this.router.navigate(['/videos/category', filterType.toLowerCase()]);
+  }
+
+  onSelectTag(tag: string | null): void {
+    this.videosService.setSelectedTag(tag);
+  }
+
+  onClearAllFilters(): void {
+    this.videosService.clearAllFilters();
   }
 
   onSearchChange(event: Event): void {
@@ -130,7 +173,12 @@ export class VideosViewComponent implements OnInit {
     this.videosService.setSearchQuery(value);
   }
 
+  onLikeVideo(video: BizzdealVideo): void {
+    this.videosService.likeVideo(video.source_id).subscribe();
+  }
+
   onVideoCardClick(video: BizzdealVideo): void {
+    this.videosService.incrementView(video.source_id).subscribe();
     this.selectedVideo.set(video);
     this.isPlayerOpen.set(true);
   }

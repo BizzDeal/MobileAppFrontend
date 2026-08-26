@@ -26,7 +26,6 @@ export class ShareService {
         await Share.share({
           title: shareTitle,
           text: shareText,
-          url: appUrl,
           dialogTitle: 'Share BizzDeal App',
         });
         return;
@@ -41,7 +40,6 @@ export class ShareService {
         await navigator.share({
           title: shareTitle,
           text: shareText,
-          url: appUrl,
         });
       } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
         await navigator.clipboard.writeText(shareText);

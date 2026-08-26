@@ -128,6 +128,15 @@
               (focus)="authService.setConfirmPinFocused(true)" (blur)="authService.setConfirmPinFocused(false)" />
           </div>
 
+          <label class="input-label pin-label" for="inviteCodeInput" style="margin-top: 12px;">Invite Code (Optional)</label>
+          <div class="input-container pin-container" [class.focused]="authService.isInviteCodeFocused()">
+            <div class="pin-badge">CODE</div>
+            <input id="inviteCodeInput" type="text" maxlength="20"
+              placeholder="Enter friend's invite code (e.g. BD-XXXXXX)" formControlName="invite_code" class="phone-input"
+              style="text-transform: uppercase;"
+              (focus)="authService.setInviteCodeFocused(true)" (blur)="authService.setInviteCodeFocused(false)" />
+          </div>
+
           <div class="error-container">
             @if (authService.errorMessage()) {
             <span class="error-text">{{ authService.errorMessage() }}</span>

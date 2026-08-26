@@ -7,6 +7,9 @@ import { CustomerProfileDTO, WalletDTO } from '../../models/home.model';
 import { WalletService } from '../../../wallet/services/wallet.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { ToastService } from '../../../../core/services/toast.service';
+import { ShareService } from '../../../../core/platform/share.service';
+import { UserInviteService } from '../../../auth/services/user-invite.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-home-header',
@@ -19,6 +22,8 @@ import { ToastService } from '../../../../core/services/toast.service';
 export class HomeHeaderComponent implements OnInit, OnDestroy {
   private readonly walletService = inject(WalletService);
   private readonly toastService = inject(ToastService);
+  private readonly shareService = inject(ShareService);
+  private readonly userInviteService = inject(UserInviteService);
   readonly bizzCoinsBalance = this.walletService.bizzCoinsBalance;
 
   readonly customer = input.required<CustomerProfileDTO>();
@@ -109,28 +114,22 @@ export class HomeHeaderComponent implements OnInit, OnDestroy {
   }
 
   async shareApp(): Promise<void> {
-    const shareData = {
-      title: 'BizzDeal',
-      text: 'Discover top local deals, businesses, and savings on BizzDeal!',
-      url: 'https://bizzdeal.in',
-    };
-
     try {
-      if (typeof navigator !== 'undefined' && navigator.share) {
-        await navigator.share(shareData);
-      } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        await navigator.clipboard.writeText('https://bizzdeal.in');
-        await this.toastService.showSuccess('App link copied to clipboard!');
-      } else {
-        await this.toastService.showSuccess('https://bizzdeal.in');
+      const res = await firstValueFrom(this.userInviteService.getInviteDetails());
+      if (res?.data) {
+        await this.shareService.shareAppInvite({
+          inviteCode: res.data.invite_code,
+          appUrl: res.data.app_url,
+          joinerRewardCoins: res.data.joiner_reward_coins,
+        });
       }
-    } catch (err: any) {
-      if (err?.name !== 'AbortError') {
-        if (typeof navigator !== 'undefined' && navigator.clipboard) {
-          await navigator.clipboard.writeText('https://bizzdeal.in');
-          await this.toastService.showSuccess('App link copied to clipboard!');
-        }
-      }
+    } catch (err: unknown) {
+      console.error('Failed to get invite details for share:', err);
+      await this.shareService.shareAppInvite({
+        inviteCode: 'BIZZDEAL',
+        appUrl: 'https://play.google.com/store/apps/details?id=com.bizzdeal.app',
+        joinerRewardCoins: 50,
+      });
     }
   }
 }

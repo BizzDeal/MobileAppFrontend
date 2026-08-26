@@ -13,6 +13,9 @@ export interface PlatformSettings {
   customer_signup_bizz_points?: number;
   customer_redemption_reward_bizz_points?: number;
   member_referral_bizz_points?: number;
+  app_share_sharer_bizz_points?: number;
+  app_share_joiner_bizz_points?: number;
+  app_invite_base_url?: string;
 }
 
 export interface PlatformSettingsResponse {

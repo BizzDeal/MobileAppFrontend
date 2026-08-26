@@ -100,6 +100,55 @@
           <ion-col size="12" size-lg="6" style="padding: 12px;">
             <div class="config-card">
               <div class="form-section" style="margin-bottom: 0;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px; padding: 0 8px;">App Share & Invite Rewards</h3>
+                <div class="form-content">
+                  <ion-input
+                    type="number"
+                    step="1"
+                    min="0"
+                    labelPlacement="stacked"
+                    fill="outline"
+                    [(ngModel)]="settings.app_share_sharer_bizz_points"
+                    placeholder="e.g., 50"
+                    style="margin-bottom: 8px;">
+                    <div slot="label">Sharer Reward Points <span class="required-star">*</span></div>
+                  </ion-input>
+                  <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+                    <small>Number of Bizz Points credited to an existing user when someone registers using their invite code.</small>
+                  </div>
+                  <ion-input
+                    type="number"
+                    step="1"
+                    min="0"
+                    labelPlacement="stacked"
+                    fill="outline"
+                    [(ngModel)]="settings.app_share_joiner_bizz_points"
+                    placeholder="e.g., 50"
+                    style="margin-bottom: 8px;">
+                    <div slot="label">Joiner Reward Points <span class="required-star">*</span></div>
+                  </ion-input>
+                  <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+                    <small>Number of welcome bonus Bizz Points credited to a new user who signs up with an invite code.</small>
+                  </div>
+                  <ion-input
+                    type="url"
+                    labelPlacement="stacked"
+                    fill="outline"
+                    [(ngModel)]="settings.app_invite_base_url"
+                    placeholder="https://play.google.com/store/apps/details?id=..."
+                    style="margin-bottom: 8px;">
+                    <div slot="label">App Share / Download URL <span class="required-star">*</span></div>
+                  </ion-input>
+                  <div class="ion-padding-start ion-padding-bottom ion-text-muted">
+                    <small>The download link included in app share messages (Play Store URL or direct APK download link).</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ion-col>
+          <ion-col size="12" size-lg="6" style="padding: 12px;">
+            <div class="config-card">
+              <div class="form-section" style="margin-bottom: 0;">
                 <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0; margin-bottom: 12px; padding: 0 8px;">System Cache</h3>
         <div class="form-content">
           <div class="ion-padding-start ion-padding-bottom ion-text-muted">

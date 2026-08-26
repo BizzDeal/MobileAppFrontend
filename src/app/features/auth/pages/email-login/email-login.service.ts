@@ -37,6 +37,7 @@ export class EmailLoginService {
   private readonly _isPinFocused = signal(false);
   private readonly _isConfirmPinFocused = signal(false);
   private readonly _isOtpFocused = signal(false);
+  private readonly _isInviteCodeFocused = signal(false);
   private readonly _errorMessage = signal<string | null>(null);
 
   private _confirmationResult?: ConfirmationResult;
@@ -51,6 +52,7 @@ export class EmailLoginService {
   readonly isPinFocused = this._isPinFocused.asReadonly();
   readonly isConfirmPinFocused = this._isConfirmPinFocused.asReadonly();
   readonly isOtpFocused = this._isOtpFocused.asReadonly();
+  readonly isInviteCodeFocused = this._isInviteCodeFocused.asReadonly();
   readonly errorMessage = this._errorMessage.asReadonly();
 
   readonly loginForm = this.fb.nonNullable.group({
@@ -58,6 +60,7 @@ export class EmailLoginService {
     pin: ['', [Validators.required, Validators.pattern(/^[0-9]{4,6}$/)]],
     confirmPin: ['', [Validators.pattern(/^[0-9]{4,6}$/)]],
     otp: ['', [Validators.pattern(/^[0-9]{6}$/)]],
+    invite_code: [''],
   });
 
   readonly features = [
@@ -101,6 +104,10 @@ export class EmailLoginService {
 
   setOtpFocused(focused: boolean): void {
     this._isOtpFocused.set(focused);
+  }
+
+  setInviteCodeFocused(focused: boolean): void {
+    this._isInviteCodeFocused.set(focused);
   }
 
   clearError(): void {
@@ -230,7 +237,7 @@ export class EmailLoginService {
       }
 
       this._isSubmitting.set(true);
-      const { email, pin, otp } = this.loginForm.getRawValue();
+      const { email, pin, otp, invite_code } = this.loginForm.getRawValue();
 
       (async () => {
         try {
@@ -238,6 +245,9 @@ export class EmailLoginService {
           formData.append('email', email);
           formData.append('pin', pin);
           formData.append('otp', otp);
+          if (invite_code && invite_code.trim()) {
+            formData.append('invite_code', invite_code.trim().toUpperCase());
+          }
 
           this.authApi.registerCustomer(formData).subscribe({
             next: async (res: any) => {
@@ -267,6 +277,7 @@ export class EmailLoginService {
     this.loginForm.controls.pin.reset('');
     this.loginForm.controls.confirmPin.reset('');
     this.loginForm.controls.otp.reset('');
+    this.loginForm.controls.invite_code.reset('');
     this._errorMessage.set(null);
   }
 

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, compu
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, headsetOutline, callOutline, mailOutline, globeOutline, videocamOutline } from 'ionicons/icons';
+import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, headsetOutline, callOutline, mailOutline, globeOutline, videocamOutline, shareSocialOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../services/member-dashboard.service';
 
 import { ProfileService } from '../../../profile/services/profile.service';
@@ -14,6 +14,9 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 import { NotificationService } from '../../../notifications/services/notification.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { WalletService } from '../../../wallet/services/wallet.service';
+import { ShareService } from '../../../../core/platform/share.service';
+import { UserInviteService } from '../../../auth/services/user-invite.service';
+import { firstValueFrom } from 'rxjs';
 
 import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
 import { DashboardSkeletonComponent } from '../../../../shared/components/skeletons/dashboard-skeleton/dashboard-skeleton.component';
@@ -43,6 +46,8 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly meetingsService = inject(MeetingsService);
   private readonly notificationService = inject(NotificationService);
   readonly walletService = inject(WalletService);
+  private readonly shareService = inject(ShareService);
+  private readonly userInviteService = inject(UserInviteService);
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
   private readonly appSocket = inject(AppSocketService);
@@ -167,7 +172,7 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     
   constructor() {
-    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, headsetOutline, callOutline, mailOutline, globeOutline, videocamOutline });
+    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, headsetOutline, callOutline, mailOutline, globeOutline, videocamOutline, shareSocialOutline });
   }
 
   showSupportInfo() {
@@ -176,6 +181,26 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   closeSupportInfo() {
     this.showSupportDialog.set(false);
+  }
+
+  async shareApp(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.userInviteService.getInviteDetails());
+      if (res?.data) {
+        await this.shareService.shareAppInvite({
+          inviteCode: res.data.invite_code,
+          appUrl: res.data.app_url,
+          joinerRewardCoins: res.data.joiner_reward_coins,
+        });
+      }
+    } catch (err: unknown) {
+      console.error('Failed to get invite details for share:', err);
+      await this.shareService.shareAppInvite({
+        inviteCode: 'BIZZDEAL',
+        appUrl: 'https://play.google.com/store/apps/details?id=com.bizzdeal.app',
+        joinerRewardCoins: 50,
+      });
+    }
   }
 
   toggleActionsMenu() {

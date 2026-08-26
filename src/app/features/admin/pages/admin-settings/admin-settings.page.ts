@@ -40,7 +40,10 @@ export class AdminSettingsPage implements OnInit {
     bizz_coin_value: 1,
     customer_signup_bizz_points: 100,
     customer_redemption_reward_bizz_points: 75,
-    member_referral_bizz_points: 100
+    member_referral_bizz_points: 100,
+    app_share_sharer_bizz_points: 50,
+    app_share_joiner_bizz_points: 50,
+    app_invite_base_url: 'https://play.google.com/store/apps/details?id=com.bizzdeal.app'
   };
 
   isLoading = true;

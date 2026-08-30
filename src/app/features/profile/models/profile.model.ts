@@ -40,6 +40,13 @@ export interface ProfileDTO {
   missing_fields?: string[];
   completed_fields?: string[];
 
+  // User Stats
+  stats?: {
+    stores_visited: number;
+    customers_dealt: number;
+    profit_gained: number;
+  };
+
   created_at: string;
   updated_at: string;
 }

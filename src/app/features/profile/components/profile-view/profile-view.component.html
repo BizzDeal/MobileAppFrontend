@@ -15,37 +15,54 @@
 <div class="profile-container">
 
   @if (profile() && !loading()) {
-    <div class="completion-card bd-card" [class.incomplete]="isIncompleteProfile()" [class.pass]="!isIncompleteProfile()">
-      <div class="completion-header">
-        <h3>Profile Completion</h3>
-        <div class="grade-badge">
-          @if (isIncompleteProfile()) {
-            <ion-icon name="alert-circle-outline"></ion-icon> INCOMPLETE
-          } @else {
-            <ion-icon name="checkmark-circle-outline"></ion-icon> PASS
-          }
+    <!-- Profile Stats Banner (3 KPIs) -->
+    <div class="profile-stats-card bd-card">
+      <!-- 1. Store Visits (Member) / Stores Visited (Customer) -->
+      <div class="stat-tile">
+        <div class="stat-icon-wrapper stores-icon">
+          <ion-icon name="storefront-outline"></ion-icon>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-number">{{ userStats().stores_visited }}</span>
+          <span class="stat-title">{{ userRole() === 'MEMBER' ? 'Store Visits' : 'Stores Visited' }}</span>
         </div>
       </div>
-      
-      <div class="progress-bar-container">
-        <div class="progress-bar-fill" [style.width]="completionScore() + '%'" 
-             [class.full]="completionScore() === 100" [class.partial]="completionScore() < 100">
+
+      <div class="stat-divider"></div>
+
+      <!-- 2. Customers Dealt (Member) / Deals Availed (Customer) -->
+      <div class="stat-tile">
+        <div class="stat-icon-wrapper customers-icon">
+          <ion-icon [name]="userRole() === 'MEMBER' ? 'people-outline' : 'ticket-outline'"></ion-icon>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-number">{{ userStats().customers_dealt }}</span>
+          <span class="stat-title">{{ userRole() === 'MEMBER' ? 'Customers Dealt' : 'Deals Availed' }}</span>
         </div>
       </div>
-      
-      <p class="score-text">{{ completionScore() }}% Completed</p>
-      
-      @if (isIncompleteProfile() && missingFields().length> 0) {
-        <div class="missing-fields">
-          <p>Please complete the following mandatory fields:</p>
-          <div class="tags-container">
-            @for (field of missingFields(); track field) {
-              <span class="missing-tag">{{ field.replace('_id', '').replace('_', ' ') | titlecase }}</span>
-            }
-          </div>
+
+      <div class="stat-divider"></div>
+
+      <!-- 3. Profit Gained (Member revenue / Customer savings) -->
+      <div class="stat-tile">
+        <div class="stat-icon-wrapper profit-icon">
+          <ion-icon name="cash-outline"></ion-icon>
         </div>
-      }
+        <div class="stat-meta">
+          <span class="stat-number">₹{{ userStats().profit_gained | number:'1.0-0' }}</span>
+          <span class="stat-title">Profit Gained</span>
+        </div>
+      </div>
     </div>
+
+    <!-- Option 2: Slim Completion Chip (Only if incomplete) -->
+    @if (isIncompleteProfile()) {
+      <div class="completion-chip" (click)="toggleEditMode(true)" role="button" tabindex="0" title="Complete Profile">
+        <ion-icon name="alert-circle-outline" class="chip-alert-icon"></ion-icon>
+        <span class="chip-text">Profile {{ completionScore() }}% complete • Complete missing details</span>
+        <ion-icon name="chevron-forward-outline" class="chip-arrow-icon"></ion-icon>
+      </div>
+    }
   }
 
   @if (loading() && !profile()) {
@@ -65,13 +82,11 @@
     <div class="avatar-wrapper">
       <img loading="lazy" [appCachedImg]="selectedPhotoUrl()" [fallbackName]="profileForm.value.full_name || profile()?.full_name" alt="Avatar Preview" class="profile-avatar" />
 
-      @if (isEditMode()) {
-      <label for="profileFile" class="edit-badge">
-        <ion-icon name="camera-outline"></ion-icon>
+      <label for="profileFile" class="edit-badge" title="Change Profile Picture" aria-label="Change Profile Picture">
+        <ion-icon name="pencil-outline"></ion-icon>
         <input type="file" id="profileFile" accept="image/*" (change)="onPhotoSelected($event)"
           style="display: none;" />
       </label>
-      }
     </div>
     <h2 class="profile-name">{{ profile()?.full_name }}</h2>
     <span class="profile-role">{{ userRole() }}</span>
@@ -321,14 +336,11 @@
           style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.5)); pointer-events: none;">
         </div>
 
-        @if (isEditMode()) {
-        <label for="businessLogoFile"
-          style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; background: var(--bizzdeal-primary, #1E88E5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1;">
-          <ion-icon name="camera-outline" style="font-size: 18px;"></ion-icon>
+        <label for="businessLogoFile" class="brand-logo-edit-badge" title="Change Brand Image" aria-label="Change Brand Image">
+          <ion-icon name="pencil-outline"></ion-icon>
           <input type="file" id="businessLogoFile" accept="image/*" (change)="onBusinessLogoSelected($event)"
             style="display: none;" />
         </label>
-        }
         <span
           style="position: absolute; bottom: 12px; left: 12px; color: white; font-size: 0.875rem; font-weight: 600; z-index: 1;">Brand
           Image</span>

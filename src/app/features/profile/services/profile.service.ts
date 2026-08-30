@@ -171,6 +171,11 @@ export class ProfileService {
             grade: p.grade,
             missing_fields: p.missing_fields,
             completed_fields: p.completed_fields,
+            stats: p.stats || {
+              stores_visited: 0,
+              customers_dealt: 0,
+              profit_gained: 0,
+            },
             created_at: p.created_at || new Date().toISOString(),
             updated_at: p.updated_at || new Date().toISOString(),
           };

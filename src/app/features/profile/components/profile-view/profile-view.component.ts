@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, TitleCasePipe } from '@angular/common';
+import { DatePipe, DecimalPipe, NgClass, TitleCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, untracked, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -38,7 +38,12 @@ import {
   phonePortraitOutline,
   desktopOutline,
   refreshOutline,
-  pencilOutline
+  pencilOutline,
+  storefrontOutline,
+  peopleOutline,
+  ticketOutline,
+  cashOutline,
+  chevronForwardOutline
 } from 'ionicons/icons';
 import { ProfileService } from '../../services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -57,6 +62,7 @@ import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.uti
   standalone: true,
   imports: [
     DatePipe,
+    DecimalPipe,
     TitleCasePipe,
     NgClass,
     ReactiveFormsModule,
@@ -116,6 +122,11 @@ export class ProfileViewComponent implements OnInit {
   
   readonly completionScore = computed(() => this.profile()?.completion_score || 0);
   readonly missingFields = computed(() => this.profile()?.missing_fields || []);
+  readonly userStats = computed(() => this.profile()?.stats || {
+    stores_visited: 0,
+    customers_dealt: 0,
+    profit_gained: 0,
+  });
 
   readonly profileForm: FormGroup = this.fb.group({
     full_name: ['', [Validators.minLength(2)]],
@@ -161,7 +172,12 @@ export class ProfileViewComponent implements OnInit {
       phonePortraitOutline,
       desktopOutline,
       refreshOutline,
-      pencilOutline
+      pencilOutline,
+      storefrontOutline,
+      peopleOutline,
+      ticketOutline,
+      cashOutline,
+      chevronForwardOutline
     });
 
     this.profileService.fetchStates();
@@ -434,8 +450,11 @@ export class ProfileViewComponent implements OnInit {
       if (role === 'confirm' && data) {
         this.selectedPhotoFile.set(data.file);
         this.selectedPhotoUrl.set(data.base64);
-                this.profileService.updateProfilePic(data.base64);
+        this.profileService.updateProfilePic(data.base64);
         this.toastService.showSuccess('📸 Profile picture adjusted & cropped successfully!');
+        if (!this.isEditMode()) {
+          this.toggleEditMode(true);
+        }
       }
 
       input.value = '';
@@ -472,7 +491,10 @@ export class ProfileViewComponent implements OnInit {
       if (role === 'confirm' && data) {
         this.selectedBusinessLogoFile.set(data.file);
         this.selectedBusinessLogoUrl.set(data.base64);
-                this.toastService.showSuccess('📸 Brand image adjusted & cropped successfully!');
+        this.toastService.showSuccess('📸 Brand image adjusted & cropped successfully!');
+        if (!this.isEditMode()) {
+          this.toggleEditMode(true);
+        }
       }
 
       input.value = '';

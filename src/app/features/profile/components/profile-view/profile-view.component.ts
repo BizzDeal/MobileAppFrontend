@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe, NgClass, TitleCasePipe } from '@angular/common';
+import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, untracked, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -63,7 +63,6 @@ import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.uti
   imports: [
     DatePipe,
     DecimalPipe,
-    TitleCasePipe,
     NgClass,
     ReactiveFormsModule,
     IonIcon,
@@ -106,7 +105,11 @@ export class ProfileViewComponent implements OnInit {
   readonly selectedBusinessLogoUrl = signal<string | null>(null);
   readonly selectedBusinessLogoFile = signal<File | null>(null);
   readonly isCompleteProfileModalOpen = signal<boolean>(false);
-  readonly isEditMode = signal<boolean>(false);
+  readonly activeEditSection = signal<'personal' | 'business' | 'all' | null>(null);
+  readonly isPersonalEditing = computed(() => this.activeEditSection() === 'personal' || this.activeEditSection() === 'all');
+  readonly isBusinessEditing = computed(() => this.activeEditSection() === 'business' || this.activeEditSection() === 'all');
+  readonly isEditMode = computed(() => this.activeEditSection() !== null);
+  readonly hasPendingImage = computed(() => !!this.selectedPhotoFile() || !!this.selectedBusinessLogoFile());
     
   readonly registeredDevices = signal<any[]>([]);
   readonly loadingDevices = signal<boolean>(false);
@@ -450,11 +453,7 @@ export class ProfileViewComponent implements OnInit {
       if (role === 'confirm' && data) {
         this.selectedPhotoFile.set(data.file);
         this.selectedPhotoUrl.set(data.base64);
-        this.profileService.updateProfilePic(data.base64);
         this.toastService.showSuccess('📸 Profile picture adjusted & cropped successfully!');
-        if (!this.isEditMode()) {
-          this.toggleEditMode(true);
-        }
       }
 
       input.value = '';
@@ -492,9 +491,6 @@ export class ProfileViewComponent implements OnInit {
         this.selectedBusinessLogoFile.set(data.file);
         this.selectedBusinessLogoUrl.set(data.base64);
         this.toastService.showSuccess('📸 Brand image adjusted & cropped successfully!');
-        if (!this.isEditMode()) {
-          this.toggleEditMode(true);
-        }
       }
 
       input.value = '';
@@ -575,7 +571,7 @@ export class ProfileViewComponent implements OnInit {
       next: () => {
         this.selectedPhotoFile.set(null);
         this.selectedBusinessLogoFile.set(null);
-        this.isEditMode.set(false);
+        this.activeEditSection.set(null);
       },
       error: (err) => {
         // Interceptor handles the error toast
@@ -598,59 +594,73 @@ export class ProfileViewComponent implements OnInit {
     this.profileService.loadProfile().subscribe();
   }
 
+  toggleEditSection(section: 'personal' | 'business' | null): void {
+    if (section === null) {
+      this.revertFormValues();
+      this.activeEditSection.set(null);
+    } else {
+      this.activeEditSection.set(section);
+    }
+  }
+
   toggleEditMode(mode: boolean): void {
     if (!mode) {
-      // Revert changes if canceling
-      const p = this.profile();
-      if (p) {
-        const states = this.profileService.states();
-        const apState = states.find((s) => s.name.toLowerCase().includes('andhra pradesh'));
-        const targetStateId = apState?.id || p.state_id || p.business_state_id || '';
-        const targetBusinessStateId = apState?.id || p.business_state_id || p.state_id || '';
-
-        this.profileForm.patchValue({
-          full_name: p.full_name || '',
-          phone: p.phone || '',
-          whatsapp: p.whatsapp || '',
-          email: p.email || '',
-          state_id: targetStateId,
-          district_id: p.district_id || p.business_district_id || '',
-          address: p.address || '',
-          business_name: p.business_name || '',
-          business_description: p.business_description || '',
-          website: p.website || '',
-          gst_number: p.gst_number || '',
-          category_id: p.category_id || '',
-          business_state_id: targetBusinessStateId,
-          business_district_id: p.business_district_id || p.district_id || '',
-          business_address: p.business_address || '',
-          video_url: p.video_url || ''
-        }, { emitEvent: false });
-        
-        this.selectedPhotoFile.set(null);
-        this.selectedPhotoUrl.set(p.profile_pic_url || null);
-        this.selectedBusinessLogoFile.set(null);
-        this.selectedBusinessLogoUrl.set(p.business_logo_url || null);
-      }
+      this.revertFormValues();
+      this.activeEditSection.set(null);
+    } else {
+      this.activeEditSection.set('all');
     }
-    this.isEditMode.set(mode);
+  }
+
+  private revertFormValues(): void {
+    const p = this.profile();
+    if (p) {
+      const states = this.profileService.states();
+      const apState = states.find((s) => s.name.toLowerCase().includes('andhra pradesh'));
+      const targetStateId = apState?.id || p.state_id || p.business_state_id || '';
+      const targetBusinessStateId = apState?.id || p.business_state_id || p.state_id || '';
+
+      this.profileForm.patchValue({
+        full_name: p.full_name || '',
+        phone: p.phone || '',
+        whatsapp: p.whatsapp || '',
+        email: p.email || '',
+        state_id: targetStateId,
+        district_id: p.district_id || p.business_district_id || '',
+        address: p.address || '',
+        business_name: p.business_name || '',
+        business_description: p.business_description || '',
+        website: p.website || '',
+        gst_number: p.gst_number || '',
+        category_id: p.category_id || '',
+        business_state_id: targetBusinessStateId,
+        business_district_id: p.business_district_id || p.district_id || '',
+        business_address: p.business_address || '',
+        video_url: p.video_url || ''
+      }, { emitEvent: false });
+      
+      this.selectedPhotoFile.set(null);
+      this.selectedPhotoUrl.set(p.profile_pic_url || null);
+      this.selectedBusinessLogoFile.set(null);
+      this.selectedBusinessLogoUrl.set(p.business_logo_url || null);
+    }
   }
 
   getStateName(stateId: string | null | undefined): string {
-    if (!stateId) return 'N/A';
+    if (!stateId) return this.profile()?.state_name || 'N/A';
     const state = this.profileService.states().find(s => s.id === stateId);
-    return state ? state.name : 'Unknown State';
+    return state ? state.name : (this.profile()?.state_name || 'N/A');
   }
 
   getDistrictName(districtId: string | null | undefined): string {
-    if (!districtId) return 'N/A';
+    if (!districtId) return this.profile()?.district_name || 'N/A';
     const district = this.profileService.districts().find(d => d.id === districtId);
-    return district ? district.name : 'Unknown District';
+    return district ? district.name : (this.profile()?.district_name || 'N/A');
   }
 
   getCategoryName(categoryId: string | null | undefined): string {
-    if (!categoryId) return 'N/A';
+    if (!categoryId) return this.profile()?.primary_business_category_name || 'N/A';
     const cat = this.onboardingService.categories().find(c => c.id === categoryId);
-    return cat ? cat.name : 'Unknown Category';
+    return cat ? cat.name : (this.profile()?.primary_business_category_name || 'N/A');
   }
 }

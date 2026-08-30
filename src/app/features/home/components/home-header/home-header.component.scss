@@ -24,7 +24,7 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 10px;
-    height: 38px;
+    height: 44px;
     opacity: 1;
     transform: scaleY(1);
     transform-origin: top center;
@@ -50,8 +50,8 @@
       }
 
       .user-avatar-wrap {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         overflow: hidden;
         background: rgba(255, 255, 255, 0.2);
@@ -71,12 +71,12 @@
       }
 
       .header-logo-text {
-        height: 22px;
+        height: 36px;
         width: auto;
-        max-width: 120px;
+        max-width: 170px;
         object-fit: contain;
         filter: brightness(0) invert(1);
-        opacity: 0.95;
+        opacity: 0.98;
       }
     }
 
@@ -84,86 +84,6 @@
       display: flex;
       align-items: center;
       gap: 10px;
-
-      /* 3D Wallet Flip Card */
-      .wallet-flip-container {
-        perspective: 600px;
-        cursor: pointer;
-
-        .wallet-flip-card {
-          width: 105px;
-          height: 34px;
-          position: relative;
-          transform-style: preserve-3d;
-          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-
-          &.flipped {
-            transform: rotateY(180deg);
-          }
-
-          .flip-face {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-
-            &.flip-front {
-              color: #ffffff;
-            }
-
-            &.flip-back {
-              transform: rotateY(180deg);
-              background: rgba(255, 229, 0, 0.22);
-              border-color: rgba(255, 229, 0, 0.5);
-              color: #ffffff;
-            }
-
-            .wallet-svg {
-              color: #ffe500;
-            }
-
-            .coin-emoji-icon {
-              font-size: 14px;
-            }
-
-            .wallet-info {
-              display: flex;
-              flex-direction: column;
-              line-height: 1.1;
-
-              .wallet-label {
-                font-size: 9px;
-                text-transform: uppercase;
-                letter-spacing: 0.3px;
-                opacity: 0.9;
-              }
-
-              .wallet-amount {
-                font-size: 12px;
-                font-weight: 700;
-              }
-
-              .coin-label {
-                color: #ffe500;
-              }
-
-              .coin-amount {
-                color: #ffffff;
-              }
-            }
-          }
-        }
-      }
 
       .notif-btn {
         width: 36px;

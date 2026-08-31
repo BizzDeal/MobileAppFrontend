@@ -1,37 +1,18 @@
+<!-- Sticky Top Header Container -->
+<div class="sticky-top-header">
+  <app-member-home-header
+    [profile]="profile()"
+    [unreadCount]="unreadCount() || 0"
+    (notificationClick)="notificationClick.emit()"
+  />
+</div>
+
 @if (loading()) {
 <div class="dashboard-content" style="padding-top: 16px;">
   <app-dashboard-skeleton></app-dashboard-skeleton>
 </div>
 } @else if (dashboardData(); as data) {
 <div class="member-dashboard">
-  <!-- Header -->
-  <header class="dashboard-header">
-    <div class="brand-info">
-      <img loading="lazy" [appCachedImg]="profile()?.profile_pic_url" [fallbackName]="profile()?.full_name"
-        alt="Profile Pic" class="business-logo" />
-      <h1 class="business-name"><span class="truncate-name">Hi {{ getFirstName(profile()?.full_name) }}</span></h1>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <button class="notification-btn wallet-btn" (click)="walletClick.emit()" type="button" aria-label="Wallet">
-        <ion-icon name="wallet-outline" class="notif-icon" />
-        @if ((walletService.bizzCoinsBalance() || 0) > 0) {
-        <span class="badge coin-badge">{{ walletService.bizzCoinsBalance() }} 🪙</span>
-        }
-      </button>
-      <button class="notification-btn" (click)="showSupportInfo()" type="button" aria-label="Support">
-        <ion-icon name="headset-outline" class="notif-icon" />
-      </button>
-      <button class="notification-btn" (click)="notificationClick.emit()" type="button" aria-label="Notifications">
-        <ion-icon name="notifications-outline" class="notif-icon" />
-        @if ((unreadCount() || 0)> 0) {
-        <span class="badge count-badge">{{ unreadCount()> 99 ? '99+' : unreadCount() }}</span>
-        } @else if (data.alerts.length> 0) {
-        <span class="badge"></span>
-        }
-      </button>
-    </div>
-  </header>
-
   <div class="dashboard-content">
     @if (error() || meetingsError()) {
     <div class="error-container">
@@ -40,23 +21,25 @@
     }
 
     <section class="business-profile-card bd-card-premium">
+      <!-- Greeting Row -->
+      <div class="biz-greeting-row">
+        <h2 class="biz-greeting">Hi {{ getFirstName(profile()?.full_name) }}</h2>
+        <span class="biz-status-badge" [class.active]="profile()?.status === 'ACTIVE'">
+          <ion-icon name="checkmark-circle" class="status-check-icon"></ion-icon>
+          {{ profile()?.status | titlecase }}
+        </span>
+      </div>
+
       <div class="biz-profile-main">
         <div class="logo-wrapper">
-          <img loading="lazy" [appCachedImg]="profile()?.business_logo_url"
-            [fallbackName]="profile()?.business_name || 'My Business'" alt="Business Logo" class="biz-profile-logo" />
+          <img loading="lazy" [appCachedImg]="profile()?.profile_pic_url"
+            [fallbackName]="profile()?.full_name || 'Member'" alt="Member Profile" class="biz-profile-logo" />
         </div>
         <div class="biz-info">
           <h2 class="biz-profile-name">
             {{ profile()?.business_name || 'My Business' }}
-            <ion-icon name="checkmark-circle" class="verified-badge"></ion-icon>
           </h2>
-          <div class="biz-meta">
-            <span class="biz-status" [class.active]="profile()?.status === 'ACTIVE'">
-              {{ profile()?.status | titlecase }}
-            </span>
-            <span class="meta-dot">•</span>
-            <span class="biz-joined">Joined {{ profile()?.created_at | date:'MMM yyyy' }}</span>
-          </div>
+          <span class="biz-joined">Joined {{ profile()?.created_at | date:'d MMM yyyy' }}</span>
 
           @if (bizzCoinOffer(); as coinOffer) {
           <div class="bizz-coin-offer-pill" (click)="onBizzCoinsOffer()">
@@ -70,6 +53,131 @@
             </span>
           </div>
           }
+        </div>
+      </div>
+    </section>
+
+    <!-- Business & Bizz Coins Section -->
+    <section class="quick-actions-section">
+      <h3 class="qa-section-title">Business & Bizz Coins</h3>
+      <div class="qa-card-container">
+        <div class="qa-coin-card" (click)="walletClick.emit()" role="button" tabindex="0">
+          <div class="qa-coin-icon-wrap">
+            <svg class="qa-coin-svg" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="qaCoinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FFF3A8" />
+                  <stop offset="35%" stop-color="#FFD13B" />
+                  <stop offset="70%" stop-color="#F59E0B" />
+                  <stop offset="100%" stop-color="#D97706" />
+                </linearGradient>
+                <linearGradient id="qaCoinRim" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FFFBEB" />
+                  <stop offset="50%" stop-color="#FBBF24" />
+                  <stop offset="100%" stop-color="#B45309" />
+                </linearGradient>
+              </defs>
+              <ellipse cx="26" cy="26" rx="24" ry="24" fill="url(#qaCoinRim)" />
+              <circle cx="26" cy="24" r="21" fill="url(#qaCoinGrad)" />
+              <circle cx="26" cy="24" r="17" fill="none" stroke="#FFFBEB" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.9" />
+              <polygon points="26,13 29,20.5 37,21 31,26 33,34 26,29.5 19,34 21,26 15,21 23,20.5" fill="#FFFBEB" stroke="#D97706" stroke-width="0.8" stroke-linejoin="round" />
+              <circle cx="25" cy="22" r="1.5" fill="#FFFFFF" />
+            </svg>
+          </div>
+          <div class="qa-coin-info">
+            <span class="qa-coin-label">BIZZ COINS</span>
+            <span class="qa-coin-value">{{ walletService.bizzCoinsBalance() | number:'1.0-0' }}</span>
+          </div>
+        </div>
+        <div class="qa-action-buttons">
+          <button type="button" class="qa-action-btn" (click)="receivedBusinessClick.emit()">
+            <span class="qa-btn-text">RECEIVED BUSINESS</span>
+          </button>
+          <div class="qa-btn-divider"></div>
+          <button type="button" class="qa-action-btn" (click)="givenBusinessClick.emit()">
+            <span class="qa-btn-text">GIVEN BUSINESS</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Analytics Dashboard Section: Given & Received Business Cards -->
+    <section class="analytics-dashboard-section feed-section">
+      <div class="section-header">
+        <div class="header-left">
+          <ion-icon name="trending-up-outline" class="section-icon spark"></ion-icon>
+          <h2 class="section-title">Analytics Dashboard</h2>
+        </div>
+      </div>
+
+      <div class="business-analytics-grid">
+        <!-- Card 1: Given Business -->
+        <div class="analytics-biz-card">
+          <div class="card-main-row">
+            <div class="biz-icon-badge given-badge">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L6 14" />
+                <path d="m4 18 4-4" />
+                <circle cx="18" cy="8" r="4" fill="#fbbf24" stroke="#d97706" stroke-width="1.5" />
+                <path d="M18 6v4M16 8h4" stroke="#ffffff" stroke-width="1.2" />
+              </svg>
+            </div>
+            <div class="card-info-col">
+              <span class="card-biz-title">GIVEN BUSINESS</span>
+              <div class="card-stat-wrap">
+                <span class="stat-number">{{ data.analytics.referralsGiven }}</span>
+                <div class="mini-bar-chart">
+                  <span class="bar bar-1"></span>
+                  <span class="bar bar-2"></span>
+                  <span class="bar bar-3"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <div class="card-middle-row">
+            <span class="completed-label">Completed referrals: <strong>{{ data.analytics.referralsGivenCompleted }}</strong></span>
+          </div>
+
+          <div class="card-bottom-row">
+            <span class="total-value-label">Total value : <strong class="value-amount">₹{{ data.analytics.givenBusinessValue | number:'1.0-0' }}+</strong></span>
+          </div>
+        </div>
+
+        <!-- Card 2: Received Business -->
+        <div class="analytics-biz-card">
+          <div class="card-main-row">
+            <div class="biz-icon-badge received-badge">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="6" width="20" height="12" rx="2" fill="#dcfce7" stroke="#16a34a" />
+                <circle cx="12" cy="12" r="3" stroke="#16a34a" />
+                <path d="M6 12h.01M18 12h.01" stroke="#16a34a" />
+              </svg>
+            </div>
+            <div class="card-info-col">
+              <span class="card-biz-title">RECEIVED BUSINESS</span>
+              <div class="card-stat-wrap">
+                <span class="stat-number">{{ data.analytics.referralsReceived }}</span>
+                <div class="mini-bar-chart">
+                  <span class="bar bar-1"></span>
+                  <span class="bar bar-2"></span>
+                  <span class="bar bar-3"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <div class="card-middle-row">
+            <span class="completed-label">Completed referrals: <strong>{{ data.analytics.referralsReceivedCompleted }}</strong></span>
+          </div>
+
+          <div class="card-bottom-row">
+            <span class="total-value-label">Total value : <strong class="value-amount">₹{{ data.analytics.receivedBusinessValue | number:'1.0-0' }}+</strong></span>
+          </div>
         </div>
       </div>
     </section>
@@ -302,39 +410,4 @@
 
   </div>
 </div>
-}
-
-<!-- Custom Support Dialog -->
-@if (showSupportDialog()) {
-<div class="custom-support-overlay">
-  <div class="custom-support-backdrop" (click)="closeSupportInfo()"></div>
-  <div class="custom-support-dialog">
-    <div class="dialog-header">
-      <h3>INQUIRY & SUPPORT</h3>
-    </div>
-    <div class="dialog-body">
-      <a href="tel:+919121232727" class="support-link">
-        <ion-icon name="call-outline"></ion-icon>
-        <span><strong>Call Us:</strong> +91 9121232727</span>
-      </a>
-      <a href="mailto:support@bizzdeal.in" class="support-link">
-        <ion-icon name="mail-outline"></ion-icon>
-        <span><strong>Email Us:</strong> support@bizzdeal.in</span>
-      </a>
-      <a href="https://bizzdeal.in" target="_blank" class="support-link">
-        <ion-icon name="globe-outline"></ion-icon>
-        <span><strong>Web:</strong> bizzdeal.in</span>
-      </a>
-
-      <!-- App Share Button -->
-      <button type="button" class="share-app-btn" (click)="shareApp()">
-        <ion-icon name="share-social-outline"></ion-icon>
-        <span>Share BizzDeal App</span>
-      </button>
-    </div>
-    <div class="dialog-footer">
-      <button class="close-btn" (click)="closeSupportInfo()">Close</button>
-    </div>
-  </div>
-</div>
-}
+}

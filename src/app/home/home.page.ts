@@ -166,11 +166,6 @@ export class HomePage implements AfterViewInit, OnDestroy {
     trending.forEach(o => map.set(o.id, o));
     return Array.from(map.values());
   });
-
-  readonly percentageDeals = computed(() => this.allOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'PERCENTAGE'));
-  readonly flatOffers = computed(() => this.allOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'FIXED_AMOUNT'));
-  readonly cashbackOffers = computed(() => this.allOffers().filter(o => o.offer_type === 'CASHBACK'));
-
   readonly selectedConversationId = this.chatService.activeConversationId;
   readonly unreadNotificationsCount = this.notificationService.unreadCount;
 
@@ -183,44 +178,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
   readonly selectedBizCoinsOffer = signal<OfferDTO | null>(null);
   readonly loadingBizCoinsOffer = signal<boolean>(false);
   readonly searchQuery = signal<string>('');
-
-  private filterOffers = (offers: OfferDTO[]) => {
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return offers;
-    return offers.filter(o => 
-      o.title.toLowerCase().includes(query) || 
-      o.description.toLowerCase().includes(query) ||
-      (o.businessName && o.businessName.toLowerCase().includes(query))
-    );
-  };
-
-  readonly filteredPercentageDealsBySearch = computed(() => this.filterOffers(this.percentageDeals()));
-  readonly filteredFlatOffersBySearch = computed(() => this.filterOffers(this.flatOffers()));
-  readonly filteredCashbackOffersBySearch = computed(() => this.filterOffers(this.cashbackOffers()));
-
-  readonly filteredTopBizBySearch = computed(() => {
-    const bizList = this.topBusinesses();
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return bizList;
-    return bizList.filter(b => 
-      b.name.toLowerCase().includes(query) || 
-      (b.description && b.description.toLowerCase().includes(query)) ||
-      (b.categoryName && b.categoryName.toLowerCase().includes(query))
-    );
-  });
-
-  readonly filteredFeaturedBySearch = computed(() => {
-    const bizList = this.featuredBusinesses();
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return bizList;
-    return bizList.filter(b => 
-      b.name.toLowerCase().includes(query) || 
-      (b.description && b.description.toLowerCase().includes(query)) ||
-      (b.categoryName && b.categoryName.toLowerCase().includes(query))
-    );
-  });
-
-
+  readonly referralInitialSegment = signal<'GIVEN' | 'RECEIVED' | undefined>(undefined);
 
   constructor() {
     addIcons({ 

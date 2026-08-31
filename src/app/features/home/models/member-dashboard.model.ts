@@ -4,6 +4,12 @@ export interface MemberDashboardAnalytics {
   vouchersRedeemedWeek: number;
   businessGrowth: number;
   successfulReferrals: number;
+  referralsGiven: number;
+  referralsGivenCompleted: number;
+  givenBusinessValue: number;
+  referralsReceived: number;
+  referralsReceivedCompleted: number;
+  receivedBusinessValue: number;
   districtStats?: {
     totalBusinesses: number;
     totalMembers: number;

@@ -1,0 +1,149 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Transaction History</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="page-content">
+  <div class="page-body-container">
+    <!-- Filter Chips -->
+    <div class="filter-chips-row">
+      <button 
+        type="button" 
+        class="filter-chip" 
+        [class.active]="activeFilter() === 'ALL'" 
+        (click)="setFilter('ALL')">
+        All
+      </button>
+      <button 
+        type="button" 
+        class="filter-chip" 
+        [class.active]="activeFilter() === 'CREDIT'" 
+        (click)="setFilter('CREDIT')">
+        Credits
+      </button>
+      <button 
+        type="button" 
+        class="filter-chip" 
+        [class.active]="activeFilter() === 'DEBIT'" 
+        (click)="setFilter('DEBIT')">
+        Debits
+      </button>
+    </div>
+
+    <!-- History List -->
+    <div class="full-history-list">
+      @if (filteredTransactions().length > 0) {
+        @for (tx of filteredTransactions(); track tx.id) {
+          <div class="history-item-row" (click)="viewTransactionDetails(tx)">
+            <div class="activity-icon-bubble" [ngClass]="'icon-' + tx.iconType">
+              @if (tx.iconType === 'business') {
+                <ion-icon name="briefcase-outline"></ion-icon>
+              } @else if (tx.iconType === 'referral') {
+                <ion-icon name="people-outline"></ion-icon>
+              } @else if (tx.iconType === 'purchase') {
+                <ion-icon name="bag-handle-outline"></ion-icon>
+              } @else {
+                <ion-icon name="sparkles-outline"></ion-icon>
+              }
+            </div>
+
+            <div class="activity-meta">
+              <span class="activity-item-title">{{ tx.description }}</span>
+              <span class="activity-item-time">{{ tx.created_at | date:'mediumDate' }}</span>
+            </div>
+
+            <div class="activity-amount" [class.is-debit]="tx.type === 'DEBIT'">
+              {{ tx.type === 'DEBIT' ? '-' : '+' }}{{ tx.currencySymbol }}{{ tx.amount | number }}
+            </div>
+          </div>
+        }
+
+        <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore()">
+          <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more history..."></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      } @else {
+        <div class="empty-history-box">
+          <ion-icon name="document-text-outline"></ion-icon>
+          <p>No transactions found for this filter.</p>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>
+
+<!-- Transaction Details Modal -->
+<ion-modal [isOpen]="!!selectedTransaction()" (didDismiss)="closeDetailsModal()" class="tx-details-modal">
+  <ng-template>
+    <ion-header class="ion-no-border premium-header">
+      <ion-toolbar>
+        <ion-title>Transaction Details</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeDetailsModal()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    @if (selectedTransaction(); as tx) {
+      <div class="modal-tx-content">
+        <div class="tx-details-header" [class.is-debit]="tx.type === 'DEBIT'">
+          <div class="tx-large-icon" [ngClass]="'icon-' + tx.iconType">
+            @if (tx.iconType === 'business') {
+              <ion-icon name="briefcase-outline"></ion-icon>
+            } @else if (tx.iconType === 'referral') {
+              <ion-icon name="people-outline"></ion-icon>
+            } @else if (tx.iconType === 'purchase') {
+              <ion-icon name="bag-handle-outline"></ion-icon>
+            } @else {
+              <ion-icon name="sparkles-outline"></ion-icon>
+            }
+          </div>
+          <h2 class="tx-detail-amount">
+            {{ tx.type === 'DEBIT' ? '-' : '+' }}{{ tx.currencySymbol }}{{ tx.amount | number }}
+          </h2>
+          <span class="tx-status-badge" [class.status-credit]="tx.type === 'CREDIT'" [class.status-debit]="tx.type === 'DEBIT'">
+            {{ tx.type === 'CREDIT' ? 'Credited' : 'Redeemed' }}
+          </span>
+        </div>
+
+        <div class="tx-info-list">
+          <div class="tx-info-row">
+            <span class="info-label">Title</span>
+            <span class="info-val">{{ tx.activityTitle }}</span>
+          </div>
+          <div class="tx-info-row">
+            <span class="info-label">Description</span>
+            <span class="info-val">{{ tx.description }}</span>
+          </div>
+          <div class="tx-info-row">
+            <span class="info-label">Date & Time</span>
+            <span class="info-val">{{ tx.created_at | date:'medium' }}</span>
+          </div>
+          @if (tx.reference_type) {
+            <div class="tx-info-row">
+              <span class="info-label">Reference</span>
+              <span class="info-val">{{ tx.reference_type }}</span>
+            </div>
+          }
+          <div class="tx-info-row">
+            <span class="info-label">Transaction ID</span>
+            <span class="info-val id-mono">{{ tx.id }}</span>
+          </div>
+        </div>
+
+        <div class="modal-action-row" style="margin-top: 24px;">
+          <button type="button" class="bd-btn-primary full-width" (click)="closeDetailsModal()">
+            Done
+          </button>
+        </div>
+      </div>
+    }
+  </ng-template>
+</ion-modal>

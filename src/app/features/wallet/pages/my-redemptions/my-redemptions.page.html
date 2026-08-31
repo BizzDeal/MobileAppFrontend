@@ -1,0 +1,111 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>My Redemptions</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="page-content">
+  <div class="page-body-container">
+    <div class="redemptions-info-banner">
+      <ion-icon name="gift-outline"></ion-icon>
+      <div>
+        <h4>Redeemed Points & Wallet</h4>
+        <p>History of where you used your points or wallet balance.</p>
+      </div>
+    </div>
+
+    <div class="full-history-list">
+      @if (redemptionTransactions().length > 0) {
+        @for (tx of redemptionTransactions(); track tx.id) {
+          <div class="history-item-row" (click)="viewTransactionDetails(tx)">
+            <div class="activity-icon-bubble icon-purchase">
+              <ion-icon name="bag-handle-outline"></ion-icon>
+            </div>
+
+            <div class="activity-meta">
+              <span class="activity-item-title">{{ tx.description }}</span>
+              <span class="activity-item-time">{{ tx.created_at | date:'mediumDate' }}</span>
+            </div>
+
+            <div class="activity-amount is-debit">
+              -{{ tx.currencySymbol }}{{ tx.amount | number }}
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="empty-history-box">
+          <ion-icon name="gift-outline"></ion-icon>
+          <p>You haven't redeemed any points or wallet balance yet.<br>Browse active deals to start saving!</p>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>
+
+<!-- Optional details modal inside redemptions page -->
+<ion-modal [isOpen]="!!selectedTransaction()" (didDismiss)="closeDetailsModal()" class="tx-details-modal">
+  <ng-template>
+    <ion-header class="ion-no-border premium-header">
+      <ion-toolbar>
+        <ion-title>Transaction Details</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeDetailsModal()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    @if (selectedTransaction(); as tx) {
+      <div class="modal-tx-content">
+        <div class="tx-details-header is-debit">
+          <div class="tx-large-icon icon-purchase">
+            <ion-icon name="bag-handle-outline"></ion-icon>
+          </div>
+          <h2 class="tx-detail-amount">
+            -{{ tx.currencySymbol }}{{ tx.amount | number }}
+          </h2>
+          <span class="tx-status-badge status-debit">
+            Redeemed
+          </span>
+        </div>
+
+        <div class="tx-info-list">
+          <div class="tx-info-row">
+            <span class="info-label">Title</span>
+            <span class="info-val">{{ tx.activityTitle }}</span>
+          </div>
+          <div class="tx-info-row">
+            <span class="info-label">Description</span>
+            <span class="info-val">{{ tx.description }}</span>
+          </div>
+          <div class="tx-info-row">
+            <span class="info-label">Date & Time</span>
+            <span class="info-val">{{ tx.created_at | date:'medium' }}</span>
+          </div>
+          @if (tx.reference_type) {
+            <div class="tx-info-row">
+              <span class="info-label">Reference</span>
+              <span class="info-val">{{ tx.reference_type }}</span>
+            </div>
+          }
+          <div class="tx-info-row">
+            <span class="info-label">Transaction ID</span>
+            <span class="info-val id-mono">{{ tx.id }}</span>
+          </div>
+        </div>
+
+        <div class="modal-action-row" style="margin-top: 24px;">
+          <button type="button" class="bd-btn-primary full-width" (click)="closeDetailsModal()">
+            Done
+          </button>
+        </div>
+      </div>
+    }
+  </ng-template>
+</ion-modal>

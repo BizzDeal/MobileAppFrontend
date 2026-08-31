@@ -104,6 +104,13 @@ export class MemberDashboardService {
           : (vouchersRedeemedWeek > 0 ? 100 : 0);
 
         const successfulReferrals = backendAnalytics.successfulReferrals || 0;
+        const referralsGiven = backendAnalytics.referralsGiven || 0;
+        const referralsGivenCompleted = backendAnalytics.referralsGivenCompleted || 0;
+        const givenBusinessValue = Number(backendAnalytics.givenBusinessValue || 0);
+        const referralsReceived = backendAnalytics.referralsReceived || 0;
+        const referralsReceivedCompleted = backendAnalytics.referralsReceivedCompleted || 0;
+        const receivedBusinessValue = Number(backendAnalytics.receivedBusinessValue || 0);
+
         const districtStats = backendAnalytics.districtStats ? {
           totalBusinesses: backendAnalytics.districtStats.totalBusinesses || 0,
           totalMembers: backendAnalytics.districtStats.totalMembers || 0,
@@ -117,6 +124,12 @@ export class MemberDashboardService {
           vouchersRedeemedWeek,
           businessGrowth,
           successfulReferrals,
+          referralsGiven,
+          referralsGivenCompleted,
+          givenBusinessValue,
+          referralsReceived,
+          referralsReceivedCompleted,
+          receivedBusinessValue,
           districtStats
         };
 

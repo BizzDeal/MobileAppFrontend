@@ -82,6 +82,26 @@ export const routes: Routes = [
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
+    path: 'wallet/earn-bizz-coins',
+    loadComponent: () => import('./features/wallet/pages/earn-bizz-coins/earn-bizz-coins.page').then(m => m.EarnBizzCoinsPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'wallet/earn-wallet-points',
+    loadComponent: () => import('./features/wallet/pages/earn-wallet-points/earn-wallet-points.page').then(m => m.EarnWalletPointsPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'wallet/my-redemptions',
+    loadComponent: () => import('./features/wallet/pages/my-redemptions/my-redemptions.page').then(m => m.MyRedemptionsPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'wallet/history',
+    loadComponent: () => import('./features/wallet/pages/wallet-history/wallet-history.page').then(m => m.WalletHistoryPage),
+    canActivate: [authGuard],
+  },
+  {
     path: 'admin',
     loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
     canActivate: [authGuard],

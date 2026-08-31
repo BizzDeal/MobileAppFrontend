@@ -1,4 +1,4 @@
-<!-- Fixed Sticky Header Container (Header + Search + Category Filters pinned at top) -->
+<!-- Fixed Sticky Header Container (Header + Search pinned at top) -->
 <div class="sticky-top-header">
   <app-home-header 
     [customer]="customer" 
@@ -11,134 +11,14 @@
     (searchSubmit)="searchSubmit.emit($event)" 
     [isScrolled]="isScrolled"
   />
-
-  <app-category-chips 
-    [categories]="feed.categories" 
-    [selectedCategoryId]="selectedCategory"
-    [districtName]="customer.district_name || 'Srikakulam'"
-    (categorySelect)="categorySelect.emit($event)" 
-    [isScrolled]="isScrolled"
-  />
 </div>
 
-<!-- Main Feed Content Area (Scrolls seamlessly beneath the fixed header) -->
-<div class="customer-feed-body">
-
-  <!-- Combined Places Section -->
-  <section class="combined-places-section">
-    <!-- 1. Hero Featured Stores -->
-    <app-featured-store-banners 
-      [stores]="filteredFeaturedBiz" 
-      (storeClick)="businessClick.emit($event)" 
-    />
-
-    <!-- 2. Top Businesses (2-Column Vertical Grid) -->
-    <app-infinite-scrolling-cards 
-      title="Top Businesses" 
-      subtitle="Explore trending merchants"
-      iconType="star"
-      [items]="filteredTopBiz"
-      cardType="business"
-      [autoScroll]="true"
-      [hideHeader]="true"
-      (businessClick)="businessClick.emit($event)"
-    />
-  </section>
-
-  <!-- 3. Top Deals (Percentage) Infinite Scrolling Rail -->
-  <app-infinite-scrolling-cards 
-    title="Top Deals & Discounts" 
-    subtitle="Handpicked mega savings near you"
-    iconType="flame"
-    [items]="filteredPercentageDeals"
-    cardType="deal"
-    [autoScroll]="true"
-    (itemClick)="dealClick.emit($event)"
-    (claimClick)="claimOffer.emit($event)"
+<!-- Main Body Area displaying the Wallet Screen with no header (Matches Screenshot) -->
+<div class="customer-wallet-body">
+  <app-wallet-view 
+    [hideHeader]="true"
+    [customer]="customer"
+    [customerName]="customer.name"
+    (redeemClick)="onRedeem()"
   />
-
-  <!-- 4. Flat Offers Infinite Scrolling Rail -->
-  <app-infinite-scrolling-cards 
-    title="Flat Price Offers" 
-    subtitle="Direct instant price drops"
-    iconType="deal"
-    [items]="filteredFlatOffers"
-    cardType="deal"
-    [autoScroll]="true"
-    (itemClick)="dealClick.emit($event)"
-    (claimClick)="claimOffer.emit($event)"
-  />
-
-  <!-- 5. Cashback Rewards Infinite Scrolling Rail -->
-  <app-infinite-scrolling-cards 
-    title="Cashback Rewards" 
-    subtitle="Earn wallet cashback on every deal"
-    iconType="cash"
-    [items]="filteredCashbackOffers"
-    cardType="deal"
-    [autoScroll]="true"
-    (itemClick)="dealClick.emit($event)"
-    (claimClick)="claimOffer.emit($event)"
-  />
-
-  <!-- 6. Main Infinite Scroll Feed (Vertical Stream, No Loop) -->
-  <section class="feed-section vertical-infinite-feed-section">
-    <div class="section-header-row">
-      <div class="title-group">
-        <div class="icon-badge icon-infinite">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 12c-2-2.5-4-4-6.5-4A4.5 4.5 0 0 0 1 12.5 4.5 4.5 0 0 0 5.5 17C8 17 10 15.5 12 13m0-1c2 2.5 4 4 6.5 4a4.5 4.5 0 0 0 4.5-4.5 4.5 4.5 0 0 0-4.5-4.5C16 7 14 8.5 12 11"/>
-          </svg>
-        </div>
-        <div class="text-meta">
-          <h2 class="section-title">All Local Deals & Offers</h2>
-          <p class="section-subtitle">Continuous feed of active promotions in your area</p>
-        </div>
-      </div>
-    </div>
-
-    @if (infiniteOffers().length > 0) {
-      <div class="vertical-deals-grid">
-        @for (offer of infiniteOffers(); track offer.id) {
-          <app-offer-card 
-            [offer]="offer" 
-            (cardClick)="dealClick.emit($event)" 
-            (claimClick)="claimOffer.emit($event)" 
-          />
-        }
-      </div>
-    }
-
-    <!-- Infinite Scroll Bottom Sentinel -->
-    <div 
-      class="feed-sentinel" 
-      appIntersectionObserver 
-      (appIntersectionObserver)="onSentinelIntersect()"
-    >
-      @if (loadingMoreFeed()) {
-        <div class="infinite-loader-box">
-          <div class="spinner-ring"></div>
-          <span>Loading more deals...</span>
-        </div>
-      } @else if (!hasMoreFeed() && infiniteOffers().length > 0) {
-        <div class="end-of-feed-card">
-          <div class="end-icon">✨</div>
-          <h4>You've reached the end of today's deals!</h4>
-          <p>Check back later or explore top categories for new promotions.</p>
-        </div>
-      } @else if (!hasMoreFeed() && infiniteOffers().length === 0 && initialFeedLoaded()) {
-        <div class="empty-feed-card">
-          <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#94a3b8" stroke-width="1.5">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M8 15s1.5-2 4-2 4 2 4 2"/>
-            <line x1="9" y1="9" x2="9.01" y2="9" stroke-width="3" stroke-linecap="round"/>
-            <line x1="15" y1="9" x2="15.01" y2="9" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-          <h4>No deals found</h4>
-          <p>No active offers found for the selected category.</p>
-        </div>
-      }
-    </div>
-  </section>
-
 </div>

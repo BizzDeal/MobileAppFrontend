@@ -1,0 +1,255 @@
+.page-toolbar {
+  --background: #ffffff;
+  --color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+
+  ion-title {
+    font-weight: 700;
+    font-size: 18px;
+    color: #1e293b;
+  }
+
+  .back-btn {
+    --color: #1e293b;
+  }
+}
+
+.page-content {
+  --background: #f8fafc;
+}
+
+.page-body-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-chips-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  .filter-chip {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &.active {
+      background: #1877f2;
+      color: #ffffff;
+      border-color: #1877f2;
+    }
+  }
+}
+
+.full-history-list {
+  display: flex;
+  flex-direction: column;
+
+  .history-item-row {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    background: #ffffff;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+    border: 1px solid #f1f5f9;
+
+    .activity-icon-bubble {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-right: 12px;
+
+      &.icon-business { background: #1877f2; }
+      &.icon-referral { background: #16a34a; }
+      &.icon-purchase { background: #ea580c; }
+      &.icon-reward { background: #f59e0b; }
+    }
+
+    .activity-meta {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .activity-item-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e293b;
+      }
+
+      .activity-item-time {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-top: 2px;
+      }
+    }
+
+    .activity-amount {
+      font-size: 15px;
+      font-weight: 700;
+      color: #16a34a;
+
+      &.is-debit {
+        color: #dc2626;
+      }
+    }
+  }
+
+  .empty-history-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    text-align: center;
+    color: #94a3b8;
+
+    ion-icon {
+      font-size: 44px;
+      margin-bottom: 10px;
+      color: #cbd5e1;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13.5px;
+      line-height: 1.4;
+      color: #64748b;
+    }
+  }
+}
+
+.tx-details-modal {
+  --border-radius: 20px 20px 0 0;
+  --height: auto;
+  --max-height: 90vh;
+
+  .premium-header {
+    ion-toolbar {
+      --background: #ffffff;
+      --color: #1e293b;
+      font-weight: 700;
+      border-bottom: 1px solid #f1f5f9;
+    }
+  }
+}
+
+.modal-tx-content {
+  padding: 20px 16px;
+  background: #ffffff;
+
+  .tx-details-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+
+    .tx-large-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 26px;
+      margin-bottom: 10px;
+
+      &.icon-business { background: #1877f2; }
+      &.icon-referral { background: #16a34a; }
+      &.icon-purchase { background: #ea580c; }
+      &.icon-reward { background: #f59e0b; }
+    }
+
+    .tx-detail-amount {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+      color: #16a34a;
+    }
+
+    &.is-debit .tx-detail-amount {
+      color: #dc2626;
+    }
+
+    .tx-status-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+
+      &.status-credit {
+        background: #dcfce7;
+        color: #15803d;
+      }
+
+      &.status-debit {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+    }
+  }
+
+  .tx-info-list {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .tx-info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+
+      .info-label {
+        color: #64748b;
+        font-weight: 500;
+      }
+
+      .info-val {
+        color: #1e293b;
+        font-weight: 600;
+        text-align: right;
+
+        &.id-mono {
+          font-family: monospace;
+          font-size: 11.5px;
+          color: #475569;
+        }
+      }
+    }
+  }
+
+  .modal-action-row {
+    margin-top: 24px;
+
+    .full-width {
+      width: 100%;
+      padding: 13px;
+      border-radius: 14px;
+      font-size: 14.5px;
+      font-weight: 700;
+      background: #1877f2;
+      color: #ffffff;
+      border: none;
+    }
+  }
+}

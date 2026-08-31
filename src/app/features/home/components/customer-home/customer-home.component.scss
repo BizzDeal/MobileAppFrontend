@@ -1,174 +1,37 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 72px - env(safe-area-inset-bottom, 0px));
+  height: calc(100dvh - 72px - env(safe-area-inset-bottom, 0px));
+  max-height: calc(100vh - 72px - env(safe-area-inset-bottom, 0px));
+  max-height: calc(100dvh - 72px - env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+  width: 100%;
+}
+
 .sticky-top-header {
   position: sticky;
   top: 0;
   z-index: 1000;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
 }
 
-.customer-feed-body {
-  padding-bottom: 0;
-  background: #f1f5f9;
+.customer-wallet-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background-color: var(--bizzdeal-bg-main, #f8fafc);
+  display: flex;
+  flex-direction: column;
 
-  .combined-places-section {
-    background: #ffffff;
-    padding: 14px 0 12px 0;
-    margin-bottom: 8px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  }
-
-  .vertical-infinite-feed-section {
-    padding: 16px;
-    background: #ffffff;
-    margin-top: 10px;
-    margin-bottom: 24px;
-
-    .section-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-
-      .title-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        .icon-badge.icon-infinite {
-          width: 36px;
-          height: 36px;
-          border-radius: 10px;
-          background: #f3e8ff;
-          color: #9333ea;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .text-meta {
-          .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1e293b;
-            margin: 0;
-          }
-
-          .section-subtitle {
-            font-size: 11px;
-            color: #64748b;
-            margin: 1px 0 0 0;
-          }
-        }
-      }
-    }
-
-    .vertical-deals-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 16px;
-      width: 100%;
-      box-sizing: border-box;
-
-      @media (min-width: 640px) {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 14px;
-      }
-
-      app-offer-card {
-        display: block;
-        width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
-      }
-    }
-
-    .feed-sentinel {
-      min-height: 48px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      .infinite-loader-box {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 20px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 20px;
-        color: #475569;
-        font-size: 13px;
-        font-weight: 600;
-
-        .spinner-ring {
-          width: 18px;
-          height: 18px;
-          border: 2px solid #cbd5e1;
-          border-top-color: #2874f0;
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
-        }
-      }
-
-      .end-of-feed-card {
-        text-align: center;
-        padding: 24px 16px;
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        border: 1px dashed #cbd5e1;
-        border-radius: 16px;
-        width: 100%;
-        max-width: 480px;
-        margin: 10px auto;
-
-        .end-icon {
-          font-size: 24px;
-          margin-bottom: 6px;
-        }
-
-        h4 {
-          font-size: 14px;
-          font-weight: 700;
-          color: #334155;
-          margin: 0 0 4px 0;
-        }
-
-        p {
-          font-size: 12px;
-          color: #64748b;
-          margin: 0;
-        }
-      }
-
-      .empty-feed-card {
-        text-align: center;
-        padding: 30px 16px;
-        width: 100%;
-
-        h4 {
-          font-size: 15px;
-          font-weight: 700;
-          color: #475569;
-          margin: 10px 0 4px 0;
-        }
-
-        p {
-          font-size: 12px;
-          color: #94a3b8;
-          margin: 0;
-        }
-      }
-    }
+  > app-wallet-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
   }
 }
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-

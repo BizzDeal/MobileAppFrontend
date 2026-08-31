@@ -1,0 +1,108 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Earn Wallet Points</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="page-content">
+  <div class="page-body-container">
+    <!-- Ribbon Header Banner -->
+    <div class="ribbon-banner-wrap">
+      <div class="ribbon-banner wallet-gradient">
+        <span class="ribbon-text">HOW TO EARN WALLET POINTS?</span>
+      </div>
+    </div>
+
+    <!-- 4 Wallet Points Avenues -->
+    <div class="reward-cards-list">
+      <!-- 1. Redeem Offers & Cashback -->
+      <div class="reward-card-row">
+        <div class="reward-icon-circle green-circle">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+        </div>
+        <div class="reward-meta">
+          <h4 class="reward-title">REDEEM OFFERS & CASHBACK</h4>
+          <p class="reward-desc">Visit partner stores and redeem active deals for instant cashback</p>
+        </div>
+        <div class="reward-badge-pill green-badge">
+          <span class="badge-num">CASHBACK</span>
+          <span class="badge-label">DIRECT</span>
+        </div>
+      </div>
+
+      <!-- 2. Add Funds & Top-up -->
+      <div class="reward-card-row">
+        <div class="reward-icon-circle blue-circle">
+          <ion-icon name="card-outline"></ion-icon>
+        </div>
+        <div class="reward-meta">
+          <h4 class="reward-title">ADD FUNDS & TOP-UP</h4>
+          <p class="reward-desc">Load your wallet via UPI or card to get exclusive payment discounts</p>
+        </div>
+        <div class="reward-badge-pill blue-badge">
+          <span class="badge-num">SAVINGS</span>
+          <span class="badge-label">ON PAY</span>
+        </div>
+      </div>
+
+      <!-- 3. Exclusive Promotions -->
+      <div class="reward-card-row">
+        <div class="reward-icon-circle purple-circle">
+          <ion-icon name="sparkles-outline"></ion-icon>
+        </div>
+        <div class="reward-meta">
+          <h4 class="reward-title">EXCLUSIVE PROMOTIONS</h4>
+          <p class="reward-desc">Shop during special campaigns to earn percentage-based wallet rewards</p>
+        </div>
+        <div class="reward-badge-pill purple-badge">
+          <span class="badge-num">PERCENT</span>
+          <span class="badge-label">REWARD</span>
+        </div>
+      </div>
+
+      <!-- 4. Loyalty Milestones -->
+      <div class="reward-card-row">
+        <div class="reward-icon-circle orange-circle">
+          <ion-icon name="trophy-outline"></ion-icon>
+        </div>
+        <div class="reward-meta">
+          <h4 class="reward-title">LOYALTY MILESTONES</h4>
+          <p class="reward-desc">Complete transactions with local businesses to unlock milestone bonuses</p>
+        </div>
+        <div class="reward-badge-pill orange-badge">
+          <span class="badge-num">BONUS</span>
+          <span class="badge-label">POINTS</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cash Wallet Summary Overview -->
+    <div class="wallet-cash-mini-card">
+      <div class="mini-cash-top">
+        <div>
+          <span class="mini-cash-lbl">Current Cash Balance</span>
+          <h3 class="mini-cash-val">₹{{ wallet()?.balance | number:'1.2-2' }}</h3>
+        </div>
+        <ion-button fill="solid" color="primary" (click)="openAddFundsPrompt()" class="mini-add-btn">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Add Funds
+        </ion-button>
+      </div>
+      <div class="mini-savings-row">
+        <ion-icon name="sparkles-outline"></ion-icon>
+        <span>Lifetime Savings: ₹{{ wallet()?.total_savings | number:'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <div class="action-btn-row">
+      <button type="button" class="bd-btn-primary full-width" (click)="goBack()">
+        Close
+      </button>
+    </div>
+  </div>
+</ion-content>

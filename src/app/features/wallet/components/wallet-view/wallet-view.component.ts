@@ -1,16 +1,14 @@
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   IonButton,
   IonButtons,
   IonHeader,
   IonIcon,
   IonModal,
-  IonSpinner,
   IonTitle,
   IonToolbar,
-  IonInfiniteScroll,
-  IonInfiniteScrollContent,
   AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -27,10 +25,23 @@ import {
   trendingUpOutline,
   walletOutline,
   ribbonOutline,
-  addCircleOutline
+  addCircleOutline,
+  peopleOutline,
+  bagHandleOutline,
+  briefcaseOutline,
+  documentTextOutline,
+  checkmarkCircleOutline,
+  shareSocialOutline,
+  informationCircleOutline,
+  swapHorizontalOutline,
+  cashOutline,
+  syncOutline,
+  chatbubbleEllipsesOutline,
+  storefrontOutline,
+  cardOutline,
+  trophyOutline
 } from 'ionicons/icons';
-import { WalletTransactionDTO } from '../../models/wallet.model';
-import { WalletService, BizzCoinTransactionItem } from '../../services/wallet.service';
+import { WalletService } from '../../services/wallet.service';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 
 export interface DisplayTransactionItem {
@@ -43,6 +54,9 @@ export interface DisplayTransactionItem {
   created_at: string;
   isBizzCoin: boolean;
   currencySymbol: string;
+  activityTitle: string;
+  activitySubtitle: string;
+  iconType: 'business' | 'referral' | 'purchase' | 'reward' | 'default';
 }
 
 @Component({
@@ -59,8 +73,6 @@ export interface DisplayTransactionItem {
     IonTitle,
     IonButtons,
     IonButton,
-    IonInfiniteScroll,
-    IonInfiniteScrollContent,
     ListSkeletonComponent
   ],
   templateUrl: './wallet-view.component.html',
@@ -71,6 +83,13 @@ export class WalletViewComponent {
   readonly walletService = inject(WalletService);
   private readonly alertController = inject(AlertController);
 
+  private readonly router = inject(Router);
+
+  @Input() hideHeader = false;
+  @Input() customerName?: string;
+  @Input() customer?: any;
+  @Output() redeemClick = new EventEmitter<void>();
+
   readonly wallet = this.walletService.wallet;
   readonly transactions = this.walletService.transactions;
   readonly bizzCoinsBalance = this.walletService.bizzCoinsBalance;
@@ -79,49 +98,15 @@ export class WalletViewComponent {
   readonly error = this.walletService.error;
   readonly hasMore = this.walletService.hasMore;
 
-  // Active card: 0 = Cash Wallet Card, 1 = Bizz Coin Card
-  readonly activeCardIndex = signal<number>(0);
-
-  // Simplified filters: ALL, CREDIT, DEBIT
-  readonly activeFilter = signal<'ALL' | 'CREDIT' | 'DEBIT'>('ALL');
   readonly selectedTransaction = signal<DisplayTransactionItem | null>(null);
 
-  readonly filteredTransactions = computed(() => {
-    const isCoinCard = this.activeCardIndex() === 1;
-
-    let baseList: DisplayTransactionItem[] = [];
-
-    if (isCoinCard) {
-      baseList = this.bizzCoinsTransactions().map(t => ({
-        id: t.id,
-        type: t.type,
-        amount: t.amount,
-        description: t.description || `Received ${t.amount} Bizz Coins`,
-        reference_type: 'BIZZ_COINS',
-        reference_id: null,
-        created_at: t.created_at,
-        isBizzCoin: true,
-        currencySymbol: '🪙'
-      }));
-    } else {
-      baseList = this.transactions().map(t => ({
-        id: t.id,
-        type: t.type,
-        amount: t.amount,
-        description: t.description || this.getTransactionTypeLabel(t.type),
-        reference_type: t.reference_type,
-        reference_id: t.reference_id,
-        created_at: t.created_at,
-        isBizzCoin: false,
-        currencySymbol: '₹'
-      }));
+  // Computed greeting first name
+  readonly firstName = computed<string>(() => {
+    const raw = this.customerName || this.customer?.name || '';
+    if (!raw || raw.trim().toLowerCase() === 'customer' || raw.trim().toLowerCase() === 'unknown') {
+      return 'Raja';
     }
-
-    const filter = this.activeFilter();
-    if (filter === 'ALL') return baseList;
-    if (filter === 'CREDIT') return baseList.filter(t => t.type === 'CREDIT');
-    if (filter === 'DEBIT') return baseList.filter(t => t.type === 'DEBIT');
-    return baseList;
+    return raw.trim().split(' ')[0];
   });
 
   constructor() {
@@ -138,36 +123,133 @@ export class WalletViewComponent {
       chevronForwardOutline,
       sparklesOutline,
       ribbonOutline,
-      addCircleOutline
+      addCircleOutline,
+      peopleOutline,
+      bagHandleOutline,
+      briefcaseOutline,
+      documentTextOutline,
+      checkmarkCircleOutline,
+      shareSocialOutline,
+      informationCircleOutline,
+      swapHorizontalOutline,
+      cashOutline,
+      syncOutline,
+      chatbubbleEllipsesOutline,
+      storefrontOutline,
+      cardOutline,
+      trophyOutline
     });
   }
 
-  scrollToCard(index: number) {
-    this.activeCardIndex.set(index);
-    const track = document.querySelector('.carousel-track') as HTMLElement;
-    if (track) {
-      const cardWidth = track.clientWidth;
-      track.scrollTo({
-        left: index * cardWidth,
-        behavior: 'smooth'
-      });
-    }
-  }
+  // Helper to format friendly relative time
+  private formatRelativeTime(dateString: string): string {
+    if (!dateString) return 'Recent';
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  onCarouselScroll(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target) return;
-    const cardWidth = target.clientWidth;
-    if (cardWidth > 0) {
-      const newIndex = Math.round(target.scrollLeft / cardWidth);
-      if (newIndex >= 0 && newIndex <= 1 && newIndex !== this.activeCardIndex()) {
-        this.activeCardIndex.set(newIndex);
+      if (diffDays <= 0) {
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        return diffHours < 1 ? 'Just now' : 'Today';
       }
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays === 2) return '2 Days Ago';
+      if (diffDays < 7) return `${diffDays} Days Ago`;
+      return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    } catch {
+      return 'Recent';
     }
   }
 
-  setFilter(filter: 'ALL' | 'CREDIT' | 'DEBIT'): void {
-    this.activeFilter.set(filter);
+  // Helper to determine item display metadata
+  private mapTransactionToDisplay(
+    raw: any,
+    isCoin: boolean
+  ): DisplayTransactionItem {
+    const desc = raw.description || '';
+    const descLower = desc.toLowerCase();
+    const type = raw.type || 'CREDIT';
+    const amount = Number(raw.amount || 0);
+
+    let activityTitle = 'Points Reward';
+    let iconType: 'business' | 'referral' | 'purchase' | 'reward' | 'default' = 'reward';
+
+    if (descLower.includes('business') || descLower.includes('visiting') || descLower.includes('redemption reward')) {
+      activityTitle = 'Business Done';
+      iconType = 'business';
+    } else if (descLower.includes('referral') || descLower.includes('refer') || raw.reference_type === 'REFERRAL') {
+      activityTitle = 'Referral Added';
+      iconType = 'referral';
+    } else if (descLower.includes('purchase') || descLower.includes('order') || descLower.includes('bought') || raw.reference_type === 'VOUCHER') {
+      activityTitle = 'Purchase Made';
+      iconType = 'purchase';
+    } else if (descLower.includes('welcome') || descLower.includes('signup')) {
+      activityTitle = 'Signup Bonus';
+      iconType = 'reward';
+    } else if (type === 'DEBIT') {
+      activityTitle = 'Redeemed Points';
+      iconType = 'purchase';
+    } else if (isCoin) {
+      activityTitle = desc || 'Bizz Points';
+      iconType = 'reward';
+    } else {
+      activityTitle = desc || (type === 'CREDIT' ? 'Added Funds' : 'Paid Out');
+      iconType = 'business';
+    }
+
+    return {
+      id: raw.id,
+      type,
+      amount,
+      description: desc || activityTitle,
+      reference_type: raw.reference_type || null,
+      reference_id: raw.reference_id || null,
+      created_at: raw.created_at,
+      isBizzCoin: isCoin,
+      currencySymbol: isCoin ? '🪙' : '₹',
+      activityTitle,
+      activitySubtitle: this.formatRelativeTime(raw.created_at),
+      iconType
+    };
+  }
+
+  // All combined transactions mapped for display
+  readonly allDisplayTransactions = computed<DisplayTransactionItem[]>(() => {
+    const coins = this.bizzCoinsTransactions().map(t => this.mapTransactionToDisplay(t, true));
+    const cash = this.transactions().map(t => this.mapTransactionToDisplay(t, false));
+
+    // Prefer coin transactions at top, sorted by date descending
+    const combined = [...coins, ...cash];
+    combined.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return combined;
+  });
+
+  // Recent 10 transactions for the scrollable card view
+  readonly recentTransactions = computed<DisplayTransactionItem[]>(() => {
+    return this.allDisplayTransactions().slice(0, 10);
+  });
+
+  // Redemption transactions (where points or wallet was redeemed/debited)
+  readonly redemptionTransactions = computed<DisplayTransactionItem[]>(() => {
+    return this.allDisplayTransactions().filter(t => t.type === 'DEBIT');
+  });
+
+  navigateToHistory(): void {
+    this.router.navigate(['/wallet/history']);
+  }
+
+  navigateToEarnCoins(): void {
+    this.router.navigate(['/wallet/earn-bizz-coins']);
+  }
+
+  navigateToEarnWalletPoints(): void {
+    this.router.navigate(['/wallet/earn-wallet-points']);
+  }
+
+  navigateToRedemptions(): void {
+    this.router.navigate(['/wallet/my-redemptions']);
   }
 
   viewTransactionDetails(tx: DisplayTransactionItem): void {
@@ -176,30 +258,6 @@ export class WalletViewComponent {
 
   closeDetailsModal(): void {
     this.selectedTransaction.set(null);
-  }
-
-  getTransactionIcon(tx: DisplayTransactionItem): string {
-    if (tx.isBizzCoin) {
-      return 'sparkles-outline';
-    }
-    switch (tx.type) {
-      case 'CREDIT': return 'arrow-up-outline';
-      case 'DEBIT': return 'arrow-down-outline';
-      case 'SAVING': return 'gift-outline';
-      default: return 'receipt-outline';
-    }
-  }
-
-  getTransactionTypeLabel(type: string, isBizzCoin = false): string {
-    if (isBizzCoin) {
-      return type === 'CREDIT' ? 'Bizz Coins Credit' : 'Bizz Coins Redeemed';
-    }
-    switch (type) {
-      case 'CREDIT': return 'Added Funds';
-      case 'DEBIT': return 'Paid out / Redeemed';
-      case 'SAVING': return 'Savings / Cashback';
-      default: return 'Transaction';
-    }
   }
 
   retryLoad(): void {
@@ -221,7 +279,7 @@ export class WalletViewComponent {
   async openAddFundsPrompt(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Add Funds',
-      subHeader: 'Enter amount to add to your wallet',
+      subHeader: 'Enter amount to add to your cash wallet',
       inputs: [
         {
           name: 'amount',

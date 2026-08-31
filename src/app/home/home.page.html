@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true" class="home-content">
+<ion-content [fullscreen]="true" class="home-content" [scrollY]="activeNavTab() !== 'home' || userRole() === 'MEMBER'">
   <!-- Pull to Refresh -->
   <ion-refresher slot="fixed" pullMin="120" pullFactor="0.5" (ionRefresh)="onRefresh($event)" mode="ios">
     <ion-refresher-content pullingText="Pull down further to refresh..." refreshingText="Updating deals & wallet...">
@@ -9,42 +9,31 @@
   <div class="home-layout">
     @if (activeNavTab() === 'home') {
     @if (userRole() === 'MEMBER') {
-    <app-member-home (notificationClick)="onNotificationClick()" (referralsClick)="onTabSelect('referrals')" (walletClick)="onWalletClick()" />
+    <app-member-home 
+      (notificationClick)="onNotificationClick()" 
+      (referralsClick)="onTabSelect('referrals')" 
+      (walletClick)="onWalletClick()" 
+      (searchClick)="onSearchSubmit('')"
+      (receivedBusinessClick)="referralInitialSegment.set('RECEIVED'); onTabSelect('referrals')"
+      (givenBusinessClick)="referralInitialSegment.set('GIVEN'); onTabSelect('referrals')"
+    />
     } @else {
-    @if (loading() && !homeFeed()) {
-    <!-- Loading State -->
-    <div class="loading-container">
-      <ion-spinner name="crescent" color="primary" />
-      <p class="loading-text">Discovering mega deals & savings around you...</p>
-    </div>
-    } @else if (error() && !homeFeed()) {
-    <!-- Error State -->
-    <div class="error-container">
-      <ion-icon name="alert-circle-outline" class="error-icon" />
-      <h3 class="error-title">Oops! Couldn't load deals</h3>
-      <p class="error-desc">{{ error() }}</p>
-      <button type="button" class="retry-btn bd-btn-primary" (click)="retryRefresh()">
-        Try Again
-      </button>
-    </div>
-    } @else if (homeFeed(); as feed) {
-    <app-customer-home [feed]="feed" [customer]="customerProfile()" [wallet]="walletService.wallet() || fallbackWallet" [unreadNotificationsCount]="unreadNotificationsCount()"
-      [selectedCategory]="selectedCategory()" [filteredPercentageDeals]="filteredPercentageDealsBySearch()"
-      [filteredTopBiz]="filteredTopBizBySearch()" [filteredFeaturedBiz]="filteredFeaturedBySearch()"
-      [filteredFlatOffers]="filteredFlatOffersBySearch()" [filteredCashbackOffers]="filteredCashbackOffersBySearch()"
-      [activeVouchersCount]="activeVouchers().length" [activeVouchers]="activeVouchers()"
+    <app-customer-home 
+      [customer]="customerProfile()" 
+      [wallet]="walletService.wallet() || fallbackWallet" 
+      [unreadNotificationsCount]="unreadNotificationsCount()"
       [isScrolled]="isHeaderScrolled()"
-      (walletClick)="onWalletClick()" (notificationClick)="onNotificationClick()"
-      (searchChange)="onSearchChange($event)" (searchSubmit)="onSearchSubmit($event)" (dealClick)="onDealClick($event)"
-      (businessClick)="onBusinessClick($event)" (categorySelect)="onCategorySelect($event)"
-      (vouchersClick)="openVouchersModal()" (voucherClick)="openSingleVoucherModal($event)"
-      (claimOffer)="onClaimOffer($event)" />
-    }
+      (walletClick)="onWalletClick()" 
+      (notificationClick)="onNotificationClick()"
+      (searchChange)="onSearchChange($event)" 
+      (searchSubmit)="onSearchSubmit($event)"
+      (redeemClick)="onTabSelect('vouchers')" 
+    />
     }
     } @else if (activeNavTab() === 'meetings') {
     <app-meetings-page />
     } @else if (activeNavTab() === 'referrals') {
-    <app-referrals-page />
+    <app-referrals-page [initialSegment]="referralInitialSegment()" />
     } @else if (activeNavTab() === 'menu') {
     <app-menu-view />
     } @else if (activeNavTab() === 'videos') {

@@ -1,9 +1,9 @@
-<div class="wallet-container">
-  @if (loading() && !wallet()) {
-    <div style="padding-top: 8px;">
-      <app-list-skeleton [count]="5"></app-list-skeleton>
+<div class="wallet-container" [class.no-header-mode]="hideHeader">
+  @if (loading() && !wallet() && bizzCoinsBalance() === 0 && allDisplayTransactions().length === 0) {
+    <div style="padding-top: 16px;">
+      <app-list-skeleton [count]="4"></app-list-skeleton>
     </div>
-  } @else if (error()) {
+  } @else if (error() && !wallet() && bizzCoinsBalance() === 0) {
     <div class="error-state">
       <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
       <h3>Could not load wallet data</h3>
@@ -11,8 +11,8 @@
       <button class="retry-btn bd-btn-primary" (click)="retryLoad()">Try Again</button>
     </div>
   } @else {
-    <!-- Sticky Fixed Top Container -->
-    <div class="sticky-wallet-top">
+    <!-- Optional Page Top Header (omitted when hideHeader is true) -->
+    @if (!hideHeader) {
       <div class="page-top-header">
         <div class="header-content">
           <div class="header-icon-box">
@@ -24,237 +24,242 @@
           </div>
         </div>
       </div>
+    }
 
-      <!-- Manual Swipeable Carousel (Cards Sync Contextually with Transactions) -->
-      <div class="carousel-container">
-        <div class="carousel-track" (scroll)="onCarouselScroll($event)">
-          <!-- 1. Cash Balance Card -->
-          <div class="balance-card cash-card">
-            <div class="balance-card-inner">
-              <div class="card-bg-glow"></div>
-              <div class="balance-section" style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                  <span class="label">Cash Balance</span>
-                  <h1 class="amount">₹{{ wallet()?.balance | number:'1.2-2' }}</h1>
-                </div>
-                <ion-button fill="clear" color="light" (click)="openAddFundsPrompt()" style="--padding-start: 8px; --padding-end: 8px; font-weight: 600; font-size: 13px; margin: 0; background: rgba(255,255,255,0.15); border-radius: var(--bizzdeal-radius-full);">
-                  <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-                  Add Funds
-                </ion-button>
-              </div>
-              <div class="divider"></div>
-              <div class="savings-section">
-                <div class="savings-left">
-                  <ion-icon name="sparkles-outline" class="savings-icon"></ion-icon>
-                  <div>
-                    <span class="label">Total Lifetime Savings</span>
-                    <h3 class="savings-amount">₹{{ wallet()?.total_savings | number:'1.2-2' }}</h3>
-                  </div>
-                </div>
-                <span class="badge">Active Member</span>
-              </div>
-            </div>
+    <!-- 0. User Greeting Row Above Points Card -->
+    <div class="user-greeting-row">
+      <h3 class="user-greeting-text">Hi, {{ firstName() }} 👋</h3>
+    </div>
+
+    <!-- 1. Dual Balance Cards Row (Bizz Coins & Wallet Balance in same row) -->
+    <div class="balance-cards-row">
+      <!-- Card A: Bizz Coins Balance Card -->
+      <div class="balance-card bizz-coins-card" (click)="navigateToEarnCoins()">
+        <div class="card-glow"></div>
+        <div class="card-content-layout">
+          <div class="card-text-side">
+            <span class="card-type-label">Bizz Coins</span>
+            <h2 class="balance-number">{{ bizzCoinsBalance() | number }}</h2>
+            <span class="balance-subtext">Coins Balance</span>
           </div>
 
-          <!-- 2. Bizz Coin Balance Card -->
-          <div class="balance-card bizz-coin-card">
-            <div class="balance-card-inner">
-              <div class="card-bg-glow coin-glow"></div>
-              <div class="balance-section">
-                <div class="coin-header-top">
-                  <span class="label">Bizz Coin Balance</span>
-                  <span class="coin-ribbon-badge">
-                    <ion-icon name="sparkles-outline"></ion-icon> Rewards
-                  </span>
-                </div>
-                <h1 class="amount coin-amount-text">
-                  <span class="coin-emoji">🪙</span> {{ bizzCoinsBalance() | number }} <span class="coin-unit">Coins</span>
-                </h1>
-              </div>
-              <div class="divider"></div>
-              <div class="savings-section">
-                <div class="savings-left">
-                  <ion-icon name="gift-outline" class="coin-gift-icon"></ion-icon>
-                  <div>
-                    <span class="label">Non-Expiring Bizz Coins</span>
-                    <h3 class="savings-amount">Redeemable on Offers</h3>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <!-- Big Coin Icon in Empty Space -->
+          <div class="card-big-icon-wrap coin-icon-wrap">
+            <svg class="card-big-coin-svg" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="coinGradBig" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FFF3A8" />
+                  <stop offset="35%" stop-color="#FFD13B" />
+                  <stop offset="70%" stop-color="#F59E0B" />
+                  <stop offset="100%" stop-color="#D97706" />
+                </linearGradient>
+                <linearGradient id="coinRimBig" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FFFBEB" />
+                  <stop offset="50%" stop-color="#FBBF24" />
+                  <stop offset="100%" stop-color="#B45309" />
+                </linearGradient>
+                <filter id="goldGlowBig" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="2" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+              <ellipse cx="26" cy="26" rx="24" ry="24" fill="url(#coinRimBig)" />
+              <circle cx="26" cy="24" r="21" fill="url(#coinGradBig)" filter="url(#goldGlowBig)" />
+              <circle cx="26" cy="24" r="17" fill="none" stroke="#FFFBEB" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.9" />
+              <polygon points="26,13 29,20.5 37,21 31,26 33,34 26,29.5 19,34 21,26 15,21 23,20.5" fill="#FFFBEB" stroke="#D97706" stroke-width="0.8" stroke-linejoin="round" />
+              <circle cx="25" cy="22" r="1.5" fill="#FFFFFF" />
+            </svg>
           </div>
-        </div>
-
-        <!-- Carousel Pagination Indicator Dots -->
-        <div class="carousel-dots">
-          <button 
-            type="button" 
-            class="dot" 
-            [class.active]="activeCardIndex() === 0" 
-            (click)="scrollToCard(0)"
-            aria-label="Cash Balance Card">
-          </button>
-          <button 
-            type="button" 
-            class="dot" 
-            [class.active]="activeCardIndex() === 1" 
-            (click)="scrollToCard(1)"
-            aria-label="Bizz Coin Balance Card">
-          </button>
         </div>
       </div>
 
-      <!-- 2. Transaction List Header -->
-      <div class="list-header">
-        <h2 class="section-title">
-          {{ activeCardIndex() === 1 ? '🪙 Bizz Coin History' : 'Cash History' }}
-        </h2>
-        <span class="tx-count">{{ filteredTransactions().length }} items</span>
-      </div>
+      <!-- Card B: Wallet Cash Balance Card -->
+      <div class="balance-card wallet-cash-card" (click)="openAddFundsPrompt()">
+        <div class="card-glow"></div>
+        <div class="card-content-layout">
+          <div class="card-text-side">
+            <span class="card-type-label">Wallet Balance</span>
+            <h2 class="balance-number">₹{{ (wallet()?.balance || 0) | number:'1.0-2' }}</h2>
+            <span class="balance-subtext">Available Cash</span>
+            <button type="button" class="btn-add-balance" (click)="openAddFundsPrompt(); $event.stopPropagation()">
+              + Add Funds
+            </button>
+          </div>
 
-      <!-- 3. Clean 3 Filter Chips (Contextually Filtered by Selected Card) -->
-      <div class="filter-chips">
-        <button 
-          type="button" 
-          class="filter-chip" 
-          [class.active]="activeFilter() === 'ALL'" 
-          (click)="setFilter('ALL')">
-          All
-        </button>
-        <button 
-          type="button" 
-          class="filter-chip" 
-          [class.active]="activeFilter() === 'CREDIT'" 
-          (click)="setFilter('CREDIT')">
-          Credits
-        </button>
-        <button 
-          type="button" 
-          class="filter-chip" 
-          [class.active]="activeFilter() === 'DEBIT'" 
-          (click)="setFilter('DEBIT')">
-          Debits
-        </button>
+          <!-- Big Wallet Icon in Empty Space -->
+          <div class="card-big-icon-wrap wallet-icon-wrap">
+            <svg class="card-big-wallet-svg" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="walletGradBig" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#34D399" />
+                  <stop offset="60%" stop-color="#059669" />
+                  <stop offset="100%" stop-color="#047857" />
+                </linearGradient>
+                <filter id="walletGlowBig" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="2.5" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+              <rect x="5" y="11" width="42" height="30" rx="8" fill="url(#walletGradBig)" filter="url(#walletGlowBig)" />
+              <rect x="5" y="11" width="42" height="30" rx="8" stroke="rgba(255, 255, 255, 0.4)" stroke-width="1.2" />
+              <path d="M5 20 C14 16 38 16 47 20" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1.2" stroke-linecap="round" />
+              <rect x="30" y="19" width="17" height="14" rx="4" fill="#047857" stroke="#A7F3D0" stroke-width="1.2" />
+              <circle cx="36" cy="26" r="2.2" fill="#FDE68A" />
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- 4. Transactions List -->
-    @if (filteredTransactions().length> 0) {
-      <div class="tx-list">
-        @for (tx of filteredTransactions(); track tx.id) {
-          <div class="tx-item bd-card" [class.is-coin-item]="tx.isBizzCoin" (click)="viewTransactionDetails(tx)">
-            <div class="tx-icon-wrapper" [ngClass]="tx.isBizzCoin ? 'coin-icon-bg' : tx.type.toLowerCase()">
-              @if (tx.isBizzCoin) {
-                <span class="coin-emoji-small">🪙</span>
-              } @else {
-                <ion-icon [name]="getTransactionIcon(tx)"></ion-icon>
-              }
-            </div>
-            
-            <div class="tx-details">
-              <span class="tx-title">{{ tx.description || getTransactionTypeLabel(tx.type, tx.isBizzCoin) }}</span>
-              <div class="tx-meta">
-                @if (tx.isBizzCoin) {
-                  <span class="ref-tag coin-tag">BIZZ COINS</span>
-                  <span class="bullet">•</span>
-                } @else if (tx.reference_type) {
-                  <span class="ref-tag">{{ tx.reference_type }}</span>
-                  <span class="bullet">•</span>
+    <!-- 2. Action Icons Row (White Rounded Container - 4 Actions) -->
+    <div class="actions-container-card">
+      <div class="action-item" (click)="navigateToEarnCoins()">
+        <div class="action-icon-btn btn-earn">
+          <ion-icon name="ribbon-outline"></ion-icon>
+        </div>
+        <span class="action-label">Earn<br>Bizz Coins</span>
+      </div>
+
+      <div class="action-item" (click)="navigateToEarnWalletPoints()">
+        <div class="action-icon-btn btn-my-points">
+          <ion-icon name="cash-outline"></ion-icon>
+        </div>
+        <span class="action-label">Earn<br>Wallet Points</span>
+      </div>
+
+      <div class="action-item" (click)="navigateToHistory()">
+        <div class="action-icon-btn btn-history">
+          <ion-icon name="document-text-outline"></ion-icon>
+        </div>
+        <span class="action-label">History</span>
+      </div>
+
+      <div class="action-item" (click)="navigateToRedemptions()">
+        <div class="action-icon-btn btn-redeem">
+          <ion-icon name="gift-outline"></ion-icon>
+        </div>
+        <span class="action-label">Redeem</span>
+      </div>
+    </div>
+
+    <!-- 3. Recent Activity Section (Only this list scrolls!) -->
+    <div class="recent-activity-card">
+      <div class="activity-card-header">
+        <h3 class="activity-title">Recent Activity</h3>
+        <button type="button" class="view-all-link" (click)="navigateToHistory()">View all</button>
+      </div>
+
+      <!-- Dedicated Scrollable Area: Top 10 Transactions -->
+      <div class="activity-items-list scrollable-list">
+        @if (recentTransactions().length > 0) {
+          @for (item of recentTransactions(); track item.id) {
+            <div class="activity-row" (click)="viewTransactionDetails(item)">
+              <div class="activity-icon-bubble" [ngClass]="'icon-' + item.iconType">
+                @if (item.iconType === 'business') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m11 17 2 2a1 1 0 1 0 3-3"/>
+                    <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/>
+                    <path d="m21 3 1 11h-2"/>
+                    <path d="M3 3 2 14l10 7"/>
+                    <path d="m2 14 7-3"/>
+                  </svg>
+                } @else if (item.iconType === 'referral') {
+                  <ion-icon name="people-outline"></ion-icon>
+                } @else if (item.iconType === 'purchase') {
+                  <ion-icon name="bag-handle-outline"></ion-icon>
+                } @else {
+                  <ion-icon name="sparkles-outline"></ion-icon>
                 }
-                <span class="tx-date">{{ tx.created_at | date:'mediumDate' }}</span>
+              </div>
+
+              <div class="activity-meta">
+                <span class="activity-item-title">{{ item.activityTitle }}</span>
+                <span class="activity-item-time">{{ item.activitySubtitle }}</span>
+              </div>
+
+              <div class="activity-amount" [class.is-debit]="item.type === 'DEBIT'">
+                {{ item.type === 'DEBIT' ? '-' : '+' }}{{ item.currencySymbol }}{{ item.amount | number }}
               </div>
             </div>
-
-            <div class="tx-amount-section">
-              <span class="tx-amount" [ngClass]="tx.isBizzCoin ? 'coin-tx-amount' : tx.type.toLowerCase()">
-                {{ tx.type === 'DEBIT' ? '-' : '+' }}{{ tx.currencySymbol }}{{ tx.amount | number: (tx.isBizzCoin ? '1.0-0' : '1.2-2') }}
-                @if (tx.isBizzCoin) { <span class="coin-sub-label">Coins</span> }
-              </span>
-              <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
-            </div>
+          }
+        } @else {
+          <div class="activity-empty-state">
+            <ion-icon name="sparkles-outline" class="empty-sparkle"></ion-icon>
+            <p>No recent activity yet.<br>Earn points by shopping and referring friends!</p>
           </div>
         }
       </div>
-    } @else {
-      <div class="empty-state">
-        <ion-icon name="receipt-outline" class="empty-icon"></ion-icon>
-        <h3>No Transactions Found</h3>
-        <p>There are no transactions matching the selected filter.</p>
-      </div>
-    }
-    
-    <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore()">
-      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more transactions..."></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
+    </div>
   }
 </div>
 
-<!-- Transaction Details Drawer Modal -->
-<ion-modal 
-  [isOpen]="!!selectedTransaction()" 
-  (didDismiss)="closeDetailsModal()" 
-  class="details-modal"
-  mode="ios">
+<!-- ==================== MODALS ==================== -->
+
+<!-- 5. Transaction Details Modal -->
+<ion-modal [isOpen]="!!selectedTransaction()" (didDismiss)="closeDetailsModal()" class="tx-details-modal">
   <ng-template>
+    <ion-header class="ion-no-border premium-header">
+      <ion-toolbar>
+        <ion-title>Transaction Details</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeDetailsModal()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
     @if (selectedTransaction(); as tx) {
-      <ion-header class="ion-no-border premium-header">
-        <ion-toolbar>
-          <ion-title>Transaction Details</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeDetailsModal()">
-              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      
-      <div class="modal-content-wrapper">
-        <div class="receipt-header">
-          <div class="receipt-icon-ring" [ngClass]="tx.isBizzCoin ? 'coin-icon-bg' : tx.type.toLowerCase()">
-            @if (tx.isBizzCoin) {
-              <span style="font-size: 28px;">🪙</span>
+      <div class="modal-tx-content">
+        <div class="tx-details-header" [class.is-debit]="tx.type === 'DEBIT'">
+          <div class="tx-large-icon" [ngClass]="'icon-' + tx.iconType">
+            @if (tx.iconType === 'business') {
+              <ion-icon name="briefcase-outline"></ion-icon>
+            } @else if (tx.iconType === 'referral') {
+              <ion-icon name="people-outline"></ion-icon>
+            } @else if (tx.iconType === 'purchase') {
+              <ion-icon name="bag-handle-outline"></ion-icon>
             } @else {
-              <ion-icon [name]="getTransactionIcon(tx)"></ion-icon>
+              <ion-icon name="sparkles-outline"></ion-icon>
             }
           </div>
-          <span class="receipt-type">{{ getTransactionTypeLabel(tx.type, tx.isBizzCoin) }}</span>
-          <h2 class="receipt-amount" [ngClass]="tx.isBizzCoin ? 'coin-tx-amount' : tx.type.toLowerCase()">
-            {{ tx.type === 'DEBIT' ? '-' : '+' }}{{ tx.currencySymbol }}{{ tx.amount | number: (tx.isBizzCoin ? '1.0-0' : '1.2-2') }}
-            @if (tx.isBizzCoin) { <span>Coins</span> }
+          <h2 class="tx-detail-amount">
+            {{ tx.type === 'DEBIT' ? '-' : '+' }}{{ tx.currencySymbol }}{{ tx.amount | number }}
           </h2>
-          <p class="receipt-title">{{ tx.description }}</p>
+          <span class="tx-status-badge" [class.status-credit]="tx.type === 'CREDIT'" [class.status-debit]="tx.type === 'DEBIT'">
+            {{ tx.type === 'CREDIT' ? 'Credited' : 'Redeemed' }}
+          </span>
         </div>
 
-        <div class="receipt-body">
-          <div class="detail-row">
-            <span class="detail-label">Status</span>
-            <span class="detail-value status-success">Completed</span>
+        <div class="tx-info-list">
+          <div class="tx-info-row">
+            <span class="info-label">Title</span>
+            <span class="info-val">{{ tx.activityTitle }}</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Transaction ID</span>
-            <span class="detail-value mono">{{ tx.id }}</span>
+          <div class="tx-info-row">
+            <span class="info-label">Description</span>
+            <span class="info-val">{{ tx.description }}</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Date & Time</span>
-            <span class="detail-value">{{ tx.created_at | date:'medium' }}</span>
+          <div class="tx-info-row">
+            <span class="info-label">Date & Time</span>
+            <span class="info-val">{{ tx.created_at | date:'medium' }}</span>
           </div>
-          @if (tx.isBizzCoin) {
-            <div class="detail-row">
-              <span class="detail-label">Category</span>
-              <span class="detail-value coin-tag">Bizz Coins Reward</span>
-            </div>
-          } @else if (tx.reference_type) {
-            <div class="detail-row">
-              <span class="detail-label">Reference Type</span>
-              <span class="detail-value">{{ tx.reference_type }}</span>
+          @if (tx.reference_type) {
+            <div class="tx-info-row">
+              <span class="info-label">Reference</span>
+              <span class="info-val">{{ tx.reference_type }}</span>
             </div>
           }
-          @if (tx.reference_id) {
-            <div class="detail-row">
-              <span class="detail-label">Reference ID</span>
-              <span class="detail-value mono">{{ tx.reference_id }}</span>
-            </div>
-          }
+          <div class="tx-info-row">
+            <span class="info-label">Transaction ID</span>
+            <span class="info-val id-mono">{{ tx.id }}</span>
+          </div>
+        </div>
+
+        <div class="modal-action-row" style="margin-top: 24px;">
+          <button type="button" class="bd-btn-primary full-width" (click)="closeDetailsModal()">
+            Done
+          </button>
         </div>
       </div>
     }

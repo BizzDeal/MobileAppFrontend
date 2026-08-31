@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Input, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -94,6 +94,11 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReferralsPageComponent implements OnInit {
+  @Input() set initialSegment(val: 'GIVEN' | 'RECEIVED' | undefined) {
+    if (val) {
+      this.activeSegment.set(val);
+    }
+  }
   private readonly referralsService = inject(ReferralsService);
   private readonly profileService = inject(ProfileService);
   private readonly toastService = inject(ToastService);
@@ -191,6 +196,9 @@ export class ReferralsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.initialSegment) {
+      this.activeSegment.set(this.initialSegment);
+    }
     this.fetchReferrals();
   }
 

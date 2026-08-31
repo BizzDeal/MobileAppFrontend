@@ -19,6 +19,19 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'referrals/new',
+    loadComponent: () => import('./features/referrals/pages/referral-slip/referral-slip.page').then(m => m.ReferralSlipPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'referrals',
+    pathMatch: 'full',
+    redirectTo: () => {
+      const router = inject(Router);
+      return router.createUrlTree(['/home'], { queryParams: { tab: 'referrals' } });
+    },
+  },
+  {
     path: 'business-directory',
     redirectTo: () => {
       const router = inject(Router);

@@ -6,10 +6,10 @@
 .page-container {
   max-width: 680px;
   margin: 0 auto;
-  padding: var(--bizzdeal-spacing-md, 16px);
+  padding: 10px 16px calc(24px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* 1. Top Segment Switcher */

@@ -59,7 +59,7 @@ export class ReferralsService {
       params = params.set('search', searchQuery.trim());
     }
     if (districtId) {
-      params = params.set('districts', districtId);
+      params = params.set('district', districtId);
     }
     if (excludeDistricts) {
       params = params.set('exclude_districts', excludeDistricts);

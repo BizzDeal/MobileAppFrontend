@@ -340,18 +340,22 @@
     </div>
 
     <!-- Regional Summary -->
-    <section class="regional-summary-section">
-      <div class="regional-banner">
-        <h3 class="regional-title">Regional Summary</h3>
-        <div class="regional-card">
-          <div class="regional-stat-row">
-            <span class="stat-label">Total Business Value - {{ regionalName() }} Region:</span>
-            <strong class="stat-value">₹{{ (regionalStats()?.totalBusinessValue || regionalStats()?.revenue || 0) | number:'1.0-0' }}+</strong>
-          </div>
-          <div class="regional-stat-row">
-            <span class="stat-label">Total Referrals:</span>
-            <strong class="stat-value">{{ (regionalStats()?.totalReferrals || 0) | number }}</strong>
-          </div>
+    <section class="feed-section regional-summary-section">
+      <div class="section-header">
+        <div class="header-left">
+          <ion-icon name="globe-outline" class="section-icon spark" />
+          <h2 class="section-title">Regional Summary</h2>
+        </div>
+      </div>
+      <div class="regional-card">
+        <div class="regional-stat-row">
+          <span class="stat-label">Total Business Value - {{ regionalName() }} Region</span>
+          <strong class="stat-value">₹{{ (regionalStats()?.totalBusinessValue || regionalStats()?.revenue || 0) | number:'1.0-0' }}+</strong>
+        </div>
+        <div class="card-divider"></div>
+        <div class="regional-stat-row">
+          <span class="stat-label">Total Referrals</span>
+          <strong class="stat-value">{{ (regionalStats()?.totalReferrals || 0) | number }}</strong>
         </div>
       </div>
     </section>

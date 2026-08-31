@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import {
   IonBadge,
   IonHeader,
@@ -64,6 +64,7 @@ export class ConversationListComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly authSession = inject(AuthSessionService);
 
+  readonly hideHeader = input<boolean>(false);
   readonly selectConversation = output<string>();
 
   readonly conversations = this.chatService.conversations;
@@ -74,7 +75,7 @@ export class ConversationListComponent implements OnInit {
   readonly displayedList = signal<any[]>([]);
   readonly isLoading = signal<boolean>(false);
   readonly hasMore = signal<boolean>(true);
-  
+
   private currentPage = 1;
   private readonly pageSize = 20;
 
@@ -88,7 +89,7 @@ export class ConversationListComponent implements OnInit {
       micOutline,
       peopleOutline
     });
-    
+
     // We listen to search filter changes to trigger backend search
     // Since we want debounce, we'll do it manually in onSearchChange, or we can just let it reload
   }

@@ -30,6 +30,16 @@
   background: var(--bizzdeal-bg-surface, #ffffff);
   border-bottom: 1px solid var(--bizzdeal-border-color, #e2e8f0);
 
+  &.no-header-mode {
+    padding-top: 4px;
+    box-shadow: none;
+
+    .search-section {
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+  }
+
   .chat-header-title-row {
     padding: 6px var(--bizzdeal-spacing-md) 2px var(--bizzdeal-spacing-md);
 

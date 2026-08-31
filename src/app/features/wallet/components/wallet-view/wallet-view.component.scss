@@ -9,60 +9,95 @@
 }
 
 .wallet-container {
-  padding: 8px 16px 12px 16px;
+  padding: 0;
   background-color: var(--bizzdeal-bg-main, #f8fafc);
   flex: 1;
   min-height: 0;
   height: 100%;
-  overflow: hidden;
+  overflow-y: auto;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 
   &.no-header-mode {
-    padding-top: 6px;
+    padding-top: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 0px)) + 6px);
   }
 }
 
-// Page Top Header (when hideHeader is false)
-.page-top-header {
+// App Page Header
+.app-page-header {
+  background: var(--bizzdeal-bg-surface, #ffffff);
+  border-bottom: 1px solid var(--bizzdeal-border-color, #e2e8f0);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  padding: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 0px)) + 8px) 16px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 40;
   flex-shrink: 0;
-  margin-bottom: 2px;
-  padding-top: calc(var(--bizzdeal-spacing-sm, 6px) + var(--ion-safe-area-top, env(safe-area-inset-top, 0px)));
 
-  .header-content {
+  .header-brand-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
   }
 
-  .header-icon-box {
-    width: 40px;
-    height: 40px;
+  .header-icon-badge {
+    width: 42px;
+    height: 42px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #1877f2 0%, #0d52b9 100%);
+    background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-size: 22px;
-    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.25);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 1.35rem;
+    }
   }
 
-  .header-text {
-    h2 {
+  .header-title-group {
+    flex: 1;
+    min-width: 0;
+
+    .header-title {
       margin: 0;
-      font-size: 18px;
+      font-size: 1.1rem;
       font-weight: 700;
-      color: var(--bizzdeal-text-primary, #1e293b);
+      color: #0f172a;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    p {
+
+    .header-subtitle {
       margin: 2px 0 0;
-      font-size: 12px;
-      color: var(--bizzdeal-text-secondary, #64748b);
+      font-size: 0.78rem;
+      color: #64748b;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
+}
+
+.wallet-body-content {
+  padding: 12px 16px calc(90px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
 }
 
 // 0. User Greeting Row

@@ -1,18 +1,26 @@
-<ion-header class="ion-no-border premium-header">
-  <ion-toolbar>
-    <ion-title>Notifications</ion-title>
-    <ion-buttons slot="end">
-      @if (unreadCount()> 0) {
-        <ion-button (click)="markAllAsRead()" color="primary" class="mark-all-btn">
-          <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
-          Mark all read
-        </ion-button>
+<ion-header class="ion-no-border">
+  <div class="app-page-header">
+    <div class="header-brand-group">
+      <div class="header-icon-badge">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </div>
+      <div class="header-title-group">
+        <h2 class="header-title">NOTIFICATIONS</h2>
+        <p class="header-subtitle">Stay updated with alerts and activities</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      @if (unreadCount() > 0) {
+        <button type="button" (click)="markAllAsRead()" class="mark-all-pill-btn" aria-label="Mark all read">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+          <span>Mark all read</span>
+        </button>
       }
-      <ion-button (click)="closeModal()">
-        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+      <button type="button" class="header-close-btn" (click)="closeModal()" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
 </ion-header>
 
 <ion-content color="light">

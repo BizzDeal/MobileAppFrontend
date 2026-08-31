@@ -67,17 +67,19 @@ export interface MemberBusinessDTO {
   full_name: string;
   phone: string;
   email: string;
-  profile: {
-    full_name: string;
-    whatsapp: string;
-    address: string;
-    district_id: string;
-    state_id: string;
+  profile_pic_url?: string | null;
+  profile?: {
+    full_name?: string;
+    whatsapp?: string;
+    address?: string;
+    district_id?: string;
+    state_id?: string;
   };
   businessProfile?: {
     business_name: string;
-    description: string;
-    category_id: string;
+    description?: string;
+    category_id?: string;
+    category_name?: string | null;
   };
 }
 

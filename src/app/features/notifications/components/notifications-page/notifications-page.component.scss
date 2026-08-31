@@ -4,16 +4,109 @@
   height: 100%;
 }
 
-ion-toolbar {
-  --background: var(--ion-color-light);
-  --border-width: 0;
-}
+.app-page-header {
+  background: var(--bizzdeal-bg-surface, #ffffff);
+  border-bottom: 1px solid var(--bizzdeal-border-color, #e2e8f0);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  padding: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 0px)) + 8px) 16px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 
-.mark-all-btn {
-  font-size: 0.85rem;
-  --padding-start: 8px;
-  --padding-end: 8px;
-  text-transform: none;
+  .header-brand-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .header-icon-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 1.35rem;
+    }
+  }
+
+  .header-title-group {
+    flex: 1;
+    min-width: 0;
+
+    .header-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-subtitle {
+      margin: 2px 0 0;
+      font-size: 0.78rem;
+      color: #64748b;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mark-all-pill-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(30, 136, 229, 0.1);
+    color: #1e88e5;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+
+    ion-icon {
+      font-size: 0.95rem;
+    }
+  }
+
+  .header-close-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+  }
 }
 
 /* --- Chips Filter --- */
@@ -21,7 +114,7 @@ ion-toolbar {
   display: flex;
   gap: var(--bizzdeal-spacing-sm);
   overflow-x: auto;
-  padding: var(--bizzdeal-spacing-md);
+  padding: 10px 16px;
   -webkit-overflow-scrolling: touch;
   background: var(--ion-color-light);
   border-bottom: 1px solid var(--bizzdeal-border-color);

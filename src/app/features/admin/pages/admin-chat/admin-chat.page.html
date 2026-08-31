@@ -3,7 +3,7 @@
 
   <ion-content style="--background: #fff;">
     <div class="admin-chat-container">
-      <app-conversation-list (selectConversation)="onConversationSelect($event)"></app-conversation-list>
+      <app-conversation-list [hideHeader]="true" (selectConversation)="onConversationSelect($event)"></app-conversation-list>
     </div>
   </ion-content>
 } @else {

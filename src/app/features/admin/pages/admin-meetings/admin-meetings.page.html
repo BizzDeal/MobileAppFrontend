@@ -1,7 +1,15 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar class="admin-toolbar px-2 pt-2">
-    <ion-title>Manage Meetings</ion-title>
-    <ion-buttons slot="end">
+  <div class="app-page-header">
+    <div class="header-brand-group">
+      <div class="header-icon-badge">
+        <ion-icon name="calendar-outline"></ion-icon>
+      </div>
+      <div class="header-title-group">
+        <h2 class="header-title">MANAGE MEETINGS</h2>
+        <p class="header-subtitle">Schedule and organize member meetings</p>
+      </div>
+    </div>
+    <div class="header-actions">
       @if (isDesktop) {
         <button (click)="openMeetingModal()" class="create-meeting-btn premium-btn mr-2" style="display: flex; align-items: center; gap: 8px;">
           <ion-icon name="add-outline"></ion-icon>
@@ -14,11 +22,11 @@
           <span class="filter-active-dot"></span>
         }
       </button>
-    </ion-buttons>
-  </ion-toolbar>
+    </div>
+  </div>
 </ion-header>
 
-<ion-content class="admin-content ion-padding">
+<ion-content class="admin-content">
 
 
   <ion-segment [value]="selectedTab()" (ionChange)="onTabChange($event)" class="premium-segment" mode="ios">

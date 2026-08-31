@@ -4,10 +4,12 @@
   </ion-refresher>
 
   <!-- Sticky Header & Search Bar -->
-  <div class="chat-list-header">
-    <div class="chat-header-title-row">
-      <h2 class="chat-page-title">Chats</h2>
-    </div>
+  <div class="chat-list-header" [class.no-header-mode]="hideHeader()">
+    @if (!hideHeader()) {
+      <div class="chat-header-title-row">
+        <h2 class="chat-page-title">Chats</h2>
+      </div>
+    }
     <div class="search-section">
       <ion-searchbar 
         placeholder="Search chats..." 

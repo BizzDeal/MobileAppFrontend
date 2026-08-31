@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonIcon, IonSpinner } from '@ionic/angular/standalone';
+import { IonIcon, IonSpinner, NavController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline } from 'ionicons/icons';
+import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline, paperPlaneOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../services/member-dashboard.service';
 
 import { ProfileService } from '../../../profile/services/profile.service';
@@ -45,6 +45,8 @@ export class MemberHomeComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
   readonly walletService = inject(WalletService);
   private readonly router = inject(Router);
+  private readonly navCtrl = inject(NavController);
+  private readonly ngZone = inject(NgZone);
   private readonly toastService = inject(ToastService);
   private readonly appSocket = inject(AppSocketService);
   private readonly destroyRef = inject(DestroyRef);
@@ -126,7 +128,7 @@ export class MemberHomeComponent implements OnInit {
 
     
   constructor() {
-    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline });
+    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline, paperPlaneOutline });
   }
 
   toggleActionsMenu() {
@@ -145,6 +147,16 @@ export class MemberHomeComponent implements OnInit {
   getInitials(name?: string | null): string {
     if (!name || !name.trim()) return 'U';
     return name.trim().charAt(0).toUpperCase();
+  }
+
+  onGiveReferral() {
+    if (this.profile()?.status === 'PENDING') {
+      this.toastService.showError('Pending members cannot create referrals');
+      return;
+    }
+    this.ngZone.run(() => {
+      this.navCtrl.navigateForward('/referrals/new');
+    });
   }
 
   onPostVideo() {

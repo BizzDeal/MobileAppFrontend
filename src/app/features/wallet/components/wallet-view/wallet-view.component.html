@@ -13,23 +13,24 @@
   } @else {
     <!-- Optional Page Top Header (omitted when hideHeader is true) -->
     @if (!hideHeader) {
-      <div class="page-top-header">
-        <div class="header-content">
-          <div class="header-icon-box">
+      <div class="app-page-header">
+        <div class="header-brand-group">
+          <div class="header-icon-badge">
             <ion-icon name="wallet-outline"></ion-icon>
           </div>
-          <div class="header-text">
-            <h2>My Wallet</h2>
-            <p>Manage your balances and transaction history.</p>
+          <div class="header-title-group">
+            <h2 class="header-title">MY WALLET</h2>
+            <p class="header-subtitle">Manage your balances and transaction history</p>
           </div>
         </div>
       </div>
     }
 
-    <!-- 0. User Greeting Row Above Points Card -->
-    <div class="user-greeting-row">
-      <h3 class="user-greeting-text">Hi, {{ firstName() }} 👋</h3>
-    </div>
+    <div class="wallet-body-content">
+      <!-- 0. User Greeting Row Above Points Card -->
+      <div class="user-greeting-row">
+        <h3 class="user-greeting-text">Hi, {{ firstName() }} 👋</h3>
+      </div>
 
     <!-- 1. Dual Balance Cards Row (Bizz Coins & Wallet Balance in same row) -->
     <div class="balance-cards-row">
@@ -189,6 +190,7 @@
           </div>
         }
       </div>
+    </div>
     </div>
   }
 </div>

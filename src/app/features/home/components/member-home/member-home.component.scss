@@ -643,6 +643,18 @@
         box-shadow: 0 10px 28px rgba(37, 99, 235, 0.2);
       }
 
+      &.referral-item {
+        .icon-bubble {
+          background: rgba(30, 136, 229, 0.12);
+          color: #1e88e5;
+        }
+
+        &:hover {
+          border-color: #1e88e5;
+          box-shadow: 0 10px 28px rgba(30, 136, 229, 0.25);
+        }
+      }
+
       &.bizz-coins-item {
         .icon-bubble {
           background: rgba(245, 158, 11, 0.12);
@@ -861,75 +873,50 @@
 }
 
 /* ==========================================================
-   REGIONAL SUMMARY BANNER
+   REGIONAL SUMMARY SECTION
    ========================================================== */
 .regional-summary-section {
-  margin: var(--bizzdeal-spacing-md, 16px) 0;
+  .regional-card {
+    background: var(--bizzdeal-bg-surface, #ffffff);
+    border-radius: var(--bizzdeal-radius-lg, 16px);
+    padding: var(--bizzdeal-spacing-md, 16px);
+    box-shadow: var(--bizzdeal-shadow-sm, 0 4px 14px rgba(0, 0, 0, 0.04));
+    border: 1px solid var(--bizzdeal-border-color, #e2e8f0);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
-  .regional-banner {
-    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 60%, #172554 100%);
-    border-radius: 16px;
-    padding: 14px 12px 12px;
-    box-shadow: 0 6px 20px rgba(30, 64, 175, 0.28);
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: -30%;
-      right: -20%;
-      width: 160px;
-      height: 160px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-      pointer-events: none;
-      border-radius: 50%;
-    }
-
-    .regional-title {
-      margin: 0 0 10px;
-      font-size: 1.12rem;
-      font-weight: 700;
-      color: #ffffff;
-      text-align: center;
-      letter-spacing: -0.01em;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    }
-
-    .regional-card {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 12px 14px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    .regional-stat-row {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
-      text-align: center;
+      justify-content: space-between;
+      gap: 12px;
 
-      .regional-stat-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        font-size: 0.88rem;
-        line-height: 1.35;
-
-        .stat-label {
-          font-weight: 500;
-          color: #334155;
-        }
-
-        .stat-value {
-          font-weight: 700;
-          color: #0f172a;
-        }
+      .stat-label {
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: var(--bizzdeal-text-secondary, #64748b);
+        flex: 1;
+        min-width: 0;
+        text-align: left;
       }
+
+      .stat-value {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--bizzdeal-text-primary, #0f172a);
+        text-align: right;
+        flex-shrink: 0;
+      }
+    }
+
+    .card-divider {
+      height: 1px;
+      background: var(--bizzdeal-border-color, #f1f5f9);
     }
   }
 }
+
 
 
 

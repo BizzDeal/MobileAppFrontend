@@ -1,24 +1,26 @@
 <div class="meetings-page">
-  <div class="meetings-header">
-    <div class="header-content">
-      <div class="header-icon-box">
+  <!-- Top App Header -->
+  <div class="app-page-header">
+    <div class="header-brand-group">
+      <div class="header-icon-badge">
         <ion-icon name="calendar-outline"></ion-icon>
       </div>
-      <div class="header-text">
-        <h2>My Meetings</h2>
-        <p>Manage your upcoming appointments and reviews.</p>
+      <div class="header-title-group">
+        <h2 class="header-title">MY MEETINGS</h2>
+        <p class="header-subtitle">Manage your upcoming appointments and reviews</p>
       </div>
     </div>
   </div>
 
-  <ion-segment [value]="selectedTab()" (ionChange)="onTabChange($event)" class="premium-segment" mode="ios">
-    <ion-segment-button value="upcoming">
-      <ion-label>Upcoming</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="past">
-      <ion-label>Past / Cancelled</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+  <div class="meetings-body">
+    <ion-segment [value]="selectedTab()" (ionChange)="onTabChange($event)" class="premium-segment" mode="ios">
+      <ion-segment-button value="upcoming">
+        <ion-label>Upcoming</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="past">
+        <ion-label>Past / Cancelled</ion-label>
+      </ion-segment-button>
+    </ion-segment>
 
   @if (loading()) {
     <div style="padding: 16px 0;">
@@ -43,6 +45,7 @@
       }
     </div>
   }
+  </div>
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="meetings-fab">
     <ion-fab-button (click)="openCreateModal()">

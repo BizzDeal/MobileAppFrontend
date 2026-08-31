@@ -33,7 +33,7 @@
 
   @if (!loading && displayedCategories.length > 0) {
     @if (!isDesktop) {
-      <ion-list class="bg-transparent p-0 pt-4 m-0" lines="none">
+      <ion-list class="bg-transparent p-0 pt-2 m-0" lines="none">
         @for (category of displayedCategories; track category) {
           <div class="premium-category-card" (click)="openEditCategoryModal(category)" style="cursor: pointer;">
             <div class="card-body">

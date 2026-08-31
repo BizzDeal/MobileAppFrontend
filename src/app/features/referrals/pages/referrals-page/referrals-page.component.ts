@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Input, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Input, OnInit, signal, NgZone } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   IonContent,
   IonHeader,
@@ -14,7 +15,8 @@ import {
   IonSegmentButton,
   IonFooter,
   IonInfiniteScroll,
-  IonInfiniteScrollContent
+  IonInfiniteScrollContent,
+  NavController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -27,7 +29,6 @@ import {
   checkmarkCircleOutline,
   closeOutline,
   alertCircleOutline,
-  closeCircleOutline,
   star,
   starOutline,
   callOutline,
@@ -41,27 +42,20 @@ import {
   heartOutline,
   paperPlaneOutline,
   checkmarkCircle,
-  ellipseOutline,
   businessOutline,
-  swapHorizontalOutline,
   documentTextOutline,
-  sparklesOutline,
   cashOutline,
-  flame,
-  flameOutline,
   informationCircleOutline,
-  checkmarkOutline
+  shareSocialOutline
 } from 'ionicons/icons';
 import { ReferralsService } from '../../services/referrals.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
-import { ReferralDTO, ReferralType, CreateReferralSlipDto, MemberBusinessDTO } from '../../models/referral.model';
+import { ReferralDTO } from '../../models/referral.model';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-referrals-page',
@@ -99,12 +93,13 @@ export class ReferralsPageComponent implements OnInit {
   private readonly referralsService = inject(ReferralsService);
   private readonly profileService = inject(ProfileService);
   private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
+  private readonly navCtrl = inject(NavController);
+  private readonly ngZone = inject(NgZone);
 
   readonly referrals = signal<ReferralDTO[]>([]);
   readonly loading = signal<boolean>(true);
   readonly error = signal<string | null>(null);
-  readonly submitting = signal<boolean>(false);
-  readonly isModalOpen = signal<boolean>(false);
   readonly selectedReferralForView = signal<ReferralDTO | null>(null);
   readonly isDetailModalOpen = signal<boolean>(false);
 
@@ -120,26 +115,6 @@ export class ReferralsPageComponent implements OnInit {
   private currentPage = 1;
   private readonly pageSize = 15;
   private isLoadingMore = false;
-
-  // Search Members variables
-  readonly searchInput = signal<string>('');
-  readonly isMembersLoading = signal<boolean>(false);
-  readonly membersList = signal<MemberBusinessDTO[]>([]);
-  readonly selectedMember = signal<MemberBusinessDTO | null>(null);
-  readonly isSearchFocused = signal<boolean>(false);
-
-  private searchSubject = new Subject<string>();
-
-  // Form State
-  readonly referralType = signal<ReferralType>('INHOUSE');
-  readonly contactName = signal<string>('');
-  readonly contactPhone = signal<string>('');
-  readonly contactEmail = signal<string>('');
-  readonly contactAddress = signal<string>('');
-  readonly comments = signal<string>('');
-  readonly rating = signal<number>(0);
-  readonly toldToCall = signal<boolean>(false);
-  readonly cardGiven = signal<boolean>(false);
 
   // Segment State (GIVEN / RECEIVED)
   readonly activeSegment = signal<'GIVEN' | 'RECEIVED'>('GIVEN');
@@ -159,6 +134,9 @@ export class ReferralsPageComponent implements OnInit {
     }
   });
 
+  readonly getInitials = getInitials;
+  readonly getAvatarColor = getAvatarColor;
+
   constructor() {
     addIcons({
       add,
@@ -170,7 +148,6 @@ export class ReferralsPageComponent implements OnInit {
       checkmarkCircleOutline,
       closeOutline,
       alertCircleOutline,
-      closeCircleOutline,
       star,
       starOutline,
       callOutline,
@@ -184,23 +161,11 @@ export class ReferralsPageComponent implements OnInit {
       heartOutline,
       paperPlaneOutline,
       checkmarkCircle,
-      ellipseOutline,
       businessOutline,
-      swapHorizontalOutline,
       documentTextOutline,
-      sparklesOutline,
       cashOutline,
-      flame,
-      flameOutline,
       informationCircleOutline,
-      checkmarkOutline
-    });
-
-    this.searchSubject.pipe(
-      debounceTime(500),
-      distinctUntilChanged()
-    ).subscribe(query => {
-      this.fetchMembers(query);
+      shareSocialOutline
     });
   }
 
@@ -266,17 +231,14 @@ export class ReferralsPageComponent implements OnInit {
     this.fetchReferrals();
   }
 
-  openModal(): void {
+  openCreatePage(): void {
     if (this.profileService.profile()?.status === 'PENDING') {
       this.toastService.showError('Pending members cannot create referrals');
       return;
     }
-    this.resetForm();
-    this.isModalOpen.set(true);
-  }
-
-  closeModal(): void {
-    this.isModalOpen.set(false);
+    this.ngZone.run(() => {
+      this.navCtrl.navigateForward('/referrals/new');
+    });
   }
 
   openDetailModal(ref: ReferralDTO): void {
@@ -287,163 +249,6 @@ export class ReferralsPageComponent implements OnInit {
   closeDetailModal(): void {
     this.isDetailModalOpen.set(false);
     this.selectedReferralForView.set(null);
-  }
-
-  resetForm(): void {
-    this.referralType.set('INHOUSE');
-    this.searchInput.set('');
-    this.selectedMember.set(null);
-    this.membersList.set([]);
-    this.isSearchFocused.set(false);
-    this.contactName.set('');
-    this.contactPhone.set('');
-    this.contactEmail.set('');
-    this.contactAddress.set('');
-    this.comments.set('');
-    this.rating.set(0);
-    this.toldToCall.set(false);
-    this.cardGiven.set(false);
-  }
-
-  onSearchFocus(): void {
-    this.isSearchFocused.set(true);
-    if (!this.selectedMember() && this.membersList().length === 0) {
-      this.fetchMembers(this.searchInput());
-    }
-  }
-
-  onSearchChange(event: any): void {
-    const query = event.detail.value || '';
-    this.searchInput.set(query);
-    this.isSearchFocused.set(true);
-    
-    if (this.selectedMember()) {
-      this.selectedMember.set(null);
-    }
-
-    this.searchSubject.next(query);
-  }
-
-  referralTypeChanged(event: any): void {
-    this.referralType.set(event.detail.value);
-    this.selectedMember.set(null);
-    if (this.isSearchFocused()) {
-      this.fetchMembers(this.searchInput());
-    }
-  }
-
-  fetchMembers(query: string = ''): void {
-    this.isMembersLoading.set(true);
-    const profile = this.profileService.profile();
-    let districtId: string | undefined = undefined;
-    let excludeDistricts: string | undefined = undefined;
-
-    if (this.referralType() === 'INHOUSE' && profile?.district_id) {
-      districtId = profile.district_id;
-    } else if (this.referralType() === 'OUTHOUSE' && profile?.district_id) {
-      excludeDistricts = profile.district_id;
-    }
-    
-    this.referralsService.searchMembers(query, districtId, excludeDistricts).subscribe({
-      next: (data) => {
-        // filter out self
-        const filtered = data.filter(m => m.id !== profile?.id);
-        
-        // Filter additionally on FE for INHOUSE type (must be in same district)
-        let finalData = filtered;
-        if (this.referralType() === 'INHOUSE' && profile?.district_id) {
-          finalData = filtered.filter(m => m.profile?.district_id === profile.district_id || m.profile?.district_id === profile.business_district_id);
-        }
-
-        this.membersList.set(finalData);
-        this.isMembersLoading.set(false);
-      },
-      error: () => {
-        this.isMembersLoading.set(false);
-      }
-    });
-  }
-
-  readonly getInitials = getInitials;
-  readonly getAvatarColor = getAvatarColor;
-
-  selectMember(member: MemberBusinessDTO): void {
-    this.selectedMember.set(member);
-    this.searchInput.set(`${member.full_name} (${member.businessProfile?.business_name || 'No Business'})`);
-    this.membersList.set([]);
-    this.isSearchFocused.set(false);
-  }
-
-  clearSelectedMember(): void {
-    this.selectedMember.set(null);
-    this.searchInput.set('');
-    this.membersList.set([]);
-    this.isSearchFocused.set(false);
-  }
-
-  setRating(val: number): void {
-    this.rating.set(val);
-  }
-
-  getRatingLabel(val: number): string {
-    switch (val) {
-      case 1: return '❄️ Cold Lead';
-      case 2: return '🌤️ Mild Interest';
-      case 3: return '🔥 Warm Referral';
-      case 4: return '⚡ Very Hot';
-      case 5: return '🚀 Ready to Close!';
-      default: return '';
-    }
-  }
-
-  submitReferral(): void {
-    const member = this.selectedMember();
-    if (!member) {
-      this.toastService.showError('Please select a member to refer to.');
-      return;
-    }
-
-    if (!this.contactName().trim() || !this.contactPhone().trim()) {
-      this.toastService.showError('Contact name and phone are required.');
-      return;
-    }
-
-    if (!/^\d{10}$/.test(this.contactPhone().trim())) {
-      this.toastService.showError('Valid 10-digit phone number is required.');
-      return;
-    }
-
-    if (this.submitting()) {
-      return;
-    }
-
-    this.submitting.set(true);
-    this.error.set(null);
-
-    const dto: CreateReferralSlipDto = {
-      to_member_id: member.id,
-      referral_type: this.referralType(),
-      told_to_call: this.toldToCall(),
-      card_given: this.cardGiven(),
-      contact_name: this.contactName(),
-      contact_phone: this.contactPhone(),
-      contact_email: this.contactEmail(),
-      contact_address: this.contactAddress(),
-      comments: this.comments(),
-      rating: this.rating() > 0 ? this.rating() : undefined,
-    };
-
-    this.referralsService.createReferralSlip(dto).subscribe({
-      next: () => {
-        this.fetchReferrals();
-        this.submitting.set(false);
-        this.closeModal();
-      },
-      error: (err) => {
-        this.error.set(extractFriendlyErrorMessage(err, 'Failed to create referral slip.'));
-        this.submitting.set(false);
-      }
-    });
   }
 
   // --- Appreciation Logic ---
@@ -497,10 +302,10 @@ export class ReferralsPageComponent implements OnInit {
       appreciation_message: msg.trim()
     }).subscribe({
       next: () => {
-        // Optimistically update or fetch list
         this.fetchReferrals();
         this.submittingAppreciation.set(false);
         this.closeAppreciationModal();
+        this.toastService.showSuccess('Appreciation sent successfully!');
       },
       error: (err) => {
         this.toastService.showError(extractFriendlyErrorMessage(err, 'Failed to send appreciation.'));

@@ -236,7 +236,7 @@
                         </div>
                       }
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="card-badges-row">
                       @if (ref.rating != null) {
                         <div class="rating-badge">
                           <ion-icon name="star" class="star-active"></ion-icon>
@@ -244,13 +244,13 @@
                         </div>
                       }
                       @if (ref.is_appreciated) {
-                        <div class="appreciated-badge" style="display: flex; align-items: center; gap: 4px; background: #fef1f2; color: #e11d48; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">
+                        <div class="appreciated-badge">
                           <ion-icon name="heart"></ion-icon>
                           <span>Appreciated</span>
                         </div>
                       }
                       @if (ref.is_appreciated && ref.cost_of_business) {
-                        <div class="revenue-badge" style="display: flex; align-items: center; gap: 4px; background: #ecfdf5; color: #059669; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">
+                        <div class="revenue-badge">
                           <ion-icon name="cash-outline"></ion-icon>
                           <span>₹{{ ref.cost_of_business | number:'1.0-0' }}</span>
                         </div>

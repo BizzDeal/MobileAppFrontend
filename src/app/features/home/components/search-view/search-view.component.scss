@@ -17,13 +17,13 @@
 }
 
 .search-header {
-  margin-bottom: var(--bizzdeal-spacing-md);
+  margin-bottom: 8px;
   
   .search-title {
     font-size: 1.5rem;
     font-weight: 800;
     color: var(--bizzdeal-text-primary, #1e293b);
-    margin: 0 0 var(--bizzdeal-spacing-md) 4px;
+    margin: 0 0 8px 4px;
     letter-spacing: -0.5px;
   }
 }

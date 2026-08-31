@@ -2,41 +2,37 @@
   <div class="chat-room-container">
     
     <!-- 1. Header Toolbar -->
-    <ion-header class="chat-header ion-no-border premium-header">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <button type="button" class="back-btn" (click)="onBack()">
-            <ion-icon name="arrow-back-outline" />
-          </button>
-        </ion-buttons>
-        
-        <div class="header-partner-info">
-          <!-- Avatar -->
-          <div class="partner-avatar-wrapper" (click)="isAvatarOpen.set(true)" style="cursor: pointer;">
-            @if (conv.type === 'GROUP') {
-              <div class="partner-avatar-placeholder">
-                <ion-icon name="people-outline" />
-              </div>
-            } @else {
-              <img loading="lazy" [appCachedImg]="conv.partner?.profile_pic_url" [fallbackName]="conv.partner?.full_name" alt="{{ conv.partner?.full_name }}" class="partner-avatar" />
-            }
-            @if (conv.type !== 'GROUP' && isPartnerOnline()) {
-              <span class="presence-dot online"></span>
-            }
-          </div>
-
-          <!-- Name & presence text -->
-          <div class="name-status-block">
-            <h1 class="partner-name">{{ conv.type === 'GROUP' ? conv.name || 'Community Group' : conv.partner?.full_name }}</h1>
-            @if (conv.type !== 'GROUP') {
-              <span class="partner-status" [ngClass]="{ 'online': isPartnerOnline() }">
-                {{ isPartnerOnline() ? 'Online' : 'Offline' }}
-              </span>
-            }
-          </div>
+    <header class="chat-header">
+      <button type="button" class="back-btn" (click)="onBack()">
+        <ion-icon name="arrow-back-outline" />
+      </button>
+      
+      <div class="header-partner-info">
+        <!-- Avatar -->
+        <div class="partner-avatar-wrapper" (click)="isAvatarOpen.set(true)" style="cursor: pointer;">
+          @if (conv.type === 'GROUP') {
+            <div class="partner-avatar-placeholder">
+              <ion-icon name="people-outline" />
+            </div>
+          } @else {
+            <img loading="lazy" [appCachedImg]="conv.partner?.profile_pic_url" [fallbackName]="conv.partner?.full_name" alt="{{ conv.partner?.full_name }}" class="partner-avatar" />
+          }
+          @if (conv.type !== 'GROUP' && isPartnerOnline()) {
+            <span class="presence-dot online"></span>
+          }
         </div>
-      </ion-toolbar>
-    </ion-header>
+
+        <!-- Name & presence text -->
+        <div class="name-status-block">
+          <h1 class="partner-name">{{ conv.type === 'GROUP' ? conv.name || 'Community Group' : conv.partner?.full_name }}</h1>
+          @if (conv.type !== 'GROUP') {
+            <span class="partner-status" [ngClass]="{ 'online': isPartnerOnline() }">
+              {{ isPartnerOnline() ? 'Online' : 'Offline' }}
+            </span>
+          }
+        </div>
+      </div>
+    </header>
 
     <!-- 2. Scrollable Messages Area -->
     <div class="messages-scroll-area" #scrollContainer>

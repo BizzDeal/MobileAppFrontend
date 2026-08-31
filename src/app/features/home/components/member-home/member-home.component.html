@@ -41,18 +41,20 @@
           </h2>
           <span class="biz-joined">Joined {{ profile()?.created_at | date:'d MMM yyyy' }}</span>
 
-          @if (bizzCoinOffer(); as coinOffer) {
-          <div class="bizz-coin-offer-pill" (click)="onBizzCoinsOffer()">
+          <div class="bizz-coin-offer-pill" (click)="onBizzCoinsOffer()" role="button" tabindex="0">
             <ion-icon name="ribbon-outline" class="pill-icon"></ion-icon>
             <span class="pill-title">Bizz Coin Offer</span>
-            <span class="pill-status" [class.active]="coinOffer.status === 'APPROVED'"
-              [class.pending]="coinOffer.status === 'PENDING'" [class.rejected]="coinOffer.status === 'REJECTED'"
-              [class.inactive]="coinOffer.status === 'INACTIVE'">
-              {{ coinOffer.status === 'APPROVED' ? 'Active' : (coinOffer.status === 'PENDING' ? 'Pending Approval' :
-              (coinOffer.status | titlecase)) }}
-            </span>
+            @if (bizzCoinOffer(); as coinOffer) {
+              <span class="pill-status" [class.active]="coinOffer.status === 'APPROVED'"
+                [class.pending]="coinOffer.status === 'PENDING'" [class.rejected]="coinOffer.status === 'REJECTED'"
+                [class.inactive]="coinOffer.status === 'INACTIVE'">
+                {{ coinOffer.status === 'APPROVED' ? 'Active' : (coinOffer.status === 'PENDING' ? 'Pending' :
+                (coinOffer.status | titlecase)) }}
+              </span>
+            } @else {
+              <span class="pill-status not-configured">Not Active</span>
+            }
           </div>
-          }
         </div>
       </div>
     </section>
@@ -182,98 +184,87 @@
       </div>
     </section>
 
-    <section class="analytics-section feed-section">
-      <div class="horizontal-scroll-sections" #analyticsCarousel>
-        <!-- Slide 1: My Performance -->
-        <div class="section-slide">
-          <div class="section-header">
-            <h2 class="section-title">My Performance</h2>
+    <!-- Performance & District Overview Section (1 Row, 2 Columns) -->
+    <section class="performance-overview-section feed-section">
+      <div class="performance-overview-grid">
+        <!-- Card 1: My Performance -->
+        <div class="analytics-biz-card performance-card">
+          <div class="card-main-row">
+            <div class="biz-icon-badge performance-badge">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                <polyline points="16 7 22 7 22 13"></polyline>
+              </svg>
+            </div>
+            <div class="card-info-col">
+              <span class="card-biz-title">MY PERFORMANCE</span>
+              <div class="card-stat-wrap">
+                <span class="stat-number stat-highlight">+{{ data.analytics.businessGrowth }}%</span>
+                <span class="growth-label">Growth</span>
+              </div>
+            </div>
           </div>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-label">Active Offers</span>
-              <h2 class="stat-value">{{ data.analytics.activeOffersCount }}</h2>
+
+          <div class="card-divider"></div>
+
+          <div class="card-metrics-list">
+            <div class="metric-line">
+              <span class="metric-label">Offers</span>
+              <strong class="metric-value">{{ data.analytics.activeOffersCount }}</strong>
             </div>
-            <div class="stat-card">
-              <span class="stat-label">Redeemed</span>
-              <h2 class="stat-value">{{ data.analytics.vouchersRedeemedToday }}</h2>
+            <div class="metric-line">
+              <span class="metric-label">Redeemed</span>
+              <strong class="metric-value">{{ data.analytics.vouchersRedeemedToday }}</strong>
             </div>
-            <div class="stat-card">
-              <span class="stat-label">Growth</span>
-              <h3 class="stat-value highlight">+{{ data.analytics.businessGrowth }}%</h3>
-            </div>
-            <div class="stat-card clickable" (click)="referralsClick.emit()">
-              <span class="stat-label">Referrals</span>
-              <h2 class="stat-value">{{ data.analytics.successfulReferrals }}</h2>
+            <div class="metric-line">
+              <span class="metric-label">Referrals</span>
+              <strong class="metric-value">{{ data.analytics.successfulReferrals }}</strong>
             </div>
           </div>
         </div>
 
-        <!-- Slide 2: District Overview -->
+        <!-- Card 2: District Overview -->
         @if (data.analytics.districtStats) {
-        <div class="section-slide">
-          <div class="section-header" style="margin-top: 0;">
-            <h2 class="section-title">District Overview</h2>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-label">Businesses</span>
-              <h2 class="stat-value">{{ data.analytics.districtStats.totalBusinesses }}</h2>
+        <div class="analytics-biz-card district-card">
+          <div class="card-main-row">
+            <div class="biz-icon-badge district-badge">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21h18"></path>
+                <path d="M5 21V7l8-4v18"></path>
+                <path d="M19 21V11l-6-4"></path>
+                <line x1="9" y1="9" x2="9.01"></line>
+                <line x1="9" y1="13" x2="9" y2="13.01"></line>
+                <line x1="9" y1="17" x2="9" y2="17.01"></line>
+              </svg>
             </div>
-            <div class="stat-card">
-              <span class="stat-label">Members</span>
-              <h2 class="stat-value">{{ data.analytics.districtStats.totalMembers }}</h2>
-            </div>
-            <div class="stat-card">
-              <span class="stat-label">Redeemed</span>
-              <h2 class="stat-value">{{ data.analytics.districtStats.totalVouchers }}</h2>
-            </div>
-            <div class="stat-card">
-              <span class="stat-label">Volume</span>
-              <h2 class="stat-value">&#8377;{{ data.analytics.districtStats.revenue | number:'1.0-0' }}</h2>
+            <div class="card-info-col">
+              <span class="card-biz-title">DISTRICT OVERVIEW</span>
+              <div class="card-stat-wrap">
+                <span class="stat-number">₹{{ data.analytics.districtStats.revenue | number:'1.0-0' }}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Slide 3: Clone of Slide 1 for infinite left-to-right scroll loop -->
-        <div class="section-slide">
-          <div class="section-header">
-            <h2 class="section-title">My Performance</h2>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-label">Active Offers</span>
-              <h2 class="stat-value">{{ data.analytics.activeOffersCount }}</h2>
+          <div class="card-divider"></div>
+
+          <div class="card-metrics-list">
+            <div class="metric-line">
+              <span class="metric-label">Businesses</span>
+              <strong class="metric-value">{{ data.analytics.districtStats.totalBusinesses }}</strong>
             </div>
-            <div class="stat-card">
-              <span class="stat-label">Redeemed</span>
-              <h2 class="stat-value">{{ data.analytics.vouchersRedeemedToday }}</h2>
+            <div class="metric-line">
+              <span class="metric-label">Members</span>
+              <strong class="metric-value">{{ data.analytics.districtStats.totalMembers }}</strong>
             </div>
-            <div class="stat-card">
-              <span class="stat-label">Growth</span>
-              <h3 class="stat-value highlight">+{{ data.analytics.businessGrowth }}%</h3>
-            </div>
-            <div class="stat-card clickable" (click)="referralsClick.emit()">
-              <span class="stat-label">Referrals</span>
-              <h2 class="stat-value">{{ data.analytics.successfulReferrals }}</h2>
+            <div class="metric-line">
+              <span class="metric-label">Redeemed</span>
+              <strong class="metric-value">{{ data.analytics.districtStats.totalVouchers }}</strong>
             </div>
           </div>
         </div>
         }
       </div>
     </section>
-
-    <!-- Top Deals (Percentage) Carousel -->
-    <app-hero-carousel [title]="'Top Deals'" [icon]="'flame-outline'" [featuredBusinesses]="[]"
-      [megaDeals]="percentageDeals()" [isMemberView]="true" (dealClick)="onDealClick($event)" />
-
-    <!-- Flat Offers Carousel -->
-    <app-hero-carousel [title]="'Flat Offers'" [icon]="'pricetag-outline'" [featuredBusinesses]="[]"
-      [megaDeals]="flatOffers()" [isMemberView]="true" (dealClick)="onDealClick($event)" />
-
-    <!-- Cashback Rewards Carousel -->
-    <app-hero-carousel [title]="'Cashback Rewards'" [icon]="'cash-outline'" [featuredBusinesses]="[]"
-      [megaDeals]="cashbackOffers()" [isMemberView]="true" (dealClick)="onDealClick($event)" />
 
     <!-- Floating Quick Actions Speed Dial -->
     <div class="fab-actions-wrapper" [class.is-open]="isActionsMenuOpen()">
@@ -288,11 +279,25 @@
           <span class="item-label">Post / Save Video</span>
         </button>
 
+        <button type="button" class="fab-slide-item chat-item" (click)="onOpenChat(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="chatbubbles-outline"></ion-icon>
+          </div>
+          <span class="item-label">Chat / Messages</span>
+        </button>
+
         <button type="button" class="fab-slide-item primary-item" (click)="onCreateOffer(); closeActionsMenu()">
           <div class="icon-bubble">
             <ion-icon name="add-circle-outline"></ion-icon>
           </div>
           <span class="item-label">Create New Offer</span>
+        </button>
+
+        <button type="button" class="fab-slide-item" (click)="onViewMyDeals(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="pricetag-outline"></ion-icon>
+          </div>
+          <span class="item-label">My Deals</span>
         </button>
 
         <button type="button" class="fab-slide-item bizz-coins-item" (click)="onBizzCoinsOffer(); closeActionsMenu()">
@@ -325,38 +330,31 @@
           <span class="item-label">Redeem Bizz Coins</span>
         </button>
         }
-
-        <button type="button" class="fab-slide-item" (click)="walletClick.emit(); closeActionsMenu()">
-          <div class="icon-bubble">
-            <ion-icon name="wallet-outline"></ion-icon>
-          </div>
-          <span class="item-label">My Wallet & Bizz Coins</span>
-        </button>
-
-        <button type="button" class="fab-slide-item" (click)="onViewAnalytics(); closeActionsMenu()">
-          <div class="icon-bubble">
-            <ion-icon name="bar-chart-outline"></ion-icon>
-          </div>
-          <span class="item-label">Analytics</span>
-        </button>
-
-        <button type="button" class="fab-slide-item" (click)="onViewDirectory(); closeActionsMenu()">
-          <div class="icon-bubble">
-            <ion-icon name="business-outline"></ion-icon>
-          </div>
-          <span class="item-label">Business Directory</span>
-        </button>
       </div>
       }
 
       <button type="button" class="fab-trigger-btn" [class.open]="isActionsMenuOpen()" (click)="toggleActionsMenu()"
         aria-label="Quick Actions">
         <ion-icon [name]="isActionsMenuOpen() ? 'close-outline' : 'flash-outline'" class="trigger-icon"></ion-icon>
-        @if (!isActionsMenuOpen()) {
-        <span class="trigger-badge">Actions</span>
-        }
       </button>
     </div>
+
+    <!-- Regional Summary -->
+    <section class="regional-summary-section">
+      <div class="regional-banner">
+        <h3 class="regional-title">Regional Summary</h3>
+        <div class="regional-card">
+          <div class="regional-stat-row">
+            <span class="stat-label">Total Business Value - {{ regionalName() }} Region:</span>
+            <strong class="stat-value">₹{{ (regionalStats()?.totalBusinessValue || regionalStats()?.revenue || 0) | number:'1.0-0' }}+</strong>
+          </div>
+          <div class="regional-stat-row">
+            <span class="stat-label">Total Referrals:</span>
+            <strong class="stat-value">{{ (regionalStats()?.totalReferrals || 0) | number }}</strong>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Pending Approvals -->
     <section class="feed-section pending-approvals-section">

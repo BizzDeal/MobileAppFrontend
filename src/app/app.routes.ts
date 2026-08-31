@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Routes, Router } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { UserRole } from './features/auth/models/auth.model';
 
@@ -19,12 +20,20 @@ export const routes: Routes = [
   },
   {
     path: 'business-directory',
-    loadComponent: () => import('./features/business/pages/business-directory/business-directory.page').then(m => m.BusinessDirectoryPage),
-    canActivate: [authGuard],
+    redirectTo: () => {
+      const router = inject(Router);
+      return router.createUrlTree(['/home'], { queryParams: { tab: 'members' } });
+    },
   },
   {
     path: 'offers/bizz-coins',
     loadComponent: () => import('./features/business/pages/bizz-coins-offer/bizz-coins-offer.page').then(m => m.BizzCoinsOfferPage),
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
+  },
+  {
+    path: 'offers/my-deals',
+    loadComponent: () => import('./features/business/pages/my-deals/my-deals.page').then(m => m.MyDealsPage),
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
@@ -75,12 +84,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
-  {
-    path: 'analytics',
-    loadComponent: () => import('./features/analytics/pages/analytics-dashboard/analytics-dashboard.page').then(m => m.AnalyticsDashboardPage),
-    canActivate: [authGuard],
-    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
-  },
+
   {
     path: 'wallet/earn-bizz-coins',
     loadComponent: () => import('./features/wallet/pages/earn-bizz-coins/earn-bizz-coins.page').then(m => m.EarnBizzCoinsPage),

@@ -1,99 +1,243 @@
-<ion-header class="ion-no-border premium-header">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()" class="back-btn" aria-label="Go Back">
-        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Business Directory</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="directory-tab-view">
+  <!-- Sticky Header Bar -->
+  <div class="directory-sticky-header">
+    <div class="directory-title-bar">
+      <h2 class="directory-page-title">Member Search</h2>
+    </div>
 
-<ion-content [fullscreen]="true" class="directory-content">
-  <!-- Search Section -->
-  <div class="search-section">
-    <div class="search-bar-wrapper">
-      <ion-icon name="search-outline" class="search-icon"></ion-icon>
-      <ion-input
-        type="text"
-        placeholder="Search businesses..."
-        [value]="searchQuery()"
-        (ionInput)="onSearchChange($event)"
-        class="directory-search-input">
-      </ion-input>
-      <ion-icon name="options-outline" class="filter-icon"></ion-icon>
+    <!-- Two Segment Roster Tabs -->
+    <div class="roster-tabs-container">
+      <button
+        type="button"
+        class="roster-tab-btn"
+        [class.active]="activeTab() === 'REGIONAL'"
+        (click)="setTab('REGIONAL')">
+        REGIONAL
+      </button>
+      <button
+        type="button"
+        class="roster-tab-btn"
+        [class.active]="activeTab() === 'GLOBAL'"
+        (click)="setTab('GLOBAL')">
+        GLOBAL SEARCH
+      </button>
+    </div>
+
+    <!-- Search Bar Row -->
+    <div class="search-bar-row">
+      <div class="search-input-wrap">
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+        <input
+          type="text"
+          placeholder="Search by Name, Specialty..."
+          [value]="searchQuery()"
+          (input)="onSearchChange($event)"
+          class="native-search-input" />
+        @if (searchQuery()) {
+          <button type="button" class="clear-input-btn" (click)="clearSearch()" aria-label="Clear search">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        }
+      </div>
     </div>
   </div>
 
-  <!-- Error container -->
-  <div class="error-container" style="min-height: 20px; display: flex; align-items: center; justify-content: center; margin: 8px 16px;">
+  <!-- Content Container -->
+  <div class="directory-page-container">
+    <!-- Error banner (only rendered on error) -->
     @if (errorMessage()) {
-      <span style="color: var(--ion-color-danger, #eb445a); font-size: 0.85rem;">{{ errorMessage() }}</span>
+      <div class="error-banner">
+        <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
+        <span class="error-text">{{ errorMessage() }}</span>
+        <button type="button" class="retry-btn" (click)="loadBusinesses(1, searchQuery())">Retry</button>
+      </div>
     }
-  </div>
 
-  <!-- Businesses List -->
-  <div class="directory-list-container">
-    @if (isLoading()) {
-      <div style="padding: 16px 0;">
-        <app-card-skeleton [count]="3"></app-card-skeleton>
+    <!-- Loading Skeletons -->
+    @if (isLoading() && businesses().length === 0) {
+      <div class="skeleton-wrap">
+        <app-card-skeleton [count]="5"></app-card-skeleton>
       </div>
     } @else {
-      <div class="directory-list">
+      <!-- Divider-Separated Member List -->
+      <div class="member-roster-list">
         @for (biz of filteredBusinesses(); track biz.id) {
-        <div class="business-card bd-card animate-card">
-          <!-- Business header profile row -->
-          <div class="biz-header-row">
-            <div class="initials-avatar" [style.background]="getCategoryTheme(biz.categoryName).gradient">
-              @if (biz.logoUrl) {
-                <img [appCachedImg]="biz.logoUrl" [fallbackName]="biz.name" alt="{{ biz.name }}" class="avatar-img" />
+          <div class="member-list-item" (click)="openBusinessDetail(biz)">
+            <!-- Circular Avatar with Photo or Gradient Fallback -->
+            <div class="member-avatar-wrap" [style.background]="getAvatarGradient(biz)">
+              @if ((biz.profile_pic_url || biz.logoUrl) && !isImageFailed(biz.id)) {
+                <img
+                  [appCachedImg]="biz.profile_pic_url || biz.logoUrl!"
+                  [fallbackName]="biz.owner_name || biz.name"
+                  alt="{{ biz.owner_name || biz.name }}"
+                  class="avatar-photo"
+                  (error)="handleImageError(biz.id)" />
               } @else {
-                <span class="initials-text">{{ biz.initials }}</span>
+                <span class="avatar-initials">{{ biz.initials }}</span>
               }
             </div>
-            <div class="biz-title-info">
-              <h3 class="biz-name">{{ biz.name }}</h3>
-              <span class="category-badge" 
-                    [style.background]="getCategoryTheme(biz.categoryName).bg" 
-                    [style.color]="getCategoryTheme(biz.categoryName).color"
-                    [style.border-color]="getCategoryTheme(biz.categoryName).border">
-                {{ biz.categoryName }}
-              </span>
+
+            <!-- 3-Tier Typographic Information -->
+            <div class="member-info-col">
+              <h4 class="member-name">{{ biz.owner_name || biz.name }}</h4>
+              <span class="member-specialty">{{ biz.categoryName }}</span>
+              <span class="member-company">{{ biz.name }}</span>
+            </div>
+
+            <!-- Trailing Chevron Icon -->
+            <div class="member-action-col">
+              <ion-icon name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+            </div>
+          </div>
+        } @empty {
+          <!-- Empty State -->
+          <div class="empty-state">
+            <div class="empty-icon-glow">
+              <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+            </div>
+            <h3>No members found</h3>
+            @if (activeTab() === 'REGIONAL') {
+              <p>No members found in your region. Switch to <strong>GLOBAL SEARCH</strong> to browse members across all chapters.</p>
+              <button type="button" class="switch-global-btn" (click)="setTab('GLOBAL')">
+                View Global Search
+              </button>
+            } @else {
+              <p>We couldn't find any member matching "{{ searchQuery() }}". Try adjusting your search query.</p>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Infinite Scroll -->
+      <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore() || isLoading()">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more members..."></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    }
+  </div>
+
+  <!-- Custom Member Details Modal Dialog -->
+  <ion-modal [isOpen]="isDetailModalOpen()" (didDismiss)="closeBusinessDetail()" class="member-detail-modal">
+    <ng-template>
+      <div class="modal-wrapper">
+        <!-- Modal Top Bar -->
+        <div class="modal-header-bar">
+          <span class="modal-header-title">Member Details</span>
+          <button type="button" class="modal-close-btn" (click)="closeBusinessDetail()" aria-label="Close dialog">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+
+        @if (selectedBusiness(); as biz) {
+          <!-- Modal Scrollable Content -->
+          <div class="modal-body-scroll">
+            <!-- Profile Hero -->
+            <div class="modal-hero">
+              <div class="modal-hero-avatar" [style.background]="getAvatarGradient(biz)">
+                @if ((biz.profile_pic_url || biz.logoUrl) && !isImageFailed(biz.id)) {
+                  <img
+                    [appCachedImg]="biz.profile_pic_url || biz.logoUrl!"
+                    [fallbackName]="biz.owner_name || biz.name"
+                    alt="{{ biz.owner_name || biz.name }}"
+                    class="hero-photo"
+                    (error)="handleImageError(biz.id)" />
+                } @else {
+                  <span class="hero-initials">{{ biz.initials }}</span>
+                }
+              </div>
+              <h3 class="hero-name">{{ biz.owner_name || biz.name }}</h3>
+              <span class="hero-category-badge">{{ biz.categoryName }}</span>
+              <p class="hero-company">{{ biz.name }}</p>
+            </div>
+
+            <!-- Business Description -->
+            @if (biz.description && biz.description !== 'No description provided.') {
+              <div class="detail-card">
+                <h5 class="card-heading">About Business</h5>
+                <p class="card-desc">{{ biz.description }}</p>
+              </div>
+            }
+
+            <!-- Contact & Location Card -->
+            <div class="detail-card info-card">
+              <h5 class="card-heading">Contact & Location</h5>
+              <div class="info-rows">
+                @if (biz.phone) {
+                  <a [href]="'tel:' + biz.phone" class="info-row">
+                    <span class="info-label">Phone</span>
+                    <span class="info-val">{{ biz.phone }}</span>
+                  </a>
+                }
+                @if (biz.whatsapp || biz.phone) {
+                  <div class="info-row" (click)="openWhatsApp(biz.whatsapp || biz.phone)">
+                    <span class="info-label">WhatsApp</span>
+                    <span class="info-val">{{ biz.whatsapp || biz.phone }}</span>
+                  </div>
+                }
+                @if (biz.owner_email) {
+                  <div class="info-row" (click)="openMail(biz.owner_email)">
+                    <span class="info-label">Email</span>
+                    <span class="info-val link-val">{{ biz.owner_email }}</span>
+                  </div>
+                }
+                @if (biz.district_name || biz.state_name) {
+                  <div class="info-row">
+                    <span class="info-label">Location</span>
+                    <span class="info-val">{{ biz.district_name }}{{ biz.district_name && biz.state_name ? ', ' : '' }}{{ biz.state_name }}</span>
+                  </div>
+                }
+                @if (biz.address) {
+                  <div class="info-row">
+                    <span class="info-label">Address</span>
+                    <span class="info-val">{{ biz.address }}</span>
+                  </div>
+                }
+                @if (biz.website) {
+                  <div class="info-row" (click)="openWebsite(biz.website)">
+                    <span class="info-label">Website</span>
+                    <span class="info-val link-val">{{ biz.website }}</span>
+                  </div>
+                }
+              </div>
             </div>
           </div>
 
-          <!-- Description -->
-          <p class="biz-desc">{{ biz.description }}</p>
-
-          <!-- Quick Action Buttons -->
-          <div class="actions-row">
-            <button class="action-btn bd-btn-outline" (click)="callBusiness(biz.phone)" type="button">
-              <ion-icon name="call-outline" class="action-icon"></ion-icon>
-              <span>Call</span>
-            </button>
-            @if (userRole() !== 'CUSTOMER') {
-              <button class="action-btn bd-btn-primary" (click)="startChat(biz.owner_id)" type="button">
-                <ion-icon name="chatbubble-ellipses-outline" class="action-icon chat-color"></ion-icon>
-                <span>Chat</span>
+          <!-- Bottom Action Bar (Fixed at bottom like navigation menu) -->
+          <div class="modal-bottom-actions-bar">
+            @if (biz.phone) {
+              <a [href]="'tel:' + biz.phone" class="action-tile call-action">
+                <div class="action-circle">
+                  <ion-icon name="call"></ion-icon>
+                </div>
+                <span class="action-label">Call</span>
+              </a>
+            }
+            @if (biz.whatsapp || biz.phone) {
+              <button type="button" class="action-tile whatsapp-action" (click)="openWhatsApp(biz.whatsapp || biz.phone)">
+                <div class="action-circle">
+                  <ion-icon name="logo-whatsapp"></ion-icon>
+                </div>
+                <span class="action-label">WhatsApp</span>
               </button>
             }
-            <button class="action-btn bd-btn-outline" (click)="openWebsite(biz.website)" type="button">
-              <ion-icon name="globe-outline" class="action-icon"></ion-icon>
-              <span>Web</span>
-            </button>
+            @if (biz.owner_id) {
+              <button type="button" class="action-tile chat-action" (click)="startChat(biz.owner_id)">
+                <div class="action-circle">
+                  <ion-icon name="chatbubble-ellipses"></ion-icon>
+                </div>
+                <span class="action-label">Chat</span>
+              </button>
+            }
+            @if (biz.website) {
+              <button type="button" class="action-tile web-action" (click)="openWebsite(biz.website)">
+                <div class="action-circle">
+                  <ion-icon name="globe"></ion-icon>
+                </div>
+                <span class="action-label">Website</span>
+              </button>
+            }
           </div>
-        </div>
-      } @empty {
-        <!-- Empty Search State -->
-        <div class="empty-state">
-          <div class="empty-icon-glow">
-            <ion-icon name="search-outline" class="empty-icon"></ion-icon>
-          </div>
-          <h3>No businesses found</h3>
-          <p>We couldn't find any business matching "{{ searchQuery() }}". Try adjusting your search term.</p>
-        </div>
-      }
+        }
       </div>
-    }
-  </div>
-</ion-content>
+    </ng-template>
+  </ion-modal>
+</div>

@@ -12,15 +12,15 @@
       </div>
       <span class="nav-label">Meetings</span>
     </button>
-    <button type="button" class="nav-item" [class.active]="activeTab() === 'chat'" (click)="tabSelect.emit('chat')" aria-label="Chat">
+    <button type="button" class="nav-item" [class.active]="activeTab() === 'members'" (click)="tabSelect.emit('members')" aria-label="Members">
       <div class="icon-box">
-        <ion-icon [name]="activeTab() === 'chat' ? 'chatbubble' : 'chatbubble-outline'" />
+        <ion-icon [name]="activeTab() === 'members' ? 'people' : 'people-outline'" />
       </div>
-      <span class="nav-label">Chat</span>
+      <span class="nav-label">Members</span>
     </button>
     <button type="button" class="nav-item" [class.active]="activeTab() === 'referrals'" (click)="tabSelect.emit('referrals')" aria-label="Referrals">
       <div class="icon-box">
-        <ion-icon [name]="activeTab() === 'referrals' ? 'people' : 'people-outline'" />
+        <ion-icon [name]="activeTab() === 'referrals' ? 'share-social' : 'share-social-outline'" />
       </div>
       <span class="nav-label">Referrals</span>
     </button>

@@ -1,10 +1,30 @@
-import { Component, Input, ElementRef, ViewChild, AfterViewInit, inject, signal } from '@angular/core';
-
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+  computed
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ModalController, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonSpinner, IonRange, IonFooter } from '@ionic/angular/standalone';
+import {
+  ModalController,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonButton,
+  IonIcon,
+  IonContent,
+  IonSpinner,
+  IonFooter
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   closeOutline,
+  arrowBackOutline,
   refreshOutline,
   cropOutline,
   checkmarkOutline,
@@ -12,10 +32,16 @@ import {
   removeOutline,
   swapHorizontalOutline,
   swapVerticalOutline,
-  arrowUndoOutline,
-  arrowRedoOutline,
-  moveOutline
+  expandOutline,
+  squareOutline,
+  scanOutline
 } from 'ionicons/icons';
+import {
+  ImageCropperComponent,
+  ImageCroppedEvent,
+  LoadedImage,
+  base64ToFile
+} from 'ngx-image-cropper';
 
 export interface ImageCropResult {
   base64: string;
@@ -23,10 +49,13 @@ export interface ImageCropResult {
   file: File;
 }
 
+export type AspectRatioMode = 'free' | 'original' | '1:1' | '16:9' | '4:3';
+
 @Component({
   selector: 'app-image-cropper-modal',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule,
     IonHeader,
     IonToolbar,
@@ -36,55 +65,59 @@ export interface ImageCropResult {
     IonIcon,
     IonContent,
     IonSpinner,
-    IonRange,
-    IonFooter
-],
+    IonFooter,
+    ImageCropperComponent
+  ],
   templateUrl: './image-cropper-modal.component.html',
   styleUrls: ['./image-cropper-modal.component.scss']
 })
-export class ImageCropperModalComponent implements AfterViewInit {
+export class ImageCropperModalComponent implements OnInit {
   private readonly modalCtrl = inject(ModalController);
 
+  @ViewChild(ImageCropperComponent) cropperComponent?: ImageCropperComponent;
+
   @Input() imageSource!: File | Blob | string;
-  @Input() title: string = 'Crop & Adjust Photo';
-  @Input() roundCropper: boolean = true; // true for round avatar, false for rectangular/square
-  @Input() aspectRatio: number = 1.0; // 1.0 for square profile avatar, 16/9 for banners & cards
+  @Input() title: string = 'Crop & Rotate';
+  @Input() roundCropper: boolean = false;
+  @Input() aspectRatio: number = 0; // 0 for freeform by default
   @Input() outputFileName: string = 'cropped-photo.jpg';
-  @Input() targetWidth: number = 500;
-  @Input() targetHeight: number = 500;
+  @Input() targetWidth: number = 800;
+  @Input() targetHeight: number = 800;
 
-  get canvasWidth(): number {
-    return 320;
-  }
+  // Source signals
+  readonly imageFile = signal<File | undefined>(undefined);
+  readonly imageBase64 = signal<string | undefined>(undefined);
+  readonly imageURL = signal<string | undefined>(undefined);
 
-  get canvasHeight(): number {
-    const ratio = this.aspectRatio || 1.0;
-    return Math.round(320 / ratio);
-  }
-
-  @ViewChild('canvasElement') canvasRef!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('cropperContainer') cropperContainerRef!: ElementRef<HTMLDivElement>;
-
-  // State Signals & Transformations
+  // States
   readonly loading = signal<boolean>(true);
   readonly cropping = signal<boolean>(false);
-  readonly zoomScale = signal<number>(1.0);
-  readonly rotationDeg = signal<number>(0);
+  readonly activeRatioMode = signal<AspectRatioMode>('free');
+  readonly maintainAspectRatio = signal<boolean>(false);
+  readonly currentAspectRatio = signal<number>(1);
+  readonly originalRatio = signal<number>(1);
+  readonly canvasRotation = signal<number>(0);
+  readonly zoomScale = signal<number>(1);
   readonly flipH = signal<boolean>(false);
   readonly flipV = signal<boolean>(false);
-  readonly panX = signal<number>(0);
-  readonly panY = signal<number>(0);
 
-  private loadedImage: HTMLImageElement | null = null;
-  private isDragging = false;
-  private startX = 0;
-  private startY = 0;
-  private initialPanX = 0;
-  private initialPanY = 0;
+  private latestCroppedEvent: ImageCroppedEvent | null = null;
+
+  readonly isRoundCropperActive = computed(() => {
+    return this.roundCropper && this.activeRatioMode() === '1:1';
+  });
+
+  readonly transform = computed(() => ({
+    scale: this.zoomScale(),
+    rotate: 0,
+    flipH: this.flipH(),
+    flipV: this.flipV()
+  }));
 
   constructor() {
     addIcons({
       closeOutline,
+      arrowBackOutline,
       refreshOutline,
       cropOutline,
       checkmarkOutline,
@@ -92,178 +125,147 @@ export class ImageCropperModalComponent implements AfterViewInit {
       removeOutline,
       swapHorizontalOutline,
       swapVerticalOutline,
-      arrowUndoOutline,
-      arrowRedoOutline,
-      moveOutline
+      expandOutline,
+      squareOutline,
+      scanOutline
     });
   }
 
-  ngAfterViewInit(): void {
-    this.loadImage();
+  ngOnInit(): void {
+    this.initImageSource();
+    this.initAspectRatio();
   }
 
-  private loadImage(): void {
-    if (!this.imageSource) return;
-
-    // Adjust default target dimensions for non-1:1 aspect ratios if defaults weren't explicitly customized
-    if (this.aspectRatio && this.aspectRatio !== 1.0 && this.targetWidth === 500 && this.targetHeight === 500) {
-      this.targetWidth = 800;
-      this.targetHeight = Math.round(800 / this.aspectRatio);
+  private initImageSource(): void {
+    if (!this.imageSource) {
+      this.loading.set(false);
+      return;
     }
 
-    this.loading.set(true);
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
+    if (this.imageSource instanceof File) {
+      this.imageFile.set(this.imageSource);
+    } else if (this.imageSource instanceof Blob) {
+      const file = new File([this.imageSource], this.outputFileName, {
+        type: this.imageSource.type || 'image/jpeg'
+      });
+      this.imageFile.set(file);
+    } else if (typeof this.imageSource === 'string') {
+      if (this.imageSource.startsWith('data:')) {
+        this.imageBase64.set(this.imageSource);
+      } else {
+        this.imageURL.set(this.imageSource);
+      }
+    }
+  }
 
-    img.onload = () => {
-      this.loadedImage = img;
-      this.resetTransformations();
-      this.loading.set(false);
-      this.render();
-    };
-
-    img.onerror = () => {
-      this.loading.set(false);
-      console.error('Failed to load image for cropping');
-    };
-
-    if (typeof this.imageSource === 'string') {
-      img.src = this.imageSource;
+  private initAspectRatio(): void {
+    if (this.roundCropper) {
+      // Profile avatars start in 1:1 square/circular mode, with full ability to switch to free-form
+      this.setAspectRatioMode('1:1');
+    } else if (this.aspectRatio && this.aspectRatio > 0) {
+      if (Math.abs(this.aspectRatio - 1) < 0.02) {
+        this.setAspectRatioMode('1:1');
+      } else if (Math.abs(this.aspectRatio - 16 / 9) < 0.05) {
+        this.setAspectRatioMode('16:9');
+      } else if (Math.abs(this.aspectRatio - 4 / 3) < 0.05) {
+        this.setAspectRatioMode('4:3');
+      } else {
+        this.currentAspectRatio.set(this.aspectRatio);
+        this.maintainAspectRatio.set(true);
+        this.activeRatioMode.set('free');
+      }
     } else {
-      const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        if (e.target?.result) {
-          img.src = e.target.result as string;
-        }
-      };
-      reader.readAsDataURL(this.imageSource);
+      // Free-form WhatsApp crop by default
+      this.setAspectRatioMode('free');
     }
   }
 
-  resetTransformations(): void {
-    if (this.cropping() || this.loading()) return;
-    this.zoomScale.set(1.0);
-    this.rotationDeg.set(0);
-    this.flipH.set(false);
-    this.flipV.set(false);
-    this.panX.set(0);
-    this.panY.set(0);
-    this.render();
+  setAspectRatioMode(mode: AspectRatioMode): void {
+    this.activeRatioMode.set(mode);
+    switch (mode) {
+      case 'free':
+        this.maintainAspectRatio.set(false);
+        break;
+      case 'original':
+        this.currentAspectRatio.set(this.originalRatio());
+        this.maintainAspectRatio.set(true);
+        break;
+      case '1:1':
+        this.currentAspectRatio.set(1);
+        this.maintainAspectRatio.set(true);
+        break;
+      case '16:9':
+        this.currentAspectRatio.set(16 / 9);
+        this.maintainAspectRatio.set(true);
+        break;
+      case '4:3':
+        this.currentAspectRatio.set(4 / 3);
+        this.maintainAspectRatio.set(true);
+        break;
+    }
   }
 
-  zoomIn(): void {
-    if (this.cropping() || this.loading()) return;
-    this.zoomScale.update(z => Math.min(z + 0.15, 3.5));
-    this.render();
+  onImageLoaded(image: LoadedImage): void {
+    this.loading.set(false);
+    if (image?.original?.size?.width && image?.original?.size?.height) {
+      const ratio = image.original.size.width / image.original.size.height;
+      this.originalRatio.set(ratio);
+      if (this.activeRatioMode() === 'original') {
+        this.currentAspectRatio.set(ratio);
+      }
+    }
   }
 
-  zoomOut(): void {
-    if (this.cropping() || this.loading()) return;
-    this.zoomScale.update(z => Math.max(z - 0.15, 0.5));
-    this.render();
+  onCropperReady(): void {
+    this.loading.set(false);
   }
 
-  onZoomChange(event: any): void {
-    if (this.cropping() || this.loading()) return;
-    const val = parseFloat(event.target?.value || event.detail?.value || '1');
-    this.zoomScale.set(val);
-    this.render();
+  onLoadImageFailed(): void {
+    this.loading.set(false);
+    console.error('Failed to load image into WhatsApp cropper');
   }
 
-  rotateLeft(): void {
-    if (this.cropping() || this.loading()) return;
-    this.rotationDeg.update(r => (r - 90) % 360);
-    this.render();
+  onImageCropped(event: ImageCroppedEvent): void {
+    this.latestCroppedEvent = event;
   }
 
-  rotateRight(): void {
-    if (this.cropping() || this.loading()) return;
-    this.rotationDeg.update(r => (r + 90) % 360);
-    this.render();
+  // 90° Clockwise Rotation
+  rotate90(): void {
+    if (this.loading() || this.cropping()) return;
+    this.canvasRotation.update(r => (r + 1) % 4);
   }
 
   toggleFlipH(): void {
-    if (this.cropping() || this.loading()) return;
+    if (this.loading() || this.cropping()) return;
     this.flipH.update(f => !f);
-    this.render();
   }
 
   toggleFlipV(): void {
-    if (this.cropping() || this.loading()) return;
+    if (this.loading() || this.cropping()) return;
     this.flipV.update(f => !f);
-    this.render();
   }
 
-  // Mouse & Touch Pan Dragging
-  onMouseDown(event: MouseEvent | TouchEvent): void {
-    if (this.cropping() || this.loading()) return;
-    this.isDragging = true;
-    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
-    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
-    this.startX = clientX;
-    this.startY = clientY;
-    this.initialPanX = this.panX();
-    this.initialPanY = this.panY();
+  zoomIn(): void {
+    if (this.loading() || this.cropping()) return;
+    this.zoomScale.update(s => Math.min(Number((s + 0.15).toFixed(2)), 3.0));
   }
 
-  onMouseMove(event: MouseEvent | TouchEvent): void {
-    if (!this.isDragging || this.cropping() || this.loading()) return;
-    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
-    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
-    const deltaX = clientX - this.startX;
-    const deltaY = clientY - this.startY;
-
-    this.panX.set(this.initialPanX + deltaX);
-    this.panY.set(this.initialPanY + deltaY);
-    this.render();
+  zoomOut(): void {
+    if (this.loading() || this.cropping()) return;
+    this.zoomScale.update(s => Math.max(Number((s - 0.15).toFixed(2)), 0.5));
   }
 
-  onMouseUp(): void {
-    this.isDragging = false;
-  }
-
-  // Render on Canvas
-  private render(): void {
-    const canvas = this.canvasRef?.nativeElement;
-    const img = this.loadedImage;
-    if (!canvas || !img) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const width = canvas.width;
-    const height = canvas.height;
-    const canvasRatio = width / height;
-
-    ctx.clearRect(0, 0, width, height);
-    ctx.save();
-
-    // Move to center of canvas
-    ctx.translate(width / 2 + this.panX(), height / 2 + this.panY());
-
-    // Rotate
-    ctx.rotate((this.rotationDeg() * Math.PI) / 180);
-
-    // Scale & Flip
-    const scaleX = (this.flipH() ? -1 : 1) * this.zoomScale();
-    const scaleY = (this.flipV() ? -1 : 1) * this.zoomScale();
-    ctx.scale(scaleX, scaleY);
-
-    // Draw Image Centered (Cover fit within canvas container)
-    const imgRatio = img.width / img.height;
-    let drawW = width;
-    let drawH = height;
-
-    if (imgRatio > canvasRatio) {
-      drawH = height;
-      drawW = height * imgRatio;
+  reset(): void {
+    if (this.loading() || this.cropping()) return;
+    this.canvasRotation.set(0);
+    this.zoomScale.set(1);
+    this.flipH.set(false);
+    this.flipV.set(false);
+    if (this.roundCropper) {
+      this.setAspectRatioMode('1:1');
     } else {
-      drawW = width;
-      drawH = width / imgRatio;
+      this.setAspectRatioMode('free');
     }
-
-    ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
-    ctx.restore();
   }
 
   cancel(): void {
@@ -271,56 +273,56 @@ export class ImageCropperModalComponent implements AfterViewInit {
     this.modalCtrl.dismiss(null, 'cancel');
   }
 
-  applyCrop(): void {
+  private blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve((reader.result as string) || '');
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async applyCrop(): Promise<void> {
     if (this.cropping() || this.loading()) return;
-
-    const canvas = this.canvasRef?.nativeElement;
-    if (!canvas || !this.loadedImage) return;
-
     this.cropping.set(true);
 
-    // Defer high-res offscreen rendering so Angular updates button loading state visually
-    setTimeout(() => {
-      try {
-        const outputCanvas = document.createElement('canvas');
-        outputCanvas.width = this.targetWidth;
-        outputCanvas.height = this.targetHeight;
-        const ctx = outputCanvas.getContext('2d');
+    try {
+      let base64 = this.latestCroppedEvent?.base64 || '';
+      let blob = this.latestCroppedEvent?.blob;
 
-        if (!ctx) {
-          this.cropping.set(false);
-          return;
+      // Fallback: manually trigger crop if base64 not yet present
+      if (!base64 && this.cropperComponent) {
+        const manualCrop = this.cropperComponent.crop('base64');
+        if (manualCrop?.base64) {
+          base64 = manualCrop.base64;
         }
+      }
 
-        if (this.roundCropper) {
-          ctx.beginPath();
-          ctx.arc(this.targetWidth / 2, this.targetHeight / 2, this.targetWidth / 2, 0, Math.PI * 2);
-          ctx.closePath();
-          ctx.clip();
-        }
+      // If we have blob but no base64, convert it
+      if (!base64 && blob) {
+        base64 = await this.blobToBase64(blob);
+      }
 
-        // Draw canvas state onto output canvas
-        ctx.drawImage(canvas, 0, 0, this.targetWidth, this.targetHeight);
+      // If we have base64 but no blob, convert it
+      if (base64 && !blob) {
+        blob = base64ToFile(base64);
+      }
 
-        const base64 = outputCanvas.toDataURL('image/jpeg', 0.92);
-
-        outputCanvas.toBlob((blob) => {
-          if (blob) {
-            const file = new File([blob], this.outputFileName, { type: 'image/jpeg' });
-            const result: ImageCropResult = {
-              base64,
-              blob,
-              file
-            };
-            this.modalCtrl.dismiss(result, 'confirm');
-          } else {
-            this.cropping.set(false);
-          }
-        }, 'image/jpeg', 0.92);
-      } catch (error) {
-        console.error('Error during image crop:', error);
+      if (base64 && blob) {
+        const file = new File([blob], this.outputFileName, { type: 'image/jpeg' });
+        const result: ImageCropResult = {
+          base64,
+          blob,
+          file
+        };
+        await this.modalCtrl.dismiss(result, 'confirm');
+      } else {
+        console.error('Could not extract cropped image: missing base64 or blob');
         this.cropping.set(false);
       }
-    }, 50);
+    } catch (err) {
+      console.error('Error while applying crop:', err);
+      this.cropping.set(false);
+    }
   }
 }

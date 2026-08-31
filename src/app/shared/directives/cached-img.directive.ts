@@ -42,6 +42,12 @@ export class CachedImgDirective {
         return;
       }
 
+      // Fast-path for in-memory data URLs and blobs (e.g. freshly cropped image previews)
+      if (url.startsWith('data:') || url.startsWith('blob:')) {
+        this.setImageSrc(url);
+        return;
+      }
+
       // Show fallback instantly while loading
       if (fallback && this.getElSrc() !== url) {
         this.setImageSrc(fallback);

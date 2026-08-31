@@ -1,270 +1,448 @@
 .cropper-toolbar {
-  --background: var(--bizzdeal-surface-color, #1e293b);
-  --color: #ffffff;
+  --background: #0b141a;
+  --color: #e9edef;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
   ion-title {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
+    color: #e9edef;
+    letter-spacing: 0.2px;
   }
 
   ion-button {
-    --color: #cbd5e1;
+    --color: #aebac1;
+    font-size: 1.2rem;
+  }
+
+  .header-reset-btn {
+    background: transparent;
+    border: none;
+    color: #00a884;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
   }
 }
 
 .cropper-content {
-  --background: #0f172a;
+  --background: #000000;
+  --color: #e9edef;
 }
 
-.cropper-wrapper {
+.cropper-layout {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 100%;
-  padding: 1.25rem 1rem 1.5rem;
-  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
   position: relative;
+  background-color: #000000;
 }
 
 .loading-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 23, 42, 0.85);
+  inset: 0;
+  background: rgba(11, 20, 26, 0.88);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 20;
-  color: #94a3b8;
+  z-index: 30;
+  color: #aebac1;
+
+  ion-spinner {
+    width: 36px;
+    height: 36px;
+    --color: #00a884;
+  }
 
   p {
-    margin-top: 10px;
+    margin-top: 12px;
     font-size: 0.9rem;
   }
 }
 
-.canvas-container {
-  position: relative;
-  margin: 0 auto;
-  max-width: 90vw;
-  max-height: 70vh;
-  background: #1e293b;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.1);
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-
-  &:active {
-    cursor: grabbing;
-  }
-
-  &.round-mask {
-    border-radius: 50%;
-  }
-}
-
-.cropper-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.crop-overlay-guide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  border: 2px dashed rgba(255, 255, 255, 0.4);
-  box-sizing: border-box;
-
-  .round-mask & {
-    border-radius: 50%;
-  }
-
-  .guide-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    width: 100%;
-    height: 100%;
-
-    div {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-  }
-}
-
-.drag-hint {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  color: #94a3b8;
-  font-size: 0.8rem;
-  font-weight: 500;
-
-  ion-icon {
-    font-size: 1rem;
-  }
-}
-
-.controls-panel {
-  width: 100%;
-  max-width: 400px;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.control-row {
+// Center cropper viewport
+.cropper-viewport {
+  flex: 1;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-}
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 8px;
+  box-sizing: border-box;
 
-.zoom-row {
-  padding: 0 10px;
-
-  ion-range {
-    flex: 1;
-    --bar-background: #334155;
-    --bar-background-active: var(--bizzdeal-primary, #3b82f6);
-    --knob-background: #ffffff;
-    --knob-size: 20px;
-  }
-
-  .ctrl-btn {
-    background: #334155;
-    color: #f8fafc;
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+  image-cropper {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background 0.2s ease;
-
-    &:hover:not(:disabled) {
-      background: #475569;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
   }
 }
 
-.actions-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-
-  .action-btn {
-    background: #1e293b;
-    color: #cbd5e1;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 0.75rem;
-    font-weight: 500;
+// Deep styling to replicate iconic WhatsApp Cropper
+:host ::ng-deep {
+  image-cropper {
     display: flex;
-    flex-direction: column;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    justify-content: center;
     align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 60px;
 
-    ion-icon {
-      font-size: 1.2rem;
+    // Outer dark backdrop outside crop box
+    .ngx-ic-overlay {
+      outline: rgba(0, 0, 0, 0.72) solid 100vw !important;
     }
 
-    &:hover:not(:disabled) {
-      background: #334155;
-      color: #ffffff;
-    }
+    .ngx-ic-cropper {
+      outline: rgba(0, 0, 0, 0.72) solid 100vw !important;
+      position: absolute;
+      touch-action: none;
 
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      border-color: #1e293b;
-    }
+      // Subtle 3x3 Rule-of-Thirds Grid inside crop area
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(to right, rgba(255, 255, 255, 0.28) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.28) 1px, transparent 1px);
+        background-size: 33.333% 33.333%;
+        z-index: 1;
+      }
 
-    &.active {
-      background: rgba(59, 130, 246, 0.2);
-      border-color: var(--bizzdeal-primary, #3b82f6);
-      color: #60a5fa;
-    }
+      // Thin perimeter border
+      .ngx-ic-move {
+        border: 1px solid rgba(255, 255, 255, 0.85) !important;
+        width: 100%;
+        height: 100%;
+        cursor: move;
+        box-sizing: border-box;
+      }
 
-    &.reset-btn {
-      color: #f87171;
-      border-color: rgba(248, 113, 113, 0.3);
+      // WhatsApp Bold White Corner L-Brackets
+      .ngx-ic-resize {
+        width: 24px !important;
+        height: 24px !important;
+        padding: 0 !important;
+        opacity: 1 !important;
+        z-index: 5 !important;
+        background: transparent !important;
+        box-sizing: border-box !important;
 
-      &:hover:not(:disabled) {
-        background: rgba(248, 113, 113, 0.15);
+        .ngx-ic-square {
+          display: none !important;
+        }
+
+        &.ngx-ic-topleft {
+          top: -2px !important;
+          left: -2px !important;
+          border-top: 3.5px solid #ffffff !important;
+          border-left: 3.5px solid #ffffff !important;
+        }
+
+        &.ngx-ic-topright {
+          top: -2px !important;
+          right: -2px !important;
+          border-top: 3.5px solid #ffffff !important;
+          border-right: 3.5px solid #ffffff !important;
+        }
+
+        &.ngx-ic-bottomleft {
+          bottom: -2px !important;
+          left: -2px !important;
+          border-bottom: 3.5px solid #ffffff !important;
+          border-left: 3.5px solid #ffffff !important;
+        }
+
+        &.ngx-ic-bottomright {
+          bottom: -2px !important;
+          right: -2px !important;
+          border-bottom: 3.5px solid #ffffff !important;
+          border-right: 3.5px solid #ffffff !important;
+        }
+
+        // WhatsApp Middle Edge Grip Bars
+        &.ngx-ic-top,
+        &.ngx-ic-bottom {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          top: -2px !important;
+          bottom: auto !important;
+
+          .ngx-ic-square {
+            display: block !important;
+            width: 22px !important;
+            height: 3.5px !important;
+            background: #ffffff !important;
+            border: none !important;
+            border-radius: 2px !important;
+          }
+        }
+
+        &.ngx-ic-bottom {
+          top: auto !important;
+          bottom: -2px !important;
+        }
+
+        &.ngx-ic-left,
+        &.ngx-ic-right {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          left: -2px !important;
+          right: auto !important;
+
+          .ngx-ic-square {
+            display: block !important;
+            width: 3.5px !important;
+            height: 22px !important;
+            background: #ffffff !important;
+            border: none !important;
+            border-radius: 2px !important;
+          }
+        }
+
+        &.ngx-ic-right {
+          left: auto !important;
+          right: -2px !important;
+        }
+      }
+
+      // Circular cropper mask styling
+      &.ngx-ic-round {
+        &::before {
+          border-radius: 50%;
+        }
+
+        .ngx-ic-move {
+          border-radius: 50% !important;
+        }
       }
     }
   }
 }
 
-.modal-footer-actions {
+// Bottom Controls Panel
+.cropper-controls {
+  background: #111b21;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+// Aspect ratio pills
+.aspect-pills-row {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-  background: #0f172a;
-  border-top: 1px solid #1e293b;
+  justify-content: flex-start;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
 
-  button {
-    height: 44px;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.95rem;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .aspect-pill {
+    background: rgba(255, 255, 255, 0.07);
+    color: #aebac1;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 500;
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
 
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      box-shadow: none !important;
-      filter: none !important;
+    ion-icon {
+      font-size: 1rem;
     }
 
-    &.cancel-btn {
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+    }
+
+    &.active {
+      background: #00a884;
+      border-color: #00a884;
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 168, 132, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Action buttons (Rotate, Flip, Zoom)
+.tool-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  .tool-btn {
+    background: rgba(255, 255, 255, 0.06);
+    color: #d1d7db;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    ion-icon {
+      font-size: 1.1rem;
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    &.active {
+      background: rgba(0, 168, 132, 0.2);
+      border-color: #00a884;
+      color: #00a884;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  .zoom-buttons-group {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 2px 4px;
+    gap: 4px;
+
+    .zoom-btn {
       background: transparent;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      padding: 0 18px;
+      border: none;
+      color: #d1d7db;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
 
       &:hover:not(:disabled) {
-        background: #1e293b;
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+      }
+
+      &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+    }
+
+    .zoom-label {
+      font-size: 0.75rem;
+      color: #aebac1;
+      font-weight: 600;
+      min-width: 30px;
+      text-align: center;
+      user-select: none;
+    }
+  }
+}
+
+// Footer
+.cropper-footer {
+  background: #0b141a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  .footer-actions-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: #0b141a;
+
+    button {
+      height: 44px;
+      border-radius: 22px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .footer-cancel-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #d1d7db;
+      padding: 0 24px;
+
+      &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.08);
         color: #ffffff;
       }
     }
 
-    &.apply-btn {
-      background: var(--bizzdeal-primary, #3b82f6);
-      color: #ffffff;
+    .footer-done-btn {
+      background: #00a884;
       border: none;
-      padding: 0 22px;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      color: #ffffff;
+      padding: 0 28px;
+      box-shadow: 0 2px 12px rgba(0, 168, 132, 0.35);
+
+      ion-icon {
+        font-size: 1.25rem;
+      }
 
       &:hover:not(:disabled) {
         filter: brightness(1.1);

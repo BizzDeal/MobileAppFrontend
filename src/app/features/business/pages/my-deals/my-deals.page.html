@@ -1,0 +1,189 @@
+<ion-header class="bd-header ion-no-border">
+  <ion-toolbar class="main-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>My Deals</ion-title>
+    <ion-buttons slot="end">
+      <!-- Add Deal Button -->
+      <ion-button (click)="onCreateDeal()" fill="clear" aria-label="Create Offer" class="header-action-btn add-btn">
+        <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Pinned Header Search & Filter Bar -->
+  <div class="header-search-filter-section">
+    <div class="header-searchbar-wrap">
+      <ion-searchbar
+        [value]="searchQuery()"
+        (ionInput)="onSearch($event)"
+        (ionClear)="clearSearch()"
+        placeholder="Search deals by title or keywords..."
+        mode="md"
+        class="custom-searchbar">
+      </ion-searchbar>
+    </div>
+
+    <!-- Active Filter Selector Bar -->
+    <div class="header-filter-bar">
+      <button
+        type="button"
+        class="filter-selector-btn"
+        [class.is-filtered]="activeFilter() !== 'ALL'"
+        (click)="openFilterActionSheet()">
+        <ion-icon [name]="activeFilterOption().icon || 'filter-outline'" class="filter-icon"></ion-icon>
+        <span class="filter-label">
+          Filter: <strong>{{ activeFilterOption().label }}</strong>
+        </span>
+        <span class="filter-count-badge">{{ countsByFilter()[activeFilter()] }}</span>
+        <ion-icon name="chevron-down-outline" class="chevron-icon"></ion-icon>
+      </button>
+
+      @if (activeFilter() !== 'ALL' || searchQuery()) {
+        <button type="button" class="clear-quick-btn" (click)="resetFilter(); clearSearch()" aria-label="Clear active filters">
+          <span>Reset</span>
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      }
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="my-deals-content">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content pullingIcon="refresh-outline" refreshingSpinner="crescent"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="deals-page-container">
+    <!-- Error Banner -->
+    @if (error()) {
+      <div class="error-banner">
+        <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
+        <span class="error-text">{{ error() }}</span>
+        <button type="button" class="retry-btn" (click)="loadDeals()">Retry</button>
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (loading() && deals().length === 0) {
+      <div class="loading-state">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p class="loading-text">Loading your deals...</p>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!loading() && filteredDeals().length === 0) {
+      <div class="empty-state-card">
+        <div class="empty-icon-wrap">
+          <ion-icon name="pricetag-outline"></ion-icon>
+        </div>
+        @if (searchQuery() || activeFilter() !== 'ALL') {
+          <h3 class="empty-title">No matching deals found</h3>
+          <p class="empty-subtitle">No deals found for the current search or filter. Try choosing another filter.</p>
+          <div class="empty-actions">
+            <button type="button" class="clear-filters-btn" (click)="resetFilter(); clearSearch()">
+              Clear Filters
+            </button>
+          </div>
+        } @else {
+          <h3 class="empty-title">No deals created yet</h3>
+          <p class="empty-subtitle">Attract more customers to your business by creating attractive discounts, flat offers, or cashback deals.</p>
+          <div class="empty-actions">
+            <button type="button" class="create-deal-btn" (click)="onCreateDeal()">
+              <ion-icon name="add-circle-outline"></ion-icon>
+              <span>Create Your First Deal</span>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Deals Cards List -->
+    @if (filteredDeals().length > 0) {
+      <div class="deals-list">
+        @for (deal of filteredDeals(); track deal.id) {
+          <article class="deal-card" (click)="onEditDeal(deal)">
+            <!-- Card Banner / Media Header -->
+            <div class="card-media" [style.background]="getAvatarColor(deal.title)">
+              @if (deal.imageUrl) {
+                <img [appCachedImg]="deal.imageUrl" [alt]="deal.title" class="media-img" loading="lazy" />
+              } @else {
+                <div class="fallback-avatar">
+                  <span class="initials">{{ getInitials(deal.title) }}</span>
+                </div>
+              }
+              <div class="media-gradient-overlay"></div>
+
+              <!-- Top Tags Row -->
+              <div class="media-tags-top">
+                <div class="tags-left">
+                  <!-- Discount Pill -->
+                  <span class="discount-pill" [class.cashback]="deal.offer_type === 'CASHBACK'">
+                    @if (deal.offer_type === 'CASHBACK') {
+                      <ion-icon name="cash-outline"></ion-icon>
+                    } @else {
+                      <ion-icon name="pricetag-outline"></ion-icon>
+                    }
+                    {{ getDiscountLabel(deal) }}
+                  </span>
+
+                  <!-- Highlight Tags -->
+                  @if (deal.offer_type === 'DISCOUNT' && deal.discount_type === 'PERCENTAGE') {
+                    <span class="highlight-tag top-deal">
+                      <ion-icon name="flame-outline"></ion-icon> Top Deal
+                    </span>
+                  }
+                  @if (deal.is_featured) {
+                    <span class="highlight-tag featured">
+                      <ion-icon name="star-outline"></ion-icon> Featured
+                    </span>
+                  }
+                </div>
+
+                <!-- Status Badge -->
+                <div class="tags-right">
+                  <span class="status-badge" [ngClass]="getStatusBadge(deal).class">
+                    <ion-icon [name]="getStatusBadge(deal).icon"></ion-icon>
+                    {{ getStatusBadge(deal).label }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Content Body -->
+            <div class="card-body">
+              <div class="deal-title-row">
+                <h3 class="deal-title">{{ deal.title }}</h3>
+              </div>
+
+              @if (deal.description) {
+                <p class="deal-description">{{ deal.description }}</p>
+              }
+
+              <!-- Validity Date -->
+              <div class="validity-row">
+                <ion-icon name="calendar-outline" class="calendar-icon"></ion-icon>
+                <span class="validity-text">
+                  Valid: {{ deal.start_date | date:'dd MMM yyyy' }} – {{ deal.end_date | date:'dd MMM yyyy' }}
+                </span>
+                @if (isDealExpired(deal)) {
+                  <span class="expired-indicator">(Expired)</span>
+                }
+              </div>
+
+              <!-- Action Footer -->
+              <div class="card-footer">
+                <button type="button" class="edit-deal-btn" (click)="$event.stopPropagation(); onEditDeal(deal)">
+                  <ion-icon name="create-outline"></ion-icon>
+                  <span>Edit Deal</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</ion-content>

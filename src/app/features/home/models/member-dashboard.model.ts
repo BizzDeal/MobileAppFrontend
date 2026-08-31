@@ -15,6 +15,9 @@ export interface MemberDashboardAnalytics {
     totalMembers: number;
     totalVouchers: number;
     revenue: number;
+    totalReferrals?: number;
+    totalBusinessValue?: number;
+    districtName?: string;
   };
 }
 
@@ -32,4 +35,5 @@ export interface MemberDashboardData {
   alerts: MemberAlert[];
   recentActivity: any[];
   myOffers: import('../../home/models/home.model').OfferDTO[];
+  bizzCoinOffer?: import('../../home/models/home.model').OfferDTO | null;
 }

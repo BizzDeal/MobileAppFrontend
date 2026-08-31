@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline } from 'ionicons/icons';
+import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../services/member-dashboard.service';
 
 import { ProfileService } from '../../../profile/services/profile.service';
@@ -15,7 +15,6 @@ import { NotificationService } from '../../../notifications/services/notificatio
 import { ToastService } from '../../../../core/services/toast.service';
 import { WalletService } from '../../../wallet/services/wallet.service';
 
-import { HeroCarouselComponent } from '../hero-carousel/hero-carousel.component';
 import { DashboardSkeletonComponent } from '../../../../shared/components/skeletons/dashboard-skeleton/dashboard-skeleton.component';
 import { MemberHomeHeaderComponent } from '../member-home-header/member-home-header.component';
 
@@ -26,17 +25,15 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-member-home',
   standalone: true,
-  imports: [CommonModule, IonIcon, MeetingCardComponent, CachedImgDirective, HeroCarouselComponent, DashboardSkeletonComponent, MemberHomeHeaderComponent],
+  imports: [CommonModule, IonIcon, MeetingCardComponent, CachedImgDirective, DashboardSkeletonComponent, MemberHomeHeaderComponent],
   templateUrl: './member-home.component.html',
   styleUrls: ['./member-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('analyticsCarousel') analyticsCarousel!: ElementRef;
-  private autoScrollInterval: any;
-
+export class MemberHomeComponent implements OnInit {
   @Output() notificationClick = new EventEmitter<void>();
   @Output() referralsClick = new EventEmitter<void>();
+  @Output() chatClick = new EventEmitter<void>();
   @Output() walletClick = new EventEmitter<void>();
   @Output() searchClick = new EventEmitter<void>();
   @Output() receivedBusinessClick = new EventEmitter<void>();
@@ -85,61 +82,20 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  ngAfterViewInit() {
-    this.startAutoScroll();
-  }
 
-  ngOnDestroy() {
-    if (this.autoScrollInterval) {
-      clearInterval(this.autoScrollInterval);
-    }
-  }
-
-  startAutoScroll() {
-    this.autoScrollInterval = setInterval(() => {
-      const el = this.analyticsCarousel?.nativeElement;
-      if (!el) return;
-
-      const slideWidth = el.clientWidth;
-      if (!slideWidth) return;
-
-      const maxScroll = el.scrollWidth - slideWidth;
-      if (maxScroll <= 0) return;
-
-      if (el.scrollLeft >= maxScroll - 15) {
-        // At the cloned slide end: instantly reset to 0 without backward animation
-        el.scrollTo({ left: 0, behavior: 'instant' });
-        // Then scroll left-to-right to next slide
-        setTimeout(() => {
-          el.scrollBy({ left: slideWidth, behavior: 'smooth' });
-        }, 50);
-      } else {
-        // Scroll left-to-right
-        el.scrollBy({ left: slideWidth, behavior: 'smooth' });
-
-        // If landed on the cloned slide, reset position to 0 silently after transition
-        setTimeout(() => {
-          if (el.scrollLeft >= maxScroll - 15) {
-            el.scrollTo({ left: 0, behavior: 'instant' });
-          }
-        }, 600);
-      }
-    }, 3000);
-  }
-
-
-
-  readonly approvedOffers = computed(() =>
-    this.dashboardData()?.myOffers.filter(o => o.status === 'APPROVED') || []
-  );
-
-  readonly percentageDeals = computed(() => this.approvedOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'PERCENTAGE'));
-  readonly flatOffers = computed(() => this.approvedOffers().filter(o => o.offer_type === 'DISCOUNT' && o.discount_type === 'FIXED_AMOUNT'));
-  readonly cashbackOffers = computed(() => this.approvedOffers().filter(o => o.offer_type === 'CASHBACK'));
 
   readonly bizzCoinOffer = computed(() =>
-    this.dashboardData()?.myOffers.find(o => o.offer_type === 'BIZZ_COINS') || null
+    this.dashboardData()?.bizzCoinOffer ||
+    this.dashboardData()?.myOffers.find(o => o.offer_type === 'BIZZ_COINS') ||
+    null
   );
+
+  readonly regionalStats = computed(() => this.dashboardData()?.analytics?.districtStats);
+  readonly regionalName = computed(() => {
+    const stats = this.regionalStats();
+    if (stats?.districtName && stats.districtName !== 'Region') return stats.districtName;
+    return this.profile()?.primary_business_district_name || this.profile()?.district_name || 'Your';
+  });
 
   readonly isBusinessFeatured = computed(() => {
     return !!this.profile()?.is_featured;
@@ -170,7 +126,7 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     
   constructor() {
-    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline });
+    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline });
   }
 
   toggleActionsMenu() {
@@ -195,12 +151,20 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['/videos/new']);
   }
 
+  onOpenChat() {
+    this.chatClick.emit();
+  }
+
   onCreateOffer() {
     if (this.profile()?.status === 'PENDING') {
       this.toastService.showError('Pending members cannot create offers');
       return;
     }
     this.router.navigate(['/offers/new']);
+  }
+
+  onViewMyDeals() {
+    this.router.navigate(['/offers/my-deals']);
   }
 
   onBizzCoinsOffer() {
@@ -225,14 +189,6 @@ export class MemberHomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onRedeemBizzCoins() {
     this.router.navigate(['/vouchers/redeem-bizz-coins']);
-  }
-
-  onViewAnalytics() {
-    this.router.navigate(['/analytics']);
-  }
-
-  onViewDirectory() {
-    this.router.navigate(['/business-directory']);
   }
 
   handleRsvp(event: { meetingId: string, status: AttendeeStatus }) {

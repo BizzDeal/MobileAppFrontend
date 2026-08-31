@@ -11,13 +11,13 @@ import {
   ViewChild
 } from '@angular/core';
 import {
-  IonButton,
-  IonButtons,
-  IonHeader,
   IonIcon,
-  IonTitle,
-  IonToolbar,
   IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonButton,
   IonContent
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -36,16 +36,16 @@ import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.uti
   imports: [
     NgClass,
     IonIcon,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
     ChatBubbleComponent,
     ChatInputComponent,
     CachedImgDirective,
     IonModal,
-    IonContent,
+    IonHeader,
+    IonToolbar,
     IonTitle,
-    IonButton
+    IonButtons,
+    IonButton,
+    IonContent
   ],
   templateUrl: './chat-room.component.html',
   styleUrl: './chat-room.component.scss',

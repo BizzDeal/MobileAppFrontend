@@ -60,10 +60,11 @@ export class MemberDashboardService {
       profile: this.http.get<any>(`${this.apiUrl}/users/profile`).pipe(catchError(() => of(null))),
       vouchers: this.http.get<any>(`${this.apiUrl}/vouchers/my`).pipe(catchError(() => of([]))),
       myOffers: this.http.get<any>(`${this.apiUrl}/offers/my`).pipe(catchError(() => of([]))),
+      bizzCoinOffer: this.http.get<any>(`${this.apiUrl}/offers/bizz-coins/my`).pipe(catchError(() => of(null))),
       analytics: this.http.get<any>(`${this.apiUrl}/analytics/member/summary`).pipe(catchError(() => of(null)))
     }).pipe(
       map((response: any) => {
-        const { myOffers: offersRes, vouchers: vouchersRes, analytics: analyticsRes } = response;
+        const { myOffers: offersRes, vouchers: vouchersRes, analytics: analyticsRes, bizzCoinOffer: bizzCoinsRes } = response;
         const rawOffers: OfferDTO[] = Array.isArray(offersRes) ? offersRes : offersRes?.data || offersRes?.items || [];
         const rawVouchers: VoucherDTO[] = Array.isArray(vouchersRes) ? vouchersRes : vouchersRes?.data || vouchersRes?.items || [];
         const backendAnalytics = analyticsRes?.data || {};
@@ -77,6 +78,15 @@ export class MemberDashboardService {
           businessName: offer.businessName || profile?.business_name || undefined,
           businessLogoUrl: offer.businessLogoUrl || profile?.business_logo_url || undefined
         }));
+
+        const rawBizzOffer = bizzCoinsRes?.data || bizzCoinsRes;
+        const bizzCoinOffer: OfferDTO | null = (rawBizzOffer && rawBizzOffer.id)
+          ? {
+              ...rawBizzOffer,
+              businessName: rawBizzOffer.businessName || profile?.business_name || undefined,
+              businessLogoUrl: rawBizzOffer.businessLogoUrl || profile?.business_logo_url || undefined
+            }
+          : (myOffers.find(o => o.offer_type === 'BIZZ_COINS') || null);
 
         const now = new Date();
         const todayStr = now.toISOString().split('T')[0];
@@ -116,6 +126,9 @@ export class MemberDashboardService {
           totalMembers: backendAnalytics.districtStats.totalMembers || 0,
           totalVouchers: backendAnalytics.districtStats.totalVouchers || 0,
           revenue: backendAnalytics.districtStats.revenue || 0,
+          totalReferrals: backendAnalytics.districtStats.totalReferrals || 0,
+          totalBusinessValue: backendAnalytics.districtStats.totalBusinessValue || backendAnalytics.districtStats.revenue || 0,
+          districtName: backendAnalytics.districtStats.districtName || profile?.district_name || 'Region',
         } : undefined;
 
         const analytics: MemberDashboardAnalytics = {
@@ -143,7 +156,8 @@ export class MemberDashboardService {
             text: `Voucher ${v.voucher_code} ${v.status.toLowerCase()}`,
             time: v.updated_at || v.created_at
           })),
-          myOffers
+          myOffers,
+          bizzCoinOffer
         };
 
         return dashboardData;

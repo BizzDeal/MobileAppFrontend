@@ -25,29 +25,28 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
-  padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
-  background: var(--bizzdeal-bg-surface);
-  
-  ion-toolbar {
-    --background: var(--bizzdeal-bg-surface);
-    --border-color: var(--bizzdeal-border-color);
-    --padding-bottom: 2px;
-    --min-height: 44px;
-  }
-  
-  ion-title {
-    font-family: var(--bizzdeal-font-family);
-    font-weight: 700;
-    font-size: 20px;
-    color: var(--bizzdeal-text-primary);
-  }
-}
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  padding-top: calc(var(--ion-safe-area-top, 24px) + 8px);
+  background: var(--bizzdeal-bg-surface, #ffffff);
+  border-bottom: 1px solid var(--bizzdeal-border-color, #e2e8f0);
 
-.search-section {
-  padding: 10px var(--bizzdeal-spacing-md) 8px var(--bizzdeal-spacing-md);
-  margin: 0;
-  background: transparent;
+  .chat-header-title-row {
+    padding: 6px var(--bizzdeal-spacing-md) 2px var(--bizzdeal-spacing-md);
+
+    .chat-page-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--bizzdeal-text-primary, #0f172a);
+    }
+  }
+
+  .search-section {
+    padding: 4px var(--bizzdeal-spacing-md) 10px var(--bizzdeal-spacing-md);
+    margin: 0;
+    background: transparent;
+  }
 }
 
 .custom-searchbar {

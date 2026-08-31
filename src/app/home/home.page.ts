@@ -64,6 +64,7 @@ import { VouchersViewComponent } from '../features/vouchers/components/vouchers-
 import { CustomerVouchersService } from '../features/vouchers/services/customer-vouchers.service';
 import { CategoriesViewComponent } from '../features/categories/components/categories-view/categories-view.component';
 import { VideosViewComponent } from '../features/videos/components/videos-view/videos-view.component';
+import { BusinessDirectoryPage } from '../features/business/pages/business-directory/business-directory.page';
 import { AuthSessionService } from '../core/services/auth-session.service';
 import { CachedImgDirective } from '../shared/directives/cached-img.directive';
 import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
@@ -102,6 +103,7 @@ import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
     VouchersViewComponent,
     CategoriesViewComponent,
     VideosViewComponent,
+    BusinessDirectoryPage,
   ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],

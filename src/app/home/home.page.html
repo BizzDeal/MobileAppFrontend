@@ -12,6 +12,7 @@
     <app-member-home 
       (notificationClick)="onNotificationClick()" 
       (referralsClick)="onTabSelect('referrals')" 
+      (chatClick)="onTabSelect('chat')"
       (walletClick)="onWalletClick()" 
       (searchClick)="onSearchSubmit('')"
       (receivedBusinessClick)="referralInitialSegment.set('RECEIVED'); onTabSelect('referrals')"
@@ -32,6 +33,8 @@
     }
     } @else if (activeNavTab() === 'meetings') {
     <app-meetings-page />
+    } @else if (activeNavTab() === 'members') {
+    <app-business-directory />
     } @else if (activeNavTab() === 'referrals') {
     <app-referrals-page [initialSegment]="referralInitialSegment()" />
     } @else if (activeNavTab() === 'menu') {

@@ -29,9 +29,11 @@ import {
   playOutline,
   playCircle,
   playCircleOutline,
+  shareSocial,
+  shareSocialOutline,
 } from 'ionicons/icons';
 
-export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile' | 'meetings' | 'menu' | 'referrals' | 'vouchers' | 'categories' | 'videos';
+export type NavTab = 'home' | 'search' | 'chat' | 'wallet' | 'profile' | 'meetings' | 'menu' | 'referrals' | 'vouchers' | 'categories' | 'videos' | 'members';
 
 @Component({
   selector: 'app-bottom-nav',
@@ -67,6 +69,8 @@ export class BottomNavComponent {
       calendarOutline,
       people,
       peopleOutline,
+      shareSocial,
+      shareSocialOutline,
       ticket,
       ticketOutline,
       grid,

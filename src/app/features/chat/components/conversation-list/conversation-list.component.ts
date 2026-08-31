@@ -131,7 +131,12 @@ export class ConversationListComponent implements OnInit {
 
     this.chatService.getChatList(this.currentPage, this.pageSize, query).subscribe({
       next: (res) => {
-        const items = res?.data || [];
+        let items = res?.data || [];
+        // Deduplicate duplicate admin entries: prioritize 'System Administrator'
+        const hasSystemAdmin = items.some((item: any) => item.contact?.full_name === 'System Administrator');
+        if (hasSystemAdmin) {
+          items = items.filter((item: any) => item.contact?.full_name !== 'Admin' || item.conversationId);
+        }
         this.displayedList.update(prev => isInitial ? items : [...prev, ...items]);
         this.hasMore.set(res?.meta ? (res.meta.currentPage < res.meta.totalPages && items.length > 0) : false);
         this.isLoading.set(false);

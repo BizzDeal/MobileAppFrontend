@@ -256,7 +256,9 @@ export class OfferFormPage implements OnInit {
     formData.append('start_date', new Date(formValues.start_date).toISOString());
     formData.append('end_date', new Date(formValues.end_date).toISOString());
     
-    formData.append('video_url', formValues.video_url || '');
+    if (formValues.video_url?.trim()) {
+      formData.append('video_url', formValues.video_url.trim());
+    }
 
     if (this.selectedImageFile()) {
       formData.append('offer_image', this.selectedImageFile()!);
@@ -267,7 +269,7 @@ export class OfferFormPage implements OnInit {
         next: (res) => {
           this.submitting.set(false);
           this.dashboardService.loadDashboardData().subscribe();
-          this.router.navigate(['/home']);
+          this.router.navigate(['/offers/my-deals']);
         },
         error: (err) => {
           this.submitting.set(false);
@@ -306,7 +308,7 @@ export class OfferFormPage implements OnInit {
       next: (res) => {
         this.submitting.set(false);
         this.dashboardService.loadDashboardData().subscribe();
-        this.router.navigate(['/home']);
+        this.router.navigate(['/offers/my-deals']);
       },
       error: (err) => {
         this.submitting.set(false);
@@ -344,7 +346,7 @@ export class OfferFormPage implements OnInit {
       next: (res) => {
         this.submitting.set(false);
         this.dashboardService.loadDashboardData().subscribe();
-        this.router.navigate(['/home']);
+        this.router.navigate(['/offers/my-deals']);
       },
       error: (err) => {
         this.submitting.set(false);

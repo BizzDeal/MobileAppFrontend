@@ -124,137 +124,313 @@
   <!-- Add Referral Modal (Full Page Overlay) -->
   <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()">
     <ng-template>
-      <ion-header class="ion-no-border">
-        <ion-toolbar>
-          <ion-title>REFERRAL SLIP</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeModal()">
+      <ion-header class="modal-header ion-no-border">
+        <ion-toolbar class="modal-toolbar">
+          <div class="modal-header-content">
+            <div class="header-brand-group">
+              <div class="modal-icon-badge">
+                <ion-icon name="paper-plane-outline"></ion-icon>
+              </div>
+              <div class="modal-title-group">
+                <h2 class="modal-title">REFERRAL SLIP</h2>
+                <p class="modal-subtitle">Share a verified business opportunity</p>
+              </div>
+            </div>
+            <button type="button" class="modal-close-btn" (click)="closeModal()" aria-label="Close modal">
               <ion-icon name="close-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
+            </button>
+          </div>
         </ion-toolbar>
       </ion-header>
 
-      <ion-content class="ion-padding" color="light">
+      <ion-content class="modal-content ion-padding">
         <div class="modal-body">
 
-          <!-- Member Search Section -->
-          <div class="form-section">
-            <ion-segment [value]="referralType()" (ionChange)="referralTypeChanged($event)" mode="ios" class="type-segment">
-              <ion-segment-button value="INHOUSE">
-                <ion-label>Inhouse</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="OUTHOUSE">
-                <ion-label>Outhouse</ion-label>
-              </ion-segment-button>
-            </ion-segment>
-
-            <p class="search-helper">
-              {{ referralType() === 'INHOUSE' ? 'Search for a member in your current district.' : 'Search for a member outside your district.' }}
-            </p>
-
-            <div class="search-container">
-              <ion-searchbar
-                [value]="searchInput()"
-                (ionInput)="onSearchChange($event)"
-                (ionFocus)="onSearchFocus()"
-                (click)="onSearchFocus()"
-                placeholder="Search member by name or business..."
-                debounce="300">
-              </ion-searchbar>
-
-              @if (isSearchFocused() && membersList().length> 0 && !selectedMember()) {
-                <div class="search-results">
-                  <ion-list lines="full">
-                    @for (member of membersList(); track member) {
-                      <ion-item button (click)="selectMember(member)">
-                        <ion-label>
-                          <h2>{{ member.full_name }}</h2>
-                          <p class="business-title">{{ member.businessProfile?.business_name || 'No Business' }}</p>
-                          <p class="member-contact">{{ member.email }} • {{ member.phone }}</p>
-                        </ion-label>
-                      </ion-item>
-                    }
-                  </ion-list>
-                </div>
-              }
-              @if (isSearchFocused() && isMembersLoading()) {
-                <div class="search-results">
-                  <ion-item lines="none">
-                    <ion-spinner name="crescent"></ion-spinner>
-                    <ion-label class="ion-margin-start">Searching...</ion-label>
-                  </ion-item>
-                </div>
-              }
+          <!-- Step 1: Member Selection -->
+          <div class="form-card">
+            <div class="card-step-header">
+              <div class="step-badge">STEP 1</div>
+              <div class="step-title-wrap">
+                <h3 class="step-title">Select Recipient Member</h3>
+                <p class="step-subtitle">Who should receive this referral opportunity?</p>
+              </div>
             </div>
+
+            <div class="segment-wrap">
+              <ion-segment [value]="referralType()" (ionChange)="referralTypeChanged($event)" mode="ios" class="styled-type-segment">
+                <ion-segment-button value="INHOUSE">
+                  <ion-label>Inhouse</ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="OUTHOUSE">
+                  <ion-label>Outhouse</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </div>
+
+            <div class="scope-info-pill">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <span>
+                {{ referralType() === 'INHOUSE' ? 'Showing members in your current district' : 'Showing members outside your district' }}
+              </span>
+            </div>
+
+            @if (selectedMember(); as member) {
+              <div class="selected-member-card">
+                <div class="selected-member-avatar" [style.background]="getAvatarColor(member.full_name)">
+                  <span class="avatar-text">{{ getInitials(member.full_name) }}</span>
+                </div>
+                <div class="selected-member-details">
+                  <div class="name-badge-row">
+                    <h4 class="member-name">{{ member.full_name }}</h4>
+                    <span class="member-type-tag" [class.inhouse]="referralType() === 'INHOUSE'" [class.outhouse]="referralType() === 'OUTHOUSE'">
+                      {{ referralType() }}
+                    </span>
+                  </div>
+                  @if (member.businessProfile?.business_name) {
+                    <p class="member-business-name">
+                      <ion-icon name="business-outline"></ion-icon>
+                      {{ member.businessProfile?.business_name }}
+                    </p>
+                  }
+                  <p class="member-meta-line">
+                    <ion-icon name="call-outline"></ion-icon>
+                    <span>{{ member.phone }}</span>
+                    @if (member.email) {
+                      <span class="meta-dot">•</span>
+                      <span>{{ member.email }}</span>
+                    }
+                  </p>
+                </div>
+                <button type="button" class="change-selection-btn" (click)="clearSelectedMember()" title="Change Member">
+                  <ion-icon name="swap-horizontal-outline"></ion-icon>
+                  <span>Change</span>
+                </button>
+              </div>
+            } @else {
+              <div class="search-container">
+                <div class="search-input-box" [class.is-focused]="isSearchFocused()">
+                  <ion-icon name="people-outline" class="search-box-icon"></ion-icon>
+                  <input
+                    type="text"
+                    class="custom-search-input"
+                    [value]="searchInput()"
+                    (input)="onSearchChange($event)"
+                    (focus)="onSearchFocus()"
+                    placeholder="Search member by name or business..." />
+                  @if (searchInput()) {
+                    <button type="button" class="clear-search-btn" (click)="searchInput.set(''); onSearchChange({ detail: { value: '' } })">
+                      <ion-icon name="close-circle-outline"></ion-icon>
+                    </button>
+                  }
+                </div>
+
+                @if (isSearchFocused() && membersList().length > 0 && !selectedMember()) {
+                  <div class="search-results-dropdown">
+                    <div class="results-header">
+                      <span>Select a Member ({{ membersList().length }} found)</span>
+                    </div>
+                    <div class="results-list">
+                      @for (member of membersList(); track member.id) {
+                        <div class="result-member-item" (click)="selectMember(member)">
+                          <div class="result-avatar" [style.background]="getAvatarColor(member.full_name)">
+                            {{ getInitials(member.full_name) }}
+                          </div>
+                          <div class="result-info">
+                            <h4 class="result-name">{{ member.full_name }}</h4>
+                            <p class="result-business">
+                              <ion-icon name="business-outline"></ion-icon>
+                              {{ member.businessProfile?.business_name || 'No Business' }}
+                            </p>
+                            <p class="result-contact">{{ member.phone }} • {{ member.email }}</p>
+                          </div>
+                          <ion-icon name="chevron-forward-outline" class="result-arrow"></ion-icon>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+                @if (isSearchFocused() && isMembersLoading()) {
+                  <div class="search-results-dropdown loading-state">
+                    <ion-spinner name="crescent" color="primary"></ion-spinner>
+                    <span>Searching members...</span>
+                  </div>
+                }
+              </div>
+            }
           </div>
 
-          <!-- Referral Form Details -->
-          <div class="form-section" [class.disabled]="!selectedMember()" (click)="isSearchFocused.set(false)">
-            <h3>Referral Details</h3>
-
-            <div class="checkbox-row">
-              <ion-item lines="none" class="checkbox-item">
-                <ion-checkbox [checked]="toldToCall()" (ionChange)="toldToCall.set($event.detail.checked)">
-                  Told them you would call
-                </ion-checkbox>
-              </ion-item>
-              <ion-item lines="none" class="checkbox-item">
-                <ion-checkbox [checked]="cardGiven()" (ionChange)="cardGiven.set($event.detail.checked)">
-                  Given your card
-                </ion-checkbox>
-              </ion-item>
+          <!-- Step 2: Referral Details -->
+          <div class="form-card" [class.is-locked]="!selectedMember()" (click)="isSearchFocused.set(false)">
+            <div class="card-step-header">
+              <div class="step-badge" [class.locked]="!selectedMember()">STEP 2</div>
+              <div class="step-title-wrap">
+                <h3 class="step-title">Referral & Prospect Details</h3>
+                <p class="step-subtitle">Provide verified contact information for this lead</p>
+              </div>
             </div>
 
-            <ion-item class="input-item">
-              <ion-input labelPlacement="stacked" placeholder="Prospect Name" [value]="contactName()" (ionInput)="contactName.set($any($event.target).value)">
-                <div slot="label">Name <span class="required-star">*</span></div>
-              </ion-input>
-            </ion-item>
+            @if (!selectedMember()) {
+              <div class="select-first-banner">
+                <ion-icon name="people-outline"></ion-icon>
+                <span>Please select a recipient member in Step 1 to unlock referral details.</span>
+              </div>
+            }
 
-            <ion-item class="input-item">
-              <ion-input type="tel" labelPlacement="stacked" placeholder="Phone Number" [value]="contactPhone()" (ionInput)="contactPhone.set($any($event.target).value)">
-                <div slot="label">Telephone <span class="required-star">*</span></div>
-              </ion-input>
-            </ion-item>
+            <!-- Interactive Toggle Chips (Told them you would call & Given your card) -->
+            <div class="quick-options-grid">
+              <div class="toggle-option-card" [class.selected]="toldToCall()" (click)="toldToCall.set(!toldToCall())">
+                <div class="toggle-icon-wrap" [class.active]="toldToCall()">
+                  <ion-icon [name]="toldToCall() ? 'checkmark-circle' : 'call-outline'"></ion-icon>
+                </div>
+                <div class="toggle-text-wrap">
+                  <span class="toggle-title">Told them you'd call</span>
+                  <span class="toggle-desc">Prospect expects contact</span>
+                </div>
+                <div class="toggle-indicator" [class.checked]="toldToCall()">
+                  @if (toldToCall()) {
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  }
+                </div>
+              </div>
 
-            <ion-item class="input-item">
-              <ion-input label="Email" type="email" labelPlacement="stacked" placeholder="Email Address" [value]="contactEmail()" (ionInput)="contactEmail.set($any($event.target).value)"></ion-input>
-            </ion-item>
+              <div class="toggle-option-card" [class.selected]="cardGiven()" (click)="cardGiven.set(!cardGiven())">
+                <div class="toggle-icon-wrap" [class.active]="cardGiven()">
+                  <ion-icon [name]="cardGiven() ? 'checkmark-circle' : 'card-outline'"></ion-icon>
+                </div>
+                <div class="toggle-text-wrap">
+                  <span class="toggle-title">Given your card</span>
+                  <span class="toggle-desc">Handed business card</span>
+                </div>
+                <div class="toggle-indicator" [class.checked]="cardGiven()">
+                  @if (cardGiven()) {
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  }
+                </div>
+              </div>
+            </div>
 
-            <ion-item class="input-item">
-              <ion-textarea label="Address" labelPlacement="stacked" placeholder="Address" [value]="contactAddress()" (ionInput)="contactAddress.set($any($event.target).value)"></ion-textarea>
-            </ion-item>
+            <!-- Prospect Name -->
+            <div class="form-group">
+              <label class="field-label">Prospect Name <span class="required-star">*</span></label>
+              <div class="field-input-box">
+                <ion-icon name="person-outline" class="field-icon"></ion-icon>
+                <input
+                  type="text"
+                  class="field-native-input"
+                  placeholder="e.g. John Doe"
+                  [value]="contactName()"
+                  (input)="contactName.set($any($event.target).value)" />
+              </div>
+              <div class="error-container"></div>
+            </div>
 
-            <ion-item class="input-item">
-              <ion-textarea label="Comments" labelPlacement="stacked" placeholder="Any comments..." [value]="comments()" (ionInput)="comments.set($any($event.target).value)"></ion-textarea>
-            </ion-item>
+            <!-- Telephone -->
+            <div class="form-group">
+              <label class="field-label">Telephone <span class="required-star">*</span></label>
+              <div class="field-input-box">
+                <ion-icon name="call-outline" class="field-icon"></ion-icon>
+                <input
+                  type="tel"
+                  class="field-native-input"
+                  placeholder="10-digit mobile number"
+                  maxlength="10"
+                  [value]="contactPhone()"
+                  (input)="contactPhone.set($any($event.target).value)" />
+              </div>
+              <div class="error-container"></div>
+            </div>
 
-            <div class="rating-section">
-              <p>How hot is this referral?</p>
-              <div class="stars-container">
-                @for (i of [1,2,3,4,5]; track i) {
-                  <ion-icon
-                    [name]="i <= rating() ? 'star' : 'star-outline'"
+            <!-- Email -->
+            <div class="form-group">
+              <label class="field-label">Email Address</label>
+              <div class="field-input-box">
+                <ion-icon name="mail-outline" class="field-icon"></ion-icon>
+                <input
+                  type="email"
+                  class="field-native-input"
+                  placeholder="e.g. prospect@example.com"
+                  [value]="contactEmail()"
+                  (input)="contactEmail.set($any($event.target).value)" />
+              </div>
+              <div class="error-container"></div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group">
+              <label class="field-label">Prospect Location / Address</label>
+              <div class="field-input-box textarea-box">
+                <ion-icon name="location-outline" class="field-icon textarea-icon"></ion-icon>
+                <textarea
+                  rows="2"
+                  class="field-native-textarea"
+                  placeholder="Office or city address..."
+                  [value]="contactAddress()"
+                  (input)="contactAddress.set($any($event.target).value)"></textarea>
+              </div>
+              <div class="error-container"></div>
+            </div>
+
+            <!-- Comments -->
+            <div class="form-group">
+              <label class="field-label">Comments / Requirements</label>
+              <div class="field-input-box textarea-box">
+                <ion-icon name="chatbubble-ellipses-outline" class="field-icon textarea-icon"></ion-icon>
+                <textarea
+                  rows="3"
+                  class="field-native-textarea"
+                  placeholder="Detail their specific requirements or context..."
+                  [value]="comments()"
+                  (input)="comments.set($any($event.target).value)"></textarea>
+              </div>
+              <div class="error-container"></div>
+            </div>
+
+            <!-- Rating / Heat Level -->
+            <div class="heat-rating-card">
+              <div class="heat-header">
+                <div class="heat-title-wrap">
+                  <ion-icon name="flame" class="heat-flame-icon"></ion-icon>
+                  <div>
+                    <h4 class="heat-title">How hot is this referral?</h4>
+                    <p class="heat-subtitle">Rate how likely this deal is to close</p>
+                  </div>
+                </div>
+                @if (rating() > 0) {
+                  <span class="heat-status-pill">{{ getRatingLabel(rating()) }}</span>
+                }
+              </div>
+              <div class="heat-stars-row">
+                @for (i of [1, 2, 3, 4, 5]; track i) {
+                  <button
+                    type="button"
+                    class="heat-star-btn"
+                    [class.active]="i <= rating()"
                     (click)="setRating(i)"
-                    class="interactive-star">
-                  </ion-icon>
+                    [attr.aria-label]="'Rate ' + i + ' stars'">
+                    <ion-icon [name]="i <= rating() ? 'star' : 'star-outline'"></ion-icon>
+                  </button>
                 }
               </div>
             </div>
+
           </div>
 
         </div>
       </ion-content>
-      <ion-footer class="ion-no-border">
-        <ion-toolbar>
+
+      <ion-footer class="modal-footer ion-no-border">
+        <ion-toolbar class="footer-toolbar">
           <div class="footer-actions">
-            <ion-button expand="block" (click)="submitReferral()" [disabled]="submitting() || !selectedMember() || !contactName().trim() || !contactPhone().trim()">
+            <ion-button
+              expand="block"
+              class="submit-slip-btn"
+              (click)="submitReferral()"
+              [disabled]="submitting() || !selectedMember() || !contactName().trim() || !contactPhone().trim()">
               @if (submitting()) {
                 <ion-spinner name="crescent"></ion-spinner>
-              }
-              @if (!submitting()) {
-                <span>Submit Slip</span>
+              } @else {
+                <ion-icon name="paper-plane-outline" slot="start"></ion-icon>
+                <span>Submit Referral Slip</span>
               }
             </ion-button>
           </div>
@@ -266,21 +442,29 @@
   <!-- Appreciate Referral Modal -->
   <ion-modal [isOpen]="isAppreciationModalOpen()" (didDismiss)="closeAppreciationModal()">
     <ng-template>
-      <ion-header class="ion-no-border">
-        <ion-toolbar>
-          <ion-title>APPRECIATE REFERRAL</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeAppreciationModal()">
+      <ion-header class="modal-header ion-no-border">
+        <ion-toolbar class="modal-toolbar">
+          <div class="modal-header-content">
+            <div class="header-brand-group">
+              <div class="modal-icon-badge appreciation-badge">
+                <ion-icon name="heart"></ion-icon>
+              </div>
+              <div class="modal-title-group">
+                <h2 class="modal-title">APPRECIATE REFERRAL</h2>
+                <p class="modal-subtitle">Celebrate closed business and say thank you</p>
+              </div>
+            </div>
+            <button type="button" class="modal-close-btn" (click)="closeAppreciationModal()" aria-label="Close modal">
               <ion-icon name="close-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
+            </button>
+          </div>
         </ion-toolbar>
       </ion-header>
 
-      <ion-content class="ion-padding" color="light">
+      <ion-content class="modal-content ion-padding">
         @if (selectedReferralForAppreciation(); as ref) {
           <div class="modal-body">
-            <div class="form-section">
+            <div class="form-card">
               <div class="contact-profile ion-margin-bottom">
                 <div class="avatar-circle">
                   @if (ref.referrer?.profile_pic_url) {
@@ -299,30 +483,56 @@
                   </div>
                 </div>
               </div>
-              <p class="search-helper">Record the revenue generated from this referral and send a thank you message to <b>{{ ref.referrer?.full_name }}</b>.</p>
-              <ion-item class="input-item">
-                <ion-input type="number" labelPlacement="stacked" placeholder="e.g. 5000" [value]="appreciationCost()" (ionInput)="onCostChange($event)">
-                  <div slot="label">Revenue Generated (₹) <span class="required-star">*</span></div>
-                </ion-input>
-              </ion-item>
-              <ion-item class="input-item">
-                <ion-textarea rows="4" labelPlacement="stacked" placeholder="Thank you message..." [value]="appreciationMessage()" (ionInput)="appreciationMessage.set($any($event.target).value)">
-                  <div slot="label">Appreciation Message <span class="required-star">*</span></div>
-                </ion-textarea>
-              </ion-item>
+
+              <div class="scope-info-pill appreciation-info-pill">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                <span>Record the revenue generated from this referral and send a thank you message to <b>{{ ref.referrer?.full_name }}</b>.</span>
+              </div>
+
+              <div class="form-group">
+                <label class="field-label">Revenue Generated (₹) <span class="required-star">*</span></label>
+                <div class="field-input-box">
+                  <ion-icon name="cash-outline" class="field-icon"></ion-icon>
+                  <input
+                    type="number"
+                    class="field-native-input"
+                    placeholder="e.g. 5000"
+                    [value]="appreciationCost() ?? ''"
+                    (input)="onCostChange($event)" />
+                </div>
+                <div class="error-container"></div>
+              </div>
+
+              <div class="form-group">
+                <label class="field-label">Appreciation Message <span class="required-star">*</span></label>
+                <div class="field-input-box textarea-box">
+                  <ion-icon name="chatbubble-ellipses-outline" class="field-icon textarea-icon"></ion-icon>
+                  <textarea
+                    rows="4"
+                    class="field-native-textarea"
+                    placeholder="Write a heartfelt thank you message..."
+                    [value]="appreciationMessage()"
+                    (input)="appreciationMessage.set($any($event.target).value)"></textarea>
+                </div>
+                <div class="error-container"></div>
+              </div>
             </div>
           </div>
         }
       </ion-content>
 
-      <ion-footer class="ion-no-border">
-        <ion-toolbar>
+      <ion-footer class="modal-footer ion-no-border">
+        <ion-toolbar class="footer-toolbar">
           <div class="footer-actions">
-            <ion-button expand="block" (click)="submitAppreciation()" [disabled]="submittingAppreciation() || appreciationCost() === null || !appreciationMessage().trim()">
+            <ion-button
+              expand="block"
+              class="submit-slip-btn appreciation-submit-btn"
+              (click)="submitAppreciation()"
+              [disabled]="submittingAppreciation() || appreciationCost() === null || !appreciationMessage().trim()">
               @if (submittingAppreciation()) {
                 <ion-spinner name="crescent"></ion-spinner>
-              }
-              @if (!submittingAppreciation()) {
+              } @else {
+                <ion-icon name="heart" slot="start"></ion-icon>
                 <span>Send Appreciation</span>
               }
             </ion-button>
@@ -335,14 +545,22 @@
   <!-- View Detailed Referral Slip Modal -->
   <ion-modal [isOpen]="isDetailModalOpen()" (didDismiss)="closeDetailModal()">
     <ng-template>
-      <ion-header class="ion-no-border">
-        <ion-toolbar>
-          <ion-title>REFERRAL DETAILS</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeDetailModal()">
+      <ion-header class="modal-header ion-no-border">
+        <ion-toolbar class="modal-toolbar">
+          <div class="modal-header-content">
+            <div class="header-brand-group">
+              <div class="modal-icon-badge detail-badge">
+                <ion-icon name="document-text-outline"></ion-icon>
+              </div>
+              <div class="modal-title-group">
+                <h2 class="modal-title">REFERRAL DETAILS</h2>
+                <p class="modal-subtitle">Full referral slip information</p>
+              </div>
+            </div>
+            <button type="button" class="modal-close-btn" (click)="closeDetailModal()" aria-label="Close modal">
               <ion-icon name="close-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
+            </button>
+          </div>
         </ion-toolbar>
       </ion-header>
 

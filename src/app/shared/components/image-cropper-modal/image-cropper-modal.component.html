@@ -1,124 +1,190 @@
 <ion-header class="ion-no-border">
   <ion-toolbar class="cropper-toolbar">
-    <ion-title>{{ title }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button [disabled]="loading() || cropping()" (click)="cancel()" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
+    <ion-buttons slot="start">
+      <ion-button [disabled]="loading() || cropping()" (click)="cancel()" aria-label="Cancel">
+        <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
+    </ion-buttons>
+
+    <ion-title>{{ title }}</ion-title>
+
+    <ion-buttons slot="end">
+      <button type="button" class="header-reset-btn" [disabled]="loading() || cropping()" (click)="reset()">
+        Reset
+      </button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="cropper-content">
-  <div class="cropper-wrapper">
+<ion-content class="cropper-content" [scrollY]="false">
+  <div class="cropper-layout">
 
     @if (loading()) {
-    <div class="loading-overlay">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Loading image...</p>
-    </div>
+      <div class="loading-overlay">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading photo...</p>
+      </div>
     }
 
-    <!-- Interactive Canvas Cropper Area -->
-    <div
-      #cropperContainer
-      class="canvas-container"
-      [class.round-mask]="roundCropper"
-      [style.width.px]="canvasWidth"
-      [style.height.px]="canvasHeight"
-      (mousedown)="onMouseDown($event)"
-      (mousemove)="onMouseMove($event)"
-      (mouseup)="onMouseUp()"
-      (mouseleave)="onMouseUp()"
-      (touchstart)="onMouseDown($event)"
-      (touchmove)="onMouseMove($event)"
-      (touchend)="onMouseUp()">
-      <canvas #canvasElement [attr.width]="canvasWidth" [attr.height]="canvasHeight" class="cropper-canvas"></canvas>
-
-      <!-- Mask Overlay Guide -->
-      <div class="crop-overlay-guide">
-        <div class="guide-grid">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-      </div>
+    <!-- Main Cropper Viewport -->
+    <div class="cropper-viewport">
+      <image-cropper
+        [imageFile]="imageFile()"
+        [imageBase64]="imageBase64()"
+        [imageURL]="imageURL()"
+        [maintainAspectRatio]="maintainAspectRatio()"
+        [aspectRatio]="currentAspectRatio()"
+        [canvasRotation]="canvasRotation()"
+        [transform]="transform()"
+        [roundCropper]="isRoundCropperActive()"
+        [autoCrop]="true"
+        [containWithinAspectRatio]="false"
+        [output]="'base64'"
+        [format]="'jpeg'"
+        [imageQuality]="92"
+        [checkImageType]="false"
+        (imageCropped)="onImageCropped($event)"
+        (imageLoaded)="onImageLoaded($event)"
+        (cropperReady)="onCropperReady()"
+        (loadImageFailed)="onLoadImageFailed()">
+      </image-cropper>
     </div>
 
-    <!-- Instruction Label -->
-    <div class="drag-hint">
-      <ion-icon name="move-outline"></ion-icon>
-      <span>Drag to position image</span>
-    </div>
-
-    <!-- Controls Panel -->
-    <div class="controls-panel">
-      <!-- Zoom Slider -->
-      <div class="control-row zoom-row">
-        <button type="button" class="ctrl-btn" [disabled]="loading() || cropping()" (click)="zoomOut()" title="Zoom Out">
-          <ion-icon name="remove-outline"></ion-icon>
+    <!-- WhatsApp Style Controls Panel -->
+    <div class="cropper-controls">
+      
+      <!-- Aspect Ratio Filter Pills -->
+      <div class="aspect-pills-row">
+        <button
+          type="button"
+          class="aspect-pill"
+          [class.active]="activeRatioMode() === 'free'"
+          (click)="setAspectRatioMode('free')"
+          [disabled]="loading() || cropping()">
+          <ion-icon name="crop-outline"></ion-icon>
+          <span>Free</span>
         </button>
 
-        <ion-range
-          min="0.5"
-          max="3.5"
-          step="0.05"
+        <button
+          type="button"
+          class="aspect-pill"
+          [class.active]="activeRatioMode() === 'original'"
+          (click)="setAspectRatioMode('original')"
+          [disabled]="loading() || cropping()">
+          <ion-icon name="scan-outline"></ion-icon>
+          <span>Original</span>
+        </button>
+
+        <button
+          type="button"
+          class="aspect-pill"
+          [class.active]="activeRatioMode() === '1:1'"
+          (click)="setAspectRatioMode('1:1')"
+          [disabled]="loading() || cropping()">
+          <ion-icon name="square-outline"></ion-icon>
+          <span>1:1</span>
+        </button>
+
+        <button
+          type="button"
+          class="aspect-pill"
+          [class.active]="activeRatioMode() === '16:9'"
+          (click)="setAspectRatioMode('16:9')"
+          [disabled]="loading() || cropping()">
+          <span>16:9</span>
+        </button>
+
+        <button
+          type="button"
+          class="aspect-pill"
+          [class.active]="activeRatioMode() === '4:3'"
+          (click)="setAspectRatioMode('4:3')"
+          [disabled]="loading() || cropping()">
+          <span>4:3</span>
+        </button>
+      </div>
+
+      <!-- Quick Action Controls (Rotate 90°, Flip, Zoom) -->
+      <div class="tool-actions-row">
+        <button
+          type="button"
+          class="tool-btn rotate-btn"
+          (click)="rotate90()"
           [disabled]="loading() || cropping()"
-          [value]="zoomScale()"
-          (ionInput)="onZoomChange($event)"
-          aria-label="Zoom scale">
-        </ion-range>
-
-        <button type="button" class="ctrl-btn" [disabled]="loading() || cropping()" (click)="zoomIn()" title="Zoom In">
-          <ion-icon name="add-outline"></ion-icon>
-        </button>
-      </div>
-
-      <!-- Rotation & Flip Action Buttons -->
-      <div class="control-row actions-row">
-        <button type="button" class="action-btn" [disabled]="loading() || cropping()" (click)="rotateLeft()" title="Rotate Left 90°">
-          <ion-icon name="arrow-undo-outline"></ion-icon>
-          <span>Rotate L</span>
+          title="Rotate 90°">
+          <ion-icon name="refresh-outline"></ion-icon>
+          <span>Rotate</span>
         </button>
 
-        <button type="button" class="action-btn" [disabled]="loading() || cropping()" (click)="rotateRight()" title="Rotate Right 90°">
-          <ion-icon name="arrow-redo-outline"></ion-icon>
-          <span>Rotate R</span>
-        </button>
-
-        <button type="button" class="action-btn" [class.active]="flipH()" [disabled]="loading() || cropping()" (click)="toggleFlipH()" title="Flip Horizontal">
+        <button
+          type="button"
+          class="tool-btn"
+          [class.active]="flipH()"
+          (click)="toggleFlipH()"
+          [disabled]="loading() || cropping()"
+          title="Flip Horizontal">
           <ion-icon name="swap-horizontal-outline"></ion-icon>
           <span>Flip H</span>
         </button>
 
-        <button type="button" class="action-btn" [class.active]="flipV()" [disabled]="loading() || cropping()" (click)="toggleFlipV()" title="Flip Vertical">
+        <button
+          type="button"
+          class="tool-btn"
+          [class.active]="flipV()"
+          (click)="toggleFlipV()"
+          [disabled]="loading() || cropping()"
+          title="Flip Vertical">
           <ion-icon name="swap-vertical-outline"></ion-icon>
           <span>Flip V</span>
         </button>
 
-        <button type="button" class="action-btn reset-btn" [disabled]="loading() || cropping()" (click)="resetTransformations()" title="Reset Adjustments">
-          <ion-icon name="refresh-outline"></ion-icon>
-          <span>Reset</span>
-        </button>
+        <div class="zoom-buttons-group">
+          <button
+            type="button"
+            class="zoom-btn"
+            (click)="zoomOut()"
+            [disabled]="loading() || cropping() || zoomScale() <= 0.5"
+            title="Zoom Out">
+            <ion-icon name="remove-outline"></ion-icon>
+          </button>
+          <span class="zoom-label">{{ zoomScale().toFixed(1) }}x</span>
+          <button
+            type="button"
+            class="zoom-btn"
+            (click)="zoomIn()"
+            [disabled]="loading() || cropping() || zoomScale() >= 3.0"
+            title="Zoom In">
+            <ion-icon name="add-outline"></ion-icon>
+          </button>
+        </div>
       </div>
+
     </div>
 
   </div>
 </ion-content>
 
-<ion-footer class="ion-no-border">
-  <div class="modal-footer-actions">
-    <button type="button" class="bd-btn-secondary cancel-btn" [disabled]="loading() || cropping()" (click)="cancel()">
+<ion-footer class="ion-no-border cropper-footer">
+  <div class="footer-actions-container">
+    <button
+      type="button"
+      class="footer-cancel-btn"
+      [disabled]="loading() || cropping()"
+      (click)="cancel()">
       Cancel
     </button>
 
-    <button type="button" class="bd-btn-primary apply-btn" [disabled]="loading() || cropping()" (click)="applyCrop()">
+    <button
+      type="button"
+      class="footer-done-btn"
+      [disabled]="loading() || cropping()"
+      (click)="applyCrop()">
       @if (cropping()) {
         <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
-        <span>Cropping...</span>
+        <span>Saving...</span>
       } @else {
         <ion-icon name="checkmark-outline"></ion-icon>
-        <span>Crop & Save</span>
+        <span>Done</span>
       }
     </button>
   </div>

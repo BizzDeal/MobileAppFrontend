@@ -183,8 +183,9 @@ export class BizzCoinsOfferPage implements OnInit {
     formData.append('offer_type', 'BIZZ_COINS');
     formData.append('start_date', new Date(formValues.start_date).toISOString());
     formData.append('end_date', new Date(formValues.end_date).toISOString());
-    
-    formData.append('video_url', formValues.video_url || '');
+    if (formValues.video_url?.trim()) {
+      formData.append('video_url', formValues.video_url.trim());
+    }
 
     if (this.isEditMode() && this.existingOfferId()) {
       this.http.put<any>(`${environment.apiUrl}/offers/${this.existingOfferId()}`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).subscribe({

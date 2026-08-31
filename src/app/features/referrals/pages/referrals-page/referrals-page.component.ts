@@ -4,22 +4,14 @@ import { FormsModule } from '@angular/forms';
 import {
   IonContent,
   IonHeader,
-  IonTitle,
   IonToolbar,
   IonSpinner,
   IonIcon,
   IonModal,
-  IonButtons,
   IonButton,
-  IonSearchbar,
-  IonCheckbox,
-  IonList,
-  IonItem,
   IonLabel,
   IonSegment,
   IonSegmentButton,
-  IonInput,
-  IonTextarea,
   IonFooter,
   IonInfiniteScroll,
   IonInfiniteScrollContent
@@ -46,7 +38,19 @@ import {
   cardOutline,
   chevronForwardOutline,
   heart,
-  heartOutline
+  heartOutline,
+  paperPlaneOutline,
+  checkmarkCircle,
+  ellipseOutline,
+  businessOutline,
+  swapHorizontalOutline,
+  documentTextOutline,
+  sparklesOutline,
+  cashOutline,
+  flame,
+  flameOutline,
+  informationCircleOutline,
+  checkmarkOutline
 } from 'ionicons/icons';
 import { ReferralsService } from '../../services/referrals.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
@@ -55,6 +59,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 import { ReferralDTO, ReferralType, CreateReferralSlipDto, MemberBusinessDTO } from '../../models/referral.model';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -67,22 +72,14 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     FormsModule,
     IonContent,
     IonHeader,
-    IonTitle,
     IonToolbar,
     IonSpinner,
     IonIcon,
     IonModal,
-    IonButtons,
     IonButton,
-    IonSearchbar,
-    IonCheckbox,
-    IonList,
-    IonItem,
     IonLabel,
     IonSegment,
     IonSegmentButton,
-    IonInput,
-    IonTextarea,
     IonFooter,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
@@ -184,7 +181,19 @@ export class ReferralsPageComponent implements OnInit {
       cardOutline,
       chevronForwardOutline,
       heart,
-      heartOutline
+      heartOutline,
+      paperPlaneOutline,
+      checkmarkCircle,
+      ellipseOutline,
+      businessOutline,
+      swapHorizontalOutline,
+      documentTextOutline,
+      sparklesOutline,
+      cashOutline,
+      flame,
+      flameOutline,
+      informationCircleOutline,
+      checkmarkOutline
     });
 
     this.searchSubject.pipe(
@@ -355,6 +364,9 @@ export class ReferralsPageComponent implements OnInit {
     });
   }
 
+  readonly getInitials = getInitials;
+  readonly getAvatarColor = getAvatarColor;
+
   selectMember(member: MemberBusinessDTO): void {
     this.selectedMember.set(member);
     this.searchInput.set(`${member.full_name} (${member.businessProfile?.business_name || 'No Business'})`);
@@ -362,8 +374,26 @@ export class ReferralsPageComponent implements OnInit {
     this.isSearchFocused.set(false);
   }
 
+  clearSelectedMember(): void {
+    this.selectedMember.set(null);
+    this.searchInput.set('');
+    this.membersList.set([]);
+    this.isSearchFocused.set(false);
+  }
+
   setRating(val: number): void {
     this.rating.set(val);
+  }
+
+  getRatingLabel(val: number): string {
+    switch (val) {
+      case 1: return '❄️ Cold Lead';
+      case 2: return '🌤️ Mild Interest';
+      case 3: return '🔥 Warm Referral';
+      case 4: return '⚡ Very Hot';
+      case 5: return '🚀 Ready to Close!';
+      default: return '';
+    }
   }
 
   submitReferral(): void {

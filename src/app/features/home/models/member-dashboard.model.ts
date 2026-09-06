@@ -16,8 +16,18 @@ export interface MemberDashboardAnalytics {
     totalVouchers: number;
     revenue: number;
     totalReferrals?: number;
+    referralBusinessValue?: number;
     totalBusinessValue?: number;
     districtName?: string;
+  };
+  globalStats?: {
+    totalBusinesses: number;
+    totalMembers: number;
+    totalVouchers: number;
+    revenue: number;
+    totalReferrals?: number;
+    referralBusinessValue?: number;
+    totalBusinessValue?: number;
   };
 }
 

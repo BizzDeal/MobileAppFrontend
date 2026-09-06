@@ -105,6 +105,52 @@ ion-content {
     margin-bottom: 8px;
   }
 
+  .logo-upload-square {
+    width: 110px;
+    height: 110px;
+    border-radius: var(--bizzdeal-radius-md);
+    background: var(--bizzdeal-bg-surface-secondary, #F8FAFC);
+    border: 2px dashed rgba(0, 102, 255, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.2s ease;
+    gap: 6px;
+
+    &:hover {
+      background: rgba(0, 102, 255, 0.04);
+      border-color: var(--bizzdeal-primary);
+    }
+
+    .camera-icon {
+      font-size: 26px;
+      color: rgba(0, 102, 255, 0.6);
+    }
+
+    .upload-text {
+      font-size: 11px;
+      color: var(--bizzdeal-text-secondary);
+      font-weight: 500;
+      text-align: center;
+      padding: 0 4px;
+    }
+
+    .preview-img-square {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: var(--bizzdeal-bg-surface-secondary, #F8FAFC);
+    }
+
+    .hidden-input {
+      display: none;
+    }
+  }
+
   .logo-upload-rect {
     width: 100%;
     height: 120px;
@@ -140,7 +186,7 @@ ion-content {
     .preview-img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       background: var(--bizzdeal-bg-surface-secondary, #F8FAFC);
     }
 

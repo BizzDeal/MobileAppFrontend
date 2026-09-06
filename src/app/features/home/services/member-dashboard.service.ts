@@ -127,9 +127,20 @@ export class MemberDashboardService {
           totalVouchers: backendAnalytics.districtStats.totalVouchers || 0,
           revenue: backendAnalytics.districtStats.revenue || 0,
           totalReferrals: backendAnalytics.districtStats.totalReferrals || 0,
+          referralBusinessValue: backendAnalytics.districtStats.referralBusinessValue ?? Math.max(0, (Number(backendAnalytics.districtStats.totalBusinessValue || 0) - Number(backendAnalytics.districtStats.revenue || 0))),
           totalBusinessValue: backendAnalytics.districtStats.totalBusinessValue || backendAnalytics.districtStats.revenue || 0,
           districtName: backendAnalytics.districtStats.districtName || profile?.district_name || 'Region',
         } : undefined;
+
+        const globalStats = backendAnalytics.globalStats ? {
+          totalBusinesses: backendAnalytics.globalStats.totalBusinesses || 0,
+          totalMembers: backendAnalytics.globalStats.totalMembers || 0,
+          totalVouchers: backendAnalytics.globalStats.totalVouchers || 0,
+          revenue: backendAnalytics.globalStats.revenue || 0,
+          totalReferrals: backendAnalytics.globalStats.totalReferrals || 0,
+          referralBusinessValue: backendAnalytics.globalStats.referralBusinessValue ?? Math.max(0, (Number(backendAnalytics.globalStats.totalBusinessValue || 0) - Number(backendAnalytics.globalStats.revenue || 0))),
+          totalBusinessValue: backendAnalytics.globalStats.totalBusinessValue || backendAnalytics.globalStats.revenue || 0,
+        } : districtStats;
 
         const analytics: MemberDashboardAnalytics = {
           activeOffersCount,
@@ -143,7 +154,8 @@ export class MemberDashboardService {
           referralsReceived,
           referralsReceivedCompleted,
           receivedBusinessValue,
-          districtStats
+          districtStats,
+          globalStats
         };
 
         const dashboardData: MemberDashboardData = {

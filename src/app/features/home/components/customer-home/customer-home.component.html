@@ -13,12 +13,78 @@
   />
 </div>
 
-<!-- Main Body Area displaying the Wallet Screen with no header (Matches Screenshot) -->
-<div class="customer-wallet-body">
-  <app-wallet-view 
-    [hideHeader]="true"
-    [customer]="customer"
-    [customerName]="customer.name"
-    (redeemClick)="onRedeem()"
-  />
+<!-- Unified Scrollable Body Area -->
+<div class="customer-home-scroll-area">
+  <!-- 0. User Greeting Row Above Banners -->
+  <div class="user-greeting-row">
+    <div class="user-greeting-avatar-wrap">
+      @if (customer.profile_pic_url) {
+        <img loading="lazy" [appCachedImg]="customer.profile_pic_url" [fallbackName]="customer.name" alt="Profile" class="user-greeting-avatar" />
+      } @else {
+        <div class="user-greeting-fallback" [style.background]="getAvatarColor(customer.name)">
+          {{ getInitials(customer.name) }}
+        </div>
+      }
+    </div>
+    <div class="user-greeting-meta">
+      <h3 class="user-greeting-text">Hi, {{ firstName }} 👋</h3>
+    </div>
+  </div>
+
+  <!-- 1. Featured Businesses Hero Banner (Infinite Loop 3s, No Headers/Titles) -->
+  @if (loopFeaturedBusinesses.length > 0) {
+    <div class="featured-banner-section">
+      <swiper-container
+        autoplay-delay="3000"
+        autoplay-disable-on-interaction="false"
+        loop="true"
+        speed="700"
+        slides-per-view="1"
+        space-between="12"
+        class="featured-swiper"
+      >
+        @for (biz of loopFeaturedBusinesses; track $index) {
+          <swiper-slide>
+            <div class="featured-card" (click)="businessClick.emit(biz)">
+              <div class="card-media" [style.background]="getAvatarColor(biz.name)">
+                <span class="fallback-monogram">{{ getInitials(biz.name) }}</span>
+                @if (biz.bannerUrl || biz.logoUrl) {
+                  <img loading="lazy" [appCachedImg]="biz.bannerUrl || biz.logoUrl" [alt]="biz.name" class="media-img" />
+                }
+                <div class="card-scrim"></div>
+              </div>
+              
+              <div class="card-badge-row">
+                <span class="featured-tag">
+                  <ion-icon name="star"></ion-icon> FEATURED STORE
+                </span>
+              </div>
+
+              <div class="card-info">
+                <h3 class="biz-name">{{ biz.name }}</h3>
+                <div class="biz-meta">
+                  <span class="biz-category">{{ biz.categoryName || 'Partner Store' }}</span>
+                  <span class="meta-dot">•</span>
+                  <span class="biz-badge-action">
+                    Explore <ion-icon name="arrow-forward-outline"></ion-icon>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </swiper-slide>
+        }
+      </swiper-container>
+    </div>
+  }
+
+  <!-- 3. Main Body Area displaying the Wallet Screen with no header -->
+  <div class="customer-wallet-body">
+    <app-wallet-view 
+      [hideHeader]="true"
+      [hideGreeting]="true"
+      [customer]="customer"
+      [customerName]="customer.name"
+      (redeemClick)="onRedeem()"
+    />
+  </div>
 </div>

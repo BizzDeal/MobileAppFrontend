@@ -1,14 +1,14 @@
 <header class="home-header flipkart-header" [class.scrolled]="isScrolled()">
   <!-- Top Row: Profile Pic + Logo & Actions -->
   <div class="top-row">
-    <div class="user-brand-group" (click)="showSupportInfo()" role="button" tabindex="0" aria-label="User and Support Details">
+    <div class="user-brand-group" aria-label="BizzDeal">
       <div class="user-avatar-wrap">
-        <img loading="lazy" [appCachedImg]="customer().profile_pic_url" [fallbackName]="customer().name" alt="Profile" class="header-avatar" />
+        <img loading="lazy" src="assets/icon-only.png" alt="BizzDeal" class="header-avatar app-logo-avatar" />
       </div>
       <img loading="lazy" src="assets/logo-text.png" alt="BizzDeal" class="header-logo-text" />
     </div>
 
-    <!-- Header Actions: Search Button & Notification Bell -->
+    <!-- Header Actions: Search Button, Help Button & Notification Bell -->
     <div class="header-actions">
       <!-- Search Button -->
       <button class="notif-btn" (click)="onSearchClick()" type="button" aria-label="Search">
@@ -16,6 +16,17 @@
           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+
+      <!-- Support Button -->
+      <button class="notif-btn" (click)="showSupportInfo()" type="button" aria-label="Support">
+        <svg class="notif-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+          <path
+            d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z">
+          </path>
         </svg>
       </button>
 

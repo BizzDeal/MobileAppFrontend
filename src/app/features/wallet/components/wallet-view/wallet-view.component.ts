@@ -86,6 +86,7 @@ export class WalletViewComponent {
   private readonly router = inject(Router);
 
   @Input() hideHeader = false;
+  @Input() hideGreeting = false;
   @Input() customerName?: string;
   @Input() customer?: any;
   @Output() redeemClick = new EventEmitter<void>();

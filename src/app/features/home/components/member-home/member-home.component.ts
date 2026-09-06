@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, compu
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner, NavController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline, paperPlaneOutline } from 'ionicons/icons';
+import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline, paperPlaneOutline, trophy, peopleOutline, locationOutline } from 'ionicons/icons';
+import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
 import { MemberDashboardService } from '../../services/member-dashboard.service';
 
 import { ProfileService } from '../../../profile/services/profile.service';
@@ -60,6 +61,10 @@ export class MemberHomeComponent implements OnInit {
 
   readonly isActionsMenuOpen = signal(false);
 
+  getAvatarColor(name?: string | null): string {
+    return getAvatarColor(name);
+  }
+
   ngOnInit() {
     this.dashboardService.loadDashboardData().subscribe();
     this.meetingsService.loadMeetings().subscribe();
@@ -99,6 +104,8 @@ export class MemberHomeComponent implements OnInit {
     return this.profile()?.primary_business_district_name || this.profile()?.district_name || 'Your';
   });
 
+  readonly globalStats = computed(() => this.dashboardData()?.analytics?.globalStats || this.regionalStats());
+
   readonly isBusinessFeatured = computed(() => {
     return !!this.profile()?.is_featured;
   });
@@ -128,7 +135,7 @@ export class MemberHomeComponent implements OnInit {
 
     
   constructor() {
-    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline, paperPlaneOutline });
+    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline, paperPlaneOutline, trophy, peopleOutline, locationOutline });
   }
 
   toggleActionsMenu() {
@@ -145,8 +152,7 @@ export class MemberHomeComponent implements OnInit {
   }
 
   getInitials(name?: string | null): string {
-    if (!name || !name.trim()) return 'U';
-    return name.trim().charAt(0).toUpperCase();
+    return getInitials(name);
   }
 
   onGiveReferral() {

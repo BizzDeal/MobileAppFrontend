@@ -109,6 +109,7 @@ export class MemberOnboardingService {
   readonly registrationData = signal<MemberRegistrationPayload | null>(null);
   readonly profilePicFile = signal<File | null>(null);
   readonly businessLogoFile = signal<File | null>(null);
+  readonly businessBannerFile = signal<File | null>(null);
   readonly isSubmitting = signal<boolean>(false);
 
   async fetchCategories(): Promise<void> {
@@ -194,13 +195,16 @@ export class MemberOnboardingService {
     }
   }
 
-  setRegistrationData(data: MemberRegistrationPayload, profilePic?: File | null, businessLogo?: File | null): void {
+  setRegistrationData(data: MemberRegistrationPayload, profilePic?: File | null, businessLogo?: File | null, businessBanner?: File | null): void {
     this.registrationData.set(data);
     if (profilePic !== undefined) {
       this.profilePicFile.set(profilePic || null);
     }
     if (businessLogo !== undefined) {
       this.businessLogoFile.set(businessLogo || null);
+    }
+    if (businessBanner !== undefined) {
+      this.businessBannerFile.set(businessBanner || null);
     }
   }
 
@@ -242,6 +246,10 @@ export class MemberOnboardingService {
       const businessLogo = this.businessLogoFile();
       if (businessLogo) {
         formData.append('business_logo', businessLogo, businessLogo.name);
+      }
+      const businessBanner = this.businessBannerFile();
+      if (businessBanner) {
+        formData.append('business_banner', businessBanner, businessBanner.name);
       }
 
       const res: any = await firstValueFrom(

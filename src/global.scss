@@ -548,8 +548,8 @@ ion-searchbar {
    colliding with clock, WiFi, and battery status bar icons.
    ========================================================================== */
 body.capacitor-native.plt-android {
-  --ion-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
-  --bizzdeal-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
+  --ion-safe-area-top: max(28px, env(safe-area-inset-top, 28px)) !important;
+  --bizzdeal-safe-area-top: max(28px, env(safe-area-inset-top, 28px)) !important;
 }
 
 .system-status-bar-bg {
@@ -748,8 +748,8 @@ ion-menu::part(container)::-webkit-scrollbar {
    colliding with clock, WiFi, and battery status bar icons.
    ========================================================================== */
 body.capacitor-native.plt-android {
-  --ion-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
-  --bizzdeal-safe-area-top: max(48px, env(safe-area-inset-top, 48px)) !important;
+  --ion-safe-area-top: max(28px, env(safe-area-inset-top, 28px)) !important;
+  --bizzdeal-safe-area-top: max(28px, env(safe-area-inset-top, 28px)) !important;
 }
 
 .system-status-bar-bg {

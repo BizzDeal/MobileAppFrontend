@@ -7,6 +7,7 @@
   max-height: calc(100dvh - 72px - env(safe-area-inset-bottom, 0px));
   overflow: hidden;
   width: 100%;
+  background-color: var(--bizzdeal-bg-main, #f8fafc);
 }
 
 .sticky-top-header {
@@ -18,20 +19,254 @@
   flex-shrink: 0;
 }
 
-.customer-wallet-body {
+.customer-home-scroll-area {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
-  background-color: var(--bizzdeal-bg-main, #f8fafc);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior-y: auto;
   display: flex;
   flex-direction: column;
+  background-color: var(--bizzdeal-bg-main, #f8fafc);
+}
+
+/* 0. User Greeting Row Above Banners */
+.user-greeting-row {
+  flex-shrink: 0;
+  padding: 14px 16px 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .user-greeting-avatar-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #e2e8f0;
+
+    .user-greeting-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .user-greeting-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+  }
+
+  .user-greeting-meta {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+
+    .user-greeting-text {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--bizzdeal-text-primary, #1e293b);
+      letter-spacing: -0.2px;
+      line-height: 1.3;
+    }
+  }
+}
+
+/* 1. Featured Businesses Hero Banner (No Headers / Clean Landscape) */
+.featured-banner-section {
+  width: 100%;
+  padding: 8px 14px 4px;
+  box-sizing: border-box;
+
+  .featured-swiper {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    display: block;
+  }
+
+  .featured-card {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+    user-select: none;
+    -webkit-user-select: none;
+
+    .card-media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .fallback-monogram {
+        font-size: 42px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.25);
+        letter-spacing: 2px;
+      }
+
+      .media-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .card-scrim {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0.82) 100%);
+      }
+    }
+
+    .card-badge-row {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 2;
+
+      .featured-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 9px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(217, 119, 6, 0.98) 100%);
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+        backdrop-filter: blur(4px);
+
+        ion-icon {
+          font-size: 11px;
+        }
+      }
+    }
+
+    .card-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 14px;
+      z-index: 2;
+
+      .biz-name {
+        margin: 0 0 4px;
+        color: #ffffff;
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        line-height: 1.25;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .biz-meta {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.9);
+
+        .biz-category {
+          font-weight: 500;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .meta-dot {
+          opacity: 0.6;
+        }
+
+        .biz-badge-action {
+          display: inline-flex;
+          align-items: center;
+          gap: 2px;
+          color: #fef08a;
+          font-weight: 600;
+          font-size: 11px;
+
+          ion-icon {
+            font-size: 11px;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/* 3. Customer Wallet & Deals Body (Un-nested scrolling to prevent scroll trap) */
+.customer-wallet-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bizzdeal-bg-main, #f8fafc);
 
   > app-wallet-view {
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-height: 0;
-    height: 100%;
-    overflow: hidden;
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  ::ng-deep {
+    .user-greeting-row {
+      display: none !important;
+    }
+
+    .wallet-container {
+      overflow-y: visible !important;
+      height: auto !important;
+      min-height: auto !important;
+      padding-top: 4px !important;
+    }
+
+    .recent-activity-card {
+      flex: none !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    .activity-items-list.scrollable-list {
+      flex: none !important;
+      overflow-y: visible !important;
+      height: auto !important;
+      max-height: none !important;
+      touch-action: auto !important;
+      overscroll-behavior: auto !important;
+    }
   }
 }

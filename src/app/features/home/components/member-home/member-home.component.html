@@ -20,90 +20,121 @@
     </div>
     }
 
-    <section class="business-profile-card bd-card-premium">
-      <!-- Greeting Row -->
-      <div class="biz-greeting-row">
-        <h2 class="biz-greeting">Hi {{ getFirstName(profile()?.full_name) }}</h2>
-        <span class="biz-status-badge" [class.active]="profile()?.status === 'ACTIVE'">
-          <ion-icon name="checkmark-circle" class="status-check-icon"></ion-icon>
-          {{ profile()?.status | titlecase }}
-        </span>
+    <!-- 0. User Greeting Row Above Brand Card (Matches Customer Home) -->
+    <div class="user-greeting-row">
+      <div class="user-greeting-avatar-wrap">
+        @if (profile()?.profile_pic_url) {
+          <img loading="lazy" [appCachedImg]="profile()?.profile_pic_url" [fallbackName]="profile()?.full_name" alt="Profile" class="user-greeting-avatar" />
+        } @else {
+          <div class="user-greeting-fallback" [style.background]="getAvatarColor(profile()?.full_name)">
+            {{ getInitials(profile()?.full_name) }}
+          </div>
+        }
       </div>
+      <div class="user-greeting-meta">
+        <h3 class="user-greeting-text">Hi, {{ getFirstName(profile()?.full_name) }} 👋</h3>
+      </div>
+    </div>
 
+    <section class="business-profile-card bd-card-premium">
       <div class="biz-profile-main">
-        <div class="logo-wrapper">
-          <img loading="lazy" [appCachedImg]="profile()?.profile_pic_url"
-            [fallbackName]="profile()?.full_name || 'Member'" alt="Member Profile" class="biz-profile-logo" />
+        <div class="brand-logo-wrapper">
+          <img loading="lazy" [appCachedImg]="profile()?.business_logo_url || profile()?.business_banner_url"
+            [fallbackName]="profile()?.business_name || 'My Business'" alt="Brand Profile Pic" class="brand-logo-img" />
         </div>
         <div class="biz-info">
           <h2 class="biz-profile-name">
-            {{ profile()?.business_name || 'My Business' }}
+            <span>{{ profile()?.business_name || 'My Business' }}</span>
+            @if (profile()?.status === 'ACTIVE') {
+              <ion-icon name="checkmark-circle" class="biz-check-icon" aria-label="Verified Active"></ion-icon>
+            }
           </h2>
           <span class="biz-joined">Joined {{ profile()?.created_at | date:'d MMM yyyy' }}</span>
 
-          <div class="bizz-coin-offer-pill" (click)="onBizzCoinsOffer()" role="button" tabindex="0">
-            <ion-icon name="ribbon-outline" class="pill-icon"></ion-icon>
-            <span class="pill-title">Bizz Coin Offer</span>
-            @if (bizzCoinOffer(); as coinOffer) {
-              <span class="pill-status" [class.active]="coinOffer.status === 'APPROVED'"
-                [class.pending]="coinOffer.status === 'PENDING'" [class.rejected]="coinOffer.status === 'REJECTED'"
-                [class.inactive]="coinOffer.status === 'INACTIVE'">
-                {{ coinOffer.status === 'APPROVED' ? 'Active' : (coinOffer.status === 'PENDING' ? 'Pending' :
-                (coinOffer.status | titlecase)) }}
-              </span>
-            } @else {
-              <span class="pill-status not-configured">Not Active</span>
-            }
+          <div class="biz-followers-pill">
+            <ion-icon name="people-outline" class="followers-icon"></ion-icon>
+            <span class="followers-text">Followers : 0</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Business & Bizz Coins Section -->
+    <!-- Business & Bizz Rewards Section -->
     <section class="quick-actions-section">
-      <h3 class="qa-section-title">Business & Bizz Coins</h3>
-      <div class="qa-card-container">
-        <div class="qa-coin-card" (click)="walletClick.emit()" role="button" tabindex="0">
-          <div class="qa-coin-icon-wrap">
-            <svg class="qa-coin-svg" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="qaCoinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#FFF3A8" />
-                  <stop offset="35%" stop-color="#FFD13B" />
-                  <stop offset="70%" stop-color="#F59E0B" />
-                  <stop offset="100%" stop-color="#D97706" />
-                </linearGradient>
-                <linearGradient id="qaCoinRim" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#FFFBEB" />
-                  <stop offset="50%" stop-color="#FBBF24" />
-                  <stop offset="100%" stop-color="#B45309" />
-                </linearGradient>
-              </defs>
-              <ellipse cx="26" cy="26" rx="24" ry="24" fill="url(#qaCoinRim)" />
-              <circle cx="26" cy="24" r="21" fill="url(#qaCoinGrad)" />
-              <circle cx="26" cy="24" r="17" fill="none" stroke="#FFFBEB" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.9" />
-              <polygon points="26,13 29,20.5 37,21 31,26 33,34 26,29.5 19,34 21,26 15,21 23,20.5" fill="#FFFBEB" stroke="#D97706" stroke-width="0.8" stroke-linejoin="round" />
-              <circle cx="25" cy="22" r="1.5" fill="#FFFFFF" />
-            </svg>
+      <h3 class="qa-section-title">Business & Bizz Rewards</h3>
+      <div class="qa-card-container unified-rewards-card">
+        <!-- Centered Bizz Rewards Pill -->
+        <div class="qa-rewards-pill" (click)="walletClick.emit()" role="button" tabindex="0">
+          <div class="qa-trophy-icon-wrap">
+            <ion-icon name="trophy" class="qa-trophy-icon"></ion-icon>
           </div>
-          <div class="qa-coin-info">
-            <span class="qa-coin-label">BIZZ COINS</span>
-            <span class="qa-coin-value">{{ walletService.bizzCoinsBalance() | number:'1.0-0' }}</span>
-          </div>
+          <span class="qa-pill-label">BIZZ REWARDS</span>
         </div>
-        <div class="qa-action-buttons">
-          <button type="button" class="qa-action-btn" (click)="receivedBusinessClick.emit()">
-            <span class="qa-btn-text">RECEIVED BUSINESS</span>
-          </button>
-          <div class="qa-btn-divider"></div>
-          <button type="button" class="qa-action-btn" (click)="givenBusinessClick.emit()">
-            <span class="qa-btn-text">GIVEN BUSINESS</span>
-          </button>
+
+        <!-- 2-Column Business Stats (Given vs Received) -->
+        <div class="rewards-columns-grid">
+          <!-- Left Column: Given Business -->
+          <div class="biz-col given-col" (click)="givenBusinessClick.emit()" role="button" tabindex="0">
+            <div class="biz-col-header">
+              <span class="biz-col-title">Given Business</span>
+            </div>
+            
+            <div class="biz-col-icon-row">
+              <svg class="biz-briefcase-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+              <svg class="biz-arrow-icon up" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </div>
+
+            <div class="biz-col-stat">
+              <span class="col-label">Total Referrals</span>
+              <strong class="col-value">{{ data.analytics.referralsGiven }}</strong>
+            </div>
+
+            <div class="biz-col-stat">
+              <span class="col-label">Total Value</span>
+              <strong class="col-value">₹{{ data.analytics.givenBusinessValue | number:'1.0-0' }}+</strong>
+            </div>
+          </div>
+
+          <div class="biz-col-divider"></div>
+
+          <!-- Right Column: Received Business -->
+          <div class="biz-col received-col" (click)="receivedBusinessClick.emit()" role="button" tabindex="0">
+            <div class="biz-col-header">
+              <span class="biz-col-title">Received Business</span>
+            </div>
+
+            <div class="biz-col-icon-row">
+              <svg class="biz-briefcase-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+              <svg class="biz-arrow-icon down" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="5 12 12 19 19 12"></polyline>
+              </svg>
+            </div>
+
+            <div class="biz-col-stat">
+              <span class="col-label">Total Referrals</span>
+              <strong class="col-value">{{ data.analytics.referralsReceived }}</strong>
+            </div>
+
+            <div class="biz-col-stat">
+              <span class="col-label">Total Value</span>
+              <strong class="col-value">₹{{ data.analytics.receivedBusinessValue | number:'1.0-0' }}+</strong>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Analytics Dashboard Section: Given & Received Business Cards -->
+    <!-- Analytics Dashboard Section: My Performance & District Overview -->
     <section class="analytics-dashboard-section feed-section">
       <div class="section-header">
         <div class="header-left">
@@ -112,80 +143,6 @@
         </div>
       </div>
 
-      <div class="business-analytics-grid">
-        <!-- Card 1: Given Business -->
-        <div class="analytics-biz-card">
-          <div class="card-main-row">
-            <div class="biz-icon-badge given-badge">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L6 14" />
-                <path d="m4 18 4-4" />
-                <circle cx="18" cy="8" r="4" fill="#fbbf24" stroke="#d97706" stroke-width="1.5" />
-                <path d="M18 6v4M16 8h4" stroke="#ffffff" stroke-width="1.2" />
-              </svg>
-            </div>
-            <div class="card-info-col">
-              <span class="card-biz-title">GIVEN BUSINESS</span>
-              <div class="card-stat-wrap">
-                <span class="stat-number">{{ data.analytics.referralsGiven }}</span>
-                <div class="mini-bar-chart">
-                  <span class="bar bar-1"></span>
-                  <span class="bar bar-2"></span>
-                  <span class="bar bar-3"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card-divider"></div>
-
-          <div class="card-middle-row">
-            <span class="completed-label">Completed referrals: <strong>{{ data.analytics.referralsGivenCompleted }}</strong></span>
-          </div>
-
-          <div class="card-bottom-row">
-            <span class="total-value-label">Total value : <strong class="value-amount">₹{{ data.analytics.givenBusinessValue | number:'1.0-0' }}+</strong></span>
-          </div>
-        </div>
-
-        <!-- Card 2: Received Business -->
-        <div class="analytics-biz-card">
-          <div class="card-main-row">
-            <div class="biz-icon-badge received-badge">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="6" width="20" height="12" rx="2" fill="#dcfce7" stroke="#16a34a" />
-                <circle cx="12" cy="12" r="3" stroke="#16a34a" />
-                <path d="M6 12h.01M18 12h.01" stroke="#16a34a" />
-              </svg>
-            </div>
-            <div class="card-info-col">
-              <span class="card-biz-title">RECEIVED BUSINESS</span>
-              <div class="card-stat-wrap">
-                <span class="stat-number">{{ data.analytics.referralsReceived }}</span>
-                <div class="mini-bar-chart">
-                  <span class="bar bar-1"></span>
-                  <span class="bar bar-2"></span>
-                  <span class="bar bar-3"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card-divider"></div>
-
-          <div class="card-middle-row">
-            <span class="completed-label">Completed referrals: <strong>{{ data.analytics.referralsReceivedCompleted }}</strong></span>
-          </div>
-
-          <div class="card-bottom-row">
-            <span class="total-value-label">Total value : <strong class="value-amount">₹{{ data.analytics.receivedBusinessValue | number:'1.0-0' }}+</strong></span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Performance & District Overview Section (1 Row, 2 Columns) -->
-    <section class="performance-overview-section feed-section">
       <div class="performance-overview-grid">
         <!-- Card 1: My Performance -->
         <div class="analytics-biz-card performance-card">
@@ -343,19 +300,62 @@
     <section class="feed-section regional-summary-section">
       <div class="section-header">
         <div class="header-left">
-          <ion-icon name="globe-outline" class="section-icon spark" />
+          <ion-icon name="location-outline" class="section-icon spark" />
           <h2 class="section-title">Regional Summary</h2>
         </div>
       </div>
       <div class="regional-card">
-        <div class="regional-stat-row">
-          <span class="stat-label">Total Business Value - {{ regionalName() }} Region</span>
-          <strong class="stat-value">₹{{ (regionalStats()?.totalBusinessValue || regionalStats()?.revenue || 0) | number:'1.0-0' }}+</strong>
+        <div class="regional-main-title">{{ regionalName() }} Region Breakdown</div>
+        
+        <div class="summary-table">
+          <div class="summary-table-row">
+            <span class="stat-label">Revenue</span>
+            <strong class="stat-value">₹{{ (regionalStats()?.revenue || 0) | number:'1.0-0' }}</strong>
+          </div>
+
+          <div class="summary-table-row">
+            <span class="stat-label">Referrals</span>
+            <strong class="stat-value">+₹{{ (regionalStats()?.referralBusinessValue || 0) | number:'1.0-0' }}</strong>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <div class="summary-table-row total-row">
+            <span class="stat-label total-label">Total Value</span>
+            <strong class="stat-value total-value">₹{{ (regionalStats()?.totalBusinessValue || 0) | number:'1.0-0' }}+</strong>
+          </div>
         </div>
-        <div class="card-divider"></div>
-        <div class="regional-stat-row">
-          <span class="stat-label">Total Referrals</span>
-          <strong class="stat-value">{{ (regionalStats()?.totalReferrals || 0) | number }}</strong>
+      </div>
+    </section>
+
+    <!-- Global Summary -->
+    <section class="feed-section global-summary-section">
+      <div class="section-header">
+        <div class="header-left">
+          <ion-icon name="globe-outline" class="section-icon spark" />
+          <h2 class="section-title">Global Summary</h2>
+        </div>
+      </div>
+      <div class="regional-card global-card">
+        <div class="regional-main-title">Worldwide Platform Breakdown</div>
+
+        <div class="summary-table">
+          <div class="summary-table-row">
+            <span class="stat-label">Revenue</span>
+            <strong class="stat-value">₹{{ (globalStats()?.revenue || 0) | number:'1.0-0' }}</strong>
+          </div>
+
+          <div class="summary-table-row">
+            <span class="stat-label">Referrals</span>
+            <strong class="stat-value">+₹{{ (globalStats()?.referralBusinessValue || 0) | number:'1.0-0' }}</strong>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <div class="summary-table-row total-row">
+            <span class="stat-label total-label">Total Value</span>
+            <strong class="stat-value total-value">₹{{ (globalStats()?.totalBusinessValue || 0) | number:'1.0-0' }}+</strong>
+          </div>
         </div>
       </div>
     </section>

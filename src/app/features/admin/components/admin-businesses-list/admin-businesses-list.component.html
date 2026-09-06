@@ -121,7 +121,7 @@
               <tr (click)="viewBusiness(business)">
                 <td>
                   <div class="table-user-info">
-                    <img loading="lazy" [appCachedImg]="business.logo_url" [fallbackName]="business.name" class="table-avatar" [alt]="business.name">
+                    <img loading="lazy" [appCachedImg]="business.banner_url || business.logo_url" [fallbackName]="business.name" class="table-avatar" [alt]="business.name">
                     <span class="table-user-name">
                       {{ business.name }}
                       @if (business.is_featured) {

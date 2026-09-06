@@ -26,8 +26,6 @@ export class MemberRegistrationService {
 
   readonly photoPreview = signal<string | null>(null);
   private photoFile: File | null = null;
-  readonly logoPreview = signal<string | null>(null);
-  private logoFile: File | null = null;
   readonly bannerPreview = signal<string | null>(null);
   private bannerFile: File | null = null;
   readonly isSubmitting = signal<boolean>(false);
@@ -149,43 +147,6 @@ export class MemberRegistrationService {
     return true;
   }
 
-  async onLogoSelected(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const rawFile = input.files[0];
-      const validation = validateFileSize(rawFile, 10);
-      if (!validation.valid) {
-        this.toastService.showError(validation.error || 'File size exceeds limit');
-        input.value = '';
-        return;
-      }
-
-      const modal = await this.modalCtrl.create({
-        component: ImageCropperModalComponent,
-        componentProps: {
-          imageSource: rawFile,
-          title: 'Crop Brand Profile Pic',
-          roundCropper: false,
-          aspectRatio: 1,
-          targetWidth: 600,
-          targetHeight: 600,
-          outputFileName: 'brand-profile-pic.jpg'
-        }
-      });
-
-      await modal.present();
-      const { data, role } = await modal.onDidDismiss<ImageCropResult>();
-
-      if (role === 'confirm' && data) {
-        this.logoFile = data.file;
-        this.logoPreview.set(data.base64);
-        this.toastService.showSuccess('📸 Brand profile picture cropped successfully!');
-      }
-
-      input.value = '';
-    }
-  }
-
   async onBannerSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -254,7 +215,7 @@ export class MemberRegistrationService {
         reference_code: val.referenceCode || undefined,
       };
 
-      this.onboardingService.setRegistrationData(payload, this.photoFile, this.logoFile, this.bannerFile);
+      this.onboardingService.setRegistrationData(payload, this.photoFile, this.bannerFile);
       await this.onboardingService.submitMemberRegistration();
       this.toastService.showSuccess('Welcome to BizzDeal! Your member registration has been submitted successfully. Please check your email to verify your account.');
       this.router.navigate(['/auth/login']).catch(() => {});

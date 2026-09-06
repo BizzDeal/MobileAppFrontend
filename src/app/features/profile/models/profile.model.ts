@@ -20,7 +20,6 @@ export interface ProfileDTO {
   business_description?: string | null;
   website?: string | null;
   gst_number?: string | null;
-  business_logo_url?: string | null;
   business_banner_url?: string | null;
   business_address?: string | null;
   business_state_id?: string | null;

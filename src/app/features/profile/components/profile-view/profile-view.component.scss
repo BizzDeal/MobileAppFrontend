@@ -423,26 +423,6 @@
       margin-bottom: 6px;
     }
 
-    .brand-pic-picker-wrapper {
-      .brand-square-picker {
-        width: 100px;
-        height: 100px;
-        position: relative;
-        border-radius: 14px;
-        overflow: hidden;
-        border: 2px solid var(--bizzdeal-border-color, rgba(0, 0, 0, 0.08));
-        background: var(--bizzdeal-surface-card, #ffffff);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-
-        .brand-square-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-      }
-    }
-
     .brand-banner-picker-wrapper {
       .brand-banner-picker {
         width: 100%;
@@ -501,36 +481,6 @@
       &:active {
         transform: scale(0.92);
       }
-    }
-  }
-
-  .brand-logo-edit-badge {
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
-    width: 36px;
-    height: 36px;
-    background: var(--bizzdeal-gradient-primary-diagonal);
-    color: var(--bizzdeal-text-on-primary, #ffffff);
-    border-radius: var(--bizzdeal-radius-full, 50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    z-index: 2;
-    transition: all 0.2s ease;
-
-    ion-icon {
-      font-size: 18px;
-    }
-
-    &:hover {
-      transform: scale(1.08);
-    }
-
-    &:active {
-      transform: scale(0.92);
     }
   }
 }

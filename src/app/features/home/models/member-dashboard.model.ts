@@ -13,6 +13,7 @@ export interface MemberDashboardAnalytics {
   districtStats?: {
     totalBusinesses: number;
     totalMembers: number;
+    totalCustomers?: number;
     totalVouchers: number;
     revenue: number;
     totalReferrals?: number;
@@ -23,6 +24,7 @@ export interface MemberDashboardAnalytics {
   globalStats?: {
     totalBusinesses: number;
     totalMembers: number;
+    totalCustomers?: number;
     totalVouchers: number;
     revenue: number;
     totalReferrals?: number;

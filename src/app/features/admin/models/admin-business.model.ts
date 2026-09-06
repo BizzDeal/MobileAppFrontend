@@ -32,8 +32,10 @@ export interface AdminBusiness {
   pincode?: string | null;
   created_at: Date;
   updated_at: Date;
-  logo_url: string | null;
+  logo_url?: string | null;
   logoUrl?: string | null;
+  banner_url?: string | null;
+  bannerUrl?: string | null;
   initials?: string;
 }
 

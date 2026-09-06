@@ -307,20 +307,8 @@
         }
       </div>
 
-      <!-- Brand Media Section (Profile Pic & Banner) -->
+      <!-- Brand Media Section (Banner) -->
       <div class="brand-media-section">
-        <!-- Brand Profile Pic (1:1 Square) -->
-        <div class="brand-pic-picker-wrapper">
-          <span class="brand-media-label">Brand Profile Pic</span>
-          <div class="brand-square-picker">
-            <img loading="lazy" [appCachedImg]="selectedBusinessLogoUrl()" [fallbackName]="profileForm.value.business_name || profile()?.business_name || 'My Business'" alt="Brand Profile Pic Preview" class="brand-square-img" />
-            <label for="businessLogoFile" class="brand-media-edit-badge" title="Change Brand Profile Pic" aria-label="Change Brand Profile Pic">
-              <ion-icon name="camera-outline"></ion-icon>
-              <input type="file" id="businessLogoFile" accept="image/*" (change)="onBusinessLogoSelected($event)" style="display: none;" />
-            </label>
-          </div>
-        </div>
-
         <!-- Brand Banner (16:9 Rectangle) -->
         <div class="brand-banner-picker-wrapper">
           <span class="brand-media-label">Brand Banner</span>

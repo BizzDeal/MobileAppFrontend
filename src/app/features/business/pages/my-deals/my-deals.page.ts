@@ -165,7 +165,7 @@ export class MyDealsPage implements OnInit {
         return rawOffers.map(offer => ({
           ...offer,
           businessName: offer.businessName || profile?.business_name || undefined,
-          businessLogoUrl: offer.businessLogoUrl || profile?.business_logo_url || undefined,
+          businessLogoUrl: offer.businessLogoUrl || profile?.business_banner_url || undefined,
         }));
       }),
       catchError((err) => {

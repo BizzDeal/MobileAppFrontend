@@ -102,8 +102,6 @@ export class ProfileViewComponent implements OnInit {
 
   readonly selectedPhotoUrl = signal<string | null>(null);
   readonly selectedPhotoFile = signal<File | null>(null);
-  readonly selectedBusinessLogoUrl = signal<string | null>(null);
-  readonly selectedBusinessLogoFile = signal<File | null>(null);
   readonly selectedBusinessBannerUrl = signal<string | null>(null);
   readonly selectedBusinessBannerFile = signal<File | null>(null);
   readonly isCompleteProfileModalOpen = signal<boolean>(false);
@@ -111,7 +109,7 @@ export class ProfileViewComponent implements OnInit {
   readonly isPersonalEditing = computed(() => this.activeEditSection() === 'personal' || this.activeEditSection() === 'all');
   readonly isBusinessEditing = computed(() => this.activeEditSection() === 'business' || this.activeEditSection() === 'all');
   readonly isEditMode = computed(() => this.activeEditSection() !== null);
-  readonly hasPendingImage = computed(() => !!this.selectedPhotoFile() || !!this.selectedBusinessLogoFile() || !!this.selectedBusinessBannerFile());
+  readonly hasPendingImage = computed(() => !!this.selectedPhotoFile() || !!this.selectedBusinessBannerFile());
     
   readonly registeredDevices = signal<any[]>([]);
   readonly loadingDevices = signal<boolean>(false);
@@ -314,9 +312,6 @@ export class ProfileViewComponent implements OnInit {
         if (p.profile_pic_url && !this.selectedPhotoUrl()) {
           this.selectedPhotoUrl.set(p.profile_pic_url);
         }
-        if (p.business_logo_url && !this.selectedBusinessLogoUrl()) {
-          this.selectedBusinessLogoUrl.set(p.business_logo_url);
-        }
         if (p.business_banner_url && !this.selectedBusinessBannerUrl()) {
           this.selectedBusinessBannerUrl.set(p.business_banner_url);
         }
@@ -465,43 +460,6 @@ export class ProfileViewComponent implements OnInit {
     }
   }
 
-  async onBusinessLogoSelected(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const rawFile = input.files[0];
-      const validation = validateFileSize(rawFile, 10);
-      if (!validation.valid) {
-        this.toastService.showError(validation.error || 'File size exceeds limit');
-        input.value = '';
-        return;
-      }
-
-      const modal = await this.modalCtrl.create({
-        component: ImageCropperModalComponent,
-        componentProps: {
-          imageSource: rawFile,
-          title: 'Crop Brand Profile Pic',
-          roundCropper: false,
-          aspectRatio: 1,
-          targetWidth: 500,
-          targetHeight: 500,
-          outputFileName: 'brand-profile-pic.jpg'
-        }
-      });
-
-      await modal.present();
-      const { data, role } = await modal.onDidDismiss<ImageCropResult>();
-
-      if (role === 'confirm' && data) {
-        this.selectedBusinessLogoFile.set(data.file);
-        this.selectedBusinessLogoUrl.set(data.base64);
-        this.toastService.showSuccess('📸 Brand profile pic adjusted & cropped successfully!');
-      }
-
-      input.value = '';
-    }
-  }
-
   async onBusinessBannerSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -554,10 +512,9 @@ export class ProfileViewComponent implements OnInit {
     const formVal = this.profileForm.getRawValue();
     let payload: any;
     const photoFile = this.selectedPhotoFile();
-    const logoFile = this.selectedBusinessLogoFile();
     const bannerFile = this.selectedBusinessBannerFile();
 
-    if (photoFile || logoFile || bannerFile) {
+    if (photoFile || bannerFile) {
       const formData = new FormData();
       formData.append('full_name', formVal.full_name);
       formData.append('phone', formVal.phone || this.profile()?.phone || '');
@@ -580,7 +537,6 @@ export class ProfileViewComponent implements OnInit {
         formData.append('video_url', formVal.video_url || '');
       }
       if (photoFile) formData.append('profile_pic', photoFile, photoFile.name || 'profile.jpg');
-      if (logoFile) formData.append('business_logo', logoFile, logoFile.name || 'logo.jpg');
       if (bannerFile) formData.append('business_banner', bannerFile, bannerFile.name || 'banner.jpg');
       payload = formData;
     } else {
@@ -614,7 +570,6 @@ export class ProfileViewComponent implements OnInit {
     this.profileService.updateProfile(payload).subscribe({
       next: () => {
         this.selectedPhotoFile.set(null);
-        this.selectedBusinessLogoFile.set(null);
         this.selectedBusinessBannerFile.set(null);
         this.activeEditSection.set(null);
       },
@@ -686,8 +641,6 @@ export class ProfileViewComponent implements OnInit {
       
       this.selectedPhotoFile.set(null);
       this.selectedPhotoUrl.set(p.profile_pic_url || null);
-      this.selectedBusinessLogoFile.set(null);
-      this.selectedBusinessLogoUrl.set(p.business_logo_url || null);
       this.selectedBusinessBannerFile.set(null);
       this.selectedBusinessBannerUrl.set(p.business_banner_url || null);
     }

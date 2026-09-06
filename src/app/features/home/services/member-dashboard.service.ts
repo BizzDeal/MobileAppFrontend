@@ -76,7 +76,7 @@ export class MemberDashboardService {
         const myOffers = rawOffers.map(offer => ({
           ...offer,
           businessName: offer.businessName || profile?.business_name || undefined,
-          businessLogoUrl: offer.businessLogoUrl || profile?.business_logo_url || undefined
+          businessLogoUrl: offer.businessLogoUrl || profile?.business_banner_url || undefined
         }));
 
         const rawBizzOffer = bizzCoinsRes?.data || bizzCoinsRes;
@@ -84,7 +84,7 @@ export class MemberDashboardService {
           ? {
               ...rawBizzOffer,
               businessName: rawBizzOffer.businessName || profile?.business_name || undefined,
-              businessLogoUrl: rawBizzOffer.businessLogoUrl || profile?.business_logo_url || undefined
+              businessLogoUrl: rawBizzOffer.businessLogoUrl || profile?.business_banner_url || undefined
             }
           : (myOffers.find(o => o.offer_type === 'BIZZ_COINS') || null);
 
@@ -124,6 +124,7 @@ export class MemberDashboardService {
         const districtStats = backendAnalytics.districtStats ? {
           totalBusinesses: backendAnalytics.districtStats.totalBusinesses || 0,
           totalMembers: backendAnalytics.districtStats.totalMembers || 0,
+          totalCustomers: backendAnalytics.districtStats.totalCustomers || 0,
           totalVouchers: backendAnalytics.districtStats.totalVouchers || 0,
           revenue: backendAnalytics.districtStats.revenue || 0,
           totalReferrals: backendAnalytics.districtStats.totalReferrals || 0,
@@ -135,6 +136,7 @@ export class MemberDashboardService {
         const globalStats = backendAnalytics.globalStats ? {
           totalBusinesses: backendAnalytics.globalStats.totalBusinesses || 0,
           totalMembers: backendAnalytics.globalStats.totalMembers || 0,
+          totalCustomers: backendAnalytics.globalStats.totalCustomers || 0,
           totalVouchers: backendAnalytics.globalStats.totalVouchers || 0,
           revenue: backendAnalytics.globalStats.revenue || 0,
           totalReferrals: backendAnalytics.globalStats.totalReferrals || 0,
@@ -160,7 +162,7 @@ export class MemberDashboardService {
 
         const dashboardData: MemberDashboardData = {
           businessName: profile?.business_name || 'My Business',
-          businessLogoUrl: profile?.business_logo_url || '',
+          businessLogoUrl: profile?.business_banner_url || '',
           analytics,
           alerts: [],
           recentActivity: rawVouchers.slice(0, 5).map(v => ({

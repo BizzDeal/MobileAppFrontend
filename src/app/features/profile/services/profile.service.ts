@@ -125,7 +125,6 @@ export class ProfileService {
         business_description: (currentUser as any).business_description || null,
         website: (currentUser as any).website || null,
         gst_number: (currentUser as any).gst_number || null,
-        business_logo_url: (currentUser as any).business_logo_url || null,
         business_banner_url: (currentUser as any).business_banner_url || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -157,7 +156,6 @@ export class ProfileService {
             business_description: p.business_description || (currentUser as any)?.business_description || null,
             website: p.website || (currentUser as any)?.website || null,
             gst_number: p.gst_number || (currentUser as any)?.gst_number || null,
-            business_logo_url: p.business_logo_url || (currentUser as any)?.business_logo_url || null,
             business_banner_url: p.business_banner_url || (currentUser as any)?.business_banner_url || null,
             business_address: p.business_address || (currentUser as any)?.business_address || null,
             business_state_id: p.business_state_id || (currentUser as any)?.business_state_id || p.state_id || null,
@@ -198,7 +196,6 @@ export class ProfileService {
               ...((loaded.business_description ? { business_description: loaded.business_description } : {}) as any),
               ...((loaded.website ? { website: loaded.website } : {}) as any),
               ...((loaded.gst_number ? { gst_number: loaded.gst_number } : {}) as any),
-              ...((loaded.business_logo_url ? { business_logo_url: loaded.business_logo_url } : {}) as any),
               ...((loaded.business_banner_url ? { business_banner_url: loaded.business_banner_url } : {}) as any),
               ...((loaded.category_id ? { category_id: loaded.category_id } : {}) as any),
             }).catch(() => {});
@@ -250,9 +247,6 @@ export class ProfileService {
           if (updated.profile_pic_url) {
             this.imageCache.invalidateImage(updated.profile_pic_url);
           }
-          if (updated.business_logo_url) {
-            this.imageCache.invalidateImage(updated.business_logo_url);
-          }
           if (updated.business_banner_url) {
             this.imageCache.invalidateImage(updated.business_banner_url);
           }
@@ -271,7 +265,6 @@ export class ProfileService {
               ...((updated.business_description ? { business_description: updated.business_description } : {}) as any),
               ...((updated.website ? { website: updated.website } : {}) as any),
               ...((updated.gst_number ? { gst_number: updated.gst_number } : {}) as any),
-              ...((updated.business_logo_url ? { business_logo_url: updated.business_logo_url } : {}) as any),
               ...((updated.business_banner_url ? { business_banner_url: updated.business_banner_url } : {}) as any),
               ...((updated.category_id ? { category_id: updated.category_id } : {}) as any),
               is_profile_completed: updated.is_profile_completed,

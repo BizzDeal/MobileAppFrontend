@@ -36,32 +36,36 @@
       </div>
     </div>
 
-    <section class="business-profile-card bd-card-premium">
-      <div class="biz-profile-main">
-        <div class="brand-logo-wrapper">
-          <img loading="lazy" [appCachedImg]="profile()?.business_logo_url || profile()?.business_banner_url"
-            [fallbackName]="profile()?.business_name || 'My Business'" alt="Brand Profile Pic" class="brand-logo-img" />
+    <section class="business-profile-banner">
+      <!-- Background cover image -->
+      <div class="banner-bg">
+        @if (profile()?.business_banner_url) {
+          <img loading="lazy" [appCachedImg]="profile()?.business_banner_url!"
+            [fallbackName]="profile()?.business_name || 'My Business'" alt="Business Banner" class="banner-bg-img" />
+        }
+        <div class="banner-gradient-scrim"></div>
+      </div>
+      <!-- Followers pill — top right -->
+      <div class="banner-top-bar">
+        <div class="banner-followers-pill">
+          <ion-icon name="people-outline" class="banner-followers-icon"></ion-icon>
+          <span class="banner-followers-text">Followers : 0</span>
         </div>
-        <div class="biz-info">
-          <h2 class="biz-profile-name">
-            <span>{{ profile()?.business_name || 'My Business' }}</span>
-            @if (profile()?.status === 'ACTIVE') {
-              <ion-icon name="checkmark-circle" class="biz-check-icon" aria-label="Verified Active"></ion-icon>
-            }
-          </h2>
-          <span class="biz-joined">Joined {{ profile()?.created_at | date:'d MMM yyyy' }}</span>
-
-          <div class="biz-followers-pill">
-            <ion-icon name="people-outline" class="followers-icon"></ion-icon>
-            <span class="followers-text">Followers : 0</span>
-          </div>
-        </div>
+      </div>
+      <!-- Business info — bottom left -->
+      <div class="banner-bottom-bar">
+        <h2 class="banner-biz-name">
+          <span>{{ profile()?.business_name || 'My Business' }}</span>
+          @if (profile()?.status === 'ACTIVE') {
+            <ion-icon name="checkmark-circle" class="banner-check-icon" aria-label="Verified Active"></ion-icon>
+          }
+        </h2>
+        <span class="banner-joined">Joined {{ profile()?.created_at | date:'d MMM yyyy' }}</span>
       </div>
     </section>
 
     <!-- Business & Bizz Rewards Section -->
     <section class="quick-actions-section">
-      <h3 class="qa-section-title">Business & Bizz Rewards</h3>
       <div class="qa-card-container unified-rewards-card">
         <!-- Centered Bizz Rewards Pill -->
         <div class="qa-rewards-pill" (click)="walletClick.emit()" role="button" tabindex="0">
@@ -131,95 +135,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Analytics Dashboard Section: My Performance & District Overview -->
-    <section class="analytics-dashboard-section feed-section">
-      <div class="section-header">
-        <div class="header-left">
-          <ion-icon name="trending-up-outline" class="section-icon spark"></ion-icon>
-          <h2 class="section-title">Analytics Dashboard</h2>
-        </div>
-      </div>
-
-      <div class="performance-overview-grid">
-        <!-- Card 1: My Performance -->
-        <div class="analytics-biz-card performance-card">
-          <div class="card-main-row">
-            <div class="biz-icon-badge performance-badge">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                <polyline points="16 7 22 7 22 13"></polyline>
-              </svg>
-            </div>
-            <div class="card-info-col">
-              <span class="card-biz-title">MY PERFORMANCE</span>
-              <div class="card-stat-wrap">
-                <span class="stat-number stat-highlight">+{{ data.analytics.businessGrowth }}%</span>
-                <span class="growth-label">Growth</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card-divider"></div>
-
-          <div class="card-metrics-list">
-            <div class="metric-line">
-              <span class="metric-label">Offers</span>
-              <strong class="metric-value">{{ data.analytics.activeOffersCount }}</strong>
-            </div>
-            <div class="metric-line">
-              <span class="metric-label">Redeemed</span>
-              <strong class="metric-value">{{ data.analytics.vouchersRedeemedToday }}</strong>
-            </div>
-            <div class="metric-line">
-              <span class="metric-label">Referrals</span>
-              <strong class="metric-value">{{ data.analytics.successfulReferrals }}</strong>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 2: District Overview -->
-        @if (data.analytics.districtStats) {
-        <div class="analytics-biz-card district-card">
-          <div class="card-main-row">
-            <div class="biz-icon-badge district-badge">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 21h18"></path>
-                <path d="M5 21V7l8-4v18"></path>
-                <path d="M19 21V11l-6-4"></path>
-                <line x1="9" y1="9" x2="9.01"></line>
-                <line x1="9" y1="13" x2="9" y2="13.01"></line>
-                <line x1="9" y1="17" x2="9" y2="17.01"></line>
-              </svg>
-            </div>
-            <div class="card-info-col">
-              <span class="card-biz-title">DISTRICT OVERVIEW</span>
-              <div class="card-stat-wrap">
-                <span class="stat-number">₹{{ data.analytics.districtStats.revenue | number:'1.0-0' }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card-divider"></div>
-
-          <div class="card-metrics-list">
-            <div class="metric-line">
-              <span class="metric-label">Businesses</span>
-              <strong class="metric-value">{{ data.analytics.districtStats.totalBusinesses }}</strong>
-            </div>
-            <div class="metric-line">
-              <span class="metric-label">Members</span>
-              <strong class="metric-value">{{ data.analytics.districtStats.totalMembers }}</strong>
-            </div>
-            <div class="metric-line">
-              <span class="metric-label">Redeemed</span>
-              <strong class="metric-value">{{ data.analytics.districtStats.totalVouchers }}</strong>
-            </div>
-          </div>
-        </div>
-        }
       </div>
     </section>
 
@@ -305,24 +220,17 @@
         </div>
       </div>
       <div class="regional-card">
-        <div class="regional-main-title">{{ regionalName() }} Region Breakdown</div>
-        
         <div class="summary-table">
           <div class="summary-table-row">
-            <span class="stat-label">Revenue</span>
-            <strong class="stat-value">₹{{ (regionalStats()?.revenue || 0) | number:'1.0-0' }}</strong>
-          </div>
-
-          <div class="summary-table-row">
-            <span class="stat-label">Referrals</span>
-            <strong class="stat-value">+₹{{ (regionalStats()?.referralBusinessValue || 0) | number:'1.0-0' }}</strong>
+            <span class="stat-label">Total Referrals</span>
+            <strong class="stat-value">{{ (regionalStats()?.totalReferrals || 0) | number:'1.0-0' }}</strong>
           </div>
 
           <div class="card-divider"></div>
 
           <div class="summary-table-row total-row">
-            <span class="stat-label total-label">Total Value</span>
-            <strong class="stat-value total-value">₹{{ (regionalStats()?.totalBusinessValue || 0) | number:'1.0-0' }}+</strong>
+            <span class="stat-label total-label">Total Business Value</span>
+            <strong class="stat-value total-value">₹{{ (regionalStats()?.totalBusinessValue || 0) | number:'1.0-0' }}</strong>
           </div>
         </div>
       </div>
@@ -336,25 +244,19 @@
           <h2 class="section-title">Global Summary</h2>
         </div>
       </div>
-      <div class="regional-card global-card">
-        <div class="regional-main-title">Worldwide Platform Breakdown</div>
-
-        <div class="summary-table">
-          <div class="summary-table-row">
-            <span class="stat-label">Revenue</span>
-            <strong class="stat-value">₹{{ (globalStats()?.revenue || 0) | number:'1.0-0' }}</strong>
+      <div class="global-table-card">
+        <div class="global-table-grid">
+          <div class="global-col">
+            <span class="global-col-title">Bizz deal customer</span>
+            <strong class="global-col-value">{{ (globalStats()?.totalCustomers || 0) | number:'1.0-0' }}</strong>
           </div>
-
-          <div class="summary-table-row">
-            <span class="stat-label">Referrals</span>
-            <strong class="stat-value">+₹{{ (globalStats()?.referralBusinessValue || 0) | number:'1.0-0' }}</strong>
+          <div class="global-col">
+            <span class="global-col-title">Referrals</span>
+            <strong class="global-col-value">{{ (globalStats()?.totalReferrals || 0) | number:'1.0-0' }}</strong>
           </div>
-
-          <div class="card-divider"></div>
-
-          <div class="summary-table-row total-row">
-            <span class="stat-label total-label">Total Value</span>
-            <strong class="stat-value total-value">₹{{ (globalStats()?.totalBusinessValue || 0) | number:'1.0-0' }}+</strong>
+          <div class="global-col">
+            <span class="global-col-title">Total Value</span>
+            <strong class="global-col-value">₹ {{ (globalStats()?.totalBusinessValue || 0) | number:'1.0-0' }}</strong>
           </div>
         </div>
       </div>

@@ -158,24 +158,32 @@ export class ImageCropperModalComponent implements OnInit {
     }
   }
 
+  private initialRatioMode: AspectRatioMode = 'free';
+
   private initAspectRatio(): void {
     if (this.roundCropper) {
       // Profile avatars start in 1:1 square/circular mode, with full ability to switch to free-form
+      this.initialRatioMode = '1:1';
       this.setAspectRatioMode('1:1');
     } else if (this.aspectRatio && this.aspectRatio > 0) {
       if (Math.abs(this.aspectRatio - 1) < 0.02) {
+        this.initialRatioMode = '1:1';
         this.setAspectRatioMode('1:1');
       } else if (Math.abs(this.aspectRatio - 16 / 9) < 0.05) {
+        this.initialRatioMode = '16:9';
         this.setAspectRatioMode('16:9');
       } else if (Math.abs(this.aspectRatio - 4 / 3) < 0.05) {
+        this.initialRatioMode = '4:3';
         this.setAspectRatioMode('4:3');
       } else {
+        this.initialRatioMode = 'free';
         this.currentAspectRatio.set(this.aspectRatio);
         this.maintainAspectRatio.set(true);
         this.activeRatioMode.set('free');
       }
     } else {
       // Free-form WhatsApp crop by default
+      this.initialRatioMode = 'free';
       this.setAspectRatioMode('free');
     }
   }
@@ -261,11 +269,7 @@ export class ImageCropperModalComponent implements OnInit {
     this.zoomScale.set(1);
     this.flipH.set(false);
     this.flipV.set(false);
-    if (this.roundCropper) {
-      this.setAspectRatioMode('1:1');
-    } else {
-      this.setAspectRatioMode('free');
-    }
+    this.setAspectRatioMode(this.initialRatioMode);
   }
 
   cancel(): void {

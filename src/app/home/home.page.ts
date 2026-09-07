@@ -238,6 +238,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
   ionViewWillEnter(): void {
     if (this.authSession.isAuthenticated() && this.userRole() !== 'CUSTOMER') {
       this.chatService.refreshContactsAndConversations().subscribe();
+      this.memberDashboardService.loadDashboardData().subscribe();
     }
   }
   ngAfterViewInit(): void {

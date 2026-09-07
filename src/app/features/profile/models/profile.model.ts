@@ -12,9 +12,12 @@ export interface ProfileDTO {
   pincode?: string | null;
   role: 'ADMIN' | 'MEMBER' | 'CUSTOMER';
   status: 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED';
+  rejection_reason?: string | null;
   profile_pic_url: string | null;
   // Business fields
   business_id?: string | null;
+  business_status?: 'PENDING' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED' | null;
+  business_rejection_reason?: string | null;
   category_id?: string;
   business_name?: string | null;
   business_description?: string | null;
@@ -32,6 +35,7 @@ export interface ProfileDTO {
   primary_business_category_name?: string | null;
   primary_business_state_name?: string | null;
   primary_business_district_name?: string | null;
+  primary_business_banner_url?: string | null;
   
   // Profile Completion Tracking
   is_profile_completed?: boolean;

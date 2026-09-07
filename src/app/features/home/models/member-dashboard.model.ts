@@ -48,4 +48,5 @@ export interface MemberDashboardData {
   recentActivity: any[];
   myOffers: import('../../home/models/home.model').OfferDTO[];
   bizzCoinOffer?: import('../../home/models/home.model').OfferDTO | null;
+  featuredRequests?: import('../../business/models/featured-business.model').FeaturedBusinessRequestDTO[];
 }

@@ -269,15 +269,27 @@ export class ReferralsPageComponent implements OnInit {
     this.appreciationMessage.set('');
   }
 
-  onCostChange(event: any): void {
-    const cost = event.detail.value;
-    this.appreciationCost.set(cost);
+  onCostChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const rawVal = input?.value?.trim();
     const ref = this.selectedReferralForAppreciation();
-    
-    if (ref && cost !== null && cost !== '') {
-      this.appreciationMessage.set(`Thank you for referring ${ref.contact_name}! We successfully completed business worth ₹${cost}. I truly appreciate your support!`);
-    } else if (ref) {
-      this.appreciationMessage.set(`Thank you for referring ${ref.contact_name}! We successfully completed business. I truly appreciate your support!`);
+
+    if (!rawVal) {
+      this.appreciationCost.set(null);
+      if (ref) {
+        this.appreciationMessage.set(`Thank you for referring ${ref.contact_name}! We successfully completed business. I truly appreciate your support!`);
+      }
+      return;
+    }
+
+    const num = Number(rawVal);
+    if (!isNaN(num) && num >= 0) {
+      this.appreciationCost.set(num);
+      if (ref) {
+        this.appreciationMessage.set(`Thank you for referring ${ref.contact_name}! We successfully completed business worth ₹${num.toLocaleString('en-IN')}. I truly appreciate your support!`);
+      }
+    } else {
+      this.appreciationCost.set(null);
     }
   }
 
@@ -287,7 +299,7 @@ export class ReferralsPageComponent implements OnInit {
     const msg = this.appreciationMessage();
     
     if (!ref) return;
-    if (cost === null || cost < 0 || isNaN(Number(cost)) || cost.toString().trim() === '') {
+    if (cost === null || cost < 0 || isNaN(cost)) {
       this.toastService.showError('Please enter a valid cost of business.');
       return;
     }
@@ -298,7 +310,7 @@ export class ReferralsPageComponent implements OnInit {
 
     this.submittingAppreciation.set(true);
     this.referralsService.appreciateReferral(ref.id, {
-      cost_of_business: Number(cost),
+      cost_of_business: cost,
       appreciation_message: msg.trim()
     }).subscribe({
       next: () => {
@@ -307,7 +319,7 @@ export class ReferralsPageComponent implements OnInit {
         this.closeAppreciationModal();
         this.toastService.showSuccess('Appreciation sent successfully!');
       },
-      error: (err) => {
+      error: (err: unknown) => {
         this.toastService.showError(extractFriendlyErrorMessage(err, 'Failed to send appreciation.'));
         this.submittingAppreciation.set(false);
       }

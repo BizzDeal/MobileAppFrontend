@@ -188,20 +188,6 @@
               <div class="checkboxes-section full-width mt-3">
                 <div class="checkbox-option">
                   <ion-checkbox 
-                    [checked]="isFeatured"
-                    (ionChange)="onFeaturedCheckboxChange($event)"
-                    labelPlacement="end"
-                    color="warning">
-                    <div class="checkbox-label-content">
-                      <span class="checkbox-text font-semibold">
-                        <ion-icon name="star" class="star-icon"></ion-icon> Mark as Featured Business
-                      </span>
-                    </div>
-                  </ion-checkbox>
-                </div>
-
-                <div class="checkbox-option mt-2">
-                  <ion-checkbox 
                     [checked]="isTop"
                     (ionChange)="onTopCheckboxChange($event)"
                     labelPlacement="end"

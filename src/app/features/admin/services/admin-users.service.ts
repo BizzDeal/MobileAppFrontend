@@ -39,8 +39,8 @@ export class AdminUsersService {
     return this.http.put<ApiResponse<{ memberId: string; status: UserStatus }>>(`${this.apiUrl}/approve-member`, { memberId }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 
-  rejectMember(memberId: string): Observable<ApiResponse<{ memberId: string; status: UserStatus }>> {
-    return this.http.put<ApiResponse<{ memberId: string; status: UserStatus }>>(`${this.apiUrl}/reject-member`, { memberId }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
+  rejectMember(memberId: string, reason: string): Observable<ApiResponse<{ memberId: string; status: UserStatus; rejection_reason?: string }>> {
+    return this.http.put<ApiResponse<{ memberId: string; status: UserStatus; rejection_reason?: string }>>(`${this.apiUrl}/reject-member`, { memberId, reason }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 
   suspendMember(memberId: string): Observable<ApiResponse<{ memberId: string; status: UserStatus }>> {

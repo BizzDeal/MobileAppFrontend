@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { BusinessCategoryDTO, OfferDTO } from '../../home/models/home.model';
+import { BusinessCategoryDTO, CategoryMemberDTO, OfferDTO } from '../../home/models/home.model';
 import { CustomerVouchersService } from '../../vouchers/services/customer-vouchers.service';
 import { HomeService } from '../../home/services/home.service';
+import { ProfileService } from '../../profile/services/profile.service';
+import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { CategoryFilterType, CategorySortType } from '../models/category-view.model';
 
 @Injectable({
@@ -15,13 +17,33 @@ export class CategoriesService {
   private readonly http = inject(HttpClient);
   private readonly homeService = inject(HomeService);
   private readonly customerVouchersService = inject(CustomerVouchersService);
+  private readonly profileService = inject(ProfileService);
+  private readonly authSession = inject(AuthSessionService);
   private readonly apiUrl = environment.apiUrl;
+
+  readonly userDistrict = computed<string | null>(() => {
+    const prof = this.profileService.profile();
+    if (prof?.district_id) return prof.district_id;
+    if (prof?.business_district_id) return prof.business_district_id;
+
+    const authUser = this.authSession.currentUser();
+    if (authUser?.district_id) return authUser.district_id;
+    if (authUser?.business_district_id) return authUser.business_district_id;
+
+    return null;
+  });
+
+  readonly userDistrictName = computed<string | null>(() => {
+    const prof = this.profileService.profile();
+    return prof?.district_name || prof?.primary_business_district_name || null;
+  });
 
   private readonly _categories = signal<BusinessCategoryDTO[]>([]);
   private readonly _selectedCategoryId = signal<string>('ALL');
   private readonly _rawOffers = signal<OfferDTO[]>([]);
   private readonly _loadingCategories = signal<boolean>(false);
   private readonly _loadingOffers = signal<boolean>(false);
+  private readonly _loadingMember = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
 
   private readonly _searchQuery = signal<string>('');
@@ -32,6 +54,7 @@ export class CategoriesService {
   readonly selectedCategoryId = this._selectedCategoryId.asReadonly();
   readonly loadingCategories = this._loadingCategories.asReadonly();
   readonly loadingOffers = this._loadingOffers.asReadonly();
+  readonly loadingMember = this._loadingMember.asReadonly();
   readonly error = this._error.asReadonly();
   readonly searchQuery = this._searchQuery.asReadonly();
   readonly filterType = this._filterType.asReadonly();
@@ -49,10 +72,31 @@ export class CategoriesService {
         is_active: true,
         created_at: '',
         updated_at: '',
+        member: null,
       };
     }
     return this._categories().find((c) => c.id === id) || null;
   });
+
+  readonly selectedCategoryMember = computed<CategoryMemberDTO | null>(() => {
+    const selected = this.selectedCategory();
+    if (!selected || selected.id === 'ALL') {
+      return null;
+    }
+    return selected.member || null;
+  });
+
+  constructor() {
+    effect(() => {
+      const district = this.userDistrict();
+      untracked(() => {
+        if (district) {
+          this.loadCategories(district).subscribe();
+          this.loadOffers(this._selectedCategoryId(), district).subscribe();
+        }
+      });
+    });
+  }
 
   readonly filteredOffers = computed<OfferDTO[]>(() => {
     let list = this._rawOffers();
@@ -99,9 +143,12 @@ export class CategoriesService {
     return sorted;
   });
 
-  loadCategories(): Observable<BusinessCategoryDTO[]> {
+  loadCategories(districtId?: string): Observable<BusinessCategoryDTO[]> {
     this._loadingCategories.set(true);
-    return this.http.get<any>(`${this.apiUrl}/businesses/categories`).pipe(
+    const district = districtId || this.userDistrict();
+    const queryParam = district ? `?district=${encodeURIComponent(district)}` : '';
+
+    return this.http.get<any>(`${this.apiUrl}/businesses/categories${queryParam}`).pipe(
       map((res) => {
         const rawList: any[] = Array.isArray(res) ? res : res?.data || res?.items || [];
         const categories: BusinessCategoryDTO[] = rawList
@@ -116,6 +163,21 @@ export class CategoriesService {
             updated_at: cat.updated_at || new Date().toISOString(),
             icon: cat.icon || cat.slug,
             color: cat.color || undefined,
+            member: cat.member ? {
+              id: cat.member.id,
+              name: cat.member.name,
+              business_name: cat.member.business_name,
+              profile_pic_url: cat.member.profile_pic_url || null,
+              phone: cat.member.phone || '',
+              whatsapp: cat.member.whatsapp || cat.member.phone || '',
+              website: cat.member.website || null,
+              address: cat.member.address || null,
+              district_name: cat.member.district_name || null,
+              state_name: cat.member.state_name || null,
+              owner_id: cat.member.owner_id,
+              initials: cat.member.initials || 'BD',
+              description: cat.member.description || null,
+            } : null,
           }));
         return categories;
       }),
@@ -123,6 +185,14 @@ export class CategoriesService {
         next: (cats) => {
           this._categories.set(cats);
           this._loadingCategories.set(false);
+          // If a category was already selected and member was missing, check if now available
+          const currentId = this._selectedCategoryId();
+          if (currentId !== 'ALL') {
+            const currentCat = cats.find((c) => c.id === currentId);
+            if (!currentCat?.member) {
+              this.loadMemberForCategory(currentId, district || undefined).subscribe();
+            }
+          }
         },
         error: (err) => {
           this._loadingCategories.set(false);
@@ -133,13 +203,83 @@ export class CategoriesService {
     );
   }
 
-  loadOffers(categoryId: string = this._selectedCategoryId()): Observable<OfferDTO[]> {
+  loadMemberForCategory(categoryId: string, districtId?: string): Observable<CategoryMemberDTO | null> {
+    if (!categoryId || categoryId === 'ALL') {
+      return of(null);
+    }
+    const currentCat = this._categories().find((c) => c.id === categoryId);
+    if (currentCat?.member) {
+      return of(currentCat.member);
+    }
+
+    this._loadingMember.set(true);
+    const queryParts: string[] = [`category_id=${encodeURIComponent(categoryId)}`];
+    const district = districtId || this.userDistrict();
+    if (district) {
+      queryParts.push(`district=${encodeURIComponent(district)}`);
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/businesses?${queryParts.join('&')}`).pipe(
+      map((res) => {
+        const list: any[] = Array.isArray(res) ? res : res?.data || [];
+        if (list.length > 0) {
+          const b = list[0];
+          const ownerName = b.owner_name || b.owner?.profile?.full_name || b.name || 'Member';
+          const initials = (ownerName || b.name || 'BD')
+            .split(' ')
+            .map((w: string) => w[0])
+            .slice(0, 2)
+            .join('')
+            .toUpperCase();
+
+          const member: CategoryMemberDTO = {
+            id: b.id,
+            name: ownerName,
+            business_name: b.name,
+            profile_pic_url: b.profile_pic_url || null,
+            phone: b.phone || b.owner_phone || '',
+            whatsapp: b.whatsapp || b.phone || '',
+            website: b.website || null,
+            address: b.address || null,
+            district_name: b.district_name || null,
+            state_name: b.state_name || null,
+            owner_id: b.owner_id,
+            initials,
+            description: b.description || null,
+          };
+          this._categories.update((cats) =>
+            cats.map((c) => (c.id === categoryId ? { ...c, member } : c))
+          );
+          return member;
+        }
+        return null;
+      }),
+      tap({
+        next: () => this._loadingMember.set(false),
+        error: () => this._loadingMember.set(false),
+      }),
+      catchError(() => {
+        this._loadingMember.set(false);
+        return of(null);
+      })
+    );
+  }
+
+  loadOffers(categoryId: string = this._selectedCategoryId(), districtId?: string): Observable<OfferDTO[]> {
     this._loadingOffers.set(true);
     this._error.set(null);
 
-    const queryParam = categoryId && categoryId !== 'ALL' ? `?category_id=${categoryId}` : '';
+    const queryParts: string[] = [];
+    if (categoryId && categoryId !== 'ALL') {
+      queryParts.push(`category_id=${encodeURIComponent(categoryId)}`);
+    }
+    const district = districtId || this.userDistrict();
+    if (district) {
+      queryParts.push(`district=${encodeURIComponent(district)}`);
+    }
+    const queryString = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
 
-    return this.http.get<any>(`${this.apiUrl}/offers${queryParam}`).pipe(
+    return this.http.get<any>(`${this.apiUrl}/offers${queryString}`).pipe(
       map((res) => {
         const dataRaw: any[] = Array.isArray(res) ? res : res?.data || res?.items || [];
         const claimedOfferIds = new Set(
@@ -193,7 +333,14 @@ export class CategoriesService {
 
   selectCategory(categoryId: string): void {
     this._selectedCategoryId.set(categoryId);
-    this.loadOffers(categoryId).subscribe();
+    const district = this.userDistrict() || undefined;
+    this.loadOffers(categoryId, district).subscribe();
+    if (categoryId !== 'ALL') {
+      const cat = this._categories().find((c) => c.id === categoryId);
+      if (!cat?.member) {
+        this.loadMemberForCategory(categoryId, district).subscribe();
+      }
+    }
   }
 
   setSearchQuery(query: string): void {

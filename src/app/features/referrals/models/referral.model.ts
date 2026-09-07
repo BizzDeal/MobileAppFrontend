@@ -68,6 +68,10 @@ export interface MemberBusinessDTO {
   phone: string;
   email: string;
   profile_pic_url?: string | null;
+  business_name?: string | null;
+  category_name?: string | null;
+  district_id?: string | null;
+  business_district_id?: string | null;
   profile?: {
     full_name?: string;
     whatsapp?: string;

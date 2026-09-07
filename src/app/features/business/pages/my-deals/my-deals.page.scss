@@ -448,6 +448,46 @@
       overflow: hidden;
     }
 
+    .deal-rejection-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 3px solid #ef4444;
+      border-radius: 6px;
+
+      .rejection-icon {
+        font-size: 1.1rem;
+        color: #dc2626;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .rejection-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .rejection-label {
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: #991b1b;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+        }
+
+        .rejection-text {
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: #b91c1c;
+          line-height: 1.35;
+          margin: 0;
+        }
+      }
+    }
+
     .validity-row {
       display: flex;
       align-items: center;

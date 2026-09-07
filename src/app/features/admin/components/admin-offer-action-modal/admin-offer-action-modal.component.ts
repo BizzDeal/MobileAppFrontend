@@ -112,7 +112,7 @@ export class AdminOfferActionModalComponent implements OnInit {
   }
 
   reject() {
-    if (!this.rejectionReason.trim()) {
+    if (this.rejectionReason.trim().length < 3) {
       return;
     }
     

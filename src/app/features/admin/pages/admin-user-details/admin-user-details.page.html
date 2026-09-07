@@ -124,15 +124,6 @@
                     <button 
                       type="button" 
                       class="action-btn"
-                      [ngClass]="$any(user).is_featured ? 'btn-warning' : 'btn-outline-warning'"
-                      [disabled]="toggleFeaturedLoading"
-                      (click)="toggleFeatured()">
-                      <ion-icon [name]="$any(user).is_featured ? 'star' : 'star-outline'"></ion-icon>
-                      {{ $any(user).is_featured ? 'Featured Business' : 'Mark as Featured' }}
-                    </button>
-                    <button 
-                      type="button" 
-                      class="action-btn"
                       [ngClass]="$any(user).is_top ? 'btn-primary' : 'btn-outline-primary'"
                       [disabled]="toggleTopLoading"
                       (click)="toggleTop()">

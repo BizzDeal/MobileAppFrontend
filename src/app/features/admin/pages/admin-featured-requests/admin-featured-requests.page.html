@@ -1,0 +1,249 @@
+<ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true" style="padding-top: 0px !important; --ion-safe-area-top: 0px;">
+  <div class="admin-search-filter-bar">
+    <ion-searchbar
+      [value]="searchQuery()"
+      (ionInput)="onSearch($event)"
+      placeholder="Search requests, business, category..."
+      mode="md"
+      class="premium-searchbar">
+    </ion-searchbar>
+  </div>
+
+  <ion-toolbar class="pb-2">
+    <ion-segment [value]="selectedStatus()" (ionChange)="onStatusSegmentChange($event)" mode="ios" class="premium-segment">
+      <ion-segment-button value="ALL">
+        <ion-label>All</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="PENDING">
+        <ion-label>Pending</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="APPROVED">
+        <ion-label>Approved</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="REJECTED">
+        <ion-label>Rejected</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="EXPIRED">
+        <ion-label>Expired</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content style="--background: #f8fafc;">
+  <div class="list-container m-0 mt-2 mx-4">
+    <!-- Mobile Card View -->
+    @if (!isDesktop) {
+      @if (loading() && requests().length === 0) {
+        <div style="padding: 16px;">
+          <app-card-skeleton [count]="3"></app-card-skeleton>
+        </div>
+      }
+
+      @if (!loading() && filteredRequests().length === 0) {
+        <div class="ion-padding ion-text-center mt-6 empty-placeholder">
+          <ion-icon name="star-outline" class="placeholder-icon"></ion-icon>
+          <h3 class="placeholder-title">No Featured Requests</h3>
+          <p class="placeholder-sub">No requests found matching your current filter.</p>
+        </div>
+      }
+
+      @if (filteredRequests().length > 0) {
+        <div class="mobile-cards-list">
+          @for (req of filteredRequests(); track req.id) {
+            <div class="premium-req-card" [class.has-conflict]="!!getConflict(req)">
+              <!-- Banner Thumbnail -->
+              @if (req.banner?.file_url) {
+                <div class="card-banner-wrapper" (click)="openBannerPreview(req.banner?.file_url)">
+                  <img loading="lazy" [appCachedImg]="req.banner?.file_url" [fallbackName]="req.title" [alt]="req.title" class="card-banner-img" />
+                  <div class="banner-expand-overlay">
+                    <ion-icon name="open-outline"></ion-icon>
+                    <span>Expand Banner (16:9)</span>
+                  </div>
+                </div>
+              }
+
+              <div class="card-body">
+                <div class="card-header-row">
+                  <span class="category-pill">{{ req.category?.name || 'Category' }}</span>
+                  <span class="status-badge" [ngClass]="'status-' + getStatusBadgeColor(req.status)">
+                    {{ req.status }}
+                  </span>
+                </div>
+
+                <h3 class="req-title">{{ req.title }}</h3>
+                <p class="req-desc">{{ req.description }}</p>
+
+                <!-- Business Info -->
+                <div class="meta-row">
+                  <ion-icon name="business-outline" class="meta-icon"></ion-icon>
+                  <span class="meta-text"><strong>{{ req.business?.name }}</strong></span>
+                  @if (req.business?.owner?.profile?.full_name) {
+                    <span class="owner-text">• {{ req.business?.owner?.profile?.full_name }}</span>
+                  }
+                </div>
+
+                <!-- Date Range -->
+                <div class="date-chip">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span>{{ req.start_date | date:'mediumDate' }} — {{ req.end_date | date:'mediumDate' }}</span>
+                </div>
+
+                <!-- Exclusivity Conflict Alert -->
+                @if (getConflict(req); as conflict) {
+                  <div class="conflict-banner">
+                    <ion-icon name="alert-circle-outline" class="conflict-icon"></ion-icon>
+                    <div class="conflict-text">
+                      <strong>Category Slot Occupied:</strong>
+                      <span>"{{ conflict.live_request?.business_name }}" is currently live until {{ conflict.live_request?.end_date | date:'mediumDate' }}. Overlapping approval is locked.</span>
+                    </div>
+                  </div>
+                }
+
+                <!-- Rejection Reason if any -->
+                @if (req.status === 'REJECTED' && req.rejection_reason) {
+                  <div class="rejection-box">
+                    <strong>Rejection Reason:</strong> {{ req.rejection_reason }}
+                  </div>
+                }
+              </div>
+
+              <!-- Footer Actions -->
+              @if (req.status === 'PENDING') {
+                <div class="card-actions-bar">
+                  <button type="button" class="btn-action btn-reject" (click)="onReject(req)">
+                    <ion-icon name="close-outline"></ion-icon>
+                    <span>Reject</span>
+                  </button>
+                  <button type="button" class="btn-action btn-approve" [class.btn-blocked]="!!getConflict(req)" (click)="onApprove(req)">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                    <span>{{ getConflict(req) ? 'Exclusivity Conflict' : 'Approve' }}</span>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- Desktop Table View -->
+    @if (isDesktop) {
+      <div class="desktop-table-container">
+        <table class="desktop-table">
+          <thead>
+            <tr>
+              <th style="width: 120px;">Banner</th>
+              <th>Request Title & Description</th>
+              <th>Business & Category</th>
+              <th>Date Window</th>
+              <th style="width: 110px;">Status</th>
+              <th style="width: 200px; text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading() && requests().length === 0) {
+              <tr>
+                <td colspan="6" class="p-4">
+                  <app-card-skeleton [count]="3"></app-card-skeleton>
+                </td>
+              </tr>
+            }
+
+            @if (!loading() && filteredRequests().length === 0) {
+              <tr>
+                <td colspan="6" class="text-center py-10 text-muted">
+                  <ion-icon name="star-outline" style="font-size: 2rem; color: #94a3b8; display: block; margin: 0 auto 8px;"></ion-icon>
+                  No featured requests found for this filter.
+                </td>
+              </tr>
+            }
+
+            @if (filteredRequests().length > 0) {
+              @for (req of filteredRequests(); track req.id) {
+                <tr [class.row-conflict]="!!getConflict(req)">
+                  <td>
+                    @if (req.banner?.file_url) {
+                      <div class="table-banner-thumb" (click)="openBannerPreview(req.banner?.file_url)">
+                        <img loading="lazy" [appCachedImg]="req.banner?.file_url" [fallbackName]="req.title" [alt]="req.title" />
+                      </div>
+                    } @else {
+                      <div class="table-banner-placeholder">
+                        <ion-icon name="image-outline"></ion-icon>
+                      </div>
+                    }
+                  </td>
+                  <td>
+                    <div class="table-title-group">
+                      <strong class="table-title">{{ req.title }}</strong>
+                      <p class="table-desc">{{ req.description }}</p>
+                      @if (req.status === 'REJECTED' && req.rejection_reason) {
+                        <span class="table-rejection">Reason: {{ req.rejection_reason }}</span>
+                      }
+                    </div>
+                  </td>
+                  <td>
+                    <div class="table-biz-group">
+                      <span class="table-biz-name">{{ req.business?.name }}</span>
+                      <span class="table-category-pill">{{ req.category?.name || 'Category' }}</span>
+                      @if (req.business?.owner?.profile?.full_name) {
+                        <span class="table-owner">Owner: {{ req.business?.owner?.profile?.full_name }}</span>
+                      }
+                    </div>
+                  </td>
+                  <td>
+                    <div class="table-dates">
+                      <div class="date-line"><strong>Start:</strong> {{ req.start_date | date:'mediumDate' }}</div>
+                      <div class="date-line"><strong>End:</strong> {{ req.end_date | date:'mediumDate' }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="status-badge" [ngClass]="'status-' + getStatusBadgeColor(req.status)">
+                      {{ req.status }}
+                    </span>
+                  </td>
+                  <td style="text-align: right;">
+                    @if (req.status === 'PENDING') {
+                      <div class="table-actions">
+                        @if (getConflict(req); as conflict) {
+                          <span class="conflict-warning-pill" [title]="'Occupied by ' + conflict.live_request?.business_name">
+                            <ion-icon name="alert-circle-outline"></ion-icon> Conflict
+                          </span>
+                        }
+                        <button type="button" class="tbl-btn tbl-btn-reject" (click)="onReject(req)" title="Reject Request">
+                          <ion-icon name="close-outline"></ion-icon>
+                          <span>Reject</span>
+                        </button>
+                        <button type="button" class="tbl-btn tbl-btn-approve" (click)="onApprove(req)" title="Approve Request">
+                          <ion-icon name="checkmark-outline"></ion-icon>
+                          <span>Approve</span>
+                        </button>
+                      </div>
+                    } @else {
+                      <span class="text-muted" style="font-size: 0.85rem; color: #94a3b8;">
+                        {{ req.status === 'APPROVED' ? 'Approved' : 'Completed' }}
+                      </span>
+                    }
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- Banner Lightbox Modal -->
+  @if (previewImage(); as imgUrl) {
+    <div class="banner-lightbox-backdrop" (click)="closeBannerPreview()">
+      <div class="lightbox-modal" (click)="$event.stopPropagation()">
+        <button type="button" class="lightbox-close-btn" (click)="closeBannerPreview()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <img [appCachedImg]="imgUrl" [fallbackName]="'Banner'" alt="Featured Banner Preview" class="lightbox-image" />
+        <div class="lightbox-caption">Featured Business Banner Preview (16:9 Aspect Ratio)</div>
+      </div>
+    </div>
+  }
+</ion-content>

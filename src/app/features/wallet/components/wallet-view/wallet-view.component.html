@@ -15,6 +15,9 @@
     @if (!hideHeader) {
       <div class="app-page-header">
         <div class="header-brand-group">
+          <button type="button" class="header-back-btn" (click)="backToHome()" aria-label="Back to Home">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </button>
           <div class="header-icon-badge">
             <ion-icon name="wallet-outline"></ion-icon>
           </div>
@@ -30,7 +33,7 @@
     <!-- 1. Dual Balance Cards Row (Bizz Coins & Wallet Balance in same row) -->
     <div class="balance-cards-row">
       <!-- Card A: Bizz Coins Balance Card -->
-      <div class="balance-card bizz-coins-card" (click)="navigateToEarnCoins()">
+      <div class="balance-card bizz-coins-card" (click)="navigateToPointsDetails()">
         <div class="card-glow"></div>
         <div class="card-content-layout">
           <div class="card-text-side">
@@ -70,7 +73,7 @@
       </div>
 
       <!-- Card B: Wallet Cash Balance Card -->
-      <div class="balance-card wallet-cash-card" (click)="openAddFundsPrompt()">
+      <div class="balance-card wallet-cash-card" (click)="navigateToWalletDetails()">
         <div class="card-glow"></div>
         <div class="card-content-layout">
           <div class="card-text-side">

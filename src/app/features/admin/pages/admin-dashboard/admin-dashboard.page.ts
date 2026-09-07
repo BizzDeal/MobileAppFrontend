@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, AlertController, SegmentCustomEvent } from '@ionic/angular';
 
 import { 
   AdminDashboardService, 
@@ -9,6 +9,7 @@ import {
   User, 
   Offer 
 } from '../../services/admin-dashboard.service';
+import { FeaturedBusinessRequestDTO } from '../../../business/models/featured-business.model';
 import { Observable } from 'rxjs';
 import { AdminMemberActionModalComponent } from '../../components/admin-member-action-modal/admin-member-action-modal.component';
 import { AdminOfferActionModalComponent } from '../../components/admin-offer-action-modal/admin-offer-action-modal.component';
@@ -25,7 +26,8 @@ import {
   megaphoneOutline, 
   documentTextOutline, 
   shieldCheckmarkOutline,
-  filterOutline
+  filterOutline,
+  starOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -36,19 +38,38 @@ import {
   imports: [CommonModule, IonicModule, DatePipe, DashboardSkeletonComponent, AdminRegionFilterModalComponent]
 })
 export class AdminDashboardPage implements OnInit {
+  private readonly dashboardService = inject(AdminDashboardService);
+  private readonly modalCtrl = inject(ModalController);
+  private readonly alertCtrl = inject(AlertController);
+  private readonly router = inject(Router);
+
   analytics$!: Observable<AdminAnalyticsDto>;
   pendingMembers$!: Observable<User[]>;
   pendingOffers$!: Observable<Offer[]>;
+  pendingFeaturedRequests$!: Observable<FeaturedBusinessRequestDTO[]>;
 
+  // Tab state: 'members' | 'offers' | 'featured'
+  readonly selectedQueueTab = signal<'members' | 'offers' | 'featured'>('members');
+
+  // Queue data signals
+  private readonly _pendingMembers = signal<User[] | null>(null);
+  private readonly _pendingOffers = signal<Offer[] | null>(null);
+  private readonly _pendingFeaturedRequests = signal<FeaturedBusinessRequestDTO[] | null>(null);
+
+  readonly pendingMembers = this._pendingMembers.asReadonly();
+  readonly pendingOffers = this._pendingOffers.asReadonly();
+  readonly pendingFeaturedRequests = this._pendingFeaturedRequests.asReadonly();
+
+  // Tab numbers
+  readonly pendingMembersCount = computed(() => this._pendingMembers()?.length ?? 0);
+  readonly pendingOffersCount = computed(() => this._pendingOffers()?.length ?? 0);
+  readonly pendingFeaturedCount = computed(() => this._pendingFeaturedRequests()?.length ?? 0);
 
   stateId = '';
   districtId = '';
+  isFilterOpen = false;
 
-  constructor(
-    private dashboardService: AdminDashboardService,
-    private modalCtrl: ModalController,
-    private router: Router
-  ) {
+  constructor() {
     addIcons({
       peopleOutline,
       pricetagsOutline,
@@ -58,7 +79,8 @@ export class AdminDashboardPage implements OnInit {
       megaphoneOutline,
       documentTextOutline,
       shieldCheckmarkOutline,
-      filterOutline
+      filterOutline,
+      starOutline
     });
   }
 
@@ -70,18 +92,43 @@ export class AdminDashboardPage implements OnInit {
     this.refreshDashboard();
   }
 
-  handleRefresh(event: any) {
+  handleRefresh(event: { target: { complete: () => void } }) {
     this.refreshDashboard(event);
   }
 
-  refreshDashboard(event?: any) {
+  refreshDashboard(event?: { target: { complete: () => void } }) {
     this.analytics$ = this.dashboardService.getPlatformAnalytics(this.stateId, this.districtId);
     this.pendingMembers$ = this.dashboardService.getPendingMembers(this.stateId, this.districtId);
     this.pendingOffers$ = this.dashboardService.getPendingOffers(this.stateId, this.districtId);
+    this.pendingFeaturedRequests$ = this.dashboardService.getPendingFeaturedRequests();
 
-    // Subscribe to update the chart data whenever analytics refreshes
+    this.pendingMembers$.subscribe({
+      next: (data) => this._pendingMembers.set(data),
+      error: (err) => {
+        console.error('Failed to load pending members', err);
+        this._pendingMembers.set([]);
+      }
+    });
+
+    this.pendingOffers$.subscribe({
+      next: (data) => this._pendingOffers.set(data),
+      error: (err) => {
+        console.error('Failed to load pending offers', err);
+        this._pendingOffers.set([]);
+      }
+    });
+
+    this.pendingFeaturedRequests$.subscribe({
+      next: (data) => this._pendingFeaturedRequests.set(data),
+      error: (err) => {
+        console.error('Failed to load pending featured requests', err);
+        this._pendingFeaturedRequests.set([]);
+      }
+    });
+
+    // Subscribe to complete refresher whenever analytics completes
     this.analytics$.subscribe({
-      next: (data) => {
+      next: () => {
         if (event) {
           event.target.complete();
         }
@@ -94,12 +141,23 @@ export class AdminDashboardPage implements OnInit {
     });
   }
 
+  onQueueTabChange(event: SegmentCustomEvent) {
+    const val = event.detail.value;
+    if (val === 'members' || val === 'offers' || val === 'featured') {
+      this.selectedQueueTab.set(val);
+    }
+  }
+
   viewMemberApplication(member: User) {
     this.router.navigate(['/admin/member-applications', member.id]);
   }
 
   viewOfferDetails(offer: Offer) {
     this.router.navigate(['/admin/offers', offer.id]);
+  }
+
+  viewFeaturedRequests() {
+    this.router.navigate(['/admin/featured-requests'], { queryParams: { status: 'PENDING' } });
   }
 
   async openMemberModal(member: User) {
@@ -114,7 +172,7 @@ export class AdminDashboardPage implements OnInit {
       if (data.action === 'approve') {
         this.approveMember(data.memberId, true);
       } else if (data.action === 'reject') {
-        this.rejectMember(data.memberId, true);
+        this.rejectMember(data.memberId, true, undefined, data.reason);
       }
     }
   }
@@ -131,12 +189,10 @@ export class AdminDashboardPage implements OnInit {
       if (data.action === 'approve') {
         this.approveOffer(data.offerId, true);
       } else if (data.action === 'reject') {
-        this.rejectOffer(data.offerId, true);
+        this.rejectOffer(data.offerId, true, undefined, data.reason);
       }
     }
   }
-
-  isFilterOpen = false;
 
   openFilter() {
     this.isFilterOpen = true;
@@ -155,11 +211,44 @@ export class AdminDashboardPage implements OnInit {
     });
   }
 
-  rejectMember(id: string, fromModal: boolean = false, event?: Event) {
+  async rejectMember(id: string, fromModal: boolean = false, event?: Event, reason?: string) {
     if (event) event.stopPropagation();
-    this.dashboardService.rejectMember(id).subscribe(() => {
-      this.refreshDashboard();
+
+    if (reason && reason.trim()) {
+      this.dashboardService.rejectMember(id, reason.trim()).subscribe(() => {
+        this.refreshDashboard();
+      });
+      return;
+    }
+
+    const alert = await this.alertCtrl.create({
+      header: 'Reject Member',
+      message: 'Please provide the reason for rejecting this member registration.',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'textarea',
+          placeholder: 'Enter rejection reason (min 3 chars)...',
+        },
+      ],
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Reject',
+          handler: (alertData) => {
+            const entered = (alertData?.reason || '').trim();
+            if (entered.length < 3) {
+              return false;
+            }
+            this.dashboardService.rejectMember(id, entered).subscribe(() => {
+              this.refreshDashboard();
+            });
+            return true;
+          },
+        },
+      ],
     });
+    await alert.present();
   }
 
   approveOffer(id: string, fromModal: boolean = false, event?: Event) {
@@ -169,10 +258,43 @@ export class AdminDashboardPage implements OnInit {
     });
   }
 
-  rejectOffer(id: string, fromModal: boolean = false, event?: Event) {
+  async rejectOffer(id: string, fromModal: boolean = false, event?: Event, reason?: string) {
     if (event) event.stopPropagation();
-    this.dashboardService.rejectOffer(id).subscribe(() => {
-      this.refreshDashboard();
+
+    if (reason && reason.trim()) {
+      this.dashboardService.rejectOffer(id, reason.trim()).subscribe(() => {
+        this.refreshDashboard();
+      });
+      return;
+    }
+
+    const alert = await this.alertCtrl.create({
+      header: 'Reject Offer',
+      message: 'Please provide the reason for rejecting this offer.',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'textarea',
+          placeholder: 'Enter rejection reason (min 3 chars)...',
+        },
+      ],
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Reject',
+          handler: (alertData) => {
+            const entered = (alertData?.reason || '').trim();
+            if (entered.length < 3) {
+              return false;
+            }
+            this.dashboardService.rejectOffer(id, entered).subscribe(() => {
+              this.refreshDashboard();
+            });
+            return true;
+          },
+        },
+      ],
     });
+    await alert.present();
   }
 }

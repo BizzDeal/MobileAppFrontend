@@ -162,6 +162,17 @@
                 <p class="deal-description">{{ deal.description }}</p>
               }
 
+              <!-- Rejection Reason Banner if Rejected -->
+              @if (deal.status === 'REJECTED') {
+                <div class="deal-rejection-banner">
+                  <ion-icon name="close-circle-outline" class="rejection-icon"></ion-icon>
+                  <div class="rejection-content">
+                    <span class="rejection-label">Rejection Reason:</span>
+                    <p class="rejection-text">{{ deal.rejection_reason || 'Please review offer details and update to re-submit.' }}</p>
+                  </div>
+                </div>
+              }
+
               <!-- Validity Date -->
               <div class="validity-row">
                 <ion-icon name="calendar-outline" class="calendar-icon"></ion-icon>

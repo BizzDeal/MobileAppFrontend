@@ -102,14 +102,23 @@ export class ProfileViewComponent implements OnInit {
 
   readonly selectedPhotoUrl = signal<string | null>(null);
   readonly selectedPhotoFile = signal<File | null>(null);
+  readonly removeProfilePic = signal<boolean>(false);
+
   readonly selectedBusinessBannerUrl = signal<string | null>(null);
   readonly selectedBusinessBannerFile = signal<File | null>(null);
+  readonly removeBusinessBanner = signal<boolean>(false);
+
   readonly isCompleteProfileModalOpen = signal<boolean>(false);
   readonly activeEditSection = signal<'personal' | 'business' | 'all' | null>(null);
   readonly isPersonalEditing = computed(() => this.activeEditSection() === 'personal' || this.activeEditSection() === 'all');
   readonly isBusinessEditing = computed(() => this.activeEditSection() === 'business' || this.activeEditSection() === 'all');
   readonly isEditMode = computed(() => this.activeEditSection() !== null);
-  readonly hasPendingImage = computed(() => !!this.selectedPhotoFile() || !!this.selectedBusinessBannerFile());
+  readonly hasPendingImage = computed(() =>
+    !!this.selectedPhotoFile() ||
+    !!this.selectedBusinessBannerFile() ||
+    (this.removeProfilePic() && !!this.profile()?.profile_pic_url) ||
+    (this.removeBusinessBanner() && !!(this.profile()?.business_banner_url || (this.profile() as any)?.primary_business_banner_url))
+  );
     
   readonly registeredDevices = signal<any[]>([]);
   readonly loadingDevices = signal<boolean>(false);
@@ -309,11 +318,20 @@ export class ProfileViewComponent implements OnInit {
           this.profileService.clearDistricts();
         }
 
-        if (p.profile_pic_url && !this.selectedPhotoUrl()) {
-          this.selectedPhotoUrl.set(p.profile_pic_url);
+        if (p.profile_pic_url) {
+          if (!this.selectedPhotoFile() && !this.removeProfilePic()) {
+            this.selectedPhotoUrl.set(p.profile_pic_url);
+          }
+        } else if (!this.selectedPhotoFile()) {
+          this.selectedPhotoUrl.set(null);
         }
-        if (p.business_banner_url && !this.selectedBusinessBannerUrl()) {
-          this.selectedBusinessBannerUrl.set(p.business_banner_url);
+
+        if (p.business_banner_url) {
+          if (!this.selectedBusinessBannerFile() && !this.removeBusinessBanner()) {
+            this.selectedBusinessBannerUrl.set(p.business_banner_url);
+          }
+        } else if (!this.selectedBusinessBannerFile()) {
+          this.selectedBusinessBannerUrl.set(null);
         }
 
         untracked(() => {
@@ -453,11 +471,28 @@ export class ProfileViewComponent implements OnInit {
       if (role === 'confirm' && data) {
         this.selectedPhotoFile.set(data.file);
         this.selectedPhotoUrl.set(data.base64);
+        this.removeProfilePic.set(false);
         this.toastService.showSuccess('📸 Profile picture adjusted & cropped successfully!');
       }
 
       input.value = '';
     }
+  }
+
+  async onRemovePhoto(): Promise<void> {
+    const confirmed = await this.confirmAction(
+      'Remove Profile Picture',
+      'Are you sure you want to remove your profile picture?',
+      'Remove'
+    );
+    if (!confirmed) return;
+
+    this.selectedPhotoFile.set(null);
+    this.selectedPhotoUrl.set(null);
+    this.removeProfilePic.set(true);
+    const input = document.getElementById('profileFile') as HTMLInputElement;
+    if (input) input.value = '';
+    this.toastService.showSuccess('Profile picture removed. Tap Save Profile to apply.');
   }
 
   async onBusinessBannerSelected(event: Event): Promise<void> {
@@ -490,11 +525,28 @@ export class ProfileViewComponent implements OnInit {
       if (role === 'confirm' && data) {
         this.selectedBusinessBannerFile.set(data.file);
         this.selectedBusinessBannerUrl.set(data.base64);
+        this.removeBusinessBanner.set(false);
         this.toastService.showSuccess('📸 Brand banner adjusted & cropped successfully!');
       }
 
       input.value = '';
     }
+  }
+
+  async onRemoveBusinessBanner(): Promise<void> {
+    const confirmed = await this.confirmAction(
+      'Remove Brand Banner',
+      'Are you sure you want to remove your brand banner?',
+      'Remove'
+    );
+    if (!confirmed) return;
+
+    this.selectedBusinessBannerFile.set(null);
+    this.selectedBusinessBannerUrl.set(null);
+    this.removeBusinessBanner.set(true);
+    const input = document.getElementById('businessBannerFile') as HTMLInputElement;
+    if (input) input.value = '';
+    this.toastService.showSuccess('Brand banner removed. Tap Save Profile to apply.');
   }
 
   getInitials(name?: string | null): string {
@@ -513,8 +565,10 @@ export class ProfileViewComponent implements OnInit {
     let payload: any;
     const photoFile = this.selectedPhotoFile();
     const bannerFile = this.selectedBusinessBannerFile();
+    const removePic = this.removeProfilePic() && !photoFile;
+    const removeBanner = this.removeBusinessBanner() && !bannerFile;
 
-    if (photoFile || bannerFile) {
+    if (photoFile || bannerFile || removePic || removeBanner) {
       const formData = new FormData();
       formData.append('full_name', formVal.full_name);
       formData.append('phone', formVal.phone || this.profile()?.phone || '');
@@ -538,6 +592,8 @@ export class ProfileViewComponent implements OnInit {
       }
       if (photoFile) formData.append('profile_pic', photoFile, photoFile.name || 'profile.jpg');
       if (bannerFile) formData.append('business_banner', bannerFile, bannerFile.name || 'banner.jpg');
+      if (removePic) formData.append('remove_profile_pic', 'true');
+      if (removeBanner) formData.append('remove_business_banner', 'true');
       payload = formData;
     } else {
       payload = {
@@ -571,6 +627,8 @@ export class ProfileViewComponent implements OnInit {
       next: () => {
         this.selectedPhotoFile.set(null);
         this.selectedBusinessBannerFile.set(null);
+        this.removeProfilePic.set(false);
+        this.removeBusinessBanner.set(false);
         this.activeEditSection.set(null);
       },
       error: (err) => {
@@ -643,6 +701,8 @@ export class ProfileViewComponent implements OnInit {
       this.selectedPhotoUrl.set(p.profile_pic_url || null);
       this.selectedBusinessBannerFile.set(null);
       this.selectedBusinessBannerUrl.set(p.business_banner_url || null);
+      this.removeProfilePic.set(false);
+      this.removeBusinessBanner.set(false);
     }
   }
 

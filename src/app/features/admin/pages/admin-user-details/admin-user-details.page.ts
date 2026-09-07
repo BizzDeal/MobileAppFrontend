@@ -31,7 +31,6 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
   private readonly alertCtrl = inject(AlertController);
 
   activeTab: 'personal' | 'business' = 'personal';
-  toggleFeaturedLoading = false;
   toggleTopLoading = false;
 
   goBack() {
@@ -96,6 +95,36 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
   async confirmAction(action: 'approve' | 'reject' | 'suspend' | 'delete') {
     if (!this.user) return;
     
+    if (action === 'reject') {
+      const alert = await this.alertCtrl.create({
+        header: 'Reject Member',
+        message: `Please enter the reason for rejecting ${this.user.full_name}.`,
+        inputs: [
+          {
+            name: 'reason',
+            type: 'textarea',
+            placeholder: 'Enter rejection reason (min 3 characters)...'
+          }
+        ],
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          {
+            text: 'Reject',
+            handler: (data) => {
+              const entered = (data?.reason || '').trim();
+              if (entered.length < 3) {
+                return false;
+              }
+              this.executeAction('reject', entered);
+              return true;
+            }
+          }
+        ]
+      });
+      await alert.present();
+      return;
+    }
+
     const actionText = action.charAt(0).toUpperCase() + action.slice(1);
     const confirmed = window.confirm(`Are you sure you want to ${action} ${this.user.full_name}?`);
     
@@ -104,7 +133,7 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
     }
   }
 
-  private executeAction(action: 'approve' | 'reject' | 'suspend' | 'delete') {
+  private executeAction(action: 'approve' | 'reject' | 'suspend' | 'delete', reason?: string) {
     if (!this.user) return;
     
     let obs$: import('rxjs').Observable<import('../../models/admin-user.model').ApiResponse<any>> | undefined;
@@ -113,7 +142,7 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
         obs$ = this.adminUsersService.approveMember(this.user.id);
         break;
       case 'reject':
-        obs$ = this.adminUsersService.rejectMember(this.user.id);
+        obs$ = this.adminUsersService.rejectMember(this.user.id, reason || '');
         break;
       case 'suspend':
         obs$ = this.adminUsersService.suspendMember(this.user.id);
@@ -131,6 +160,9 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
       } else {
         if ('status' in (res.data || {}) && this.user) {
           this.user.status = (res.data as any).status;
+          if (action === 'reject' && reason) {
+            (this.user as any).rejection_reason = reason;
+          }
         }
       }
     });
@@ -146,42 +178,6 @@ export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
     }
   }
 
-  async toggleFeatured(): Promise<void> {
-    const businessId = (this.user as any)?.business_id;
-    if (!businessId || this.toggleFeaturedLoading) return;
-
-    const currentFeatured = !!(this.user as any)?.is_featured;
-    const newFeatured = !currentFeatured;
-    const actionText = newFeatured ? 'mark as Featured' : 'unmark from Featured';
-    const businessName = (this.user as any)?.business_name || this.user?.full_name || 'Business';
-
-    const alert = await this.alertCtrl.create({
-      header: 'Confirm Action',
-      message: `Are you sure you want to ${actionText} for "${businessName}"?`,
-      buttons: [
-        { text: 'Cancel', role: 'cancel' },
-        {
-          text: 'Confirm',
-          handler: () => {
-            this.toggleFeaturedLoading = true;
-            this.adminBusinessesService.featureBusiness(businessId, newFeatured).subscribe({
-              next: () => {
-                this.toggleFeaturedLoading = false;
-                if (this.user) {
-                  (this.user as any).is_featured = newFeatured;
-                }
-              },
-              error: () => {
-                this.toggleFeaturedLoading = false;
-              }
-            });
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
 
   async toggleTop(): Promise<void> {
     const businessId = (this.user as any)?.business_id;

@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import {
   IonIcon,
   IonSpinner,
+  IonModal,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -28,9 +29,20 @@ import {
   ribbonOutline,
   gridOutline,
   bagHandleOutline,
+  call,
+  callOutline,
+  logoWhatsapp,
+  globe,
+  globeOutline,
+  informationCircleOutline,
+  locationOutline,
+  mailOutline,
+  personOutline,
+  businessOutline,
+  checkmarkCircle,
 } from 'ionicons/icons';
 import { CategoriesService } from '../../services/categories.service';
-import { BusinessCategoryDTO, OfferDTO } from '../../../home/models/home.model';
+import { BusinessCategoryDTO, CategoryMemberDTO, OfferDTO } from '../../../home/models/home.model';
 import { CategoryFilterType, CategorySortType } from '../../models/category-view.model';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
@@ -44,6 +56,7 @@ import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.uti
     CachedImgDirective,
     IonIcon,
     IonSpinner,
+    IonModal,
   ],
   templateUrl: './categories-view.component.html',
   styleUrls: ['./categories-view.component.scss'],
@@ -55,6 +68,9 @@ export class CategoriesViewComponent implements OnInit {
   readonly categories = this.categoriesService.categories;
   readonly selectedCategoryId = this.categoriesService.selectedCategoryId;
   readonly selectedCategory = this.categoriesService.selectedCategory;
+  readonly selectedCategoryMember = this.categoriesService.selectedCategoryMember;
+  readonly loadingMember = this.categoriesService.loadingMember;
+  readonly userDistrictName = this.categoriesService.userDistrictName;
   readonly filteredOffers = this.categoriesService.filteredOffers;
   readonly loadingCategories = this.categoriesService.loadingCategories;
   readonly loadingOffers = this.categoriesService.loadingOffers;
@@ -64,6 +80,8 @@ export class CategoriesViewComponent implements OnInit {
   readonly searchQuery = this.categoriesService.searchQuery;
 
   readonly claimingOfferId = signal<string | null>(null);
+  readonly isMemberModalOpen = signal<boolean>(false);
+  readonly selectedMemberForModal = signal<CategoryMemberDTO | null>(null);
 
   readonly dealClick = output<OfferDTO>();
   readonly claimOffer = output<OfferDTO>();
@@ -87,12 +105,24 @@ export class CategoriesViewComponent implements OnInit {
       ribbonOutline,
       gridOutline,
       bagHandleOutline,
+      call,
+      callOutline,
+      logoWhatsapp,
+      globe,
+      globeOutline,
+      informationCircleOutline,
+      locationOutline,
+      mailOutline,
+      personOutline,
+      businessOutline,
+      checkmarkCircle,
     });
   }
 
   ngOnInit(): void {
-    this.categoriesService.loadCategories().subscribe();
-    this.categoriesService.loadOffers('ALL').subscribe();
+    const district = this.categoriesService.userDistrict() || undefined;
+    this.categoriesService.loadCategories(district).subscribe();
+    this.categoriesService.loadOffers('ALL', district).subscribe();
   }
 
   onSelectCategory(catId: string): void {
@@ -115,9 +145,10 @@ export class CategoriesViewComponent implements OnInit {
   }
 
   onRefresh(event: any): void {
-    this.categoriesService.loadCategories().subscribe({
+    const district = this.categoriesService.userDistrict() || undefined;
+    this.categoriesService.loadCategories(district).subscribe({
       next: () => {
-        this.categoriesService.loadOffers(this.selectedCategoryId()).subscribe({
+        this.categoriesService.loadOffers(this.selectedCategoryId(), district).subscribe({
           next: () => event?.target?.complete(),
           error: () => event?.target?.complete(),
         });
@@ -145,6 +176,39 @@ export class CategoriesViewComponent implements OnInit {
         this.claimingOfferId.set(null);
       },
     });
+  }
+
+  onCallMember(event: Event, phone?: string): void {
+    event.stopPropagation();
+    if (!phone) return;
+    const cleanPhone = phone.replace(/\s+/g, '');
+    window.open(`tel:${cleanPhone}`, '_system');
+  }
+
+  onWhatsAppMember(event: Event, phone?: string): void {
+    event.stopPropagation();
+    if (!phone) return;
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    window.open(`https://wa.me/${cleanPhone}`, '_system');
+  }
+
+  onWebsiteMember(event: Event, url?: string | null): void {
+    event.stopPropagation();
+    if (!url) return;
+    const targetUrl = url.startsWith('http://') || url.startsWith('https://')
+      ? url
+      : `https://${url}`;
+    window.open(targetUrl, '_blank');
+  }
+
+  openMemberDetails(member: CategoryMemberDTO): void {
+    this.selectedMemberForModal.set(member);
+    this.isMemberModalOpen.set(true);
+  }
+
+  closeMemberDetails(): void {
+    this.isMemberModalOpen.set(false);
+    this.selectedMemberForModal.set(null);
   }
 
   getDiscountBadgeText(deal: OfferDTO): string {

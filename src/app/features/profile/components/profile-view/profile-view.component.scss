@@ -318,6 +318,36 @@
         transform: scale(0.9);
       }
     }
+
+    .remove-avatar-badge {
+      position: absolute;
+      bottom: 2px;
+      left: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--bizzdeal-radius-full);
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 16px;
+      border: none;
+      padding: 0;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 2;
+
+      &:hover {
+        transform: scale(1.08);
+        background: #dc2626;
+      }
+
+      &:active {
+        transform: scale(0.9);
+      }
+    }
   }
 
   .profile-name {
@@ -415,6 +445,45 @@
     gap: var(--bizzdeal-spacing-md, 16px);
     margin-bottom: 1.5rem;
 
+    .brand-media-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+
+      .brand-media-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--bizzdeal-text-primary);
+        margin-bottom: 0;
+      }
+
+      .remove-banner-text-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: transparent;
+        border: none;
+        color: #ef4444;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: all 0.15s ease;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.08);
+          color: #dc2626;
+        }
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+
     .brand-media-label {
       display: block;
       font-size: 12px;
@@ -476,6 +545,39 @@
 
       &:hover {
         transform: scale(1.08);
+      }
+
+      &:active {
+        transform: scale(0.92);
+      }
+    }
+
+    .brand-media-remove-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 50px;
+      width: 34px;
+      height: 34px;
+      background: #ef4444;
+      color: #ffffff;
+      border-radius: var(--bizzdeal-radius-full, 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+      border: none;
+      padding: 0;
+      z-index: 2;
+      transition: all 0.2s ease;
+
+      ion-icon {
+        font-size: 18px;
+      }
+
+      &:hover {
+        transform: scale(1.08);
+        background: #dc2626;
       }
 
       &:active {

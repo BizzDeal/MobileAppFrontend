@@ -85,7 +85,7 @@ export class BusinessDirectoryPage implements OnInit, OnDestroy {
   readonly userRole = this.profileService.userRole;
   readonly profile = this.profileService.profile;
 
-  readonly activeTab = signal<'REGIONAL' | 'GLOBAL'>('REGIONAL');
+  readonly activeTab = signal<'INHOUSE' | 'OUTHOUSE'>('INHOUSE');
   readonly businesses = signal<DirectoryBusinessDTO[]>([]);
   readonly searchQuery = signal<string>('');
   readonly isLoading = signal<boolean>(false);
@@ -144,7 +144,7 @@ export class BusinessDirectoryPage implements OnInit, OnDestroy {
     this.searchSub?.unsubscribe();
   }
 
-  setTab(tab: 'REGIONAL' | 'GLOBAL'): void {
+  setTab(tab: 'INHOUSE' | 'OUTHOUSE'): void {
     if (this.activeTab() === tab) return;
     this.activeTab.set(tab);
     this.loadBusinesses(1, this.searchQuery());
@@ -174,10 +174,12 @@ export class BusinessDirectoryPage implements OnInit, OnDestroy {
       queryParams.push(`q=${encodeURIComponent(search.trim())}`);
     }
 
-    // Regional district filter
+    // Inhouse (district) vs Outhouse (exclude_districts) filter
     const userDistrict = this.profile()?.district_id || this.profile()?.business_district_id;
-    if (this.activeTab() === 'REGIONAL' && userDistrict) {
+    if (this.activeTab() === 'INHOUSE' && userDistrict) {
       queryParams.push(`district=${encodeURIComponent(userDistrict)}`);
+    } else if (this.activeTab() === 'OUTHOUSE' && userDistrict) {
+      queryParams.push(`exclude_districts=${encodeURIComponent(userDistrict)}`);
     }
 
     const myProfile = this.profile();

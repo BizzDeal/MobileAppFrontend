@@ -11,6 +11,19 @@
   <div class="form-container">
     <form [formGroup]="offerForm" (ngSubmit)="onSubmit()" class="bizz-form">
       
+      @if (isEditMode() && offerStatus() === 'REJECTED') {
+        <div class="rejection-alert-banner">
+          <div class="banner-header">
+            <ion-icon name="close-circle-outline" class="banner-icon"></ion-icon>
+            <strong>Offer Rejection Notice</strong>
+          </div>
+          <p class="rejection-reason-text">
+            <strong>Reason:</strong> {{ offerRejectionReason() || 'Please review offer details and update to re-submit.' }}
+          </p>
+          <span class="rejection-subtext">You can edit the details below and save to resubmit this offer for admin approval.</span>
+        </div>
+      }
+
       <div class="form-section">
         <!-- Title -->
         <div class="form-group">
@@ -101,16 +114,6 @@
           <span class="error-message">End Date must be after Start Date.</span>
         }
       </div>
-    </div>
-
-    <!-- Video URL -->
-    <div class="form-group">
-      <label class="form-label" for="video_url">Video URL (YouTube, Instagram) <span class="optional-text">(Optional)</span></label>
-      <div class="input-wrapper">
-        <ion-icon name="globe-outline" class="input-icon"></ion-icon>
-        <ion-input type="url" id="video_url" formControlName="video_url" class="form-input" placeholder="e.g. https://www.youtube.com/..."></ion-input>
-      </div>
-      <div class="error-container"></div>
     </div>
 
     <!-- Image Upload & Preview -->

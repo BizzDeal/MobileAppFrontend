@@ -61,12 +61,14 @@ export class MemberDashboardService {
       vouchers: this.http.get<any>(`${this.apiUrl}/vouchers/my`).pipe(catchError(() => of([]))),
       myOffers: this.http.get<any>(`${this.apiUrl}/offers/my`).pipe(catchError(() => of([]))),
       bizzCoinOffer: this.http.get<any>(`${this.apiUrl}/offers/bizz-coins/my`).pipe(catchError(() => of(null))),
+      featuredRequests: this.http.get<any>(`${this.apiUrl}/featured-business/my`).pipe(catchError(() => of([]))),
       analytics: this.http.get<any>(`${this.apiUrl}/analytics/member/summary`).pipe(catchError(() => of(null)))
     }).pipe(
       map((response: any) => {
-        const { myOffers: offersRes, vouchers: vouchersRes, analytics: analyticsRes, bizzCoinOffer: bizzCoinsRes } = response;
+        const { myOffers: offersRes, vouchers: vouchersRes, analytics: analyticsRes, bizzCoinOffer: bizzCoinsRes, featuredRequests: featRes } = response;
         const rawOffers: OfferDTO[] = Array.isArray(offersRes) ? offersRes : offersRes?.data || offersRes?.items || [];
         const rawVouchers: VoucherDTO[] = Array.isArray(vouchersRes) ? vouchersRes : vouchersRes?.data || vouchersRes?.items || [];
+        const rawFeatured: any[] = Array.isArray(featRes) ? featRes : featRes?.data || featRes?.items || [];
         const backendAnalytics = analyticsRes?.data || {};
 
         const profile = this.profileService.profile();
@@ -171,7 +173,8 @@ export class MemberDashboardService {
             time: v.updated_at || v.created_at
           })),
           myOffers,
-          bizzCoinOffer
+          bizzCoinOffer,
+          featuredRequests: rawFeatured,
         };
 
         return dashboardData;

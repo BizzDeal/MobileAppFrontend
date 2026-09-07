@@ -4,6 +4,7 @@ import { SHOW_SUCCESS_TOAST } from '../../../core/interceptors/interceptor.token
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
+import { FeaturedBusinessRequestDTO } from '../../business/models/featured-business.model';
 
 // Enums from BE
 export enum UserRole {
@@ -121,6 +122,16 @@ export class AdminDashboardService {
       .pipe(map((res: any) => (Array.isArray(res) ? res : res?.data || [])));
   }
 
+  getPendingFeaturedRequests(): Observable<FeaturedBusinessRequestDTO[]> {
+    const params = new HttpParams().set('status', 'PENDING');
+    return this.http
+      .get<FeaturedBusinessRequestDTO[] | { success: boolean; data: FeaturedBusinessRequestDTO[] }>(
+        `${this.apiUrl}/featured-business/admin/requests`,
+        { params }
+      )
+      .pipe(map((res: any) => (Array.isArray(res) ? res : res?.data || [])));
+  }
+
   getPlatformAnalytics(state?: string, district?: string): Observable<AdminAnalyticsDto> {
     let params = new HttpParams();
     if (state) params = params.set('state', state);
@@ -134,15 +145,15 @@ export class AdminDashboardService {
     return this.http.put<{ success: boolean }>(`${this.apiUrl}/users/approve-member`, { memberId: id }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 
-  rejectMember(id: string): Observable<{ success: boolean }> {
-    return this.http.put<{ success: boolean }>(`${this.apiUrl}/users/reject-member`, { memberId: id }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
+  rejectMember(id: string, reason: string): Observable<{ success: boolean }> {
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/users/reject-member`, { memberId: id, reason }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 
   approveOffer(id: string): Observable<{ success: boolean }> {
     return this.http.put<{ success: boolean }>(`${this.apiUrl}/offers/approve`, { offer_id: id }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 
-  rejectOffer(id: string): Observable<{ success: boolean }> {
-    return this.http.put<{ success: boolean }>(`${this.apiUrl}/offers/reject`, { offer_id: id }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
+  rejectOffer(id: string, reason: string): Observable<{ success: boolean }> {
+    return this.http.put<{ success: boolean }>(`${this.apiUrl}/offers/reject`, { offer_id: id, reason }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) });
   }
 }

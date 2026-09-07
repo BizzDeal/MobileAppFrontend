@@ -4,6 +4,22 @@ export type DiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
 export type OfferStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED' | 'INACTIVE';
 export type VoucherStatus = 'ISSUED' | 'REDEEMED' | 'CANCELLED';
 
+export interface CategoryMemberDTO {
+  id: string;
+  name: string;
+  business_name: string;
+  profile_pic_url?: string | null;
+  phone?: string;
+  whatsapp?: string;
+  website?: string | null;
+  address?: string | null;
+  district_name?: string | null;
+  state_name?: string | null;
+  owner_id?: string;
+  initials?: string;
+  description?: string | null;
+}
+
 export interface BusinessCategoryDTO {
   id: string;
   name: string;
@@ -15,6 +31,7 @@ export interface BusinessCategoryDTO {
   // UI presentation fields
   icon?: string;
   color?: string;
+  member?: CategoryMemberDTO | null;
 }
 
 export interface BusinessDTO {
@@ -56,6 +73,7 @@ export interface OfferDTO {
   image_id: string | null;
   video_url?: string | null;
   status: OfferStatus;
+  rejection_reason?: string | null;
   is_featured?: boolean;
   approved_by_id: string | null;
   approved_at: string | null;

@@ -36,6 +36,21 @@
       </div>
     </div>
 
+    @if (profile()?.business_status === 'REJECTED') {
+      <div class="business-rejection-card">
+        <div class="banner-header">
+          <ion-icon name="alert-circle-outline" class="banner-icon"></ion-icon>
+          <strong>Business Profile Rejected</strong>
+        </div>
+        <p class="rejection-text">
+          <strong>Reason:</strong> {{ profile()?.business_rejection_reason || 'Your business profile was rejected. Please review and update details.' }}
+        </p>
+        <button type="button" class="rejection-action-link" (click)="onEditProfile()">
+          Update Business Profile &rarr;
+        </button>
+      </div>
+    }
+
     <section class="business-profile-banner">
       <!-- Background cover image -->
       <div class="banner-bg">
@@ -172,6 +187,13 @@
           <span class="item-label">My Deals</span>
         </button>
 
+        <button type="button" class="fab-slide-item featured-item" (click)="onFeaturedRequest(); closeActionsMenu()">
+          <div class="icon-bubble">
+            <ion-icon name="star-outline"></ion-icon>
+          </div>
+          <span class="item-label">Featured Business</span>
+        </button>
+
         <button type="button" class="fab-slide-item bizz-coins-item" (click)="onBizzCoinsOffer(); closeActionsMenu()">
           <div class="icon-bubble">
             <ion-icon name="ribbon-outline"></ion-icon>
@@ -270,7 +292,7 @@
           <h2 class="section-title">Pending Approvals</h2>
         </div>
       </div>
-      @if (pendingOffers().length> 0) {
+      @if (pendingOffers().length > 0 || pendingFeaturedRequests().length > 0) {
       <div class="pending-list">
         @for (offer of pendingOffers(); track offer.id) {
         <div class="pending-item" (click)="onDealClick(offer)">
@@ -280,7 +302,21 @@
             </div>
             <div class="pending-details">
               <h4 class="pending-title">{{ offer.title }}</h4>
-              <span class="pending-status">Pending Admin Approval</span>
+              <span class="pending-status">Offer • Pending Admin Approval</span>
+            </div>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+        }
+        @for (req of pendingFeaturedRequests(); track req.id) {
+        <div class="pending-item featured" (click)="onFeaturedRequest()">
+          <div class="pending-item-content">
+            <div class="pending-icon-box featured-box">
+              <ion-icon name="star"></ion-icon>
+            </div>
+            <div class="pending-details">
+              <h4 class="pending-title">{{ req.title }}</h4>
+              <span class="pending-status">Featured Request • Pending Admin Approval</span>
             </div>
           </div>
           <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>

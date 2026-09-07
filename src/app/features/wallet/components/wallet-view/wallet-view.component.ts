@@ -39,7 +39,8 @@ import {
   chatbubbleEllipsesOutline,
   storefrontOutline,
   cardOutline,
-  trophyOutline
+  trophyOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 import { WalletService } from '../../services/wallet.service';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
@@ -138,7 +139,8 @@ export class WalletViewComponent {
       chatbubbleEllipsesOutline,
       storefrontOutline,
       cardOutline,
-      trophyOutline
+      trophyOutline,
+      arrowBackOutline
     });
   }
 
@@ -239,6 +241,18 @@ export class WalletViewComponent {
 
   navigateToHistory(): void {
     this.router.navigate(['/wallet/history']);
+  }
+
+  navigateToPointsDetails(): void {
+    this.router.navigate(['/wallet/points']);
+  }
+
+  navigateToWalletDetails(): void {
+    this.router.navigate(['/wallet/balance']);
+  }
+
+  backToHome(): void {
+    this.router.navigate(['/home'], { queryParams: { tab: 'home' } });
   }
 
   navigateToEarnCoins(): void {

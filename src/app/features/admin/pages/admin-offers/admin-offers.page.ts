@@ -193,7 +193,7 @@ export class AdminOffersPage implements OnInit, OnDestroy {
     this.router.navigate(['/admin/offers', offer.id]);
   }
 
-  handleOfferAction(offerId: string, action: 'approve' | 'reject' | 'feature' | 'unfeature', reason?: string, markAsTop?: boolean) {
+  async handleOfferAction(offerId: string, action: 'approve' | 'reject' | 'feature' | 'unfeature', reason?: string, markAsTop?: boolean) {
     if (action === 'feature' || action === 'unfeature') {
       const isFeatured = action === 'feature';
       this.adminBusinessesService.featureOffer(offerId, isFeatured).subscribe(async (res: any) => {
@@ -204,6 +204,36 @@ export class AdminOffersPage implements OnInit, OnDestroy {
           }
         }
       });
+      return;
+    }
+
+    if (action === 'reject' && (!reason || reason.trim().length < 3)) {
+      const alert = await this.alertController.create({
+        header: 'Reject Offer',
+        message: 'Please provide the rejection reason for this offer (min 3 characters):',
+        inputs: [
+          {
+            name: 'reason',
+            type: 'textarea',
+            placeholder: 'Enter rejection reason...',
+          },
+        ],
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          {
+            text: 'Reject',
+            handler: (data) => {
+              const entered = (data?.reason || '').trim();
+              if (entered.length < 3) {
+                return false;
+              }
+              this.handleOfferAction(offerId, 'reject', entered);
+              return true;
+            },
+          },
+        ],
+      });
+      await alert.present();
       return;
     }
 

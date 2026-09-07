@@ -45,8 +45,8 @@
       .user-avatar-wrap {
         width: 38px;
         height: 38px;
-        border-radius: 50%;
-        overflow: hidden;
+        border-radius: 0;
+        overflow: visible;
         background: transparent;
         border: none;
         box-shadow: none;
@@ -58,17 +58,17 @@
         .header-avatar {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
           display: block;
 
           &.app-logo-avatar {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             background: transparent;
             padding: 0;
             display: block;
-            transform: scale(1.2);
+            transform: scale(1.05);
           }
         }
       }

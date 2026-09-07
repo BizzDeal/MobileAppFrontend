@@ -139,6 +139,14 @@ export class MemberRegistrationService {
     }
   }
 
+  removePhoto(): void {
+    this.photoFile = null;
+    this.photoPreview.set(null);
+    const input = document.getElementById('profilePhotoInput') as HTMLInputElement;
+    if (input) input.value = '';
+    this.toastService.showSuccess('Profile photo removed');
+  }
+
   allowNumbersOnly(event: KeyboardEvent): boolean {
     const charCode = event.which ? event.which : event.keyCode;
     if (charCode > 31 && (charCode < 48 || charCode > 57)) {
@@ -182,6 +190,14 @@ export class MemberRegistrationService {
 
       input.value = '';
     }
+  }
+
+  removeBanner(): void {
+    this.bannerFile = null;
+    this.bannerPreview.set(null);
+    const input = document.getElementById('businessBannerInput') as HTMLInputElement;
+    if (input) input.value = '';
+    this.toastService.showSuccess('Brand banner removed');
   }
 
   async submitRegistration(): Promise<void> {

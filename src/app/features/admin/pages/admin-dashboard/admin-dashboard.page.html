@@ -67,66 +67,153 @@
 
   <!-- Action Required Section -->
   <div class="action-required-section">
-    <h2>Action Required Queue</h2>
+    <div class="action-required-header">
+      <h2>Action Required Queue</h2>
+    </div>
 
-    <div class="queues-container">
-      <!-- Pending Members -->
-      <ion-card class="queue-card">
-        <ion-card-header>
-          <ion-card-title>Pending Members</ion-card-title>
-        </ion-card-header>
-        <ion-card-content class="ion-no-padding">
-          @if (pendingMembers$ | async; as members) {
-            @if (members.length> 0) {
-              <ion-list lines="full">
-                @for (member of members; track member) {
-                  <ion-item class="queue-item" button="true" detail="true" (click)="viewMemberApplication(member)">
-                    <ion-label>
-                      <h3>{{ member.full_name || 'Unnamed Member' }}</h3>
-                      <p>{{ member.phone }} &bull; Applied: {{ member.created_at | date:'shortDate' }}</p>
-                    </ion-label>
-                  </ion-item>
-                }
-              </ion-list>
-            } @else {
-              <div class="empty-state">
-                <p>No pending members at this time.</p>
-              </div>
-            }
-          } @else {
-            <ion-progress-bar type="indeterminate"></ion-progress-bar>
-          }
-        </ion-card-content>
-      </ion-card>
+    <!-- Queue Tabs with Numbers -->
+    <ion-segment 
+      [value]="selectedQueueTab()" 
+      (ionChange)="onQueueTabChange($event)" 
+      mode="ios" 
+      class="queue-segment">
+      
+      <ion-segment-button value="members">
+        <div class="tab-btn-content">
+          <span class="tab-label">Members</span>
+          <span class="tab-count-badge" [class.has-items]="pendingMembersCount() > 0">
+            {{ pendingMembersCount() }}
+          </span>
+        </div>
+      </ion-segment-button>
 
-      <!-- Pending Offers -->
-      <ion-card class="queue-card">
-        <ion-card-header>
-          <ion-card-title>Pending Offers</ion-card-title>
-        </ion-card-header>
-        <ion-card-content class="ion-no-padding">
-          @if (pendingOffers$ | async; as offers) {
-            @if (offers.length> 0) {
-              <ion-list lines="full">
-                @for (offer of offers; track offer) {
-                  <ion-item class="queue-item" button="true" detail="true" (click)="viewOfferDetails(offer)">
-                    <ion-label>
-                      <h3>{{ offer.title || 'Untitled Offer' }}</h3>
-                      <p>{{ offer.business?.name || offer.business_name || offer.businessName || 'Unknown Business' }} &bull; Submitted: {{ offer.created_at | date:'shortDate' }}</p>
-                    </ion-label>
-                  </ion-item>
-                }
-              </ion-list>
-            } @else {
-              <div class="empty-state">
-                <p>No pending offers at this time.</p>
+      <ion-segment-button value="offers">
+        <div class="tab-btn-content">
+          <span class="tab-label">Offers</span>
+          <span class="tab-count-badge" [class.has-items]="pendingOffersCount() > 0">
+            {{ pendingOffersCount() }}
+          </span>
+        </div>
+      </ion-segment-button>
+
+      <ion-segment-button value="featured">
+        <div class="tab-btn-content">
+          <span class="tab-label desktop-only">Featured Requests</span>
+          <span class="tab-label mobile-only">Featured</span>
+          <span class="tab-count-badge" [class.has-items]="pendingFeaturedCount() > 0">
+            {{ pendingFeaturedCount() }}
+          </span>
+        </div>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div class="active-queue-container">
+      @switch (selectedQueueTab()) {
+        @case ('members') {
+          <!-- Pending Members Panel -->
+          <ion-card class="queue-card">
+            <ion-card-header>
+              <div class="queue-card-title-row">
+                <ion-card-title>Pending Members</ion-card-title>
+                <span class="queue-badge-count">{{ pendingMembersCount() }} waiting</span>
               </div>
-            }
-          } @else {
-            <ion-progress-bar type="indeterminate"></ion-progress-bar>
-          }
-        </ion-card-content>
-      </ion-card>
+            </ion-card-header>
+            <ion-card-content class="ion-no-padding">
+              @if (pendingMembers(); as members) {
+                @if (members.length > 0) {
+                  <ion-list lines="full">
+                    @for (member of members; track member.id) {
+                      <ion-item class="queue-item" button="true" detail="true" (click)="viewMemberApplication(member)">
+                        <ion-label>
+                          <h3>{{ member.full_name || 'Unnamed Member' }}</h3>
+                          <p>{{ member.phone }} &bull; Applied: {{ member.created_at | date:'shortDate' }}</p>
+                        </ion-label>
+                      </ion-item>
+                    }
+                  </ion-list>
+                } @else {
+                  <div class="empty-state">
+                    <ion-icon name="checkmark-circle-outline" class="empty-icon"></ion-icon>
+                    <p>No pending members at this time.</p>
+                  </div>
+                }
+              } @else {
+                <ion-progress-bar type="indeterminate"></ion-progress-bar>
+              }
+            </ion-card-content>
+          </ion-card>
+        }
+
+        @case ('offers') {
+          <!-- Pending Offers Panel -->
+          <ion-card class="queue-card">
+            <ion-card-header>
+              <div class="queue-card-title-row">
+                <ion-card-title>Pending Offers</ion-card-title>
+                <span class="queue-badge-count">{{ pendingOffersCount() }} waiting</span>
+              </div>
+            </ion-card-header>
+            <ion-card-content class="ion-no-padding">
+              @if (pendingOffers(); as offers) {
+                @if (offers.length > 0) {
+                  <ion-list lines="full">
+                    @for (offer of offers; track offer.id) {
+                      <ion-item class="queue-item" button="true" detail="true" (click)="viewOfferDetails(offer)">
+                        <ion-label>
+                          <h3>{{ offer.title || 'Untitled Offer' }}</h3>
+                          <p>{{ offer.business?.name || offer.business_name || offer.businessName || 'Unknown Business' }} &bull; Submitted: {{ offer.created_at | date:'shortDate' }}</p>
+                        </ion-label>
+                      </ion-item>
+                    }
+                  </ion-list>
+                } @else {
+                  <div class="empty-state">
+                    <ion-icon name="checkmark-circle-outline" class="empty-icon"></ion-icon>
+                    <p>No pending offers at this time.</p>
+                  </div>
+                }
+              } @else {
+                <ion-progress-bar type="indeterminate"></ion-progress-bar>
+              }
+            </ion-card-content>
+          </ion-card>
+        }
+
+        @case ('featured') {
+          <!-- Pending Featured Requests Panel -->
+          <ion-card class="queue-card">
+            <ion-card-header>
+              <div class="queue-card-title-row">
+                <ion-card-title>Pending Featured Requests</ion-card-title>
+                <span class="queue-badge-count">{{ pendingFeaturedCount() }} waiting</span>
+              </div>
+            </ion-card-header>
+            <ion-card-content class="ion-no-padding">
+              @if (pendingFeaturedRequests(); as requests) {
+                @if (requests.length > 0) {
+                  <ion-list lines="full">
+                    @for (request of requests; track request.id) {
+                      <ion-item class="queue-item" button="true" detail="true" (click)="viewFeaturedRequests()">
+                        <ion-label>
+                          <h3>{{ request.title || 'Untitled Featured Request' }}</h3>
+                          <p>{{ request.business?.name || 'Unknown Business' }} &bull; Submitted: {{ request.created_at | date:'shortDate' }}</p>
+                        </ion-label>
+                      </ion-item>
+                    }
+                  </ion-list>
+                } @else {
+                  <div class="empty-state">
+                    <ion-icon name="checkmark-circle-outline" class="empty-icon"></ion-icon>
+                    <p>No pending featured requests at this time.</p>
+                  </div>
+                }
+              } @else {
+                <ion-progress-bar type="indeterminate"></ion-progress-bar>
+              }
+            </ion-card-content>
+          </ion-card>
+        }
+      }
     </div>
   </div>
 

@@ -14,47 +14,49 @@
 
 <div class="profile-container">
 
-  @if (profile() && !loading()) {
+  @if (profile() && !loading() && (userRole() === 'MEMBER' || isIncompleteProfile())) {
     <div class="stats-completion-group">
-      <!-- Profile Stats Banner (3 KPIs) -->
-      <div class="profile-stats-card bd-card">
-        <!-- 1. Store Visits (Member) / Stores Visited (Customer) -->
-        <div class="stat-tile">
-          <div class="stat-icon-wrapper stores-icon">
-            <ion-icon name="storefront-outline"></ion-icon>
+      <!-- Profile Stats Banner (3 KPIs) — Member Only (Customer stats moved to Home Page) -->
+      @if (userRole() === 'MEMBER') {
+        <div class="profile-stats-card bd-card">
+          <!-- 1. Store Visits -->
+          <div class="stat-tile">
+            <div class="stat-icon-wrapper stores-icon">
+              <ion-icon name="storefront-outline"></ion-icon>
+            </div>
+            <div class="stat-meta">
+              <span class="stat-number">{{ userStats().stores_visited }}</span>
+              <span class="stat-title">Store Visits</span>
+            </div>
           </div>
-          <div class="stat-meta">
-            <span class="stat-number">{{ userStats().stores_visited }}</span>
-            <span class="stat-title">{{ userRole() === 'MEMBER' ? 'Store Visits' : 'Stores Visited' }}</span>
+
+          <div class="stat-divider"></div>
+
+          <!-- 2. Customers Dealt -->
+          <div class="stat-tile">
+            <div class="stat-icon-wrapper customers-icon">
+              <ion-icon name="people-outline"></ion-icon>
+            </div>
+            <div class="stat-meta">
+              <span class="stat-number">{{ userStats().customers_dealt }}</span>
+              <span class="stat-title">Customers Dealt</span>
+            </div>
+          </div>
+
+          <div class="stat-divider"></div>
+
+          <!-- 3. Profit Gained -->
+          <div class="stat-tile">
+            <div class="stat-icon-wrapper profit-icon">
+              <ion-icon name="cash-outline"></ion-icon>
+            </div>
+            <div class="stat-meta">
+              <span class="stat-number">₹{{ userStats().profit_gained | number:'1.0-0' }}</span>
+              <span class="stat-title">Profit Gained</span>
+            </div>
           </div>
         </div>
-
-        <div class="stat-divider"></div>
-
-        <!-- 2. Customers Dealt (Member) / Deals Availed (Customer) -->
-        <div class="stat-tile">
-          <div class="stat-icon-wrapper customers-icon">
-            <ion-icon [name]="userRole() === 'MEMBER' ? 'people-outline' : 'ticket-outline'"></ion-icon>
-          </div>
-          <div class="stat-meta">
-            <span class="stat-number">{{ userStats().customers_dealt }}</span>
-            <span class="stat-title">{{ userRole() === 'MEMBER' ? 'Customers Dealt' : 'Deals Availed' }}</span>
-          </div>
-        </div>
-
-        <div class="stat-divider"></div>
-
-        <!-- 3. Profit Gained (Member revenue / Customer savings) -->
-        <div class="stat-tile">
-          <div class="stat-icon-wrapper profit-icon">
-            <ion-icon name="cash-outline"></ion-icon>
-          </div>
-          <div class="stat-meta">
-            <span class="stat-number">₹{{ userStats().profit_gained | number:'1.0-0' }}</span>
-            <span class="stat-title">Profit Gained</span>
-          </div>
-        </div>
-      </div>
+      }
 
       <!-- Option 2: Slim Completion Chip (Only if incomplete) -->
       @if (isIncompleteProfile()) {
@@ -89,6 +91,17 @@
         <input type="file" id="profileFile" accept="image/*" (change)="onPhotoSelected($event)"
           style="display: none;" />
       </label>
+
+      @if (selectedPhotoUrl()) {
+        <button
+          type="button"
+          class="remove-avatar-badge"
+          (click)="onRemovePhoto()"
+          title="Remove Profile Picture"
+          aria-label="Remove Profile Picture">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      }
     </div>
     <h2 class="profile-name">{{ profile()?.full_name }}</h2>
     <span class="profile-role">{{ userRole() }}</span>
@@ -311,7 +324,20 @@
       <div class="brand-media-section">
         <!-- Brand Banner (16:9 Rectangle) -->
         <div class="brand-banner-picker-wrapper">
-          <span class="brand-media-label">Brand Banner</span>
+          <div class="brand-media-header">
+            <span class="brand-media-label">Brand Banner</span>
+            @if (selectedBusinessBannerUrl()) {
+              <button
+                type="button"
+                class="remove-banner-text-btn"
+                (click)="onRemoveBusinessBanner()"
+                title="Remove Brand Banner"
+                aria-label="Remove Brand Banner">
+                <ion-icon name="trash-outline"></ion-icon>
+                <span>Remove Banner</span>
+              </button>
+            }
+          </div>
           <div class="brand-banner-picker">
             <img loading="lazy" [appCachedImg]="selectedBusinessBannerUrl()" [fallbackName]="profileForm.value.business_name || profile()?.business_name || 'My Business'" alt="Brand Banner Preview" class="brand-banner-img" />
             <div class="brand-banner-overlay"></div>
@@ -319,6 +345,16 @@
               <ion-icon name="camera-outline"></ion-icon>
               <input type="file" id="businessBannerFile" accept="image/*" (change)="onBusinessBannerSelected($event)" style="display: none;" />
             </label>
+            @if (selectedBusinessBannerUrl()) {
+              <button
+                type="button"
+                class="brand-media-remove-badge"
+                (click)="onRemoveBusinessBanner()"
+                title="Remove Brand Banner"
+                aria-label="Remove Brand Banner">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            }
           </div>
         </div>
       </div>
@@ -576,35 +612,6 @@
         <span class="meta-label">Last Updated</span>
         <span class="meta-value">{{ profile()?.updated_at | date:'short' }}</span>
       </div>
-
-      @if (userRole() === 'CUSTOMER' && profile()?.primary_business_name) {
-      <div class="meta-row" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bizzdeal-border-color); flex-direction: column; align-items: flex-start; gap: 8px;">
-        <span class="meta-label" style="display: flex; align-items: center; gap: 5px; width: 100%;">
-          <ion-icon name="business-outline" style="color: var(--bizzdeal-primary);"></ion-icon>
-          Primary Business Details
-        </span>
-        <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 24px; width: 100%;">
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: var(--bizzdeal-text-muted); font-size: 0.9em;">Name:</span>
-            <span style="font-weight: 600; color: var(--bizzdeal-text-color);">{{ profile()?.primary_business_name }}</span>
-          </div>
-          @if (profile()?.primary_business_category_name) {
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: var(--bizzdeal-text-muted); font-size: 0.9em;">Category:</span>
-            <span style="font-weight: 500; color: var(--bizzdeal-text-color);">{{ profile()?.primary_business_category_name }}</span>
-          </div>
-          }
-          @if (profile()?.primary_business_state_name) {
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: var(--bizzdeal-text-muted); font-size: 0.9em;">Location:</span>
-            <span style="font-weight: 500; color: var(--bizzdeal-text-color);">
-              {{ profile()?.primary_business_district_name ? profile()?.primary_business_district_name + ', ' : '' }}{{ profile()?.primary_business_state_name }}
-            </span>
-          </div>
-          }
-        </div>
-      </div>
-      }
     </div>
 
     <!-- 3b. Registered Devices Section -->

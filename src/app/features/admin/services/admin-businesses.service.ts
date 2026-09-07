@@ -32,8 +32,12 @@ export class AdminBusinessesService {
     );
   }
 
-  updateBusinessStatus(id: string, status: BusinessStatus): Observable<ApiResponse<AdminBusiness>> {
-    return this.http.patch<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/${id}/status`, { status }, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
+  updateBusinessStatus(id: string, status: BusinessStatus, reason?: string): Observable<ApiResponse<AdminBusiness>> {
+    const payload: { status: BusinessStatus; reason?: string } = { status };
+    if (status === BusinessStatus.REJECTED && reason) {
+      payload.reason = reason;
+    }
+    return this.http.patch<ApiResponse<AdminBusiness>>(`${this.apiUrl}/businesses/${id}/status`, payload, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).pipe(
       catchError(err => {
         throw new Error(extractFriendlyErrorMessage(err, 'Failed to update business status'));
       })

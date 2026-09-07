@@ -16,20 +16,32 @@
 
     <!-- Upload Profile Photo Placeholder -->
     <div class="photo-upload-section" style="margin-bottom: 24px;">
-      <label class="photo-upload-circle" for="profilePhotoInput">
+      <div class="photo-upload-wrapper">
+        <label class="photo-upload-circle" for="profilePhotoInput">
+          @if (regService.photoPreview()) {
+            <img loading="lazy" [appCachedImg]="regService.photoPreview()" alt="Profile preview" class="preview-img" />
+          } @else {
+            <ion-icon name="camera-outline" class="camera-icon"></ion-icon>
+          }
+          <input
+            type="file"
+            id="profilePhotoInput"
+            accept="image/*"
+            (change)="regService.onFileSelected($event)"
+            class="hidden-input"
+          />
+        </label>
         @if (regService.photoPreview()) {
-          <img loading="lazy" [appCachedImg]="regService.photoPreview()" alt="Profile preview" class="preview-img" />
-        } @else {
-          <ion-icon name="camera-outline" class="camera-icon"></ion-icon>
+          <button
+            type="button"
+            class="remove-photo-badge"
+            (click)="regService.removePhoto()"
+            title="Remove Profile Photo"
+            aria-label="Remove Profile Photo">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
         }
-        <input
-          type="file"
-          id="profilePhotoInput"
-          accept="image/*"
-          (change)="regService.onFileSelected($event)"
-          class="hidden-input"
-        />
-      </label>
+      </div>
       <span class="photo-upload-label">Upload Profile Photo</span>
     </div>
 
@@ -173,7 +185,20 @@
 
       <!-- Brand Banner (Rectangular 16:9 Upload with Preview) -->
       <div class="logo-upload-section">
-        <label class="input-label">Brand Banner</label>
+        <div class="banner-header-row">
+          <label class="input-label">Brand Banner</label>
+          @if (regService.bannerPreview()) {
+            <button
+              type="button"
+              class="remove-banner-btn"
+              (click)="regService.removeBanner()"
+              title="Remove Brand Banner"
+              aria-label="Remove Brand Banner">
+              <ion-icon name="trash-outline"></ion-icon>
+              <span>Remove</span>
+            </button>
+          }
+        </div>
         <label class="logo-upload-rect" for="businessBannerInput">
           @if (regService.bannerPreview()) {
             <img loading="lazy" [appCachedImg]="regService.bannerPreview()" alt="Brand Banner preview" class="preview-img" />

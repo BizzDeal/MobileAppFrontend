@@ -18,16 +18,16 @@
       <button
         type="button"
         class="roster-tab-btn"
-        [class.active]="activeTab() === 'REGIONAL'"
-        (click)="setTab('REGIONAL')">
-        REGIONAL
+        [class.active]="activeTab() === 'INHOUSE'"
+        (click)="setTab('INHOUSE')">
+        INHOUSE
       </button>
       <button
         type="button"
         class="roster-tab-btn"
-        [class.active]="activeTab() === 'GLOBAL'"
-        (click)="setTab('GLOBAL')">
-        GLOBAL SEARCH
+        [class.active]="activeTab() === 'OUTHOUSE'"
+        (click)="setTab('OUTHOUSE')">
+        OUTHOUSE
       </button>
     </div>
 
@@ -104,13 +104,13 @@
               <ion-icon name="search-outline" class="empty-icon"></ion-icon>
             </div>
             <h3>No members found</h3>
-            @if (activeTab() === 'REGIONAL') {
-              <p>No members found in your region. Switch to <strong>GLOBAL SEARCH</strong> to browse members across all chapters.</p>
-              <button type="button" class="switch-global-btn" (click)="setTab('GLOBAL')">
-                View Global Search
+            @if (activeTab() === 'INHOUSE') {
+              <p>No members found in your district. Switch to <strong>OUTHOUSE</strong> to browse members across other chapters.</p>
+              <button type="button" class="switch-global-btn" (click)="setTab('OUTHOUSE')">
+                View Outhouse Members
               </button>
             } @else {
-              <p>We couldn't find any member matching "{{ searchQuery() }}". Try adjusting your search query.</p>
+              <p>We couldn't find any member in other districts matching "{{ searchQuery() }}". Try adjusting your search query.</p>
             }
           </div>
         }

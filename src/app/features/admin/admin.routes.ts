@@ -43,6 +43,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./pages/admin-offer-details/admin-offer-details.page').then(m => m.AdminOfferDetailsPage),
       },
       {
+        path: 'featured-requests',
+        loadComponent: () => import('./pages/admin-featured-requests/admin-featured-requests.page').then(m => m.AdminFeaturedRequestsPage),
+      },
+      {
         path: 'categories',
         loadComponent: () => import('./pages/admin-categories/admin-categories.page').then(m => m.AdminCategoriesPage),
       },

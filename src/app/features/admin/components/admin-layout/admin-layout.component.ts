@@ -60,6 +60,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     if (url.includes('/admin/businesses')) return 'Manage Businesses';
     if (/\/admin\/offers\/.+/.test(url)) return 'Offer Details';
     if (url.includes('/admin/offers')) return 'Offers & Deals';
+    if (url.includes('/admin/featured-requests')) return 'Featured Requests';
     if (url.includes('/admin/notifications')) return 'Push Notifications';
     if (url.includes('/admin/analytics')) return 'Analytics & Insights';
     if (url.includes('/admin/chat')) return 'Chat';

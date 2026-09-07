@@ -104,23 +104,149 @@
         </button>
       </div>
 
-      <!-- Category Promo Hero Mini-Banner -->
-      <div class="cat-promo-hero">
-        <div class="promo-text-wrap">
-          <span class="promo-badge">
-            <ion-icon name="sparkles-outline" /> Verified Offers
-          </span>
-          <h2 class="promo-title">
-            {{ selectedCategory()?.name || 'Exclusive Deals' }}
-          </h2>
-          <p class="promo-desc">
-            {{ selectedCategory()?.description || 'Discover savings, special discounts and rewards across verified businesses.' }}
-          </p>
+      <!-- Category Promo Hero Mini-Banner (for 'ALL') OR Category Member Card (for specific category) -->
+      @if (selectedCategoryId() === 'ALL') {
+        <div class="cat-promo-hero">
+          <div class="promo-text-wrap">
+            <span class="promo-badge">
+              <ion-icon name="sparkles-outline" /> Verified Offers
+            </span>
+            <h2 class="promo-title">
+              All Categories
+            </h2>
+            <p class="promo-desc">
+              Explore deals & offers from all categories
+            </p>
+          </div>
+          <div class="promo-icon-art">
+            <span class="hero-art-emoji">🛍️</span>
+          </div>
         </div>
-        <div class="promo-icon-art">
-          <span class="hero-art-emoji">{{ selectedCategory()?.icon || '✨' }}</span>
-        </div>
-      </div>
+      } @else {
+        @if (loadingMember()) {
+          <div class="cat-member-card skeleton-card">
+            <div class="member-card-top">
+              <div class="skeleton-avatar"></div>
+              <div class="skeleton-info">
+                <div class="sk-line sk-name"></div>
+                <div class="sk-line sk-biz"></div>
+              </div>
+            </div>
+            <div class="member-actions-row">
+              <div class="skeleton-btn"></div>
+              <div class="skeleton-btn"></div>
+              <div class="skeleton-btn"></div>
+            </div>
+          </div>
+        } @else if (selectedCategoryMember(); as member) {
+          <article class="cat-member-card" (click)="openMemberDetails(member)">
+            <!-- Top Section: Avatar, Member & Biz info, Category badge -->
+            <div class="member-card-top">
+              <div class="member-avatar-box" [style.background]="getAvatarColor(member.business_name || member.name)">
+                @if (member.profile_pic_url) {
+                  <img
+                    [appCachedImg]="member.profile_pic_url"
+                    [fallbackName]="member.name || member.business_name"
+                    [alt]="member.name"
+                    class="member-avatar-img"
+                  />
+                } @else {
+                  <span class="avatar-initials">{{ member.initials || getInitials(member.name || member.business_name) }}</span>
+                }
+                <span class="verified-dot" title="Verified Member">
+                  <ion-icon name="checkmark-circle" />
+                </span>
+              </div>
+
+              <div class="member-text-col">
+                <div class="name-badge-line">
+                  <h3 class="member-name" [title]="member.name">{{ member.name }}</h3>
+                </div>
+                <p class="member-biz-name" [title]="member.business_name">
+                  <ion-icon name="business-outline" class="biz-icon" />
+                  {{ member.business_name }}
+                </p>
+                <div class="member-tags-row">
+                  @if (selectedCategory()?.name) {
+                    <span class="member-cat-tag">
+                      <span class="tag-emoji">{{ selectedCategory()?.icon || '🏷️' }}</span>
+                      {{ selectedCategory()?.name }}
+                    </span>
+                  }
+                  @if (member.district_name || userDistrictName()) {
+                    <span class="member-district-tag" [title]="'District: ' + (member.district_name || userDistrictName())">
+                      <ion-icon name="location-outline" />
+                      {{ member.district_name || userDistrictName() }}
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="member-info-btn"
+                (click)="$event.stopPropagation(); openMemberDetails(member)"
+                aria-label="View member profile"
+                title="View full profile"
+              >
+                <ion-icon name="information-circle-outline" />
+              </button>
+            </div>
+
+            <!-- Bottom Action Row: Call, WhatsApp, Website Buttons -->
+            <div class="member-actions-row">
+              @if (member.phone) {
+                <button
+                  type="button"
+                  class="member-action-btn call-btn"
+                  (click)="onCallMember($event, member.phone)"
+                  aria-label="Call member"
+                >
+                  <ion-icon name="call" />
+                  <span>Call</span>
+                </button>
+              }
+
+              @if (member.whatsapp || member.phone) {
+                <button
+                  type="button"
+                  class="member-action-btn whatsapp-btn"
+                  (click)="onWhatsAppMember($event, member.whatsapp || member.phone)"
+                  aria-label="WhatsApp chat"
+                >
+                  <ion-icon name="logo-whatsapp" />
+                  <span>WhatsApp</span>
+                </button>
+              }
+
+              @if (member.website) {
+                <button
+                  type="button"
+                  class="member-action-btn website-btn"
+                  (click)="onWebsiteMember($event, member.website)"
+                  aria-label="Visit website"
+                >
+                  <ion-icon name="globe" />
+                  <span>Website</span>
+                </button>
+              }
+            </div>
+          </article>
+        } @else {
+          <!-- Empty Member Placeholder (Category has no member yet) -->
+          <div class="cat-empty-member-banner">
+            <div class="empty-member-info">
+              <span class="empty-cat-badge">
+                {{ selectedCategory()?.icon || '🏷️' }} {{ selectedCategory()?.name }}
+              </span>
+              <p class="empty-member-title">No exclusive member assigned</p>
+              <p class="empty-member-sub">
+                No active member in {{ userDistrictName() || 'your district' }} for this category yet.
+              </p>
+            </div>
+          </div>
+        }
+      }
     </div>
 
     <!-- Scrollable Deals Content -->
@@ -228,7 +354,7 @@
             @if (filterType() !== 'ALL') {
               No offers matching the selected filter in this category.
             } @else {
-              No active offers in {{ selectedCategory()?.name || 'this category' }} right now.
+              No active offers in {{ selectedCategory()?.name || 'this category' }}{{ userDistrictName() ? ' for ' + userDistrictName() : '' }} right now.
             }
           </p>
           @if (filterType() !== 'ALL') {
@@ -252,4 +378,114 @@
       }
     </div>
   </section>
+
+  <!-- Member Details Sheet Modal -->
+  <ion-modal [isOpen]="isMemberModalOpen()" (didDismiss)="closeMemberDetails()" class="member-sheet-modal">
+    <ng-template>
+      @if (selectedMemberForModal(); as m) {
+        <div class="member-modal-content">
+          <div class="modal-drag-indicator"></div>
+          <div class="modal-header">
+            <h3 class="modal-title">Member Details</h3>
+            <button type="button" class="modal-close-btn" (click)="closeMemberDetails()" aria-label="Close">
+              <ion-icon name="close-outline" />
+            </button>
+          </div>
+
+          <div class="modal-body-scroll">
+            <div class="modal-profile-hero">
+              <div class="modal-avatar" [style.background]="getAvatarColor(m.business_name || m.name)">
+                @if (m.profile_pic_url) {
+                  <img [appCachedImg]="m.profile_pic_url" [fallbackName]="m.name" [alt]="m.name" />
+                } @else {
+                  <span>{{ m.initials || getInitials(m.name) }}</span>
+                }
+              </div>
+              <h4 class="hero-member-name">{{ m.name }}</h4>
+              <p class="hero-biz-name">{{ m.business_name }}</p>
+              @if (selectedCategory()?.name) {
+                <span class="hero-cat-badge">
+                  {{ selectedCategory()?.icon || '🏷️' }} {{ selectedCategory()?.name }}
+                </span>
+              }
+            </div>
+
+            @if (m.description) {
+              <div class="modal-card">
+                <h5 class="card-sec-title">About Business</h5>
+                <p class="card-sec-desc">{{ m.description }}</p>
+              </div>
+            }
+
+            <div class="modal-card contact-card">
+              <h5 class="card-sec-title">Contact & Location</h5>
+              <div class="contact-list">
+                @if (m.phone) {
+                  <div class="contact-item" (click)="onCallMember($event, m.phone)">
+                    <ion-icon name="call-outline" class="item-icon" />
+                    <div class="item-text">
+                      <span class="label">Phone</span>
+                      <span class="val link-val">{{ m.phone }}</span>
+                    </div>
+                  </div>
+                }
+                @if (m.whatsapp || m.phone) {
+                  <div class="contact-item" (click)="onWhatsAppMember($event, m.whatsapp || m.phone)">
+                    <ion-icon name="logo-whatsapp" class="item-icon wa-icon" />
+                    <div class="item-text">
+                      <span class="label">WhatsApp</span>
+                      <span class="val link-val">{{ m.whatsapp || m.phone }}</span>
+                    </div>
+                  </div>
+                }
+                @if (m.website) {
+                  <div class="contact-item" (click)="onWebsiteMember($event, m.website)">
+                    <ion-icon name="globe-outline" class="item-icon web-icon" />
+                    <div class="item-text">
+                      <span class="label">Website</span>
+                      <span class="val link-val">{{ m.website }}</span>
+                    </div>
+                  </div>
+                }
+                @if (m.address || m.district_name || m.state_name) {
+                  <div class="contact-item">
+                    <ion-icon name="location-outline" class="item-icon" />
+                    <div class="item-text">
+                      <span class="label">Location</span>
+                      <span class="val">
+                        {{ m.address ? m.address + (m.district_name ? ', ' : '') : '' }}
+                        {{ m.district_name ? m.district_name + (m.state_name ? ', ' : '') : '' }}
+                        {{ m.state_name || '' }}
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer-actions">
+            @if (m.phone) {
+              <button type="button" class="foot-btn call" (click)="onCallMember($event, m.phone)">
+                <ion-icon name="call" />
+                <span>Call</span>
+              </button>
+            }
+            @if (m.whatsapp || m.phone) {
+              <button type="button" class="foot-btn whatsapp" (click)="onWhatsAppMember($event, m.whatsapp || m.phone)">
+                <ion-icon name="logo-whatsapp" />
+                <span>WhatsApp</span>
+              </button>
+            }
+            @if (m.website) {
+              <button type="button" class="foot-btn website" (click)="onWebsiteMember($event, m.website)">
+                <ion-icon name="globe" />
+                <span>Website</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </ng-template>
+  </ion-modal>
 </div>

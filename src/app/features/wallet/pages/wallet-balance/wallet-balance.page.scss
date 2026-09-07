@@ -1,0 +1,454 @@
+.page-toolbar {
+  --background: #ffffff;
+  --color: #0f172a;
+  border-bottom: 1px solid #f1f5f9;
+
+  --min-height: 56px;
+
+  .back-btn {
+    --color: #1e293b;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    margin-inline-start: 4px;
+    height: 36px;
+    width: 36px;
+
+    ion-icon {
+      font-size: 19px !important;
+    }
+  }
+
+  ion-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    padding-inline-start: 6px;
+  }
+}
+
+.page-content {
+  --background: #f4f7fb;
+}
+
+.wallet-page-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 540px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* 1. Hero Wallet Card */
+.hero-wallet-card {
+  width: 100%;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #1d6fe9 0%, #1557cd 50%, #0d42a8 100%);
+  padding: 22px 20px 18px;
+  box-sizing: border-box;
+  box-shadow: 0 10px 24px rgba(21, 101, 192, 0.28);
+  display: flex;
+  flex-direction: column;
+
+  .card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .wallet-balance-meta {
+      display: flex;
+      flex-direction: column;
+
+      .wallet-badge-title {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+
+      .wallet-main-amount {
+        margin: 0;
+        color: #ffffff;
+        font-size: 38px;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    .wallet-graphic-wrap {
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .wallet-card-svg {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+      }
+    }
+  }
+
+  .wallet-card-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 18px 0 14px;
+    width: 100%;
+  }
+
+  .card-stats-columns {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .stat-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .stat-col-label {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+      }
+
+      .stat-col-value {
+        font-size: 17px;
+        color: #ffffff;
+        font-weight: 700;
+      }
+    }
+
+    .stat-col-separator {
+      width: 1px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.2);
+      margin: 0 16px;
+    }
+  }
+}
+
+/* 2. Four Action Cards Row / Grid */
+.actions-quad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+
+  .quad-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e0e7ff;
+    padding: 12px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    .quad-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+
+      &.blue-box {
+        background: #eff6ff;
+      }
+      &.cyan-box {
+        background: #ecfeff;
+      }
+      &.green-box {
+        background: #f0fdf4;
+      }
+      &.indigo-box {
+        background: #eef2ff;
+      }
+    }
+
+    .quad-title {
+      margin: 0 0 4px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #1e3a8a;
+      letter-spacing: 0.3px;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .quad-subtitle {
+      margin: 0;
+      font-size: 9px;
+      color: #64748b;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+  }
+}
+
+/* 3. Recent Activity Card */
+.recent-activity-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px 16px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  border: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+
+  .activity-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .activity-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .view-all-link {
+      background: transparent;
+      border: none;
+      color: #2563eb;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 6px;
+
+      &:active {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .activity-items-list {
+    display: flex;
+    flex-direction: column;
+
+    .activity-item-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f8fafc;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .activity-icon-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 20px;
+        flex-shrink: 0;
+
+        &.icon-blue {
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        &.icon-green {
+          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+        &.icon-orange {
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        }
+      }
+
+      .activity-meta {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .activity-name {
+          margin: 0;
+          font-size: 15px;
+          font-weight: 700;
+          color: #0f172a;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .activity-date {
+          font-size: 12px;
+          color: #64748b;
+          font-weight: 500;
+        }
+      }
+
+      .activity-amount-badge {
+        flex-shrink: 0;
+
+        .amount-plus {
+          color: #16a34a;
+          font-size: 16px;
+          font-weight: 800;
+          letter-spacing: -0.3px;
+        }
+
+        .amount-minus {
+          color: #dc2626;
+          font-size: 16px;
+          font-weight: 800;
+          letter-spacing: -0.3px;
+        }
+      }
+    }
+  }
+
+  .empty-activity-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 16px;
+    gap: 6px;
+
+    .empty-icon {
+      font-size: 32px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .empty-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .empty-desc {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.4;
+      max-width: 280px;
+    }
+  }
+}
+
+/* 4. Growth Banner Card */
+.growth-banner-card {
+  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
+  border-radius: 18px;
+  border: 1px solid #bfdbfe;
+  padding: 18px 14px;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  .growth-banner-header {
+    text-align: center;
+
+    .growth-main-title {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #1e3a8a;
+      letter-spacing: 0.5px;
+    }
+
+    .growth-subtitle {
+      margin: 0;
+      font-size: 12px;
+      color: #475569;
+      font-weight: 500;
+    }
+  }
+
+  .growth-diagram-layout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .growth-illustration-wrap {
+      width: 72px;
+      height: 84px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .phone-wallet-svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .steps-flow-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        text-align: center;
+        flex: 1;
+
+        .step-circle {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+
+          &.step-blue {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          }
+          &.step-teal {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+          }
+          &.step-purple {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+          }
+        }
+
+        .step-label {
+          font-size: 9px;
+          font-weight: 700;
+          color: #334155;
+          line-height: 1.2;
+        }
+      }
+
+      .step-arrow {
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 700;
+        margin-top: -14px;
+      }
+    }
+  }
+}

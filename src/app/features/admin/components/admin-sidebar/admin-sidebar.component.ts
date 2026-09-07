@@ -17,7 +17,8 @@ import {
   chatbubblesOutline,
   cardOutline,
   shareSocialOutline,
-  albumsOutline
+  albumsOutline,
+  starOutline
 } from 'ionicons/icons';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
 
@@ -157,6 +158,7 @@ export class AdminSidebarComponent {
     { title: 'Users', url: '/admin/users', icon: 'people' },
     { title: 'Businesses', url: '/admin/businesses', icon: 'business' },
     { title: 'Offers/Deals', url: '/admin/offers', icon: 'pricetags' },
+    { title: 'Featured Requests', url: '/admin/featured-requests', icon: 'star' },
     { title: 'Categories', url: '/admin/categories', icon: 'albums' },
     { title: 'Referrals', url: '/admin/referrals', icon: 'share-social' },
     { title: 'Meetings', url: '/admin/meetings', icon: 'calendar' },
@@ -183,7 +185,8 @@ export class AdminSidebarComponent {
       chatbubblesOutline,
       cardOutline,
       shareSocialOutline,
-      albumsOutline
+      albumsOutline,
+      starOutline
     });
   }
 

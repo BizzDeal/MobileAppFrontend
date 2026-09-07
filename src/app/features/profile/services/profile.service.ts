@@ -166,6 +166,7 @@ export class ProfileService {
             primary_business_category_name: p.primary_business_category_name || (currentUser as any)?.primary_business_category_name || null,
             primary_business_state_name: p.primary_business_state_name || (currentUser as any)?.primary_business_state_name || null,
             primary_business_district_name: p.primary_business_district_name || (currentUser as any)?.primary_business_district_name || null,
+            primary_business_banner_url: p.primary_business_banner_url || (currentUser as any)?.primary_business_banner_url || null,
             is_profile_completed: p.is_profile_completed,
             completion_score: p.completion_score,
             grade: p.grade,
@@ -246,9 +247,13 @@ export class ProfileService {
           this._profile.set(updated);
           if (updated.profile_pic_url) {
             this.imageCache.invalidateImage(updated.profile_pic_url);
+          } else if (currentProfile?.profile_pic_url) {
+            this.imageCache.invalidateImage(currentProfile.profile_pic_url);
           }
           if (updated.business_banner_url) {
             this.imageCache.invalidateImage(updated.business_banner_url);
+          } else if (currentProfile?.business_banner_url) {
+            this.imageCache.invalidateImage(currentProfile.business_banner_url);
           }
           const cu = this.authSession.currentUser();
           if (cu) {
@@ -265,7 +270,7 @@ export class ProfileService {
               ...((updated.business_description ? { business_description: updated.business_description } : {}) as any),
               ...((updated.website ? { website: updated.website } : {}) as any),
               ...((updated.gst_number ? { gst_number: updated.gst_number } : {}) as any),
-              ...((updated.business_banner_url ? { business_banner_url: updated.business_banner_url } : {}) as any),
+              business_banner_url: updated.business_banner_url || undefined,
               ...((updated.category_id ? { category_id: updated.category_id } : {}) as any),
               is_profile_completed: updated.is_profile_completed,
               completion_score: updated.completion_score,

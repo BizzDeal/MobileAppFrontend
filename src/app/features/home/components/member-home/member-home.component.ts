@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, compu
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner, NavController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline, paperPlaneOutline, trophy, peopleOutline, locationOutline } from 'ionicons/icons';
+import { addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline, paperPlaneOutline, trophy, peopleOutline, locationOutline, starOutline, star, alertCircleOutline } from 'ionicons/icons';
 import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
 import { MemberDashboardService } from '../../services/member-dashboard.service';
 
@@ -18,6 +18,8 @@ import { WalletService } from '../../../wallet/services/wallet.service';
 
 import { DashboardSkeletonComponent } from '../../../../shared/components/skeletons/dashboard-skeleton/dashboard-skeleton.component';
 import { MemberHomeHeaderComponent } from '../member-home-header/member-home-header.component';
+import { FeaturedBusinessService } from '../../../business/services/featured-business.service';
+import { FeaturedBusinessRequestDTO } from '../../../business/models/featured-business.model';
 
 import { AppSocketService } from '../../../../core/services/app-socket.service';
 import { DestroyRef } from '@angular/core';
@@ -51,6 +53,7 @@ export class MemberHomeComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly appSocket = inject(AppSocketService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly featuredService = inject(FeaturedBusinessService);
 
   readonly dashboardData = this.dashboardService.dashboardData;
   readonly profile = this.profileService.profile;
@@ -60,6 +63,19 @@ export class MemberHomeComponent implements OnInit {
   readonly unreadCount = this.notificationService.unreadCount;
 
   readonly isActionsMenuOpen = signal(false);
+  readonly pendingFeaturedRequests = computed(() =>
+    this.dashboardData()?.featuredRequests?.filter((r) => r.status === 'PENDING') || []
+  );
+
+  constructor() {
+    addIcons({
+      addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline,
+      checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline,
+      barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline,
+      videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline,
+      paperPlaneOutline, trophy, peopleOutline, locationOutline, starOutline, star, alertCircleOutline
+    });
+  }
 
   getAvatarColor(name?: string | null): string {
     return getAvatarColor(name);
@@ -69,6 +85,7 @@ export class MemberHomeComponent implements OnInit {
     this.dashboardService.loadDashboardData().subscribe();
     this.meetingsService.loadMeetings().subscribe();
     this.walletService.loadWalletData().subscribe();
+    this.loadPendingFeaturedRequests();
     this.appSocket.connect();
 
     this.appSocket.onEvent('OFFER_STATUS_UPDATED')
@@ -83,10 +100,33 @@ export class MemberHomeComponent implements OnInit {
           if (payload.status === 'APPROVED') {
             this.toastService.showSuccess(`🎉 Your ${payload.offer_type === 'BIZZ_COINS' ? 'Bizz Coin offer' : 'offer'} "${payload.title || ''}" was approved by Admin!`);
           } else if (payload.status === 'REJECTED') {
-            this.toastService.showError(`Your ${payload.offer_type === 'BIZZ_COINS' ? 'Bizz Coin offer' : 'offer'} request was rejected by Admin.`);
+            const reasonText = payload.reason ? `: "${payload.reason}"` : '.';
+            this.toastService.showError(`Your ${payload.offer_type === 'BIZZ_COINS' ? 'Bizz Coin offer' : 'offer'} request was rejected by Admin${reasonText}`);
           }
         }
       });
+
+    this.appSocket.onEvent('FEATURED_REQUEST_STATUS_UPDATED')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((evt: any) => {
+        const payload = evt?.payload;
+        if (payload) {
+          this.loadPendingFeaturedRequests();
+          this.profileService.loadProfile().subscribe();
+          this.notificationService.getNotifications().subscribe();
+
+          if (payload.status === 'APPROVED') {
+            this.toastService.showSuccess(`🌟 Your Featured Business request "${payload.title || ''}" was approved by Admin!`);
+          } else if (payload.status === 'REJECTED') {
+            const reasonText = payload.reason ? `: "${payload.reason}"` : '.';
+            this.toastService.showError(`Your Featured Business request was rejected by Admin${reasonText}`);
+          }
+        }
+      });
+  }
+
+  loadPendingFeaturedRequests() {
+    this.dashboardService.loadDashboardData().subscribe();
   }
 
 
@@ -120,7 +160,7 @@ export class MemberHomeComponent implements OnInit {
   });
 
   readonly canRedeemBizzCoins = computed(() => {
-    return this.isBusinessFeatured() || this.hasActiveBizzCoinOffer();
+    return this.hasActiveBizzCoinOffer();
   });
 
   readonly pendingOffers = computed(() =>
@@ -132,11 +172,6 @@ export class MemberHomeComponent implements OnInit {
     const now = new Date();
     return all.filter(m => new Date(m.meeting_date) >= now && m.status !== 'CANCELLED');
   });
-
-    
-  constructor() {
-    addIcons({ addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline, checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline, barChartOutline, flashOutline, closeOutline, ribbonOutline, walletOutline, sparklesOutline, videocamOutline, trendingUpOutline, pricetagOutline, chatbubblesOutline, globeOutline, paperPlaneOutline, trophy, peopleOutline, locationOutline });
-  }
 
   toggleActionsMenu() {
     this.isActionsMenuOpen.update(v => !v);
@@ -169,6 +204,10 @@ export class MemberHomeComponent implements OnInit {
     this.router.navigate(['/videos/new']);
   }
 
+  onEditProfile() {
+    this.router.navigate(['/profile']);
+  }
+
   onOpenChat() {
     this.chatClick.emit();
   }
@@ -183,6 +222,14 @@ export class MemberHomeComponent implements OnInit {
 
   onViewMyDeals() {
     this.router.navigate(['/offers/my-deals']);
+  }
+
+  onFeaturedRequest() {
+    if (this.profile()?.status === 'PENDING') {
+      this.toastService.showError('Pending members cannot request featured business');
+      return;
+    }
+    this.router.navigate(['/business/featured-request']);
   }
 
   onBizzCoinsOffer() {

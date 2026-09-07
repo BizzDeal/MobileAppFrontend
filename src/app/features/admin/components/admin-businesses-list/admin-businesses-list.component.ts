@@ -213,13 +213,6 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
             label: 'Mark as Top Business',
             value: 'is_top',
             checked: false
-          },
-          {
-            name: 'is_featured',
-            type: 'checkbox',
-            label: 'Mark as Featured Business',
-            value: 'is_featured',
-            checked: false
           }
         ],
         buttons: [
@@ -231,7 +224,6 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
             text: 'Approve',
             handler: (data: string[]) => {
               const markTop = data && data.includes('is_top');
-              const markFeatured = data && data.includes('is_featured');
 
               this.adminBusinessesService.updateBusinessStatus(business.id, BusinessStatus.ACTIVE).subscribe({
                 next: (res) => {
@@ -240,11 +232,6 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
                     if (markTop) {
                       this.adminBusinessesService.topBusiness(business.id, true).subscribe(topRes => {
                         if (topRes.success) business.is_top = true;
-                      });
-                    }
-                    if (markFeatured) {
-                      this.adminBusinessesService.featureBusiness(business.id, true).subscribe(featRes => {
-                        if (featRes.success) business.is_featured = true;
                       });
                     }
                     this.filterBusinesses();
@@ -259,6 +246,50 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
         ]
       });
 
+      await alert.present();
+      return;
+    }
+
+    if (status === BusinessStatus.REJECTED) {
+      const alert = await this.alertController.create({
+        header: 'Reject Business',
+        message: `Enter rejection reason for "${business.name}" (min 3 characters):`,
+        inputs: [
+          {
+            name: 'reason',
+            type: 'textarea',
+            placeholder: 'Rejection reason...',
+          },
+        ],
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+          },
+          {
+            text: 'Reject',
+            handler: (data) => {
+              const entered = (data?.reason || '').trim();
+              if (entered.length < 3) {
+                return false;
+              }
+              this.adminBusinessesService.updateBusinessStatus(business.id, BusinessStatus.REJECTED, entered).subscribe({
+                next: (res) => {
+                  if (res.success) {
+                    business.status = BusinessStatus.REJECTED;
+                    (business as any).rejection_reason = entered;
+                    this.filterBusinesses();
+                  }
+                },
+                error: (err) => {
+                  // Handled by interceptor
+                },
+              });
+              return true;
+            },
+          },
+        ],
+      });
       await alert.present();
       return;
     }
@@ -293,39 +324,6 @@ export class AdminBusinessesListComponent implements OnInit, OnChanges {
     await alert.present();
   }
 
-  async toggleFeature(business: AdminBusiness) {
-    const newFeaturedStatus = !business.is_featured;
-    const actionText = newFeaturedStatus ? 'feature' : 'unfeature';
-    
-    const alert = await this.alertController.create({
-      header: 'Confirm Action',
-      message: `Are you sure you want to ${actionText} ${business.name}?`,
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        },
-        {
-          text: 'Confirm',
-          handler: () => {
-            this.adminBusinessesService.featureBusiness(business.id, newFeaturedStatus).subscribe({
-              next: (res) => {
-                if (res.success) {
-                  business.is_featured = newFeaturedStatus;
-                  this.loadBusinesses();
-                }
-              },
-              error: (err) => {
-                // Handled by interceptor
-              }
-            });
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
 
   async toggleTop(business: AdminBusiness) {
     const newTopStatus = !business.is_top;

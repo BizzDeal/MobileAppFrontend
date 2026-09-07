@@ -110,34 +110,6 @@ export class AdminBusinessDetailsPage implements OnInit {
     this.activeTab = tab;
   }
 
-  async toggleFeatured() {
-    if (!this.business) return;
-    if (this.business.status !== BusinessStatus.ACTIVE) return;
-    
-    const newStatus = !this.business.is_featured;
-    const actionText = newStatus ? 'feature' : 'unfeature';
-
-    const alert = await this.alertController.create({
-      header: 'Confirm Action',
-      message: `Are you sure you want to ${actionText} "${this.business.name}"?`,
-      buttons: [
-        { text: 'Cancel', role: 'cancel' },
-        {
-          text: 'Confirm',
-          handler: () => {
-            this.adminBusinessesService.featureBusiness(this.business!.id, newStatus).subscribe(res => {
-              if (res.success) {
-                this.business!.is_featured = newStatus;
-              }
-            });
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
   async toggleTop() {
     if (!this.business) return;
     if (this.business.status !== BusinessStatus.ACTIVE) return;
@@ -170,7 +142,7 @@ export class AdminBusinessDetailsPage implements OnInit {
     if (!this.business) return;
 
     if (newStatus === BusinessStatus.ACTIVE) {
-      // Approving business: provide options to mark as Top / Featured
+      // Approving business: provide options to mark as Top Business
       const alert = await this.alertController.create({
         header: 'Approve Business',
         message: `Approve "${this.business.name}" to make it active on the platform.`,
@@ -181,13 +153,6 @@ export class AdminBusinessDetailsPage implements OnInit {
             label: 'Mark as Top Business',
             value: 'is_top',
             checked: false
-          },
-          {
-            name: 'is_featured',
-            type: 'checkbox',
-            label: 'Mark as Featured Business',
-            value: 'is_featured',
-            checked: false
           }
         ],
         buttons: [
@@ -196,7 +161,6 @@ export class AdminBusinessDetailsPage implements OnInit {
             text: 'Approve',
             handler: (data: string[]) => {
               const markTop = data && data.includes('is_top');
-              const markFeatured = data && data.includes('is_featured');
 
               this.adminBusinessesService.updateBusinessStatus(this.business!.id, BusinessStatus.ACTIVE).subscribe(res => {
                 if (res.success) {
@@ -206,17 +170,49 @@ export class AdminBusinessDetailsPage implements OnInit {
                       if (topRes.success) this.business!.is_top = true;
                     });
                   }
-                  if (markFeatured) {
-                    this.adminBusinessesService.featureBusiness(this.business!.id, true).subscribe(featRes => {
-                      if (featRes.success) this.business!.is_featured = true;
-                    });
-                  }
                   this.navCtrl.back();
                 }
               });
             }
           }
         ]
+      });
+
+      await alert.present();
+      return;
+    }
+
+    if (newStatus === BusinessStatus.REJECTED) {
+      const alert = await this.alertController.create({
+        header: 'Reject Business',
+        message: `Enter rejection reason for "${this.business.name}" (min 3 characters):`,
+        inputs: [
+          {
+            name: 'reason',
+            type: 'textarea',
+            placeholder: 'Rejection reason...',
+          },
+        ],
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          {
+            text: 'Reject',
+            handler: (data) => {
+              const entered = (data?.reason || '').trim();
+              if (entered.length < 3) {
+                return false;
+              }
+              this.adminBusinessesService.updateBusinessStatus(this.business!.id, BusinessStatus.REJECTED, entered).subscribe(res => {
+                if (res.success) {
+                  this.business!.status = BusinessStatus.REJECTED;
+                  (this.business as any).rejection_reason = entered;
+                  this.navCtrl.back();
+                }
+              });
+              return true;
+            },
+          },
+        ],
       });
 
       await alert.present();
@@ -254,11 +250,9 @@ export class AdminBusinessDetailsPage implements OnInit {
     if (offer.status !== 'ACTIVE' && offer.status !== 'APPROVED') return;
 
     const newStatus = !offer.is_featured;
-    const actionText = newStatus ? 'mark' : 'unmark';
-
     const alert = await this.alertController.create({
-      header: 'Confirm Action',
-      message: `Are you sure you want to ${actionText} "${offer.title}" ${newStatus ? 'as a Top Deal' : 'from Top Deals'}?`,
+      header: newStatus ? 'Mark as Featured' : 'Remove Featured',
+      message: `Are you sure you want to ${newStatus ? 'feature' : 'unfeature'} this offer?`,
       buttons: [
         { text: 'Cancel', role: 'cancel' },
         {
@@ -277,7 +271,37 @@ export class AdminBusinessDetailsPage implements OnInit {
     await alert.present();
   }
 
-  handleOfferAction(offerId: string, action: 'approve' | 'reject', reason?: string, markAsTop?: boolean) {
+  async handleOfferAction(offerId: string, action: 'approve' | 'reject', reason?: string, markAsTop?: boolean) {
+    if (action === 'reject' && (!reason || reason.trim().length < 3)) {
+      const alert = await this.alertController.create({
+        header: 'Reject Offer',
+        message: 'Please provide the rejection reason for this offer (min 3 characters):',
+        inputs: [
+          {
+            name: 'reason',
+            type: 'textarea',
+            placeholder: 'Enter rejection reason...',
+          },
+        ],
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          {
+            text: 'Reject',
+            handler: (data) => {
+              const entered = (data?.reason || '').trim();
+              if (entered.length < 3) {
+                return false;
+              }
+              this.handleOfferAction(offerId, 'reject', entered);
+              return true;
+            },
+          },
+        ],
+      });
+      await alert.present();
+      return;
+    }
+
     const newStatus = action === 'approve' ? OfferStatus.APPROVED : OfferStatus.REJECTED;
     
     this.adminBusinessesService.updateOfferStatus(offerId, newStatus, reason).subscribe(async res => {

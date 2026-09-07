@@ -43,6 +43,7 @@ export class BizzCoinsOfferPage implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly existingOfferId = signal<string | null>(null);
   readonly offerStatus = signal<string | null>(null);
+  readonly rejectionReason = signal<string | null>(null);
   readonly isEditMode = signal(false);
 
   bizzCoinsForm: FormGroup;
@@ -58,7 +59,6 @@ export class BizzCoinsOfferPage implements OnInit {
       description: ['', [Validators.required]],
       start_date: [this.formatDateForInput(now.toISOString()), [Validators.required]],
       end_date: [this.formatDateForInput(nextMonth.toISOString()), [Validators.required]],
-      video_url: [''],
     }, { validators: this.dateValidator });
   }
 
@@ -92,13 +92,13 @@ export class BizzCoinsOfferPage implements OnInit {
   private patchFormWithOffer(offer: any) {
     this.existingOfferId.set(offer.id);
     this.offerStatus.set(offer.status || null);
+    this.rejectionReason.set(offer.rejection_reason || null);
     this.isEditMode.set(true);
     this.bizzCoinsForm.patchValue({
       title: offer.title || '',
       description: offer.description || '',
       start_date: this.formatDateForInput(offer.start_date || new Date().toISOString()),
       end_date: this.formatDateForInput(offer.end_date || new Date().toISOString()),
-      video_url: offer.video_url || '',
     });
   }
 
@@ -161,9 +161,9 @@ export class BizzCoinsOfferPage implements OnInit {
       description: '',
       start_date: this.formatDateForInput(now.toISOString()),
       end_date: this.formatDateForInput(nextMonth.toISOString()),
-      video_url: ''
     });
     this.offerStatus.set(null);
+    this.rejectionReason.set(null);
     this.errorMessage.set(null);
   }
 
@@ -183,9 +183,6 @@ export class BizzCoinsOfferPage implements OnInit {
     formData.append('offer_type', 'BIZZ_COINS');
     formData.append('start_date', new Date(formValues.start_date).toISOString());
     formData.append('end_date', new Date(formValues.end_date).toISOString());
-    if (formValues.video_url?.trim()) {
-      formData.append('video_url', formValues.video_url.trim());
-    }
 
     if (this.isEditMode() && this.existingOfferId()) {
       this.http.put<any>(`${environment.apiUrl}/offers/${this.existingOfferId()}`, formData, { context: new HttpContext().set(SHOW_SUCCESS_TOAST, true) }).subscribe({

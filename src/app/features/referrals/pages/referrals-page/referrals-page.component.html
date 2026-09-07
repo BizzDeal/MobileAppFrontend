@@ -179,6 +179,8 @@
                   <ion-icon name="cash-outline" class="field-icon"></ion-icon>
                   <input
                     type="number"
+                    min="0"
+                    step="any"
                     class="field-native-input"
                     placeholder="e.g. 5000"
                     [value]="appreciationCost() ?? ''"

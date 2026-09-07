@@ -201,10 +201,9 @@ export class AdminOfferDetailsPage implements OnInit {
   }
 
   reject(): void {
-    if (!this.offer || this.actionLoading || !this.rejectionReason.trim()) return;
-    this.actionLoading = true;
-
     const reason = this.rejectionReason.trim();
+    if (!this.offer || this.actionLoading || reason.length < 3) return;
+    this.actionLoading = true;
     this.adminBusinessesService.updateOfferStatus(this.offer.id, OfferStatus.REJECTED, reason).subscribe({
       next: (res) => {
         this.actionLoading = false;

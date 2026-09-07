@@ -77,14 +77,96 @@
     </div>
   }
 
-  <!-- 3. Main Body Area displaying the Wallet Screen with no header -->
-  <div class="customer-wallet-body">
-    <app-wallet-view 
-      [hideHeader]="true"
-      [hideGreeting]="true"
-      [customer]="customer"
-      [customerName]="customer.name"
-      (redeemClick)="onRedeem()"
-    />
-  </div>
+  <!-- 2. Bizz Rewards Quick Action Section (Matches Members) -->
+  <section class="quick-actions-section">
+    <div class="qa-rewards-pill" (click)="walletClick.emit()" role="button" tabindex="0">
+      <div class="qa-trophy-icon-wrap">
+        <ion-icon name="trophy" class="qa-trophy-icon"></ion-icon>
+      </div>
+      <span class="qa-pill-label">BIZZ REWARDS</span>
+      <ion-icon name="chevron-forward-outline" class="qa-arrow-icon"></ion-icon>
+    </div>
+  </section>
+
+  <!-- 3. Customer Stats Card (Stores Visited, Deals Availed, Profit Gained) -->
+  <section class="customer-stats-section">
+    <div class="customer-stats-card">
+      <!-- 1. Stores Visited -->
+      <div class="stat-tile">
+        <div class="stat-icon-wrapper stores-icon">
+          <ion-icon name="storefront-outline"></ion-icon>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-number">{{ userStats().stores_visited }}</span>
+          <span class="stat-title">Stores Visited</span>
+        </div>
+      </div>
+
+      <div class="stat-divider"></div>
+
+      <!-- 2. Deals Availed -->
+      <div class="stat-tile">
+        <div class="stat-icon-wrapper deals-icon">
+          <ion-icon name="ticket-outline"></ion-icon>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-number">{{ userStats().customers_dealt }}</span>
+          <span class="stat-title">Deals Availed</span>
+        </div>
+      </div>
+
+      <div class="stat-divider"></div>
+
+      <!-- 3. Profit Gained -->
+      <div class="stat-tile">
+        <div class="stat-icon-wrapper profit-icon">
+          <ion-icon name="cash-outline"></ion-icon>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-number">₹{{ userStats().profit_gained | number:'1.0-0' }}</span>
+          <span class="stat-title">Profit Gained</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Primary Business Banner (Customer Associated Store) -->
+  @if (primaryBusiness(); as pb) {
+    <section class="primary-business-section">
+      <div class="primary-banner-card" (click)="onPrimaryBusinessClick()" role="button" tabindex="0">
+        <div class="card-media" [style.background]="getAvatarColor(pb.name)">
+          <span class="fallback-monogram">{{ getInitials(pb.name) }}</span>
+          @if (pb.bannerUrl) {
+            <img loading="lazy" [appCachedImg]="pb.bannerUrl" [alt]="pb.name" class="media-img" />
+          }
+          <div class="card-scrim"></div>
+        </div>
+
+        <div class="card-badge-row">
+          <span class="primary-tag">
+            <ion-icon name="storefront"></ion-icon> PRIMARY STORE
+          </span>
+        </div>
+
+        <div class="card-info">
+          <h3 class="biz-name">{{ pb.name }}</h3>
+          <div class="biz-meta-lines">
+            <div class="biz-meta-row">
+              <span class="biz-category">{{ pb.categoryName }}</span>
+              <span class="biz-badge-action">
+                Explore <ion-icon name="arrow-forward-outline"></ion-icon>
+              </span>
+            </div>
+            @if (pb.location) {
+              <div class="biz-meta-row location-row">
+                <span class="biz-location">
+                  <ion-icon name="location-outline"></ion-icon> {{ pb.location }}
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+  }
 </div>

@@ -30,7 +30,9 @@ import {
   informationCircleOutline,
   ticketOutline,
   trashOutline,
-  walletOutline
+  walletOutline,
+  shareSocialOutline,
+  heartOutline
 } from 'ionicons/icons';
 import { NotificationDTO, NotificationType } from '../../models/notification.model';
 import { NotificationService } from '../../services/notification.service';
@@ -97,7 +99,9 @@ export class NotificationsPageComponent {
       chatbubbleOutline,
       informationCircleOutline,
       alertCircleOutline,
-      gridOutline
+      gridOutline,
+      shareSocialOutline,
+      heartOutline
     });
   }
 
@@ -129,11 +133,41 @@ export class NotificationsPageComponent {
       return;
     }
 
+    if (
+      notification.data?.['type'] === 'REFERRAL' ||
+      notification.data?.['type'] === 'REFERRAL_APPRECIATION' ||
+      notification.data?.['screen'] === 'referrals'
+    ) {
+      this.closeModal();
+      this.router.navigate(['/home'], { queryParams: { tab: 'referrals' } });
+      return;
+    }
+
     this.selectedNotification.set(notification);
   }
 
   deleteNotification(id: string): void {
     this.notificationService.deleteNotification(id).subscribe();
+  }
+
+  getIconForNotification(notification: NotificationDTO): string {
+    if (notification.data?.['type'] === 'REFERRAL') {
+      return 'share-social-outline';
+    }
+    if (notification.data?.['type'] === 'REFERRAL_APPRECIATION') {
+      return 'heart-outline';
+    }
+    return this.getIconForType(notification.type);
+  }
+
+  getColorForNotification(notification: NotificationDTO): string {
+    if (notification.data?.['type'] === 'REFERRAL') {
+      return 'primary';
+    }
+    if (notification.data?.['type'] === 'REFERRAL_APPRECIATION') {
+      return 'danger';
+    }
+    return this.getColorForType(notification.type);
   }
 
   getIconForType(type: NotificationType): string {

@@ -1,0 +1,375 @@
+.page-toolbar {
+  --background: #ffffff;
+  --color: #0f172a;
+  border-bottom: 1px solid #f1f5f9;
+
+  --min-height: 56px;
+
+  .back-btn {
+    --color: #1e293b;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    margin-inline-start: 4px;
+    height: 36px;
+    width: 36px;
+
+    ion-icon {
+      font-size: 19px !important;
+    }
+  }
+
+  ion-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    padding-inline-start: 6px;
+  }
+}
+
+.page-content {
+  --background: #f4f7fb;
+}
+
+.points-page-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 520px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* 1. Hero Balance Card (Vibrant Royal Blue Gradient) */
+.hero-balance-card {
+  position: relative;
+  width: 100%;
+  min-height: 160px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #1d6fe9 0%, #1557cd 50%, #0d42a8 100%);
+  padding: 22px 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(21, 101, 192, 0.28);
+
+  .card-sparkle-decor {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+    user-select: none;
+
+    &.decor-1 {
+      top: 14px;
+      right: 48px;
+      font-size: 13px;
+      color: #fef08a;
+      animation: pulseSparkle 2.5s ease-in-out infinite;
+    }
+    &.decor-2 {
+      bottom: 22px;
+      right: 120px;
+      font-size: 11px;
+      color: #fde047;
+      animation: pulseSparkle 3s ease-in-out infinite 0.5s;
+    }
+    &.decor-3 {
+      top: 36px;
+      right: 110px;
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  .balance-text-group {
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+
+    .balance-subheading {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.2px;
+      margin-bottom: 6px;
+    }
+
+    .balance-value-wrap {
+      display: flex;
+      flex-direction: column;
+
+      .balance-amount {
+        margin: 0;
+        color: #ffffff;
+        font-size: 42px;
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: -1px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .balance-unit {
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 20px;
+        font-weight: 600;
+        margin-top: 2px;
+      }
+    }
+  }
+
+  .coins-illustration-wrap {
+    width: 120px;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+
+    .gold-coin-graphic {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.25));
+    }
+  }
+}
+
+@keyframes pulseSparkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* 2. Actions Bar (White rounded card with 4 circular buttons) */
+.actions-card-bar {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  border: 1px solid #f1f5f9;
+
+  .action-btn-item {
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s ease;
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    .action-icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      &.bg-blue {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      }
+      &.bg-teal {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      }
+      &.bg-purple {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      }
+      &.bg-orange {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      }
+    }
+
+    .action-btn-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      text-align: center;
+      line-height: 1.2;
+    }
+  }
+}
+
+/* 3. Recent Activity Card */
+.recent-activity-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px 16px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  border: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+
+  .activity-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .activity-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .view-all-link {
+      background: transparent;
+      border: none;
+      color: #2563eb;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 6px;
+
+      &:active {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .activity-items-list {
+    display: flex;
+    flex-direction: column;
+
+    .activity-item-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f8fafc;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .activity-icon-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 20px;
+        flex-shrink: 0;
+
+        &.icon-blue {
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        &.icon-green {
+          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+        &.icon-orange {
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        }
+      }
+
+      .activity-meta {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .activity-name {
+          margin: 0;
+          font-size: 15px;
+          font-weight: 700;
+          color: #0f172a;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .activity-date {
+          font-size: 12px;
+          color: #64748b;
+          font-weight: 500;
+        }
+      }
+
+      .activity-points-badge {
+        flex-shrink: 0;
+
+        .points-plus {
+          color: #16a34a;
+          font-size: 17px;
+          font-weight: 800;
+          letter-spacing: -0.3px;
+        }
+
+        .points-minus {
+          color: #dc2626;
+          font-size: 17px;
+          font-weight: 800;
+          letter-spacing: -0.3px;
+        }
+      }
+    }
+  }
+
+  .empty-activity-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 16px;
+    gap: 6px;
+
+    .empty-icon {
+      font-size: 32px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .empty-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .empty-desc {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.4;
+      max-width: 280px;
+    }
+  }
+
+  .carousel-dots-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding-top: 8px;
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      transition: all 0.2s ease;
+
+      &.active {
+        width: 16px;
+        border-radius: 10px;
+        background: #334155;
+      }
+    }
+  }
+}

@@ -52,6 +52,8 @@ export class OfferFormPage implements OnInit {
 
   readonly isEditMode = signal(false);
   readonly offerId = signal<string | null>(null);
+  readonly offerStatus = signal<string | null>(null);
+  readonly offerRejectionReason = signal<string | null>(null);
   readonly selectedImageName = signal<string | null>(null);
   readonly selectedImagePreview = signal<string | null>(null);
   readonly selectedImageFile = signal<File | null>(null);
@@ -73,7 +75,6 @@ export class OfferFormPage implements OnInit {
       discount_value: [null, [Validators.required, Validators.min(0)]],
       start_date: [this.formatDateForInput(now.toISOString()), Validators.required],
       end_date: [this.formatDateForInput(nextMonth.toISOString()), Validators.required],
-      video_url: [''],
     }, { validators: this.dateValidator });
   }
 
@@ -119,6 +120,9 @@ export class OfferFormPage implements OnInit {
   }
 
   private patchOfferValues(offer: any) {
+    this.offerStatus.set(offer.status || null);
+    this.offerRejectionReason.set(offer.rejection_reason || null);
+
     let category = '';
     if (offer.offer_type === 'DISCOUNT') {
       category = offer.discount_type === 'PERCENTAGE' ? 'PERCENTAGE_DEAL' : 'FLAT_OFFER';
@@ -133,7 +137,6 @@ export class OfferFormPage implements OnInit {
       discount_value: offer.discount_value ?? null,
       start_date: this.formatDateForInput(offer.start_date || new Date().toISOString()),
       end_date: this.formatDateForInput(offer.end_date || new Date().toISOString()),
-      video_url: offer.video_url || '',
     });
     const previewUrl = offer.imageUrl || offer.image_url || offer.image?.file_url;
     if (previewUrl) {
@@ -256,10 +259,6 @@ export class OfferFormPage implements OnInit {
     formData.append('start_date', new Date(formValues.start_date).toISOString());
     formData.append('end_date', new Date(formValues.end_date).toISOString());
     
-    if (formValues.video_url?.trim()) {
-      formData.append('video_url', formValues.video_url.trim());
-    }
-
     if (this.selectedImageFile()) {
       formData.append('offer_image', this.selectedImageFile()!);
     }

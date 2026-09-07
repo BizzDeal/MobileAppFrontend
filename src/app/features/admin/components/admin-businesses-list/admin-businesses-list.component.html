@@ -55,9 +55,6 @@
               <ion-button fill="clear" color="primary" size="small" (click)="toggleTop(business)">
                 <ion-icon slot="start" [name]="business.is_top ? 'trophy-outline' : 'trophy'"></ion-icon> {{ business.is_top ? 'Unmark Top' : 'Top Biz' }}
               </ion-button>
-              <ion-button fill="clear" color="warning" size="small" (click)="toggleFeature(business)">
-                <ion-icon slot="start" [name]="business.is_featured ? 'star-outline' : 'star'"></ion-icon> Feature
-              </ion-button>
             }
             <!-- Options for SUSPENDED / REJECTED status -->
             @if (business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED) {
@@ -167,10 +164,6 @@
                       <button class="table-action-btn primary-btn" (click)="$event.stopPropagation(); toggleTop(business)" title="Top Business">
                         <ion-icon [name]="business.is_top ? 'trophy-outline' : 'trophy'"></ion-icon>
                         <span>{{ business.is_top ? 'Unmark Top' : 'Top Biz' }}</span>
-                      </button>
-                      <button class="table-action-btn warning-btn" (click)="$event.stopPropagation(); toggleFeature(business)" title="Feature">
-                        <ion-icon [name]="business.is_featured ? 'star-outline' : 'star'"></ion-icon>
-                        <span>{{ business.is_featured ? 'Unfeature' : 'Feature' }}</span>
                       </button>
                     }
                     @if (business.status === BusinessStatus.SUSPENDED || business.status === BusinessStatus.REJECTED) {

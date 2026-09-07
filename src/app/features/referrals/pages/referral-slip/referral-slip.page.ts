@@ -115,45 +115,12 @@ export class ReferralSlipPage implements OnInit {
 
   getMemberCategory(member: MemberBusinessDTO | null | undefined): string {
     if (!member) return 'Business Member';
-    if (member.businessProfile?.category_name) {
-      return member.businessProfile.category_name;
-    }
-    const categories = [
-      'Commercial Services',
-      'Retail & Trade',
-      'Real Estate & Property',
-      'IT & Digital Solutions',
-      'Financial & Legal',
-      'Health & Wellness',
-      'Automotive & Logistics',
-      'Manufacturing & Supply',
-      'Food & Hospitality',
-      'Construction & Interior'
-    ];
-    let hash = 0;
-    const key = member.id || member.full_name || 'member';
-    for (let i = 0; i < key.length; i++) {
-      hash = (hash * 31 + key.charCodeAt(i)) % categories.length;
-    }
-    return categories[Math.abs(hash)];
+    return member.businessProfile?.category_name || member.category_name || 'General';
   }
 
   getMemberBusinessName(member: MemberBusinessDTO | null | undefined): string {
-    if (!member) return 'Partner Enterprise';
-    if (member.businessProfile?.business_name) {
-      return member.businessProfile.business_name;
-    }
-    const cleanName = (member.full_name || 'Member')
-      .replace(/\(.*\)/g, '')
-      .trim();
-    const suffixes = ['Enterprises', 'Solutions', 'Trading Co.', 'Industries', 'Ventures', 'Associates', 'Hub', 'Services'];
-    let hash = 0;
-    const key = member.id || member.full_name || 'member';
-    for (let i = 0; i < key.length; i++) {
-      hash = (hash * 17 + key.charCodeAt(i)) % suffixes.length;
-    }
-    const suffix = suffixes[Math.abs(hash)];
-    return `${cleanName} ${suffix}`;
+    if (!member) return 'Business Not Available';
+    return member.businessProfile?.business_name || member.business_name || 'Business Not Available';
   }
 
   constructor() {
@@ -236,26 +203,24 @@ export class ReferralSlipPage implements OnInit {
   fetchMembers(query: string = ''): void {
     this.isMembersLoading.set(true);
     const profile = this.profileService.profile();
+    const userDistrict = profile?.district_id || profile?.business_district_id;
     let districtId: string | undefined = undefined;
     let excludeDistricts: string | undefined = undefined;
 
-    if (this.referralType() === 'INHOUSE' && profile?.district_id) {
-      districtId = profile.district_id;
-    } else if (this.referralType() === 'OUTHOUSE' && profile?.district_id) {
-      excludeDistricts = profile.district_id;
+    if (this.referralType() === 'INHOUSE' && userDistrict) {
+      districtId = userDistrict;
+    } else if (this.referralType() === 'OUTHOUSE' && userDistrict) {
+      excludeDistricts = userDistrict;
     }
 
     this.referralsService.searchMembers(query, districtId, excludeDistricts).subscribe({
       next: (data) => {
-        const filtered = data.filter(m => m.id !== profile?.id);
-        let finalData = filtered;
-        if (this.referralType() === 'INHOUSE' && profile?.district_id) {
-          finalData = filtered.filter(m => m.profile?.district_id === profile.district_id || m.profile?.district_id === profile.business_district_id);
-        }
-        this.membersList.set(finalData);
+        const filtered = data.filter((m) => m.id !== profile?.id);
+        this.membersList.set(filtered);
         this.isMembersLoading.set(false);
       },
       error: () => {
+        this.membersList.set([]);
         this.isMembersLoading.set(false);
       }
     });

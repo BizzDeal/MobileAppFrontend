@@ -61,7 +61,6 @@ export class AdminMemberApplicationDetailsPage implements OnInit {
   member: (AdminMember & { [key: string]: any }) | null = null;
   loading = true;
   actionLoading = false;
-  isFeatured = false;
   isTop = false;
   showRejectInput = false;
   rejectionReason = '';
@@ -104,7 +103,6 @@ export class AdminMemberApplicationDetailsPage implements OnInit {
     this.adminUsersService.getUserById(id).subscribe({
       next: (res) => {
         this.member = res?.data as any;
-        this.isFeatured = !!this.member?.is_featured;
         this.isTop = !!this.member?.is_top;
         this.loading = false;
       },
@@ -157,16 +155,9 @@ export class AdminMemberApplicationDetailsPage implements OnInit {
         if (this.member) {
           this.member.status = UserStatus.ACTIVE;
 
-          // Step 2: Once approval ends, update business featured/top statuses if selected
+          // Step 2: Once approval ends, update business top status if selected
           const businessId = this.member.business_id;
           if (businessId) {
-            if (this.isFeatured) {
-              this.adminBusinessesService.featureBusiness(businessId, true).subscribe({
-                next: () => {
-                  if (this.member) this.member.is_featured = true;
-                }
-              });
-            }
             if (this.isTop) {
               this.adminBusinessesService.topBusiness(businessId, true).subscribe({
                 next: () => {
@@ -181,24 +172,6 @@ export class AdminMemberApplicationDetailsPage implements OnInit {
         this.actionLoading = false;
       }
     });
-  }
-
-  onFeaturedCheckboxChange(event: any): void {
-    const checked = !!event?.detail?.checked;
-    this.isFeatured = checked;
-
-    // If member is already ACTIVE, update backend immediately
-    if (this.member && this.member.status === UserStatus.ACTIVE && this.member.business_id) {
-      this.adminBusinessesService.featureBusiness(this.member.business_id, checked).subscribe({
-        next: () => {
-          if (this.member) this.member.is_featured = checked;
-        },
-        error: () => {
-          // Revert checkbox state on error
-          this.isFeatured = !checked;
-        }
-      });
-    }
   }
 
   onTopCheckboxChange(event: any): void {
@@ -229,15 +202,17 @@ export class AdminMemberApplicationDetailsPage implements OnInit {
   }
 
   reject(): void {
-    if (!this.member || this.actionLoading || !this.rejectionReason.trim()) return;
+    const reason = this.rejectionReason.trim();
+    if (!this.member || this.actionLoading || !reason) return;
     this.actionLoading = true;
 
-    this.adminUsersService.rejectMember(this.member.id).subscribe({
+    this.adminUsersService.rejectMember(this.member.id, reason).subscribe({
       next: () => {
         this.actionLoading = false;
         this.showRejectInput = false;
         if (this.member) {
           this.member.status = UserStatus.REJECTED;
+          (this.member as any).rejection_reason = reason;
         }
       },
       error: () => {

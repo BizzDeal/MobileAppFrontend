@@ -45,6 +45,12 @@ export const routes: Routes = [
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
   {
+    path: 'business/featured-request',
+    loadComponent: () => import('./features/business/pages/featured-business-request/featured-business-request.page').then(m => m.FeaturedBusinessRequestPage),
+    canActivate: [authGuard],
+    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
+  },
+  {
     path: 'offers/my-deals',
     loadComponent: () => import('./features/business/pages/my-deals/my-deals.page').then(m => m.MyDealsPage),
     canActivate: [authGuard],
@@ -98,6 +104,16 @@ export const routes: Routes = [
     data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
   },
 
+  {
+    path: 'wallet/points',
+    loadComponent: () => import('./features/wallet/pages/bizz-points/bizz-points.page').then(m => m.BizzPointsPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'wallet/balance',
+    loadComponent: () => import('./features/wallet/pages/wallet-balance/wallet-balance.page').then(m => m.WalletBalancePage),
+    canActivate: [authGuard],
+  },
   {
     path: 'wallet/earn-bizz-coins',
     loadComponent: () => import('./features/wallet/pages/earn-bizz-coins/earn-bizz-coins.page').then(m => m.EarnBizzCoinsPage),

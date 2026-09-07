@@ -1,0 +1,149 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn" aria-label="Go back">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Bizz Points</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="page-content">
+  <div class="points-page-container">
+    <!-- 1. Top Royal Blue Gradient Hero Card -->
+    <div class="hero-balance-card">
+      <div class="card-sparkle-decor decor-1">✦</div>
+      <div class="card-sparkle-decor decor-2">✦</div>
+      <div class="card-sparkle-decor decor-3">★</div>
+
+      <div class="balance-text-group">
+        <span class="balance-subheading">Your Points Balance</span>
+        <div class="balance-value-wrap">
+          <h1 class="balance-amount">{{ (pointsBalance() || 0) | number }}</h1>
+          <span class="balance-unit">Points</span>
+        </div>
+      </div>
+
+      <!-- 3D Gold Medal & Stacked Coins Illustration -->
+      <div class="coins-illustration-wrap">
+        <svg class="gold-coin-graphic" viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="goldTopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFFBEB" />
+              <stop offset="25%" stop-color="#FDE047" />
+              <stop offset="70%" stop-color="#EAB308" />
+              <stop offset="100%" stop-color="#CA8A04" />
+            </linearGradient>
+            <linearGradient id="goldEdgeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FACC15" />
+              <stop offset="100%" stop-color="#854D0E" />
+            </linearGradient>
+            <filter id="goldDropGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          <!-- Bottom Stack Coin 3 -->
+          <ellipse cx="64" cy="74" rx="28" ry="8" fill="url(#goldEdgeGrad)" />
+          <ellipse cx="64" cy="71" rx="28" ry="8" fill="url(#goldTopGrad)" />
+
+          <!-- Bottom Stack Coin 2 -->
+          <ellipse cx="64" cy="67" rx="27" ry="8" fill="url(#goldEdgeGrad)" />
+          <ellipse cx="64" cy="64" rx="27" ry="8" fill="url(#goldTopGrad)" />
+
+          <!-- Small Left Coin -->
+          <ellipse cx="28" cy="73" rx="10" ry="6" fill="url(#goldEdgeGrad)" />
+          <ellipse cx="28" cy="70" rx="10" ry="6" fill="url(#goldTopGrad)" />
+
+          <!-- Main Big Front Coin / Medal -->
+          <g filter="url(#goldDropGlow)">
+            <ellipse cx="64" cy="38" rx="27" ry="27" fill="url(#goldEdgeGrad)" />
+            <circle cx="64" cy="38" r="25" fill="url(#goldTopGrad)" />
+            <circle cx="64" cy="38" r="21" fill="none" stroke="#FEF08A" stroke-width="1.5" stroke-dasharray="3 2" />
+            <!-- Inner Star Emblem -->
+            <polygon points="64,22 68,32 79,32 71,39 74,50 64,43 54,50 57,39 49,32 60,32" fill="#FEF9C3" stroke="#A16207" stroke-width="1" stroke-linejoin="round" />
+            <ellipse cx="64" cy="38" rx="4" ry="4" fill="#CA8A04" opacity="0.6" />
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 2. Four Action Buttons Row (White rounded container) -->
+    <div class="actions-card-bar">
+      <!-- Earn Points -->
+      <button type="button" class="action-btn-item" (click)="onEarnPoints()">
+        <div class="action-icon-circle bg-blue">
+          <ion-icon name="ribbon-outline"></ion-icon>
+        </div>
+        <span class="action-btn-label">Earn<br />Points</span>
+      </button>
+
+      <!-- My Points -->
+      <button type="button" class="action-btn-item" (click)="onMyPoints()">
+        <div class="action-icon-circle bg-teal">
+          <ion-icon name="gift-outline"></ion-icon>
+        </div>
+        <span class="action-btn-label">My<br />Points</span>
+      </button>
+
+      <!-- History -->
+      <button type="button" class="action-btn-item" (click)="onHistory()">
+        <div class="action-icon-circle bg-purple">
+          <ion-icon name="clipboard-outline"></ion-icon>
+        </div>
+        <span class="action-btn-label">History</span>
+      </button>
+
+      <!-- Redeem -->
+      <button type="button" class="action-btn-item" (click)="onRedeem()">
+        <div class="action-icon-circle bg-orange">
+          <ion-icon name="gift-outline"></ion-icon>
+        </div>
+        <span class="action-btn-label">Redeem</span>
+      </button>
+    </div>
+
+    <!-- 3. Recent Activity Section -->
+    <div class="recent-activity-card">
+      <div class="activity-header-row">
+        <h3 class="activity-title">Recent Activity</h3>
+        <button type="button" class="view-all-link" (click)="onHistory()">View all</button>
+      </div>
+
+      @if (recentActivities().length > 0) {
+        <div class="activity-items-list">
+          @for (item of recentActivities(); track item.id) {
+            <div class="activity-item-row">
+              <div class="activity-icon-wrap" [ngClass]="item.iconBgClass">
+                <ion-icon [name]="item.icon"></ion-icon>
+              </div>
+              <div class="activity-meta">
+                <h4 class="activity-name">{{ item.title }}</h4>
+                <span class="activity-date">{{ item.dateText }}</span>
+              </div>
+              <div class="activity-points-badge">
+                <span [class.points-plus]="item.isCredit" [class.points-minus]="!item.isCredit">
+                  {{ item.isCredit ? '+' : '-' }}{{ item.points | number }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Pagination dots matching image -->
+        <div class="carousel-dots-row">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+        </div>
+      } @else {
+        <div class="empty-activity-box">
+          <ion-icon name="sparkles-outline" class="empty-icon"></ion-icon>
+          <p class="empty-title">No points activity yet</p>
+          <span class="empty-desc">Earn Bizz Points by shopping at partner stores, redeeming vouchers, or referring friends.</span>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>

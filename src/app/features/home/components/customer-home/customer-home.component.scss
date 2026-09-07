@@ -230,22 +230,23 @@
 .quick-actions-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 14px 14px;
+  padding: 8px 14px 12px;
   width: 100%;
   box-sizing: border-box;
 
   .qa-rewards-pill {
     position: relative;
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
     gap: 10px;
     background: #ffffff;
-    border-radius: 24px;
-    padding: 8px 18px 8px 10px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 10px 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
     cursor: pointer;
     transition: all 0.2s ease;
     user-select: none;
@@ -253,25 +254,25 @@
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.22);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.16);
       border-color: #fcd34d;
     }
 
     &:active {
-      transform: scale(0.97) translateY(-1px);
+      transform: scale(0.99) translateY(0);
     }
 
     .qa-trophy-icon-wrap {
-      width: 34px;
-      height: 34px;
-      border-radius: 11px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
       border: 1px solid #fcd34d;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
 
       .qa-trophy-icon {
         font-size: 20px;
@@ -280,23 +281,11 @@
     }
 
     .qa-pill-label {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       font-weight: 800;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
       color: #1e293b;
       text-transform: uppercase;
-    }
-
-    .qa-arrow-icon {
-      font-size: 16px;
-      color: #94a3b8;
-      margin-left: 2px;
-      transition: transform 0.2s ease;
-    }
-
-    &:hover .qa-arrow-icon {
-      transform: translateX(2px);
-      color: #d97706;
     }
   }
 }

@@ -49,12 +49,14 @@
       <ion-icon name="wallet-outline"></ion-icon>
       <span class="chip-label">Wallet</span>
     </button>
-    <button type="button" class="chip-btn" 
-            [class.active]="selectedFilter() === 'CHAT'" 
-            (click)="selectedFilter.set('CHAT')">
-      <ion-icon name="chatbubble-outline"></ion-icon>
-      <span class="chip-label">Chats</span>
-    </button>
+    @if (!isCustomer()) {
+      <button type="button" class="chip-btn" 
+              [class.active]="selectedFilter() === 'CHAT'" 
+              (click)="selectedFilter.set('CHAT')">
+        <ion-icon name="chatbubble-outline"></ion-icon>
+        <span class="chip-label">Chats</span>
+      </button>
+    }
   </div>
 
   @if (filteredNotifications().length === 0) {

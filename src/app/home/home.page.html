@@ -248,15 +248,45 @@
               <span class="detail-cat">{{ biz.categoryName }} • {{ biz.status }}</span>
             </div>
           </div>
-          <p class="detail-desc">{{ biz.description }}</p>
-          <div class="detail-meta">
-            @if (biz.website) {
-            <span>🌐 {{ biz.website }}</span>
-            }
-            @if (biz.gst_number) {
-            <span>🏢 GST: {{ biz.gst_number }}</span>
-            }
-          </div>
+          @if (biz.description) {
+            <p class="detail-desc">{{ biz.description }}</p>
+          }
+
+          @if (biz.address || biz.location || biz.district_name || biz.phone || biz.website || biz.gst_number) {
+            <div class="detail-meta">
+              @if (biz.address || biz.location || biz.district_name) {
+                <span>
+                  <ion-icon name="location-outline"></ion-icon>
+                  {{ biz.address ? (biz.address + (biz.district_name ? ', ' + biz.district_name : '') + (biz.pincode ? ' - ' + biz.pincode : '')) : (biz.location || biz.district_name) }}
+                </span>
+              }
+              @if (biz.phone) {
+                <span>
+                  <ion-icon name="call-outline"></ion-icon>
+                  {{ biz.phone }}
+                </span>
+              }
+              @if (biz.website) {
+                <span>
+                  <ion-icon name="globe-outline"></ion-icon>
+                  {{ biz.website }}
+                </span>
+              }
+              @if (biz.gst_number) {
+                <span>
+                  <ion-icon name="business-outline"></ion-icon>
+                  GST: {{ biz.gst_number }}
+                </span>
+              }
+            </div>
+          }
+
+          @if (loadingBizDetails()) {
+            <div class="biz-details-loading">
+              <ion-spinner name="crescent"></ion-spinner>
+              <span>Loading store details...</span>
+            </div>
+          }
 
           @if (loadingBizCoinsOffer()) {
             <div class="bizz-coins-offer-loading">

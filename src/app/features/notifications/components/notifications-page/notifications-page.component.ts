@@ -32,7 +32,8 @@ import {
   trashOutline,
   walletOutline,
   shareSocialOutline,
-  heartOutline
+  heartOutline,
+  notificationsOutline
 } from 'ionicons/icons';
 import { NotificationDTO, NotificationType } from '../../models/notification.model';
 import { NotificationService } from '../../services/notification.service';
@@ -79,10 +80,21 @@ export class NotificationsPageComponent {
   readonly selectedFilter = signal<string>('ALL');
   readonly selectedNotification = signal<NotificationDTO | null>(null);
   readonly hasMore = this.notificationService.hasMore;
+  readonly isCustomer = this.authSession.isCustomer;
 
   readonly filteredNotifications = computed(() => {
     const filter = this.selectedFilter();
-    const all = this.notifications();
+    let all = this.notifications();
+    if (this.isCustomer()) {
+      all = all.filter(n => {
+        const type = n.type as string;
+        if (type === 'CHAT' || type === 'MEETING' || type === 'FEATURED_REQUEST') return false;
+        if (n.data?.['audience'] === 'ALL_MEMBERS') return false;
+        if (n.data?.['screen'] === 'referrals') return false;
+        if (n.data?.['type'] === 'REFERRAL' || n.data?.['type'] === 'REFERRAL_APPRECIATION') return false;
+        return true;
+      });
+    }
     if (filter === 'ALL') return all;
     if (filter === 'UNREAD') return all.filter(n => !n.is_read);
     return all.filter(n => n.type === filter);
@@ -101,7 +113,8 @@ export class NotificationsPageComponent {
       alertCircleOutline,
       gridOutline,
       shareSocialOutline,
-      heartOutline
+      heartOutline,
+      notificationsOutline
     });
   }
 

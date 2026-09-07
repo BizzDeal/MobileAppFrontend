@@ -345,16 +345,6 @@
               <ion-icon name="camera-outline"></ion-icon>
               <input type="file" id="businessBannerFile" accept="image/*" (change)="onBusinessBannerSelected($event)" style="display: none;" />
             </label>
-            @if (selectedBusinessBannerUrl()) {
-              <button
-                type="button"
-                class="brand-media-remove-badge"
-                (click)="onRemoveBusinessBanner()"
-                title="Remove Brand Banner"
-                aria-label="Remove Brand Banner">
-                <ion-icon name="trash-outline"></ion-icon>
-              </button>
-            }
           </div>
         </div>
       </div>

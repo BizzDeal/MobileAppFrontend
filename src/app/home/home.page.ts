@@ -22,12 +22,15 @@ import {
 import { addIcons } from 'ionicons';
 import {
   alertCircleOutline,
+  businessOutline,
   calendarOutline,
+  callOutline,
   chatbubbleOutline,
   checkmarkCircleOutline,
   closeOutline,
   copyOutline,
   giftOutline,
+  globeOutline,
   locationOutline,
   personOutline,
   pricetagOutline,
@@ -179,6 +182,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
   readonly selectedBizModal = signal<BusinessDTO | null>(null);
   readonly selectedBizCoinsOffer = signal<OfferDTO | null>(null);
   readonly loadingBizCoinsOffer = signal<boolean>(false);
+  readonly loadingBizDetails = signal<boolean>(false);
   readonly searchQuery = signal<string>('');
   readonly referralInitialSegment = signal<'GIVEN' | 'RECEIVED' | undefined>(undefined);
 
@@ -199,7 +203,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
       personOutline,
       walletOutline,
       ribbonOutline,
-      calendarOutline
+      calendarOutline,
+      callOutline,
+      globeOutline,
+      businessOutline
     });
 
     // Handle tab query parameter for switching active nav tab
@@ -327,6 +334,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
   onBusinessClick(biz: BusinessDTO): void {
     this.selectedBizModal.set(biz);
     this.fetchBizzCoinsOfferForBusiness(biz.id);
+    this.fetchBusinessDetails(biz.id);
   }
 
   onVideoBusinessClick(businessId: string): void {
@@ -416,6 +424,51 @@ export class HomePage implements AfterViewInit, OnDestroy {
       error: (err) => {
         this.loadingBizCoinsOffer.set(false);
         this.selectedBizCoinsOffer.set(null);
+      }
+    });
+  }
+
+  private fetchBusinessDetails(businessId: string): void {
+    if (!businessId) return;
+    this.loadingBizDetails.set(true);
+    this.http.get<any>(`${environment.apiUrl}/businesses/${businessId}`).subscribe({
+      next: (res) => {
+        this.loadingBizDetails.set(false);
+        const b = res?.data || res;
+        if (b && this.selectedBizModal()?.id === businessId) {
+          const current = this.selectedBizModal();
+          this.selectedBizModal.set({
+            id: b.id,
+            owner_id: b.owner_id || current?.owner_id || '',
+            category_id: b.category_id || current?.category_id || '',
+            name: b.name || current?.name || '',
+            description: b.description ?? current?.description ?? null,
+            website: b.website ?? current?.website ?? null,
+            gst_number: b.gst_number ?? current?.gst_number ?? null,
+            address: b.address ?? current?.address ?? null,
+            district_id: b.district_id || current?.district_id || '',
+            district_name: b.district_name || b.district?.name || current?.district_name || null,
+            state_name: b.state_name || b.state?.name || current?.state_name || null,
+            pincode: b.pincode ?? current?.pincode ?? null,
+            phone: b.phone || b.owner_phone || current?.phone || null,
+            whatsapp: b.whatsapp || current?.whatsapp || null,
+            owner_name: b.owner_name || current?.owner_name || null,
+            logo_id: b.logo_id ?? current?.logo_id ?? null,
+            video_url: b.video_url ?? current?.video_url ?? null,
+            status: b.status || current?.status || 'ACTIVE',
+            is_featured: b.is_featured ?? current?.is_featured ?? false,
+            created_at: b.created_at || current?.created_at || new Date().toISOString(),
+            updated_at: b.updated_at || current?.updated_at || new Date().toISOString(),
+            categoryName: b.categoryName || b.category?.name || current?.categoryName || 'Partner Store',
+            logoUrl: b.logoUrl || b.logo_url || b.profile_pic_url || current?.logoUrl,
+            bannerUrl: b.bannerUrl || b.banner_url || current?.bannerUrl,
+            location: [b.district_name || b.district?.name, b.state_name || b.state?.name].filter(Boolean).join(', ') || current?.location || null,
+          });
+        }
+      },
+      error: (err) => {
+        this.loadingBizDetails.set(false);
+        console.error('Error fetching full business details:', err);
       }
     });
   }

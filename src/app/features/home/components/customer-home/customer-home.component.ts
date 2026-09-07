@@ -127,6 +127,7 @@ export class CustomerHomeComponent {
     if (pb.rawBiz) {
       this.businessClick.emit(pb.rawBiz);
     } else if (pb.id) {
+      const p = this.profile();
       const bizDto: BusinessDTO = {
         id: pb.id,
         owner_id: '',
@@ -143,6 +144,9 @@ export class CustomerHomeComponent {
         updated_at: new Date().toISOString(),
         categoryName: pb.categoryName,
         bannerUrl: pb.bannerUrl || undefined,
+        location: pb.location || null,
+        district_name: p?.primary_business_district_name || null,
+        state_name: p?.primary_business_state_name || null,
       };
       this.businessClick.emit(bizDto);
     }

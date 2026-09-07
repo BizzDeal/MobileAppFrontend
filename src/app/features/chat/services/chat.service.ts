@@ -42,19 +42,24 @@ export class ChatService {
 
   constructor() {
     this.setupSocketListeners();
-    this.loadContactsAndConversations();
     
-    // Connect socket if authenticated
+    // Connect socket and load contacts/conversations if authenticated and not customer
     effect(() => {
-      if (this.authSession.isAuthenticated()) {
+      if (this.authSession.isAuthenticated() && !this.authSession.isCustomer()) {
         this.chatSocket.connect();
+        this.loadContactsAndConversations();
       } else {
         this.chatSocket.disconnect();
+        this._conversations.set([]);
+        this._contactsDirectory.set([]);
       }
     });
   }
 
   refreshContactsAndConversations(): Observable<{ contacts: any[]; conversations: ChatConversation[] }> {
+    if (!this.authSession.isAuthenticated() || this.authSession.isCustomer()) {
+      return of({ contacts: [], conversations: [] });
+    }
     return forkJoin({
       contacts: this.http.get<any[]>(`${environment.apiUrl}/chat/contacts`).pipe(catchError(() => of([]))),
       conversations: this.http.get<ChatConversation[]>(`${environment.apiUrl}/chat/conversations`).pipe(catchError(() => of([])))
@@ -81,10 +86,16 @@ export class ChatService {
   }
 
   searchContacts(query: string): Observable<any[]> {
+    if (this.authSession.isCustomer()) {
+      return of([]);
+    }
     return this.http.get<any[]>(`${environment.apiUrl}/chat/contacts?search=${encodeURIComponent(query)}`);
   }
 
   getChatList(page: number = 1, limit: number = 20, search?: string): Observable<any> {
+    if (this.authSession.isCustomer()) {
+      return of({ data: [], meta: { page: 1, limit, total: 0, totalPages: 0 } });
+    }
     let url = `${environment.apiUrl}/chat/list?page=${page}&limit=${limit}`;
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
@@ -93,6 +104,9 @@ export class ChatService {
   }
 
   private loadConversations(): void {
+    if (!this.authSession.isAuthenticated() || this.authSession.isCustomer()) {
+      return;
+    }
     this.http.get<ChatConversation[]>(`${environment.apiUrl}/chat/conversations`).subscribe({
       next: (convs) => {
         const mapped = convs.map(c => this.mapConversation(c));

@@ -18,6 +18,8 @@ export interface CategoryMemberDTO {
   owner_id?: string;
   initials?: string;
   description?: string | null;
+  banner_url?: string | null;
+  bannerUrl?: string | null;
 }
 
 export interface BusinessCategoryDTO {
@@ -52,12 +54,18 @@ export interface BusinessDTO {
   is_top?: boolean;
   created_at: string;
   updated_at: string;
-  // UI presentation fields joined in API response
   categoryName?: string;
   logoUrl?: string;
   bannerUrl?: string;
   hasBizzCoinOffer?: boolean;
   has_bizz_coin_offer?: boolean;
+  phone?: string | null;
+  whatsapp?: string | null;
+  owner_name?: string | null;
+  district_name?: string | null;
+  state_name?: string | null;
+  location?: string | null;
+  pincode?: string | null;
 }
 
 export interface OfferDTO {

@@ -144,7 +144,7 @@
 .business-profile-banner {
   position: relative;
   width: 100%;
-  min-height: 160px;
+  min-height: 200px;
   border-radius: var(--bizzdeal-radius-lg);
   overflow: hidden;
   box-shadow: var(--bizzdeal-shadow-primary);
@@ -292,18 +292,17 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: #ffffff;
+      background: var(--bizzdeal-gradient-primary, linear-gradient(90deg, #1565C0 0%, #2196F3 100%));
       border-radius: 20px;
-      padding: 6px 18px 6px 10px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 8px 22px;
+      box-shadow: var(--bizzdeal-shadow-primary, 0 6px 20px rgba(33, 150, 243, 0.35));
+      border: none;
       cursor: pointer;
       transition: all 0.2s ease;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
-        border-color: #fcd34d;
+        box-shadow: var(--bizzdeal-shadow-primary-glow, 0 8px 24px rgba(33, 150, 243, 0.45));
       }
 
       &:active {
@@ -311,28 +310,25 @@
       }
 
       .qa-trophy-icon-wrap {
-        width: 32px;
-        height: 32px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border: 1px solid #fcd34d;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+        background: transparent;
+        border: none;
+        box-shadow: none;
 
         .qa-trophy-icon {
-          font-size: 18px;
-          color: #d97706;
+          font-size: 24px;
+          color: #ffd700;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
         }
       }
 
       .qa-pill-label {
-        font-size: 0.84rem;
+        font-size: 1.15rem;
         font-weight: 800;
-        letter-spacing: 0.6px;
-        color: #1e293b;
+        letter-spacing: 0.8px;
+        color: var(--bizzdeal-text-on-primary, #ffffff);
         text-transform: uppercase;
       }
     }

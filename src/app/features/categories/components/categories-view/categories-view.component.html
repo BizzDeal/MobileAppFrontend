@@ -380,35 +380,27 @@
   </section>
 
   <!-- Member Details Sheet Modal -->
-  <ion-modal [isOpen]="isMemberModalOpen()" (didDismiss)="closeMemberDetails()" class="member-sheet-modal">
+  <ion-modal [isOpen]="isMemberModalOpen()" (didDismiss)="closeMemberDetails()" class="member-sheet-modal" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
     <ng-template>
       @if (selectedMemberForModal(); as m) {
         <div class="member-modal-content">
           <div class="modal-drag-indicator"></div>
           <div class="modal-header">
-            <h3 class="modal-title">Member Details</h3>
+            <h3 class="modal-title">{{ m.business_name || m.name }}</h3>
             <button type="button" class="modal-close-btn" (click)="closeMemberDetails()" aria-label="Close">
               <ion-icon name="close-outline" />
             </button>
           </div>
 
           <div class="modal-body-scroll">
-            <div class="modal-profile-hero">
-              <div class="modal-avatar" [style.background]="getAvatarColor(m.business_name || m.name)">
-                @if (m.profile_pic_url) {
-                  <img [appCachedImg]="m.profile_pic_url" [fallbackName]="m.name" [alt]="m.name" />
-                } @else {
-                  <span>{{ m.initials || getInitials(m.name) }}</span>
-                }
-              </div>
-              <h4 class="hero-member-name">{{ m.name }}</h4>
-              <p class="hero-biz-name">{{ m.business_name }}</p>
-              @if (selectedCategory()?.name) {
-                <span class="hero-cat-badge">
-                  {{ selectedCategory()?.icon || '🏷️' }} {{ selectedCategory()?.name }}
-                </span>
+            <div class="modal-brand-hero" [style.background]="getAvatarColor(m.business_name || m.name)">
+              <span class="fallback-hero-text">{{ getInitials(m.business_name || m.name) }}</span>
+              @if (m.banner_url || m.bannerUrl) {
+                <img loading="lazy" [appCachedImg]="m.banner_url || m.bannerUrl!" [alt]="m.business_name || m.name" class="hero-img" />
               }
             </div>
+
+            <div class="modal-body-inner">
 
             @if (m.description) {
               <div class="modal-card">
@@ -463,8 +455,9 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="modal-footer-actions">
+        <div class="modal-footer-actions">
             @if (m.phone) {
               <button type="button" class="foot-btn call" (click)="onCallMember($event, m.phone)">
                 <ion-icon name="call" />

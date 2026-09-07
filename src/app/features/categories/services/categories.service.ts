@@ -246,6 +246,8 @@ export class CategoriesService {
             owner_id: b.owner_id,
             initials,
             description: b.description || null,
+            banner_url: b.banner_url || b.bannerUrl || null,
+            bannerUrl: b.bannerUrl || b.banner_url || null,
           };
           this._categories.update((cats) =>
             cats.map((c) => (c.id === categoryId ? { ...c, member } : c))

@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.bizzdeal.in/bizzdeal/api',
+  apiUrl: 'https://bizzdeal-backend.up.railway.app/bizzdeal/api',
   firebaseConfig: {
     apiKey: 'AIzaSyCfTceNijt0yvT8Cbg1Pntz2u3jsala25o',
     authDomain: 'bizzdeal-e82c6.firebaseapp.com',

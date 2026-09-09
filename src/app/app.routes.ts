@@ -142,7 +142,13 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'auth/login',
     pathMatch: 'full',
+    redirectTo: () => {
+      const router = inject(Router);
+      if (typeof window !== 'undefined' && window.location.hostname.toLowerCase().startsWith('admin')) {
+        return router.createUrlTree(['/admin']);
+      }
+      return router.createUrlTree(['/auth/login']);
+    },
   },
 ];

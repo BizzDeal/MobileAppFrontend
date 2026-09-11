@@ -368,8 +368,13 @@ export class FeaturedBusinessRequestPage implements OnInit {
     const formData = new FormData();
     formData.append('title', fv.title.trim());
     formData.append('description', fv.description.trim());
-    formData.append('start_date', new Date(fv.start_date).toISOString());
-    formData.append('end_date', new Date(fv.end_date).toISOString());
+    if (this.isApproved() && this.existingRequest()) {
+      formData.append('start_date', this.existingRequest()!.start_date);
+      formData.append('end_date', this.existingRequest()!.end_date);
+    } else {
+      formData.append('start_date', new Date(fv.start_date).toISOString());
+      formData.append('end_date', new Date(fv.end_date).toISOString());
+    }
 
     if (this.selectedBannerFile()) {
       formData.append('banner', this.selectedBannerFile()!);

@@ -220,7 +220,7 @@
               formControlName="start_date"
               [min]="minStartDateString"
               class="custom-input"
-              [disabled]="isCategoryLocked()"
+              [disabled]="isCategoryLocked() || isApproved()"
             />
           </div>
           <div class="error-container">
@@ -242,7 +242,7 @@
               type="datetime-local"
               formControlName="end_date"
               class="custom-input"
-              [disabled]="isCategoryLocked()"
+              [disabled]="isCategoryLocked() || isApproved()"
             />
           </div>
           <div class="error-container">
@@ -252,6 +252,14 @@
           </div>
         </div>
       </div>
+
+      <!-- Dates Locked Info Hint when Request is Approved -->
+      @if (isApproved()) {
+        <div class="dates-locked-notice">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <span>Showcase dates are locked because this featured campaign is approved. To choose different dates, you can cancel this showcase above and submit a new request.</span>
+        </div>
+      }
 
       <!-- General Date Validation Errors (Past date or Mismatch) -->
       <div class="error-container full-width-error">
@@ -274,7 +282,7 @@
             <span>Submitting Request...</span>
           } @else {
             <ion-icon name="star"></ion-icon>
-            <span>{{ isCategoryLocked() ? 'Category Locked (Spot Occupied)' : (existingRequest() ? 'Update Featured Request' : 'Submit Featured Request') }}</span>
+            <span>{{ isCategoryLocked() ? 'Category Locked (Spot Occupied)' : (isApproved() ? 'Update Showcase Details' : (existingRequest() ? 'Update Featured Request' : 'Submit Featured Request')) }}</span>
           }
         </button>
       </div>

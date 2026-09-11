@@ -4,6 +4,7 @@ import {
   OnInit,
   inject,
   signal,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -94,6 +95,7 @@ export class FeaturedBusinessRequestPage implements OnInit {
   readonly existingRequest = signal<FeaturedBusinessRequestDTO | null>(null);
   readonly categoryLiveInfo = signal<CategoryLiveStatusDTO | null>(null);
   readonly isCategoryLocked = signal(false);
+  readonly isApproved = computed(() => this.existingRequest()?.status === 'APPROVED');
 
   readonly selectedBannerName = signal<string | null>(null);
   readonly selectedBannerPreview = signal<string | null>(null);
@@ -243,6 +245,14 @@ export class FeaturedBusinessRequestPage implements OnInit {
       end_date: this.formatDateForInput(req.end_date),
     });
 
+    if (req.status === 'APPROVED') {
+      this.featuredForm.get('start_date')?.disable();
+      this.featuredForm.get('end_date')?.disable();
+    } else {
+      this.featuredForm.get('start_date')?.enable();
+      this.featuredForm.get('end_date')?.enable();
+    }
+
     const bannerUrl = req.banner?.file_url;
     if (bannerUrl) {
       this.selectedBannerPreview.set(bannerUrl);
@@ -250,6 +260,9 @@ export class FeaturedBusinessRequestPage implements OnInit {
   }
 
   dateValidator(group: AbstractControl) {
+    // If request is already approved, dates are locked and cannot be edited
+    if (this.isApproved()) return null;
+
     const startVal = group.get('start_date')?.value;
     const endVal = group.get('end_date')?.value;
 
@@ -351,7 +364,7 @@ export class FeaturedBusinessRequestPage implements OnInit {
     this.submitting.set(true);
     this.errorMessage.set(null);
 
-    const fv = this.featuredForm.value;
+    const fv = this.featuredForm.getRawValue();
     const formData = new FormData();
     formData.append('title', fv.title.trim());
     formData.append('description', fv.description.trim());
@@ -367,12 +380,17 @@ export class FeaturedBusinessRequestPage implements OnInit {
       formData.append('business_id', profile.business_id);
     }
 
+    const wasApproved = this.isApproved();
+
     this.featuredService.submitRequest(formData).subscribe({
       next: (req) => {
         this.submitting.set(false);
         this.existingRequest.set(req);
         this.dashboardService.loadDashboardData().subscribe();
-        this.toastService.showSuccess('🎉 Featured Business request submitted for Admin review!');
+        const successMsg = wasApproved
+          ? '✨ Featured showcase details updated successfully!'
+          : '🎉 Featured Business request submitted for Admin review!';
+        this.toastService.showSuccess(successMsg);
         this.router.navigate(['/home']);
       },
       error: (err) => {
@@ -445,6 +463,8 @@ export class FeaturedBusinessRequestPage implements OnInit {
       next: (cancelled) => {
         this.submitting.set(false);
         this.existingRequest.set(cancelled);
+        this.featuredForm.get('start_date')?.enable();
+        this.featuredForm.get('end_date')?.enable();
         this.dashboardService.loadDashboardData().subscribe();
         this.toastService.showSuccess('Featured request cancelled successfully.');
         this.router.navigate(['/home']);

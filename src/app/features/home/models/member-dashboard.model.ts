@@ -43,6 +43,8 @@ export interface MemberAlert {
 export interface MemberDashboardData {
   businessName: string;
   businessLogoUrl: string;
+  /** Active featured request banner returned by the profile endpoint. */
+  featuredBannerUrl?: string | null;
   analytics: MemberDashboardAnalytics;
   alerts: MemberAlert[];
   recentActivity: any[];

@@ -176,12 +176,17 @@ export class MemberHomeComponent implements OnInit {
   });
 
   readonly featuredBannerUrl = computed(() => {
-    return this.activeFeaturedRequest()?.banner?.file_url || null;
+    // The profile endpoint only exposes featured_banner_url for an approved
+    // request whose dates contain the current time. Use it when the dashboard
+    // request list has not finished loading yet.
+    return this.activeFeaturedRequest()?.banner?.file_url ||
+      this.dashboardData()?.featuredBannerUrl ||
+      this.profile()?.featured_banner_url ||
+      null;
   });
 
   readonly hasActiveFeaturedShowcase = computed(() => {
-    const request = this.activeFeaturedRequest();
-    return !!(request && this.featuredBannerUrl());
+    return !!this.featuredBannerUrl();
   });
 
   readonly hasActiveBizzCoinOffer = computed(() => {

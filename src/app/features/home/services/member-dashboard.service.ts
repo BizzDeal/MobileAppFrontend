@@ -73,7 +73,8 @@ export class MemberDashboardService {
       analytics: this.http.get<any>(`${this.apiUrl}/analytics/member/summary`).pipe(catchError(() => of(null)))
     }).pipe(
       map((response: any) => {
-        const { myOffers: offersRes, vouchers: vouchersRes, analytics: analyticsRes, bizzCoinOffer: bizzCoinsRes, featuredRequests: featRes } = response;
+        const { profile: profileRes, myOffers: offersRes, vouchers: vouchersRes, analytics: analyticsRes, bizzCoinOffer: bizzCoinsRes, featuredRequests: featRes } = response;
+        const profileResponse = profileRes?.data || profileRes || {};
         const rawOffers: OfferDTO[] = Array.isArray(offersRes) ? offersRes : offersRes?.data || offersRes?.items || [];
         const rawVouchers: VoucherDTO[] = Array.isArray(vouchersRes) ? vouchersRes : vouchersRes?.data || vouchersRes?.items || [];
         const rawFeatured: any[] = Array.isArray(featRes) ? featRes : featRes?.data || featRes?.items || [];
@@ -173,6 +174,7 @@ export class MemberDashboardService {
         const dashboardData: MemberDashboardData = {
           businessName: profile?.business_name || 'My Business',
           businessLogoUrl: profile?.business_banner_url || '',
+          featuredBannerUrl: profileResponse.featured_banner_url || null,
           analytics,
           alerts: [],
           recentActivity: rawVouchers.slice(0, 5).map(v => ({

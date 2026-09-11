@@ -322,6 +322,32 @@ export class FeaturedBusinessRequestPage implements OnInit {
     this.errorMessage.set(null);
 
     const fv = this.featuredForm.getRawValue();
+    const bannerFile = this.selectedBannerFile();
+    const request = this.existingRequest();
+    const onlyBannerChanged = this.isApproved() && !!bannerFile &&
+      !this.featuredForm.get('title')?.dirty &&
+      !this.featuredForm.get('description')?.dirty;
+
+    if (onlyBannerChanged && request) {
+      this.featuredService.updateBanner(request.id, bannerFile).subscribe({
+        next: (updated) => {
+          this.submitting.set(false);
+          this.existingRequest.set(updated);
+          this.selectedBannerFile.set(null);
+          this.selectedBannerName.set(null);
+          this.selectedBannerPreview.set(updated.banner?.file_url || null);
+          this.dashboardService.updateFeaturedRequest(updated);
+          this.toastService.showSuccess('📸 Featured banner updated successfully!');
+          this.router.navigate(['/home']);
+        },
+        error: (err) => {
+          this.submitting.set(false);
+          this.errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to update featured banner.'));
+        },
+      });
+      return;
+    }
+
     const formData = new FormData();
     formData.append('title', fv.title.trim());
     formData.append('description', fv.description.trim());
@@ -332,7 +358,6 @@ export class FeaturedBusinessRequestPage implements OnInit {
       formData.append('end_date', new Date(preservedEndDate).toISOString());
     }
 
-    const bannerFile = this.selectedBannerFile();
     if (bannerFile) {
       formData.append('banner', bannerFile);
     }

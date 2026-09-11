@@ -162,7 +162,7 @@ export class MemberHomeComponent implements OnInit {
   readonly globalStats = computed(() => this.dashboardData()?.analytics?.globalStats || this.regionalStats());
 
   readonly isBusinessFeatured = computed(() => {
-    return !!this.profile()?.is_featured;
+    return !!this.activeFeaturedRequest();
   });
 
   readonly activeFeaturedRequest = computed(() => {
@@ -180,7 +180,8 @@ export class MemberHomeComponent implements OnInit {
   });
 
   readonly hasActiveFeaturedShowcase = computed(() => {
-    return !!(this.featuredBannerUrl() && (this.isBusinessFeatured() || this.activeFeaturedRequest()));
+    const request = this.activeFeaturedRequest();
+    return !!(request && this.featuredBannerUrl());
   });
 
   readonly hasActiveBizzCoinOffer = computed(() => {

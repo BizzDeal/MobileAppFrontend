@@ -118,6 +118,8 @@ export class HomeService {
           categoryName: b.categoryName || b.category?.name || 'Partner Business',
           logoUrl: b.logoUrl || b.business_logo_url || null,
           bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
+          featured_banner_url: b.featured_banner_url || b.featuredBannerUrl || null,
+          featuredBannerUrl: b.featuredBannerUrl || b.featured_banner_url || null,
           hasBizzCoinOffer: b.hasBizzCoinOffer ?? b.has_bizz_coin_offer ?? false,
           has_bizz_coin_offer: b.hasBizzCoinOffer ?? b.has_bizz_coin_offer ?? false,
         }));

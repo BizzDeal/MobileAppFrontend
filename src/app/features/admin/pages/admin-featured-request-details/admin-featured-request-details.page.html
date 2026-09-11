@@ -109,13 +109,13 @@
           <h3 class="section-title">Showcase Details</h3>
         </div>
 
-        <div class="details-grid premium-info-card">
-          <div class="detail-item full-width">
+        <div class="info-rows-card">
+          <div class="info-row desc-row">
             <span class="label">Description</span>
             <span class="value desc-text">{{ req.description }}</span>
           </div>
 
-          <div class="detail-item">
+          <div class="info-row">
             <span class="label">Featured Start Date</span>
             <span class="value font-semibold">
               <ion-icon name="calendar-outline" class="inline-icon"></ion-icon>
@@ -123,7 +123,7 @@
             </span>
           </div>
 
-          <div class="detail-item">
+          <div class="info-row">
             <span class="label">Featured End Date</span>
             <span class="value font-semibold">
               <ion-icon name="calendar-outline" class="inline-icon"></ion-icon>
@@ -131,18 +131,18 @@
             </span>
           </div>
 
-          <div class="detail-item">
+          <div class="info-row">
             <span class="label">Submitted On</span>
             <span class="value">{{ req.created_at | date:'mediumDate' }}</span>
           </div>
 
-          <div class="detail-item">
+          <div class="info-row">
             <span class="label">Last Updated</span>
             <span class="value">{{ req.updated_at | date:'mediumDate' }}</span>
           </div>
 
           @if (req.approved_at) {
-            <div class="detail-item">
+            <div class="info-row">
               <span class="label">Approved Date</span>
               <span class="value">{{ req.approved_at | date:'mediumDate' }}</span>
             </div>
@@ -154,56 +154,64 @@
           <h3 class="section-title">Business & Owner Profile</h3>
         </div>
 
-        <div class="details-grid premium-info-card">
-          <div class="detail-item">
+        <div class="info-rows-card">
+          <div class="info-row">
             <span class="label">Business Name</span>
             <span class="value font-bold">{{ req.business?.name || 'N/A' }}</span>
           </div>
 
-          <div class="detail-item">
+          <div class="info-row">
             <span class="label">Category</span>
             <span class="value">{{ req.category?.name || 'N/A' }}</span>
           </div>
 
           @if (req.business?.owner?.profile?.full_name) {
-            <div class="detail-item">
+            <div class="info-row">
               <span class="label">Owner Name</span>
               <span class="value">{{ req.business?.owner?.profile?.full_name }}</span>
             </div>
           }
 
           @if (req.business?.owner?.phone || req.business?.phone) {
-            <div class="detail-item">
+            <div class="info-row">
               <span class="label">Phone</span>
-              <span class="value">{{ req.business?.owner?.phone || req.business?.phone }}</span>
+              <span class="value phone-value">
+                <a [href]="'tel:' + (req.business?.owner?.phone || req.business?.phone)" class="link-val">
+                  {{ req.business?.owner?.phone || req.business?.phone }}
+                </a>
+              </span>
             </div>
           }
 
           @if (req.business?.owner?.email || req.business?.email) {
-            <div class="detail-item">
+            <div class="info-row">
               <span class="label">Email</span>
-              <span class="value">{{ req.business?.owner?.email || req.business?.email }}</span>
+              <span class="value email-value">
+                <a [href]="'mailto:' + (req.business?.owner?.email || req.business?.email)" class="link-val">
+                  {{ req.business?.owner?.email || req.business?.email }}
+                </a>
+              </span>
             </div>
           }
 
           @if (req.business?.owner?.whatsapp) {
-            <div class="detail-item">
+            <div class="info-row">
               <span class="label">WhatsApp</span>
               <span class="value">{{ req.business?.owner?.whatsapp }}</span>
             </div>
           }
 
           @if (req.business?.gst_number) {
-            <div class="detail-item">
+            <div class="info-row">
               <span class="label">GST Number</span>
               <span class="value">{{ req.business?.gst_number }}</span>
             </div>
           }
 
           @if (req.business?.address) {
-            <div class="detail-item full-width">
+            <div class="info-row address-row">
               <span class="label">Address</span>
-              <span class="value">{{ req.business?.address }}</span>
+              <span class="value address-value">{{ req.business?.address }}</span>
             </div>
           }
         </div>
@@ -265,16 +273,15 @@
                   </ion-button>
                 </div>
 
-                <ion-button
-                  color="medium"
-                  fill="clear"
-                  class="cancel-btn-full"
+                <button
+                  type="button"
+                  class="cancel-spotlight-btn"
                   [disabled]="actionLoading()"
                   (click)="confirmCancelRequest()"
                 >
-                  <ion-icon name="trash-outline" slot="start"></ion-icon>
-                  Cancel Approved Request
-                </ion-button>
+                  <ion-icon name="trash-outline"></ion-icon>
+                  <span>Cancel Approved Request</span>
+                </button>
               </div>
             }
           }

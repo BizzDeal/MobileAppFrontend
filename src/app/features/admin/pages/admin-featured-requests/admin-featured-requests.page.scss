@@ -40,11 +40,17 @@
   }
 }
 
+.list-container {
+  margin: 0 16px;
+  padding-top: 14px;
+}
+
 /* Compact Mobile List View */
 .compact-requests-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  padding-top: 4px;
   margin-bottom: 24px;
 }
 

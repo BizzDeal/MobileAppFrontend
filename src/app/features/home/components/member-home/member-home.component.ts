@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, computed, signal, OnInit, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Output, inject, computed, signal, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner, NavController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -25,11 +25,15 @@ import { AppSocketService } from '../../../../core/services/app-socket.service';
 import { DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
+import { register } from 'swiper/element/bundle';
+
+register();
 
 @Component({
   selector: 'app-member-home',
   standalone: true,
   imports: [CommonModule, IonIcon, MeetingCardComponent, CachedImgDirective, DashboardSkeletonComponent, MemberHomeHeaderComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './member-home.component.html',
   styleUrls: ['./member-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -173,6 +177,10 @@ export class MemberHomeComponent implements OnInit {
 
   readonly featuredBannerUrl = computed(() => {
     return this.profile()?.featured_banner_url || this.activeFeaturedRequest()?.banner?.file_url || null;
+  });
+
+  readonly hasActiveFeaturedShowcase = computed(() => {
+    return !!(this.featuredBannerUrl() && (this.isBusinessFeatured() || this.activeFeaturedRequest()));
   });
 
   readonly hasActiveBizzCoinOffer = computed(() => {

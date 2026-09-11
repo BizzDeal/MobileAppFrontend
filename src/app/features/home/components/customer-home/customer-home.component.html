@@ -48,8 +48,8 @@
             <div class="featured-card" (click)="businessClick.emit(biz)">
               <div class="card-media" [style.background]="getAvatarColor(biz.name)">
                 <span class="fallback-monogram">{{ getInitials(biz.name) }}</span>
-                @if (biz.bannerUrl || biz.logoUrl) {
-                  <img loading="lazy" [appCachedImg]="biz.bannerUrl || biz.logoUrl" [alt]="biz.name" class="media-img" />
+                @if (biz.featuredBannerUrl || biz.featured_banner_url || biz.bannerUrl || biz.logoUrl) {
+                  <img loading="lazy" [appCachedImg]="biz.featuredBannerUrl || biz.featured_banner_url || biz.bannerUrl || biz.logoUrl" [alt]="biz.name" class="media-img" />
                 }
                 <div class="card-scrim"></div>
               </div>

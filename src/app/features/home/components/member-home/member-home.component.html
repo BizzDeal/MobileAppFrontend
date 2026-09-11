@@ -51,36 +51,64 @@
       </div>
     }
 
-    <section class="business-profile-banner">
-      <!-- Background cover image -->
-      <div class="banner-bg">
-        @if (profile()?.business_banner_url) {
-          <img loading="lazy" [appCachedImg]="profile()?.business_banner_url!"
-            [fallbackName]="profile()?.business_name || 'My Business'" alt="Business Banner" class="banner-bg-img" />
-        }
-        <div class="banner-gradient-scrim"></div>
+    <!-- Dynamic Hero Banner Area: Carousel if active featured banner exists, single static banner otherwise -->
+    @if (hasActiveFeaturedShowcase()) {
+      <div class="member-banner-carousel-wrapper">
+        <swiper-container
+          autoplay-delay="4000"
+          autoplay-disable-on-interaction="false"
+          loop="true"
+          speed="700"
+          slides-per-view="1"
+          space-between="12"
+          pagination="true"
+          class="member-banner-swiper"
+        >
+          <swiper-slide>
+            <ng-container *ngTemplateOutlet="businessBannerTpl"></ng-container>
+          </swiper-slide>
+          <swiper-slide>
+            <ng-container *ngTemplateOutlet="featuredBannerTpl"></ng-container>
+          </swiper-slide>
+        </swiper-container>
       </div>
-      <!-- Followers pill — top right -->
-      <div class="banner-top-bar">
-        <div class="banner-followers-pill">
-          <ion-icon name="people-outline" class="banner-followers-icon"></ion-icon>
-          <span class="banner-followers-text">Followers : 0</span>
-        </div>
-      </div>
-      <!-- Business info — bottom left -->
-      <div class="banner-bottom-bar">
-        <h2 class="banner-biz-name">
-          <span>{{ profile()?.business_name || 'My Business' }}</span>
-          @if (profile()?.status === 'ACTIVE') {
-            <ion-icon name="checkmark-circle" class="banner-check-icon" aria-label="Verified Active"></ion-icon>
-          }
-        </h2>
-        <span class="banner-joined">Joined {{ profile()?.created_at | date:'d MMM yyyy' }}</span>
-      </div>
-    </section>
+    } @else {
+      <ng-container *ngTemplateOutlet="businessBannerTpl"></ng-container>
+    }
 
-    <!-- Dedicated Featured Business Spotlight Showcase Banner (Distinct & Separate from Store Banner) -->
-    @if (featuredBannerUrl() || (isBusinessFeatured() && activeFeaturedRequest())) {
+    <!-- Template: Business Profile Banner -->
+    <ng-template #businessBannerTpl>
+      <section class="business-profile-banner">
+        <!-- Background cover image -->
+        <div class="banner-bg">
+          @if (profile()?.business_banner_url) {
+            <img loading="lazy" [appCachedImg]="profile()?.business_banner_url!"
+              [fallbackName]="profile()?.business_name || 'My Business'" alt="Business Banner" class="banner-bg-img" />
+          }
+          <div class="banner-gradient-scrim"></div>
+        </div>
+        <!-- Followers pill — top right -->
+        <div class="banner-top-bar">
+          <div class="banner-followers-pill">
+            <ion-icon name="people-outline" class="banner-followers-icon"></ion-icon>
+            <span class="banner-followers-text">Followers : 0</span>
+          </div>
+        </div>
+        <!-- Business info — bottom left -->
+        <div class="banner-bottom-bar">
+          <h2 class="banner-biz-name">
+            <span>{{ profile()?.business_name || 'My Business' }}</span>
+            @if (profile()?.status === 'ACTIVE') {
+              <ion-icon name="checkmark-circle" class="banner-check-icon" aria-label="Verified Active"></ion-icon>
+            }
+          </h2>
+          <span class="banner-joined">Joined {{ profile()?.created_at | date:'d MMM yyyy' }}</span>
+        </div>
+      </section>
+    </ng-template>
+
+    <!-- Template: Dedicated Featured Business Spotlight Banner -->
+    <ng-template #featuredBannerTpl>
       <section class="featured-spotlight-banner" (click)="onFeaturedRequest()" role="button" tabindex="0">
         <div class="featured-banner-bg">
           @if (featuredBannerUrl()) {
@@ -111,7 +139,7 @@
           }
         </div>
       </section>
-    }
+    </ng-template>
 
     <!-- Business & Bizz Rewards Section -->
     <section class="quick-actions-section">

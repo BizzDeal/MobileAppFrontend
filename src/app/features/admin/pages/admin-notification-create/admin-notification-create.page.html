@@ -1,7 +1,9 @@
 <ion-header class="ion-no-border admin-child-header" collapse="fade" [translucent]="true">
   <ion-toolbar class="px-2 pb-2 pt-3">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin/notifications"></ion-back-button>
+      <button type="button" class="header-back-btn" (click)="goBack()" aria-label="Go Back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
     </ion-buttons>
     <ion-title>Compose Notification</ion-title>
   </ion-toolbar>

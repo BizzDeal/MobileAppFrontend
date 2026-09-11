@@ -1,8 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, DestroyRef } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AdminSettingsService } from '../../services/admin-settings.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { addIcons } from 'ionicons';
 import { closeOutline, checkmarkOutline, filterOutline, refreshOutline } from 'ionicons/icons';
 
@@ -30,9 +31,19 @@ export class AdminRegionFilterModalComponent implements OnInit {
   selectedDistrict: string = '';
 
   constructor(
-    private settingsService: AdminSettingsService
+    private settingsService: AdminSettingsService,
+    private appBackButtonService: AppBackButtonService,
+    private destroyRef: DestroyRef
   ) {
     addIcons({ closeOutline, checkmarkOutline, filterOutline, refreshOutline });
+    const unregister = this.appBackButtonService.registerCustomOverlayDismissHandler(() => {
+      if (this.isOpen) {
+        this.cancel();
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(() => unregister());
   }
 
   ngOnInit() {

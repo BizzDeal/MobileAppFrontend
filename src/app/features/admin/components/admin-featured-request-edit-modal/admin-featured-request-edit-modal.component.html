@@ -1,0 +1,204 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-title class="font-bold">Edit Featured Request</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()" aria-label="Close modal">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding edit-modal-content">
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-modal-form">
+    <!-- Status Select -->
+    <div class="form-group">
+      <label for="edit-status" class="form-label">
+        Status <span class="required-star">*</span>
+      </label>
+      <div class="input-wrapper select-wrapper">
+        <ion-icon name="star-outline" class="field-icon"></ion-icon>
+        <ion-select
+          id="edit-status"
+          formControlName="status"
+          interface="popover"
+          class="custom-select"
+        >
+          @for (opt of statusOptions; track opt) {
+            <ion-select-option [value]="opt">{{ opt }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+      <div class="error-container"></div>
+    </div>
+
+    <!-- Title -->
+    <div class="form-group">
+      <label for="edit-title" class="form-label">
+        Showcase Title <span class="required-star">*</span>
+      </label>
+      <div class="input-wrapper" [class.invalid]="isFieldInvalid('title')">
+        <ion-icon name="pricetag-outline" class="field-icon"></ion-icon>
+        <input
+          id="edit-title"
+          type="text"
+          formControlName="title"
+          placeholder="Showcase title..."
+          class="custom-input"
+        />
+      </div>
+      <div class="error-container">
+        @if (isFieldInvalid('title')) {
+          <span class="error-text">Title is required (min 3 characters).</span>
+        }
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="edit-desc" class="form-label">
+        Description <span class="required-star">*</span>
+      </label>
+      <div class="input-wrapper textarea-wrapper" [class.invalid]="isFieldInvalid('description')">
+        <ion-icon name="document-text-outline" class="field-icon"></ion-icon>
+        <textarea
+          id="edit-desc"
+          formControlName="description"
+          rows="3"
+          placeholder="Showcase details..."
+          class="custom-textarea"
+        ></textarea>
+      </div>
+      <div class="error-container">
+        @if (isFieldInvalid('description')) {
+          <span class="error-text">Description is required (min 10 characters).</span>
+        }
+      </div>
+    </div>
+
+    <!-- Banner Preview & Replace -->
+    <div class="form-group">
+      <label class="form-label">Promotional Banner (16:9)</label>
+      @if (selectedBannerPreview()) {
+        <div class="banner-preview-card">
+          <img
+            loading="lazy"
+            [appCachedImg]="selectedBannerPreview()"
+            alt="Banner preview"
+            class="banner-preview-img"
+          />
+          <div class="preview-actions">
+            <button type="button" class="change-btn" (click)="bannerInput.click()">
+              <ion-icon name="image-outline"></ion-icon> Replace Banner
+            </button>
+            @if (selectedBannerFile()) {
+              <button type="button" class="reset-btn" (click)="clearBanner()">
+                <ion-icon name="close-circle-outline"></ion-icon> Revert
+              </button>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="upload-box" (click)="bannerInput.click()">
+          <ion-icon name="image-outline" class="upload-icon"></ion-icon>
+          <span>Tap to upload banner</span>
+        </div>
+      }
+      <input #bannerInput type="file" accept="image/*" hidden (change)="onBannerSelected($event)" />
+      <div class="error-container"></div>
+    </div>
+
+    <!-- Date Row -->
+    <div class="form-row">
+      <div class="form-group half-width">
+        <label for="edit-start-date" class="form-label">
+          Start Date & Time <span class="required-star">*</span>
+        </label>
+        <div class="input-wrapper" [class.invalid]="isFieldInvalid('start_date')">
+          <ion-icon name="calendar-outline" class="field-icon"></ion-icon>
+          <input
+            id="edit-start-date"
+            type="datetime-local"
+            formControlName="start_date"
+            class="custom-input"
+          />
+        </div>
+        <div class="error-container">
+          @if (isFieldInvalid('start_date')) {
+            <span class="error-text">Start date is required.</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-group half-width">
+        <label for="edit-end-date" class="form-label">
+          End Date & Time <span class="required-star">*</span>
+        </label>
+        <div class="input-wrapper" [class.invalid]="isFieldInvalid('end_date')">
+          <ion-icon name="calendar-outline" class="field-icon"></ion-icon>
+          <input
+            id="edit-end-date"
+            type="datetime-local"
+            formControlName="end_date"
+            class="custom-input"
+          />
+        </div>
+        <div class="error-container">
+          @if (isFieldInvalid('end_date')) {
+            <span class="error-text">End date is required.</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Date Mismatch Error -->
+    <div class="error-container full-width-error">
+      @if (editForm.errors?.['dateMismatch'] && (editForm.touched || editForm.dirty)) {
+        <span class="error-text">⚠️ End date must be strictly after start date.</span>
+      }
+    </div>
+
+    <!-- Rejection / Revocation Reason -->
+    <div class="form-group">
+      <label for="edit-reason" class="form-label">Rejection / Moderation Reason</label>
+      <div class="input-wrapper textarea-wrapper">
+        <textarea
+          id="edit-reason"
+          formControlName="rejection_reason"
+          rows="2"
+          placeholder="Reason if rejected or notes on this change..."
+          class="custom-textarea"
+        ></textarea>
+      </div>
+      <div class="error-container"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="modal-footer-actions">
+      <ion-button
+        type="button"
+        fill="outline"
+        color="medium"
+        (click)="dismiss()"
+        [disabled]="submitting()"
+        class="footer-btn"
+      >
+        Cancel
+      </ion-button>
+      <ion-button
+        type="submit"
+        color="primary"
+        [disabled]="submitting() || editForm.invalid"
+        class="footer-btn save-btn"
+      >
+        @if (submitting()) {
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Saving...</span>
+        } @else {
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          <span>Save Changes</span>
+        }
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

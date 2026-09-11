@@ -69,6 +69,7 @@ import { CategoriesViewComponent } from '../features/categories/components/categ
 import { VideosViewComponent } from '../features/videos/components/videos-view/videos-view.component';
 import { BusinessDirectoryPage } from '../features/business/pages/business-directory/business-directory.page';
 import { AuthSessionService } from '../core/services/auth-session.service';
+import { AppBackButtonService } from '../core/platform/app-back-button.service';
 import { CachedImgDirective } from '../shared/directives/cached-img.directive';
 import { getInitials, getAvatarColor } from '../shared/utils/avatar.util';
 
@@ -128,6 +129,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
   readonly walletService = inject(WalletService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly ngZone = inject(NgZone);
+  private readonly backButtonService = inject(AppBackButtonService);
   
   
   readonly getInitials = getInitials;
@@ -240,6 +242,31 @@ export class HomePage implements AfterViewInit, OnDestroy {
         error: (err) => console.error('HomePage initial customer vouchers load error:', err)
       });
     }
+
+    const unregister = this.backButtonService.registerOverlayDismissHandler(() => {
+      if (this.selectedDealModal()) {
+        this.selectedDealModal.set(null);
+        return true;
+      }
+      if (this.selectedBizModal()) {
+        this.selectedBizModal.set(null);
+        return true;
+      }
+      if (this.selectedVoucherModal()) {
+        this.selectedVoucherModal.set(null);
+        return true;
+      }
+      if (this.isVouchersModalOpen()) {
+        this.isVouchersModalOpen.set(false);
+        return true;
+      }
+      if (this.isNotificationsModalOpen()) {
+        this.isNotificationsModalOpen.set(false);
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(unregister);
   }
 
   ionViewWillEnter(): void {

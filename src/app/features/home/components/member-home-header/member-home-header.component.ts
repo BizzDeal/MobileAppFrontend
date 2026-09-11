@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal, DestroyRef } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { callOutline, mailOutline, globeOutline, shareSocialOutline } from 'ionicons/icons';
@@ -6,6 +6,7 @@ import { ProfileDTO } from '../../../profile/models/profile.model';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { ShareService } from '../../../../core/platform/share.service';
 import { UserInviteService } from '../../../auth/services/user-invite.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -19,6 +20,8 @@ import { firstValueFrom } from 'rxjs';
 export class MemberHomeHeaderComponent {
   private readonly shareService = inject(ShareService);
   private readonly userInviteService = inject(UserInviteService);
+  private readonly appBackButtonService = inject(AppBackButtonService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly profile = input<ProfileDTO | null>(null);
   readonly unreadCount = input<number>(0);
@@ -31,6 +34,15 @@ export class MemberHomeHeaderComponent {
 
   constructor() {
     addIcons({ callOutline, mailOutline, globeOutline, shareSocialOutline });
+
+    const unregister = this.appBackButtonService.registerCustomOverlayDismissHandler(() => {
+      if (this.showSupportDialog()) {
+        this.closeSupportInfo();
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(() => unregister());
   }
 
   getDisplayName(profile: ProfileDTO | null): string {

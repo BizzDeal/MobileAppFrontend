@@ -6,7 +6,6 @@ import {
   IonTitle,
   IonContent,
   IonButtons,
-  IonButton,
   IonIcon
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -17,6 +16,8 @@ import {
   syncOutline
 } from 'ionicons/icons';
 
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
+
 @Component({
   selector: 'app-earn-bizz-coins',
   standalone: true,
@@ -26,7 +27,6 @@ import {
     IonTitle,
     IonContent,
     IonButtons,
-    IonButton,
     IonIcon
   ],
   templateUrl: './earn-bizz-coins.page.html',
@@ -35,6 +35,7 @@ import {
 })
 export class EarnBizzCoinsPage {
   private readonly location = inject(Location);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   constructor() {
     addIcons({
@@ -46,6 +47,6 @@ export class EarnBizzCoinsPage {
   }
 
   goBack(): void {
-    this.location.back();
+    this.backButtonService.back('/wallet/points');
   }
 }

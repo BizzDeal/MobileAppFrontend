@@ -21,24 +21,9 @@
   background: var(--bizzdeal-bg-surface);
   border-bottom: 1px solid var(--bizzdeal-border-color);
   flex-shrink: 0;
-}
-
-.back-btn {
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  color: var(--bizzdeal-text-primary);
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: var(--bizzdeal-spacing-sm);
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-  margin-left: -4px;
-
-  &:active {
-    opacity: 0.6;
-  }
+  gap: 8px;
 }
 
 .header-partner-info {

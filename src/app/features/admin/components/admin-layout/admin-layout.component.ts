@@ -6,10 +6,11 @@ import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component'
 import { AdminLogoutButtonComponent } from '../admin-logout-button/admin-logout-button.component';
 import { AdminReferralsFilterModalComponent } from '../admin-referrals-filter-modal/admin-referrals-filter-modal.component';
 import { AdminReferralsStateService, AdminReferralsFilter } from '../../services/admin-referrals-state.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
-import { menuOutline, closeOutline, filterOutline } from 'ionicons/icons';
+import { menuOutline, closeOutline, filterOutline, arrowBackOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-layout',
@@ -25,16 +26,30 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   isFilterOpen = false;
   currentFilterState: AdminReferralsFilter = { startDate: null, endDate: null, stateId: null, districtId: null };
   private routerSub!: Subscription;
+  private unregisterOverlayHandler?: () => void;
 
   constructor(
     private router: Router,
-    private adminReferralsStateService: AdminReferralsStateService
+    private adminReferralsStateService: AdminReferralsStateService,
+    private appBackButtonService: AppBackButtonService
   ) {
-    addIcons({ menuOutline, closeOutline, filterOutline });
+    addIcons({ menuOutline, closeOutline, filterOutline, arrowBackOutline });
     this.updateRouteState(this.router.url);
   }
 
   ngOnInit(): void {
+    this.unregisterOverlayHandler = this.appBackButtonService.registerCustomOverlayDismissHandler(() => {
+      if (this.isFilterOpen) {
+        this.isFilterOpen = false;
+        return true;
+      }
+      if (this.isMobileDrawerOpen) {
+        this.isMobileDrawerOpen = false;
+        return true;
+      }
+      return false;
+    });
+
     this.routerSub = this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
@@ -84,7 +99,17 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     this.isMobileDrawerOpen = false;
   }
 
+  canGoBack(): boolean {
+    const url = this.router.url;
+    return url !== '/admin/dashboard' && url !== '/admin';
+  }
+
+  goBack(): void {
+    this.appBackButtonService.back('/admin/dashboard');
+  }
+
   ngOnDestroy(): void {
     this.routerSub?.unsubscribe();
+    this.unregisterOverlayHandler?.();
   }
 }

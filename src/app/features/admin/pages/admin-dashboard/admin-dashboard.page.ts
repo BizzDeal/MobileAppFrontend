@@ -160,6 +160,10 @@ export class AdminDashboardPage implements OnInit {
     this.router.navigate(['/admin/featured-requests'], { queryParams: { status: 'PENDING' } });
   }
 
+  viewFeaturedRequestDetails(request: FeaturedBusinessRequestDTO) {
+    this.router.navigate(['/admin/featured-requests', request.id]);
+  }
+
   async openMemberModal(member: User) {
     const modal = await this.modalCtrl.create({
       component: AdminMemberActionModalComponent,

@@ -1,0 +1,113 @@
+<ion-content [fullscreen]="true" class="pending-approval-content">
+  <div class="pending-page-wrapper">
+    <div class="pending-card">
+
+      @if (isRejected()) {
+        <!-- Rejected Status Icon -->
+        <div class="status-icon-outer rejected">
+          <div class="status-icon-inner rejected">
+            <ion-icon name="close-circle" class="main-status-icon"></ion-icon>
+          </div>
+        </div>
+
+        <div class="status-badge-pill rejected">
+          <span class="status-dot rejected"></span>
+          <span>Application Rejected</span>
+        </div>
+
+        <h1 class="status-title">Application Not Approved</h1>
+
+        <p class="status-desc">
+          We regret to inform you that your BizzDeal member application was not approved.
+        </p>
+
+        @if (rejectionReason()) {
+          <div class="rejection-reason-box">
+            <div class="reason-header">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <span>Reason for Rejection</span>
+            </div>
+            <p class="reason-text">{{ rejectionReason() }}</p>
+          </div>
+        }
+
+        <p class="support-hint">
+          Please review the feedback above or contact support for further assistance.
+        </p>
+
+      } @else {
+        <!-- Success / Pending Status Icon -->
+        <div class="status-icon-outer success">
+          <div class="status-icon-inner success">
+            <ion-icon name="checkmark-circle" class="main-status-icon"></ion-icon>
+          </div>
+        </div>
+
+        <div class="status-badge-pill success">
+          <span class="status-dot success"></span>
+          <span>Pending Admin Review</span>
+        </div>
+
+        <h1 class="status-title">Payment Successful!</h1>
+
+        <p class="status-desc">
+          Thank you! Your payment has been received and your business profile is currently under review by our admin team.
+        </p>
+
+        <!-- Process Timeline Steps -->
+        <div class="process-timeline">
+          <div class="timeline-step completed">
+            <div class="step-icon-wrap">
+              <ion-icon name="checkmark-circle"></ion-icon>
+            </div>
+            <div class="step-content">
+              <span class="step-title">Payment Completed</span>
+              <span class="step-sub">Registration fee verified</span>
+            </div>
+            <span class="step-tag success">Done</span>
+          </div>
+
+          <div class="timeline-divider"></div>
+
+          <div class="timeline-step active">
+            <div class="step-icon-wrap active">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+            <div class="step-content">
+              <span class="step-title">Admin Review</span>
+              <span class="step-sub">Verification in progress</span>
+            </div>
+            <span class="step-tag in-review">In Review</span>
+          </div>
+
+          <div class="timeline-divider"></div>
+
+          <div class="timeline-step pending">
+            <div class="step-icon-wrap pending">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+            </div>
+            <div class="step-content">
+              <span class="step-title">Account Activation</span>
+              <span class="step-sub">Full access to business features</span>
+            </div>
+            <span class="step-tag pending">Next</span>
+          </div>
+        </div>
+
+        <div class="notification-info-note">
+          <ion-icon name="time-outline" class="note-icon"></ion-icon>
+          <span>You will be notified once an admin reviews and activates your account.</span>
+        </div>
+      }
+
+      <!-- Action Area -->
+      <div class="actions-area">
+        <button type="button" class="logout-btn bd-btn-primary" (click)="logout()">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Logout</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

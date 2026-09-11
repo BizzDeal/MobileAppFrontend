@@ -12,13 +12,15 @@ import {
   searchOutline,
   sparklesOutline,
   star,
-  timeOutline
+  timeOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 import { IonSkeletonText, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/standalone';
 import { BusinessDTO, OfferDTO } from '../../models/home.model';
 import { HomeService } from '../../services/home.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-search-view',
@@ -30,6 +32,7 @@ import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.uti
 })
 export class SearchViewComponent {
   private readonly homeService = inject(HomeService);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   readonly searchQuery = model<string>('');
   
@@ -59,7 +62,8 @@ export class SearchViewComponent {
       locationOutline,
       globeOutline,
       receiptOutline,
-      timeOutline
+      timeOutline,
+      arrowBackOutline
     });
 
     effect(() => {
@@ -157,5 +161,9 @@ export class SearchViewComponent {
 
   getAvatarColor(name?: string | null): string {
     return getAvatarColor(name);
+  }
+
+  goBack(): void {
+    this.backButtonService.back('/home');
   }
 }

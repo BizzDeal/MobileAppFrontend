@@ -10,6 +10,7 @@ import { environment } from '../../../../../environments/environment';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
@@ -41,6 +42,7 @@ export class IssueBizzCoinsPage implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly vouchersService = inject(VouchersService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   readonly getInitials = getInitials;
   readonly getAvatarColor = getAvatarColor;
@@ -132,7 +134,7 @@ export class IssueBizzCoinsPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/home']);
+    this.backButtonService.back('/home');
   }
 
   onSubmit() {

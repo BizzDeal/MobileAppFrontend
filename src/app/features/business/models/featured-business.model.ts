@@ -22,6 +22,13 @@ export interface FeaturedBusinessRequestDTO {
   status: FeaturedRequestStatus;
   rejection_reason?: string | null;
   approved_by_id?: string | null;
+  approved_by?: {
+    id: string;
+    email?: string;
+    profile?: {
+      full_name?: string;
+    };
+  } | null;
   approved_at?: string | null;
   created_at: string;
   updated_at: string;
@@ -30,6 +37,12 @@ export interface FeaturedBusinessRequestDTO {
     name: string;
     status?: string;
     category_id?: string;
+    phone?: string;
+    email?: string;
+    address?: string;
+    gst_number?: string;
+    state_name?: string;
+    district_name?: string;
     category?: {
       id: string;
       name: string;
@@ -37,6 +50,8 @@ export interface FeaturedBusinessRequestDTO {
     owner?: {
       id: string;
       phone?: string;
+      email?: string;
+      whatsapp?: string;
       profile?: {
         full_name?: string;
       };

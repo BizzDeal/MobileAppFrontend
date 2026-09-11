@@ -11,9 +11,15 @@
       <ion-header class="ion-no-border lg:hidden">
         <ion-toolbar color="primary" class="mobile-top-toolbar">
           <ion-buttons slot="start">
-            <ion-button fill="clear" (click)="toggleMobileDrawer()" aria-label="Open Admin Navigation Menu" class="mobile-menu-toggle-btn">
-              <ion-icon name="menu-outline" slot="icon-only"></ion-icon>
-            </ion-button>
+            @if (canGoBack()) {
+              <ion-button fill="clear" (click)="goBack()" aria-label="Go Back" class="mobile-menu-toggle-btn">
+                <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            } @else {
+              <ion-button fill="clear" (click)="toggleMobileDrawer()" aria-label="Open Admin Navigation Menu" class="mobile-menu-toggle-btn">
+                <ion-icon name="menu-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            }
           </ion-buttons>
           <ion-title class="font-bold">{{ currentTitle }}</ion-title>
           <ion-buttons slot="end">

@@ -1,0 +1,358 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <button type="button" class="header-back-btn" (click)="goBack()" aria-label="Go Back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title class="font-bold">Featured Request Details</ion-title>
+    <ion-buttons slot="end">
+      <app-admin-logout-button></app-admin-logout-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding details-page-content">
+  <main class="web-content">
+    @if (loading()) {
+      <div class="loading-container">
+        <app-card-skeleton [count]="3"></app-card-skeleton>
+      </div>
+    }
+
+    @if (!loading() && !request()) {
+      <div class="error-card">
+        <p>Featured business request not found.</p>
+        <ion-button fill="outline" color="primary" (click)="goBack()">Go Back</ion-button>
+      </div>
+    }
+
+    @if (!loading() && request(); as req) {
+      <div class="content-wrapper">
+        <!-- 1. Hero Promotional Banner Card -->
+        <div class="hero-banner-card">
+          @if (req.banner?.file_url) {
+            <div class="banner-media-box" (click)="openBannerPreview(req.banner?.file_url)">
+              <img
+                loading="lazy"
+                [appCachedImg]="req.banner?.file_url"
+                [fallbackName]="req.title"
+                alt="Featured Banner"
+                class="banner-hero-img"
+              />
+              <div class="banner-hover-indicator">
+                <ion-icon name="open-outline"></ion-icon>
+                <span>Tap to view full banner</span>
+              </div>
+            </div>
+          } @else {
+            <div class="no-banner-box">
+              <ion-icon name="star-outline" class="placeholder-icon"></ion-icon>
+              <span>No Promotional Banner Uploaded</span>
+            </div>
+          }
+
+          @if (isCurrentlyLive()) {
+            <div class="live-spotlight-ribbon">
+              <span class="live-dot"></span>
+              <strong>LIVE SPOTLIGHT ON HOME FEED</strong>
+            </div>
+          }
+        </div>
+
+        <!-- 2. Header Title & Status Card -->
+        <div class="header-summary-card">
+          <div class="summary-top">
+            <span class="category-pill">{{ req.category?.name || 'Category' }}</span>
+            <ion-badge [color]="getStatusColor(req.status)" class="status-badge">
+              {{ req.status }}
+            </ion-badge>
+          </div>
+
+          <h2 class="showcase-title">{{ req.title }}</h2>
+
+          <div class="biz-quick-link" (click)="navigateToBusiness(req.business_id)">
+            <ion-icon name="business-outline"></ion-icon>
+            <span class="biz-name">{{ req.business?.name || 'Partner Business' }}</span>
+            <ion-icon name="open-outline" class="link-icon"></ion-icon>
+          </div>
+        </div>
+
+        <!-- 3. Category Conflict Warning Alert -->
+        @if (hasConflict()) {
+          <div class="conflict-alert-card">
+            <ion-icon name="alert-circle-outline" class="conflict-icon"></ion-icon>
+            <div class="conflict-details">
+              <strong>Category Featured Spot Currently Occupied</strong>
+              <p>
+                Business "<strong>{{ categoryLiveStatus()?.live_request?.business_name }}</strong>" is currently active as the Featured Business in this category until 
+                <strong>{{ categoryLiveStatus()?.live_request?.end_date | date:'mediumDate' }}</strong>.
+              </p>
+              <small>Under category exclusivity rules, only one live featured business is permitted per category.</small>
+            </div>
+          </div>
+        }
+
+        <!-- 4. Rejection Reason Card (if rejected) -->
+        @if (req.status === 'REJECTED' && req.rejection_reason) {
+          <div class="rejection-alert-card">
+            <ion-icon name="close-circle-outline" class="rejection-icon"></ion-icon>
+            <div>
+              <span class="rejection-heading">Rejection Reason</span>
+              <p class="rejection-body">{{ req.rejection_reason }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- 5. Showcase Information Section -->
+        <div class="section-title-wrapper">
+          <h3 class="section-title">Showcase Details</h3>
+        </div>
+
+        <div class="details-grid premium-info-card">
+          <div class="detail-item full-width">
+            <span class="label">Description</span>
+            <span class="value desc-text">{{ req.description }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Featured Start Date</span>
+            <span class="value font-semibold">
+              <ion-icon name="calendar-outline" class="inline-icon"></ion-icon>
+              {{ req.start_date | date:'medium' }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Featured End Date</span>
+            <span class="value font-semibold">
+              <ion-icon name="calendar-outline" class="inline-icon"></ion-icon>
+              {{ req.end_date | date:'medium' }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Submitted On</span>
+            <span class="value">{{ req.created_at | date:'mediumDate' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Last Updated</span>
+            <span class="value">{{ req.updated_at | date:'mediumDate' }}</span>
+          </div>
+
+          @if (req.approved_at) {
+            <div class="detail-item">
+              <span class="label">Approved Date</span>
+              <span class="value">{{ req.approved_at | date:'mediumDate' }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- 6. Business & Owner Profile Section -->
+        <div class="section-title-wrapper">
+          <h3 class="section-title">Business & Owner Profile</h3>
+        </div>
+
+        <div class="details-grid premium-info-card">
+          <div class="detail-item">
+            <span class="label">Business Name</span>
+            <span class="value font-bold">{{ req.business?.name || 'N/A' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Category</span>
+            <span class="value">{{ req.category?.name || 'N/A' }}</span>
+          </div>
+
+          @if (req.business?.owner?.profile?.full_name) {
+            <div class="detail-item">
+              <span class="label">Owner Name</span>
+              <span class="value">{{ req.business?.owner?.profile?.full_name }}</span>
+            </div>
+          }
+
+          @if (req.business?.owner?.phone || req.business?.phone) {
+            <div class="detail-item">
+              <span class="label">Phone</span>
+              <span class="value">{{ req.business?.owner?.phone || req.business?.phone }}</span>
+            </div>
+          }
+
+          @if (req.business?.owner?.email || req.business?.email) {
+            <div class="detail-item">
+              <span class="label">Email</span>
+              <span class="value">{{ req.business?.owner?.email || req.business?.email }}</span>
+            </div>
+          }
+
+          @if (req.business?.owner?.whatsapp) {
+            <div class="detail-item">
+              <span class="label">WhatsApp</span>
+              <span class="value">{{ req.business?.owner?.whatsapp }}</span>
+            </div>
+          }
+
+          @if (req.business?.gst_number) {
+            <div class="detail-item">
+              <span class="label">GST Number</span>
+              <span class="value">{{ req.business?.gst_number }}</span>
+            </div>
+          }
+
+          @if (req.business?.address) {
+            <div class="detail-item full-width">
+              <span class="label">Address</span>
+              <span class="value">{{ req.business?.address }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- 7. Moderation Actions Section -->
+        <div class="action-section">
+          <!-- Pending Status Actions -->
+          @if (req.status === 'PENDING') {
+            @if (!showRejectInput()) {
+              <div class="action-buttons-row">
+                <ion-button
+                  color="success"
+                  class="action-btn-row approve-btn"
+                  [disabled]="actionLoading() || hasConflict()"
+                  (click)="approve()"
+                >
+                  <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                  {{ hasConflict() ? 'Conflict (Cannot Approve)' : 'Approve Request' }}
+                </ion-button>
+
+                <ion-button
+                  color="danger"
+                  fill="outline"
+                  class="action-btn-row reject-btn"
+                  [disabled]="actionLoading()"
+                  (click)="toggleRejectInput()"
+                >
+                  <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                  Reject Request
+                </ion-button>
+              </div>
+            }
+          }
+
+          <!-- Approved Status Actions -->
+          @if (req.status === 'APPROVED') {
+            @if (!showRejectInput()) {
+              <div class="action-buttons-stack">
+                <div class="action-buttons-row">
+                  <ion-button
+                    color="primary"
+                    class="action-btn-row edit-btn"
+                    [disabled]="actionLoading()"
+                    (click)="openEditModal()"
+                  >
+                    <ion-icon name="create-outline" slot="start"></ion-icon>
+                    Edit / Update Request
+                  </ion-button>
+
+                  <ion-button
+                    color="danger"
+                    fill="outline"
+                    class="action-btn-row reject-btn"
+                    [disabled]="actionLoading()"
+                    (click)="toggleRejectInput()"
+                  >
+                    <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                    Revoke / Reject
+                  </ion-button>
+                </div>
+
+                <ion-button
+                  color="medium"
+                  fill="clear"
+                  class="cancel-btn-full"
+                  [disabled]="actionLoading()"
+                  (click)="confirmCancelRequest()"
+                >
+                  <ion-icon name="trash-outline" slot="start"></ion-icon>
+                  Cancel Approved Request
+                </ion-button>
+              </div>
+            }
+          }
+
+          <!-- Rejected or Cancelled Actions -->
+          @if (req.status === 'REJECTED' || req.status === 'CANCELLED') {
+            <div class="action-buttons-row">
+              <ion-button
+                color="primary"
+                class="action-btn-row edit-btn"
+                [disabled]="actionLoading()"
+                (click)="openEditModal()"
+              >
+                <ion-icon name="create-outline" slot="start"></ion-icon>
+                Update / Re-evaluate Request
+              </ion-button>
+            </div>
+          }
+
+          <!-- Reject Input Box -->
+          @if (showRejectInput()) {
+            <div class="reject-input-card">
+              <ion-item lines="none" class="premium-input-item">
+                <ion-label position="stacked">
+                  Rejection Reason <span class="required-star">*</span>
+                </ion-label>
+                <ion-textarea
+                  [(ngModel)]="rejectionReason"
+                  placeholder="Please specify why this request is rejected or revoked..."
+                  rows="3"
+                ></ion-textarea>
+              </ion-item>
+              <div class="error-container">
+                @if (!rejectionReason.trim()) {
+                  <span class="error-text">Rejection reason is required (min 3 characters).</span>
+                }
+              </div>
+
+              <div class="action-buttons-row mt-3">
+                <ion-button
+                  color="medium"
+                  fill="clear"
+                  class="action-btn-row"
+                  (click)="cancelReject()"
+                  [disabled]="actionLoading()"
+                >
+                  Cancel
+                </ion-button>
+                <ion-button
+                  color="danger"
+                  class="action-btn-row"
+                  [disabled]="!rejectionReason.trim() || actionLoading()"
+                  (click)="reject()"
+                >
+                  @if (actionLoading()) {
+                    <ion-spinner name="crescent"></ion-spinner>
+                  } @else {
+                    Confirm Rejection
+                  }
+                </ion-button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </main>
+
+  <!-- Banner Lightbox Backdrop -->
+  @if (previewImage(); as imgUrl) {
+    <div class="banner-lightbox-backdrop" (click)="closeBannerPreview()">
+      <div class="lightbox-modal" (click)="$event.stopPropagation()">
+        <button type="button" class="lightbox-close-btn" (click)="closeBannerPreview()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <img [appCachedImg]="imgUrl" [fallbackName]="'Banner'" alt="Featured Banner Lightbox" class="lightbox-image" />
+        <div class="lightbox-caption">Featured Store Banner Showcase (16:9 Aspect Ratio)</div>
+      </div>
+    </div>
+  }
+</ion-content>

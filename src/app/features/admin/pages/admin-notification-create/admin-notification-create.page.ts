@@ -5,7 +5,8 @@ import { IonicModule, NavController } from '@ionic/angular';
 import { AdminNotificationsService } from '../../services/admin-notifications.service';
 import { NotificationType, NotificationAudience } from '../../models/admin-notification.model';
 import { addIcons } from 'ionicons';
-import { saveOutline, peopleOutline, personOutline, megaphoneOutline } from 'ionicons/icons';
+import { saveOutline, peopleOutline, personOutline, megaphoneOutline, arrowBackOutline } from 'ionicons/icons';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-admin-notification-create',
@@ -28,10 +29,11 @@ export class AdminNotificationCreatePage implements OnInit {
   constructor(
     private navCtrl: NavController,
     private fb: FormBuilder,
-    private notificationsService: AdminNotificationsService
+    private notificationsService: AdminNotificationsService,
+    private backButtonService: AppBackButtonService
   ) {
     addIcons({
-      saveOutline, peopleOutline, personOutline, megaphoneOutline
+      saveOutline, peopleOutline, personOutline, megaphoneOutline, arrowBackOutline
     });
 
     this.composeForm = this.fb.group({
@@ -46,7 +48,7 @@ export class AdminNotificationCreatePage implements OnInit {
   }
 
   goBack() {
-    this.navCtrl.back();
+    this.backButtonService.back('/admin/notifications');
   }
 
   async submit() {

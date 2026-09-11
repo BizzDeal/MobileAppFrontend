@@ -31,27 +31,6 @@
     align-items: center;
     gap: 10px;
 
-    .back-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #f1f5f9;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--bizzdeal-text-primary, #0f172a);
-      font-size: 20px;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: all 0.2s ease;
-
-      &:active {
-        transform: scale(0.92);
-        background: #e2e8f0;
-      }
-    }
-
     .toolbar-title-container {
       display: flex;
       align-items: center;

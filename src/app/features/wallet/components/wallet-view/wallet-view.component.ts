@@ -43,6 +43,7 @@ import {
   arrowBackOutline
 } from 'ionicons/icons';
 import { WalletService } from '../../services/wallet.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 
 export interface DisplayTransactionItem {
@@ -83,7 +84,7 @@ export interface DisplayTransactionItem {
 export class WalletViewComponent {
   readonly walletService = inject(WalletService);
   private readonly alertController = inject(AlertController);
-
+  private readonly appBackButtonService = inject(AppBackButtonService);
   private readonly router = inject(Router);
 
   @Input() hideHeader = false;
@@ -252,7 +253,7 @@ export class WalletViewComponent {
   }
 
   backToHome(): void {
-    this.router.navigate(['/home'], { queryParams: { tab: 'home' } });
+    this.appBackButtonService.back('/home');
   }
 
   navigateToEarnCoins(): void {

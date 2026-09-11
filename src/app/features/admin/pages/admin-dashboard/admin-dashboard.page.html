@@ -193,7 +193,7 @@
                 @if (requests.length > 0) {
                   <ion-list lines="full">
                     @for (request of requests; track request.id) {
-                      <ion-item class="queue-item" button="true" detail="true" (click)="viewFeaturedRequests()">
+                      <ion-item class="queue-item" button="true" detail="true" (click)="viewFeaturedRequestDetails(request)">
                         <ion-label>
                           <h3>{{ request.title || 'Untitled Featured Request' }}</h3>
                           <p>{{ request.business?.name || 'Unknown Business' }} &bull; Submitted: {{ request.created_at | date:'shortDate' }}</p>

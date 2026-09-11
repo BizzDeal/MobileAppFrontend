@@ -15,7 +15,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { cameraOutline, caretDownOutline, checkmarkCircleOutline } from 'ionicons/icons';
+import { cameraOutline, caretDownOutline, checkmarkCircleOutline, trashOutline } from 'ionicons/icons';
 import { MemberRegistrationService } from './member-registration.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 
@@ -48,9 +48,14 @@ export class MemberRegistrationPage {
 
   constructor() {
     addIcons({
+      cameraOutline,
       'camera-outline': cameraOutline,
+      caretDownOutline,
       'caret-down-outline': caretDownOutline,
+      checkmarkCircleOutline,
       'checkmark-circle-outline': checkmarkCircleOutline,
+      trashOutline,
+      'trash-outline': trashOutline,
     });
   }
 }

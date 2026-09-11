@@ -1,7 +1,9 @@
 <ion-header class="bd-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" text=""></ion-back-button>
+      <button type="button" class="header-back-btn" (click)="goBack()" aria-label="Go Back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
     </ion-buttons>
     <ion-title>Featured Business Request</ion-title>
   </ion-toolbar>
@@ -62,6 +64,9 @@
             Your business is approved as the Spotlight Featured Business in your category from 
             <strong>{{ req.start_date | date:'mediumDate' }}</strong> to <strong>{{ req.end_date | date:'mediumDate' }}</strong>.
           </p>
+          <button type="button" class="cancel-request-btn revoke-btn" (click)="confirmCancelRequest()">
+            <ion-icon name="trash-outline"></ion-icon> Cancel Featured Business
+          </button>
         </div>
       } @else if (req.status === 'REJECTED') {
         <div class="status-card rejected-card">
@@ -148,6 +153,22 @@
               >
                 <ion-icon name="image-outline"></ion-icon> Change Banner
               </button>
+              @if (selectedBannerFile() && existingRequest()) {
+                <button
+                  type="button"
+                  class="bd-btn-primary save-banner-btn"
+                  (click)="onSaveBannerOnly()"
+                  [disabled]="savingBannerOnly()"
+                >
+                  @if (savingBannerOnly()) {
+                    <ion-spinner name="crescent"></ion-spinner>
+                    <span>Saving...</span>
+                  } @else {
+                    <ion-icon name="save-outline"></ion-icon>
+                    <span>Save Banner Only</span>
+                  }
+                </button>
+              }
               <button
                 type="button"
                 class="bd-btn-danger remove-btn"

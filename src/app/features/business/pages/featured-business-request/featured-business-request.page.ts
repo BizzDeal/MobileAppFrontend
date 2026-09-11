@@ -40,6 +40,7 @@ import {
   lockClosedOutline,
   timeOutline,
   trashOutline,
+  arrowBackOutline,
 } from 'ionicons/icons';
 import { FeaturedBusinessService } from '../../services/featured-business.service';
 import { ProfileService } from '../../../profile/services/profile.service';
@@ -50,6 +51,7 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 import { validateFileSize } from '../../../../shared/utils/file-validator.util';
 import { compressImageClientSide } from '../../../../shared/utils/image-compressor.util';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import {
   FeaturedBusinessRequestDTO,
   CategoryLiveStatusDTO,
@@ -66,7 +68,6 @@ import {
     IonTitle,
     IonToolbar,
     IonButtons,
-    IonBackButton,
     IonIcon,
     IonSpinner,
     CachedImgDirective,
@@ -84,6 +85,7 @@ export class FeaturedBusinessRequestPage implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly dashboardService = inject(MemberDashboardService);
   private readonly toastService = inject(ToastService);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   readonly submitting = signal(false);
   readonly loading = signal(true);
@@ -96,6 +98,7 @@ export class FeaturedBusinessRequestPage implements OnInit {
   readonly selectedBannerName = signal<string | null>(null);
   readonly selectedBannerPreview = signal<string | null>(null);
   readonly selectedBannerFile = signal<File | null>(null);
+  readonly savingBannerOnly = signal(false);
 
   featuredForm: FormGroup;
   minStartDateString = '';
@@ -114,6 +117,7 @@ export class FeaturedBusinessRequestPage implements OnInit {
       lockClosedOutline,
       timeOutline,
       trashOutline,
+      arrowBackOutline,
     });
 
     const now = new Date();
@@ -137,6 +141,10 @@ export class FeaturedBusinessRequestPage implements OnInit {
       },
       { validators: this.dateValidator.bind(this) },
     );
+  }
+
+  goBack(): void {
+    this.backButtonService.back('/home');
   }
 
   ngOnInit() {
@@ -380,17 +388,46 @@ export class FeaturedBusinessRequestPage implements OnInit {
     });
   }
 
+  onSaveBannerOnly() {
+    const file = this.selectedBannerFile();
+    const req = this.existingRequest();
+    if (!file || !req) return;
+
+    this.savingBannerOnly.set(true);
+    this.featuredService.updateBanner(req.id, file).subscribe({
+      next: (updated) => {
+        this.savingBannerOnly.set(false);
+        this.existingRequest.set(updated);
+        this.selectedBannerFile.set(null);
+        this.selectedBannerName.set(null);
+        if (updated.banner?.file_url) {
+          this.selectedBannerPreview.set(updated.banner.file_url);
+        }
+        this.toastService.showSuccess('📸 Banner updated and saved successfully!');
+      },
+      error: (err) => {
+        this.savingBannerOnly.set(false);
+        this.toastService.showError(
+          extractFriendlyErrorMessage(err, 'Failed to update banner.'),
+        );
+      },
+    });
+  }
+
   async confirmCancelRequest() {
     const req = this.existingRequest();
     if (!req) return;
 
+    const isApproved = req.status === 'APPROVED';
     const alert = await this.alertCtrl.create({
-      header: 'Cancel Request',
-      message: 'Are you sure you want to cancel your pending featured business request?',
+      header: isApproved ? 'Cancel Featured Business' : 'Cancel Request',
+      message: isApproved
+        ? 'Are you sure you want to cancel your approved featured business showcase? This will immediately revoke your featured spotlight status and free up the spot in your category.'
+        : 'Are you sure you want to cancel your pending featured business request?',
       buttons: [
         { text: 'No', role: 'cancel' },
         {
-          text: 'Yes, Cancel',
+          text: isApproved ? 'Yes, Revoke Spotlight' : 'Yes, Cancel',
           role: 'destructive',
           handler: () => {
             this.cancelRequest(req.id);
@@ -405,8 +442,9 @@ export class FeaturedBusinessRequestPage implements OnInit {
   private cancelRequest(id: string) {
     this.submitting.set(true);
     this.featuredService.cancelRequest(id).subscribe({
-      next: () => {
+      next: (cancelled) => {
         this.submitting.set(false);
+        this.existingRequest.set(cancelled);
         this.dashboardService.loadDashboardData().subscribe();
         this.toastService.showSuccess('Featured request cancelled successfully.');
         this.router.navigate(['/home']);

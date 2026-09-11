@@ -79,24 +79,82 @@ export class FeaturedBusinessService {
   }
 
   /**
+   * Get single featured business request by ID
+   */
+  getById(id: string): Observable<FeaturedBusinessRequestDTO> {
+    return this.http
+      .get<FeaturedBusinessRequestDTO | { data: FeaturedBusinessRequestDTO }>(
+        `${this.apiUrl}/${id}`,
+      )
+      .pipe(map((res) => ('data' in res ? res.data : res)));
+  }
+
+  /**
+   * Update banner image only for an existing request
+   */
+  updateBanner(id: string, bannerFile: File): Observable<FeaturedBusinessRequestDTO> {
+    const formData = new FormData();
+    formData.append('banner', bannerFile);
+
+    return this.http
+      .put<FeaturedBusinessRequestDTO | { data: FeaturedBusinessRequestDTO }>(
+        `${this.apiUrl}/${id}/banner`,
+        formData,
+        {
+          context: new HttpContext().set(SHOW_SUCCESS_TOAST, true),
+        },
+      )
+      .pipe(map((res) => ('data' in res ? res.data : res)));
+  }
+
+  /**
+   * Admin: Update an existing featured business request
+   */
+  adminUpdateRequest(
+    id: string,
+    formData: FormData,
+  ): Observable<FeaturedBusinessRequestDTO> {
+    return this.http
+      .put<FeaturedBusinessRequestDTO | { data: FeaturedBusinessRequestDTO }>(
+        `${this.apiUrl}/admin/${id}`,
+        formData,
+        {
+          context: new HttpContext().set(SHOW_SUCCESS_TOAST, true),
+        },
+      )
+      .pipe(map((res) => ('data' in res ? res.data : res)));
+  }
+
+  /**
    * Admin: Approve request
    */
   approveRequest(id: string): Observable<FeaturedBusinessRequestDTO> {
     return this.http
-      .put<any>(`${this.apiUrl}/${id}/approve`, {}, {
-        context: new HttpContext().set(SHOW_SUCCESS_TOAST, true),
-      })
-      .pipe(map((res) => res?.data || res));
+      .put<FeaturedBusinessRequestDTO | { data: FeaturedBusinessRequestDTO }>(
+        `${this.apiUrl}/${id}/approve`,
+        {},
+        {
+          context: new HttpContext().set(SHOW_SUCCESS_TOAST, true),
+        },
+      )
+      .pipe(map((res) => ('data' in res ? res.data : res)));
   }
 
   /**
    * Admin: Reject request with reason
    */
-  rejectRequest(id: string, reason: string): Observable<FeaturedBusinessRequestDTO> {
+  rejectRequest(
+    id: string,
+    reason: string,
+  ): Observable<FeaturedBusinessRequestDTO> {
     return this.http
-      .put<any>(`${this.apiUrl}/${id}/reject`, { reason }, {
-        context: new HttpContext().set(SHOW_SUCCESS_TOAST, true),
-      })
-      .pipe(map((res) => res?.data || res));
+      .put<FeaturedBusinessRequestDTO | { data: FeaturedBusinessRequestDTO }>(
+        `${this.apiUrl}/${id}/reject`,
+        { reason },
+        {
+          context: new HttpContext().set(SHOW_SUCCESS_TOAST, true),
+        },
+      )
+      .pipe(map((res) => ('data' in res ? res.data : res)));
   }
 }

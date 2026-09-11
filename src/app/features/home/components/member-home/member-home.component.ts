@@ -24,6 +24,7 @@ import { FeaturedBusinessRequestDTO } from '../../../business/models/featured-bu
 import { AppSocketService } from '../../../../core/services/app-socket.service';
 import { DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-member-home',
@@ -54,6 +55,7 @@ export class MemberHomeComponent implements OnInit {
   private readonly appSocket = inject(AppSocketService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly featuredService = inject(FeaturedBusinessService);
+  private readonly appBackButtonService = inject(AppBackButtonService);
 
   readonly dashboardData = this.dashboardService.dashboardData;
   readonly profile = this.profileService.profile;
@@ -68,6 +70,15 @@ export class MemberHomeComponent implements OnInit {
   );
 
   constructor() {
+    const unregister = this.appBackButtonService.registerCustomOverlayDismissHandler(() => {
+      if (this.isActionsMenuOpen()) {
+        this.closeActionsMenu();
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(() => unregister());
+
     addIcons({
       addCircleOutline, ticketOutline, notificationsOutline, businessOutline, scanOutline,
       checkmarkCircle, createOutline, hourglassOutline, calendarOutline, chevronForwardOutline,

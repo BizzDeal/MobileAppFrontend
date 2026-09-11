@@ -63,6 +63,110 @@ body, html, ion-app, ion-content, .ion-page {
   }
 }
 
+.header-back-btn,
+.back-btn {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000 !important;
+  --color: #000000 !important;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 4px;
+  margin: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    opacity: 0.75;
+  }
+
+  &:active {
+    opacity: 0.45;
+    transform: scale(0.92);
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  ion-icon {
+    font-size: 20px !important;
+    color: #000000 !important;
+    --color: #000000 !important;
+    display: block;
+  }
+}
+
+ion-buttons[slot="start"] {
+  .header-back-btn,
+  .back-btn {
+    margin-inline-start: 4px;
+  }
+}
+
+ion-button.header-back-btn,
+ion-button.back-btn {
+  --background: transparent !important;
+  --background-hover: transparent !important;
+  --background-activated: transparent !important;
+  --background-focused: transparent !important;
+  --box-shadow: none !important;
+  --border-radius: 0 !important;
+  --color: #000000 !important;
+  color: #000000 !important;
+  --padding-start: 4px !important;
+  --padding-end: 4px !important;
+  --padding-top: 4px !important;
+  --padding-bottom: 4px !important;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  margin: 0;
+
+  ion-icon {
+    font-size: 20px !important;
+    color: #000000 !important;
+  }
+}
+
+ion-back-button {
+  --color: #000000 !important;
+  color: #000000 !important;
+  --icon-font-size: 20px !important;
+  --padding-start: 4px !important;
+  --padding-end: 4px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  margin: 0 !important;
+
+  &::part(native) {
+    background: transparent !important;
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    padding-inline-start: 4px !important;
+    padding-inline-end: 4px !important;
+    color: #000000 !important;
+    min-height: 32px !important;
+    min-width: 32px !important;
+  }
+
+  &::part(icon) {
+    font-size: 20px !important;
+    color: #000000 !important;
+  }
+}
+
+
 /* Global utility classes for BizzDeal design tokens */
 .bd-card {
   background: var(--bizzdeal-bg-surface);

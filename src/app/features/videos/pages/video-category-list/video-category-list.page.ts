@@ -5,6 +5,7 @@ import {
   inject,
   OnInit,
   signal,
+  DestroyRef,
 } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -44,6 +45,7 @@ import { VideosService } from '../../services/videos.service';
 import { VideoPlayerModalComponent } from '../../components/video-player-modal/video-player-modal.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 interface CategoryMeta {
   title: string;
@@ -59,39 +61,39 @@ const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     title: 'Shorts & Reels',
     subtitle: 'Quick 60-second video highlights',
     icon: 'flame',
-    accentColor: '#f43f5e',
+    accentColor: '#e11d48',
     filterType: 'SHORTS',
     isPortrait: true,
   },
-  offer: {
-    title: 'Deals & Live Discounts',
-    subtitle: 'Claim discount vouchers & cashback rewards',
+  offers: {
+    title: 'Deals & Promotions',
+    subtitle: 'Special discounts and featured vouchers',
     icon: 'pricetag-outline',
-    accentColor: '#e11d48',
+    accentColor: '#2563eb',
     filterType: 'OFFER',
     isPortrait: false,
   },
   business: {
-    title: 'Store & Showroom Tours',
-    subtitle: 'Explore partner shops, clinics & gyms',
+    title: 'Store Tours & Places',
+    subtitle: 'Step inside local businesses and shops',
     icon: 'storefront-outline',
-    accentColor: '#1565c0',
+    accentColor: '#059669',
     filterType: 'BUSINESS',
     isPortrait: false,
   },
-  demo: {
-    title: 'Product Demos & Unboxings',
-    subtitle: 'See products in live action & testing',
+  demos: {
+    title: 'Product Demos',
+    subtitle: 'See products and dishes in high definition',
     icon: 'cube-outline',
-    accentColor: '#8b5cf6',
+    accentColor: '#7c3aed',
     filterType: 'DEMO',
-    isPortrait: true,
+    isPortrait: false,
   },
-  testimonial: {
-    title: 'Customer Reviews & Stories',
-    subtitle: 'Real member reviews & verified savings',
+  reviews: {
+    title: 'Customer Reviews',
+    subtitle: 'Real member stories and experiences',
     icon: 'star-outline',
-    accentColor: '#f59e0b',
+    accentColor: '#d97706',
     filterType: 'TESTIMONIAL',
     isPortrait: true,
   },
@@ -105,8 +107,8 @@ const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     FormsModule,
     IonHeader,
     IonToolbar,
-    IonIcon,
     IonContent,
+    IonIcon,
     VideoPlayerModalComponent,
     CachedImgDirective,
   ],
@@ -119,6 +121,8 @@ export class VideoCategoryListPage implements OnInit {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private readonly videosService = inject(VideosService);
+  private readonly backButtonService = inject(AppBackButtonService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly categoryKey = signal<string>('shorts');
   readonly searchQuery = signal<string>('');
@@ -205,6 +209,15 @@ export class VideoCategoryListPage implements OnInit {
   }
 
   ngOnInit(): void {
+    const unregister = this.backButtonService.registerOverlayDismissHandler(() => {
+      if (this.isPlayerOpen()) {
+        this.onClosePlayer();
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(unregister);
+
     this.route.paramMap.subscribe((params) => {
       const key = params.get('categoryKey') || 'shorts';
       this.categoryKey.set(key);
@@ -216,7 +229,11 @@ export class VideoCategoryListPage implements OnInit {
   }
 
   onGoBack(): void {
-    this.location.back();
+    if (this.isPlayerOpen()) {
+      this.onClosePlayer();
+      return;
+    }
+    this.backButtonService.back('/home?tab=videos');
   }
 
   onSearchInput(event: Event): void {

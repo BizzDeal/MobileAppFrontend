@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, HostListener, inject, signal, computed } 
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController, ModalController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
@@ -22,7 +22,8 @@ import {
   imageOutline,
   chevronForwardOutline,
   checkmarkOutline,
-  closeOutline
+  closeOutline,
+  informationCircleOutline
 } from 'ionicons/icons';
 
 import { FeaturedBusinessService } from '../../../business/services/featured-business.service';
@@ -34,6 +35,7 @@ import {
 import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 import { ToastService } from '../../../../core/services/toast.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-admin-featured-requests',
@@ -43,9 +45,11 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
   styleUrls: ['./admin-featured-requests.page.scss']
 })
 export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
+  private readonly router = inject(Router);
   private readonly featuredService = inject(FeaturedBusinessService);
-  private readonly alertController = inject(AlertController);
+  private readonly alertCtrl = inject(AlertController);
   private readonly toastService = inject(ToastService);
+  private readonly appBackButtonService = inject(AppBackButtonService);
   private readonly route = inject(ActivatedRoute);
 
   readonly requests = signal<FeaturedBusinessRequestDTO[]>([]);
@@ -59,6 +63,7 @@ export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
 
   private readonly searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
+  private unregisterOverlayHandler?: () => void;
 
   readonly filteredRequests = computed(() => {
     let list = this.requests();
@@ -78,14 +83,11 @@ export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
       star,
       starOutline,
       timeOutline,
-      calendarOutline,
-      businessOutline,
-      alertCircleOutline,
       checkmarkCircleOutline,
       closeCircleOutline,
-      hourglassOutline,
-      personOutline,
-      openOutline,
+      informationCircleOutline,
+      calendarOutline,
+      businessOutline,
       filterOutline,
       imageOutline,
       chevronForwardOutline,
@@ -95,6 +97,14 @@ export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.unregisterOverlayHandler = this.appBackButtonService.registerCustomOverlayDismissHandler(() => {
+      if (this.previewImage()) {
+        this.closeBannerPreview();
+        return true;
+      }
+      return false;
+    });
+
     const statusParam = this.route.snapshot.queryParamMap.get('status');
     if (statusParam) {
       this.selectedStatus.set(statusParam);
@@ -110,6 +120,7 @@ export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.searchSubscription?.unsubscribe();
+    this.unregisterOverlayHandler?.();
   }
 
   @HostListener('window:resize')
@@ -183,7 +194,7 @@ export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
   async onApprove(request: FeaturedBusinessRequestDTO): Promise<void> {
     const conflict = this.getConflict(request);
     if (conflict && conflict.live_request) {
-      const alert = await this.alertController.create({
+      const alert = await this.alertCtrl.create({
         header: 'Category Exclusivity Conflict',
         subHeader: `Category "${request.category?.name || 'Current Category'}" is Busy`,
         message: `Business "${conflict.live_request.business_name}" already has an ACTIVE live featured slot in this category until ${new Date(conflict.live_request.end_date).toLocaleDateString()}.\n\nUnder exclusivity rules, each category can only have ONE live featured business. You cannot approve another request until the current one ends.`,
@@ -193,7 +204,7 @@ export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
       return;
     }
 
-    const alert = await this.alertController.create({
+    const alert = await this.alertCtrl.create({
       header: 'Approve Featured Request',
       message: `Approve "${request.title}" for business "${request.business?.name || 'Unknown'}"?\n\nValidity: ${new Date(request.start_date).toLocaleDateString()} to ${new Date(request.end_date).toLocaleDateString()}.\n\nThis business will be marked as Featured in its category for this timeframe.`,
       buttons: [
@@ -222,7 +233,7 @@ export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
   }
 
   async onReject(request: FeaturedBusinessRequestDTO): Promise<void> {
-    const alert = await this.alertController.create({
+    const alert = await this.alertCtrl.create({
       header: 'Reject Featured Request',
       message: `Please specify the reason for rejecting "${request.title}".`,
       inputs: [
@@ -237,7 +248,7 @@ export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
         {
           text: 'Reject',
           role: 'destructive',
-          handler: (data) => {
+          handler: (data: { reason?: string }) => {
             const reason = data.reason?.trim();
             if (!reason) {
               this.toastService.showError('Rejection reason is required.');
@@ -285,5 +296,9 @@ export class AdminFeaturedRequestsPage implements OnInit, OnDestroy {
 
   closeBannerPreview(): void {
     this.previewImage.set(null);
+  }
+
+  viewRequestDetails(request: FeaturedBusinessRequestDTO): void {
+    this.router.navigate(['/admin/featured-requests', request.id]);
   }
 }

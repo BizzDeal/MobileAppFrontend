@@ -14,8 +14,9 @@ import {
   starOutline, star, trophyOutline, trophy, pricetagOutline, ticketOutline,
   personOutline, callOutline, pricetag, flashOutline, timeOutline, 
   ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline,
-  mapOutline, navigateOutline
+  mapOutline, navigateOutline, arrowBackOutline
 } from 'ionicons/icons';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-admin-business-details',
@@ -39,15 +40,20 @@ export class AdminBusinessDetailsPage implements OnInit {
     private router: Router,
     private adminBusinessesService: AdminBusinessesService,
     private navCtrl: NavController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private backButtonService: AppBackButtonService
   ) {
     addIcons({
       businessOutline, globeOutline, documentTextOutline,
       starOutline, star, trophyOutline, trophy, pricetagOutline, ticketOutline,
       personOutline, callOutline, pricetag, flashOutline, timeOutline,
       ticket, personCircleOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, banOutline, refreshOutline, mailOutline,
-      mapOutline, navigateOutline
+      mapOutline, navigateOutline, arrowBackOutline
     });
+  }
+
+  goBack(): void {
+    this.backButtonService.back('/admin/businesses');
   }
 
   ngOnInit() {

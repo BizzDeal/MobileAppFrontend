@@ -24,6 +24,7 @@ import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils'
 import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { PlatformSettingsService } from '../../../../core/services/platform-settings.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 export interface CustomerCoinDetails {
   id: string;
@@ -50,6 +51,7 @@ export class RedeemBizzCoinsPage implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformSettingsService = inject(PlatformSettingsService);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   readonly getInitials = getInitials;
   readonly getAvatarColor = getAvatarColor;
@@ -146,7 +148,7 @@ export class RedeemBizzCoinsPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/home']);
+    this.backButtonService.back('/home');
   }
 
   goToCreateBizzCoinOffer() {

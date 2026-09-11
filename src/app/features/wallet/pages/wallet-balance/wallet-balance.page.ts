@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { CommonModule, Location } from '@angular/common';
 import { Router } from '@angular/router';
 import {
-  IonButton,
   IonButtons,
   IonContent,
   IonHeader,
@@ -31,6 +30,7 @@ import {
   receiptOutline,
 } from 'ionicons/icons';
 import { WalletService } from '../../services/wallet.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 export interface WalletActivityItem {
   id: string;
@@ -51,7 +51,6 @@ export interface WalletActivityItem {
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonButton,
     IonContent,
     IonIcon,
   ],
@@ -63,6 +62,7 @@ export class WalletBalancePage {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private readonly alertController = inject(AlertController);
+  private readonly backButtonService = inject(AppBackButtonService);
   readonly walletService = inject(WalletService);
 
   readonly wallet = this.walletService.wallet;
@@ -165,7 +165,7 @@ export class WalletBalancePage {
   }
 
   goBack(): void {
-    this.router.navigate(['/home'], { queryParams: { tab: 'wallet' } });
+    this.backButtonService.back('/home?tab=wallet');
   }
 
   async openAddFundsPrompt(): Promise<void> {

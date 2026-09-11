@@ -15,7 +15,6 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  IonBackButton,
   IonButtons,
   IonContent,
   IonHeader,
@@ -50,6 +49,7 @@ import {
   flashOutline,
   storefrontOutline,
   refreshOutline,
+  arrowBackOutline,
 } from 'ionicons/icons';
 import {
   CreateVideoRequest,
@@ -64,6 +64,7 @@ import { SafeVideoPipe } from '../../../../shared/pipes/safe-video.pipe';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
 import { ProfileService } from '../../../profile/services/profile.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-video-form',
@@ -74,7 +75,6 @@ import { ProfileService } from '../../../profile/services/profile.service';
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonBackButton,
     IonTitle,
     IonContent,
     IonIcon,
@@ -93,6 +93,7 @@ export class VideoFormPage implements OnInit {
   private readonly router = inject(Router);
   private readonly videosService = inject(VideosService);
   private readonly toastService = inject(ToastService);
+  private readonly backButtonService = inject(AppBackButtonService);
   private readonly alertCtrl = inject(AlertController);
   private readonly profileService = inject(ProfileService);
 
@@ -148,6 +149,7 @@ export class VideoFormPage implements OnInit {
       flashOutline,
       storefrontOutline,
       refreshOutline,
+      arrowBackOutline,
     });
 
     this.videoForm = this.fb.group({
@@ -159,6 +161,10 @@ export class VideoFormPage implements OnInit {
       cta_title: [''],
       cta_url: [''],
     });
+  }
+
+  goBack(): void {
+    this.backButtonService.back('/home?tab=videos');
   }
 
   ngOnInit(): void {

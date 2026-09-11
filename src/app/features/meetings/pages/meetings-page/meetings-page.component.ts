@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { IonSegment, IonSegmentButton, IonLabel, IonIcon, IonFab, IonFabButton, IonContent, ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, addOutline } from 'ionicons/icons';
+import { calendarOutline, addOutline, arrowBackOutline } from 'ionicons/icons';
 import { MeetingsService, AttendeeStatus, Meeting, MeetingWithAttendee } from '../../services/meetings.service';
 import { MeetingCardComponent } from '../../components/meeting-card/meeting-card.component';
 import { MeetingActionModalComponent } from '../../components/meeting-action-modal/meeting-action-modal.component';
 import { AdminMeetingAttendeesModalComponent } from '../../../admin/components/admin-meeting-attendees-modal/admin-meeting-attendees-modal.component';
 import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-meetings-page',
@@ -19,6 +20,7 @@ import { CardSkeletonComponent } from '../../../../shared/components/skeletons/c
 export class MeetingsPageComponent implements OnInit {
   private readonly meetingsService = inject(MeetingsService);
   private readonly modalCtrl = inject(ModalController);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   readonly selectedTab = signal<'upcoming' | 'past'>('upcoming');
   readonly loading = this.meetingsService.loading;
@@ -37,8 +39,13 @@ export class MeetingsPageComponent implements OnInit {
   constructor() {
     addIcons({
       calendarOutline,
-      addOutline
+      addOutline,
+      arrowBackOutline
     });
+  }
+
+  goBack(): void {
+    this.backButtonService.back('/home');
   }
 
   ngOnInit() {

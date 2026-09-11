@@ -34,10 +34,12 @@ import {
   heartOutline,
   heart,
   arrowForwardOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 import { BizzdealVideo, VideoFilterType, VideoCategorySection } from '../../models/video.model';
 import { VideosService } from '../../services/videos.service';
 import { VideoCardComponent } from '../video-card/video-card.component';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { VideoPlayerModalComponent } from '../video-player-modal/video-player-modal.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
@@ -63,6 +65,7 @@ export class VideosViewComponent implements OnInit {
   private readonly videosService = inject(VideosService);
   private readonly authSession = inject(AuthSessionService);
   private readonly router = inject(Router);
+  private readonly appBackButtonService = inject(AppBackButtonService);
 
   readonly isMember = computed(() => {
     const role = this.authSession.currentUser()?.role;
@@ -117,7 +120,12 @@ export class VideosViewComponent implements OnInit {
       heartOutline,
       heart,
       arrowForwardOutline,
+      arrowBackOutline
     });
+  }
+
+  goBack(): void {
+    this.appBackButtonService.back('/home');
   }
 
   onNavigatePostVideo(): void {

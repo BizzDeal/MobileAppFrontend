@@ -17,6 +17,7 @@ import mediumZoom, { Zoom } from 'medium-zoom';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { ProfileSkeletonComponent } from '../../../../shared/components/skeletons/profile-skeleton/profile-skeleton.component';
 import { AdminLogoutButtonComponent } from '../../components/admin-logout-button/admin-logout-button.component';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-admin-user-details',
@@ -29,12 +30,13 @@ import { AdminLogoutButtonComponent } from '../../components/admin-logout-button
 export class AdminUserDetailsPage implements OnInit, AfterViewChecked {
   private readonly adminBusinessesService = inject(AdminBusinessesService);
   private readonly alertCtrl = inject(AlertController);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   activeTab: 'personal' | 'business' = 'personal';
   toggleTopLoading = false;
 
   goBack() {
-    this.location.back();
+    this.backButtonService.back('/admin/users');
   }
 
   setTab(tab: 'personal' | 'business') {

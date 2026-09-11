@@ -28,10 +28,12 @@ import {
   banOutline,
   qrCodeOutline,
   closeOutline,
-  scanOutline
+  scanOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 import { CustomerVouchersService } from '../../services/customer-vouchers.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { CustomerVoucher, VoucherStatus } from '../../models/voucher.model';
 import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 
@@ -64,6 +66,7 @@ type FilterStatus = 'ALL' | 'ACTIVE' | 'REDEEMED' | 'CANCELLED';
 export class VouchersViewComponent implements OnInit {
   private readonly vouchersService = inject(CustomerVouchersService);
   private readonly toastService = inject(ToastService);
+  private readonly appBackButtonService = inject(AppBackButtonService);
 
   readonly vouchers = this.vouchersService.vouchers;
   readonly loading = this.vouchersService.loading;
@@ -115,8 +118,13 @@ export class VouchersViewComponent implements OnInit {
       banOutline,
       qrCodeOutline,
       closeOutline,
-      scanOutline
+      scanOutline,
+      arrowBackOutline
     });
+  }
+
+  goBack(): void {
+    this.appBackButtonService.back('/home');
   }
 
   ngOnInit(): void {

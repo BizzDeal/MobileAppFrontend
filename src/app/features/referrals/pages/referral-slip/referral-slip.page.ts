@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, NgZone, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -47,6 +47,7 @@ import { CreateReferralSlipDto, MemberBusinessDTO, ReferralType } from '../../mo
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -61,7 +62,6 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonBackButton,
     IonSpinner,
     IonIcon,
     IonModal,
@@ -82,6 +82,12 @@ export class ReferralSlipPage implements OnInit {
   private readonly router = inject(Router);
   private readonly navCtrl = inject(NavController);
   private readonly ngZone = inject(NgZone);
+  private readonly backButtonService = inject(AppBackButtonService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  goBack(): void {
+    this.backButtonService.back('/home?tab=referrals');
+  }
 
   // Form State
   readonly referralType = signal<ReferralType>('INHOUSE');
@@ -155,20 +161,19 @@ export class ReferralSlipPage implements OnInit {
   }
 
   ngOnInit(): void {
+    const unregister = this.backButtonService.registerOverlayDismissHandler(() => {
+      if (this.isMemberPickerOpen()) {
+        this.closeMemberPicker();
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(unregister);
+
     if (this.profileService.profile()?.status === 'PENDING') {
       this.toastService.showError('Pending members cannot create referrals');
       this.router.navigate(['/home'], { queryParams: { tab: 'referrals' } });
     }
-  }
-
-  goBack(event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    this.ngZone.run(() => {
-      this.navCtrl.navigateBack(['/home'], { queryParams: { tab: 'referrals' } });
-    });
   }
 
   openMemberPicker(): void {

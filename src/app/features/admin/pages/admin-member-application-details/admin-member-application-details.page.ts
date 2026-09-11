@@ -10,6 +10,7 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 import { ProfileSkeletonComponent } from '../../../../shared/components/skeletons/profile-skeleton/profile-skeleton.component';
 import { AdminLogoutButtonComponent } from '../../components/admin-logout-button/admin-logout-button.component';
 import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { addIcons } from 'ionicons';
 import { 
   callOutline, 
@@ -57,6 +58,7 @@ export class AdminMemberApplicationDetailsPage implements OnInit {
   private readonly adminBusinessesService = inject(AdminBusinessesService);
   private readonly alertCtrl = inject(AlertController);
   private readonly toastCtrl = inject(ToastController);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   member: (AdminMember & { [key: string]: any }) | null = null;
   loading = true;
@@ -113,11 +115,7 @@ export class AdminMemberApplicationDetailsPage implements OnInit {
   }
 
   goBack(): void {
-    if (window.history.length > 1) {
-      this.location.back();
-    } else {
-      this.router.navigate(['/admin/dashboard']);
-    }
+    this.backButtonService.back('/admin/users');
   }
 
   getInitials(name: string | null | undefined): string {

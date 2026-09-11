@@ -20,6 +20,7 @@ import { VouchersService } from '../../services/vouchers.service';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { PermissionsService } from '../../../../core/platform/permissions.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-redeem-voucher',
@@ -34,6 +35,7 @@ export class RedeemVoucherPage implements OnInit {
   private readonly vouchersService = inject(VouchersService);
   private readonly permissionsService = inject(PermissionsService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   step: 'VERIFY' | 'REDEEM' | 'SUCCESS' = 'VERIFY';
   isScannerOpen = false;
@@ -85,6 +87,15 @@ export class RedeemVoucherPage implements OnInit {
     this.redemptionForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.calculateLiveValues();
     });
+
+    const unregister = this.backButtonService.registerOverlayDismissHandler(() => {
+      if (this.isScannerOpen) {
+        this.closeScanner();
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(unregister);
   }
 
   get vf() {
@@ -96,7 +107,11 @@ export class RedeemVoucherPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/home']);
+    if (this.isScannerOpen) {
+      this.closeScanner();
+      return;
+    }
+    this.backButtonService.back('/home');
   }
 
   resetPage() {

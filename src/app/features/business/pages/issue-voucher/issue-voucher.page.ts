@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { VouchersService } from '../../services/vouchers.service';
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, caretDownOutline, checkmarkCircleOutline } from 'ionicons/icons';
 
@@ -21,6 +22,7 @@ export class IssueVoucherPage implements OnInit {
   private readonly router = inject(Router);
   private readonly vouchersService = inject(VouchersService);
   private readonly dashboardService = inject(MemberDashboardService);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   issueForm!: FormGroup;
   isSubmitting = false;
@@ -55,7 +57,7 @@ export class IssueVoucherPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/home']);
+    this.backButtonService.back('/home');
   }
 
   onSubmit() {

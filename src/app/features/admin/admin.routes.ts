@@ -47,6 +47,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./pages/admin-featured-requests/admin-featured-requests.page').then(m => m.AdminFeaturedRequestsPage),
       },
       {
+        path: 'featured-requests/:id',
+        loadComponent: () => import('./pages/admin-featured-request-details/admin-featured-request-details.page').then(m => m.AdminFeaturedRequestDetailsPage),
+      },
+      {
         path: 'categories',
         loadComponent: () => import('./pages/admin-categories/admin-categories.page').then(m => m.AdminCategoriesPage),
       },

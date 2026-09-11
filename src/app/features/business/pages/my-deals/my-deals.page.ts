@@ -11,7 +11,6 @@ import {
   IonTitle,
   IonToolbar,
   IonButtons,
-  IonBackButton,
   IonButton,
   IonIcon,
   IonSearchbar,
@@ -43,7 +42,8 @@ import {
   funnelOutline,
   closeOutline,
   chevronDownOutline,
-  checkmarkOutline
+  checkmarkOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 import { environment } from '../../../../../environments/environment';
 import { OfferDTO } from '../../../home/models/home.model';
@@ -51,6 +51,7 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 import { ProfileService } from '../../../profile/services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 export type DealFilterKey = 'ALL' | 'ACTIVE' | 'TOP' | 'FLAT' | 'CASHBACK' | 'FEATURED' | 'PENDING' | 'EXPIRED' | 'REJECTED';
 
@@ -71,7 +72,6 @@ interface FilterOption {
     IonTitle,
     IonToolbar,
     IonButtons,
-    IonBackButton,
     IonButton,
     IonIcon,
     IonSearchbar,
@@ -90,6 +90,7 @@ export class MyDealsPage implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly toastService = inject(ToastService);
   private readonly actionSheetCtrl = inject(ActionSheetController);
+  private readonly backButtonService = inject(AppBackButtonService);
   private readonly apiUrl = environment.apiUrl;
 
   readonly profile = this.profileService.profile;
@@ -140,8 +141,13 @@ export class MyDealsPage implements OnInit {
       funnelOutline,
       closeOutline,
       chevronDownOutline,
-      checkmarkOutline
+      checkmarkOutline,
+      arrowBackOutline
     });
+  }
+
+  goBack(): void {
+    this.backButtonService.back('/home');
   }
 
   ngOnInit(): void {

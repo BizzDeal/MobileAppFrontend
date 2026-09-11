@@ -43,11 +43,13 @@ import {
   peopleOutline,
   ticketOutline,
   cashOutline,
-  chevronForwardOutline
+  chevronForwardOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 import { ProfileService } from '../../services/profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthSessionService } from '../../../../core/services/auth-session.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { MemberOnboardingService } from '../../../auth/services/member-onboarding.service';
 import { NotificationService } from '../../../notifications/services/notification.service';
@@ -90,6 +92,7 @@ export class ProfileViewComponent implements OnInit {
   private readonly alertController = inject(AlertController);
   private readonly modalCtrl = inject(ModalController);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly appBackButtonService = inject(AppBackButtonService);
 
 
   readonly getAvatarColor = getAvatarColor;
@@ -189,7 +192,8 @@ export class ProfileViewComponent implements OnInit {
       peopleOutline,
       ticketOutline,
       cashOutline,
-      chevronForwardOutline
+      chevronForwardOutline,
+      arrowBackOutline
     });
 
     this.profileService.fetchStates();
@@ -341,6 +345,10 @@ export class ProfileViewComponent implements OnInit {
         });
       }
     });
+  }
+
+  goBack(): void {
+    this.appBackButtonService.back('/home');
   }
 
   ngOnInit(): void {

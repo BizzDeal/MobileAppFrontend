@@ -4,14 +4,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { SHOW_SUCCESS_TOAST } from '../../../../core/interceptors/interceptor.tokens';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { ribbonOutline, pricetagOutline, documentTextOutline, calendarOutline, saveOutline, refreshOutline, sparklesOutline } from 'ionicons/icons';
+import { ribbonOutline, pricetagOutline, documentTextOutline, calendarOutline, saveOutline, refreshOutline, sparklesOutline, arrowBackOutline } from 'ionicons/icons';
 import { MemberDashboardService } from '../../../home/services/member-dashboard.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { environment } from '../../../../../environments/environment';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-bizz-coins-offer',
@@ -23,7 +24,6 @@ import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils'
     IonTitle,
     IonToolbar,
     IonButtons,
-    IonBackButton,
     IonIcon,
     IonSpinner
 ],
@@ -38,6 +38,7 @@ export class BizzCoinsOfferPage implements OnInit {
   private readonly dashboardService = inject(MemberDashboardService);
   private readonly profileService = inject(ProfileService);
   private readonly toastService = inject(ToastService);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   readonly submitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -49,7 +50,7 @@ export class BizzCoinsOfferPage implements OnInit {
   bizzCoinsForm: FormGroup;
 
   constructor() {
-    addIcons({ ribbonOutline, pricetagOutline, documentTextOutline, calendarOutline, saveOutline, refreshOutline, sparklesOutline });
+    addIcons({ ribbonOutline, pricetagOutline, documentTextOutline, calendarOutline, saveOutline, refreshOutline, sparklesOutline, arrowBackOutline });
 
     const now = new Date();
     const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -60,6 +61,10 @@ export class BizzCoinsOfferPage implements OnInit {
       start_date: [this.formatDateForInput(now.toISOString()), [Validators.required]],
       end_date: [this.formatDateForInput(nextMonth.toISOString()), [Validators.required]],
     }, { validators: this.dateValidator });
+  }
+
+  goBack(): void {
+    this.backButtonService.back('/home');
   }
 
   ngOnInit() {

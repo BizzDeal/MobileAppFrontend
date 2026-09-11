@@ -1,8 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, DestroyRef } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AdminSettingsService } from '../../services/admin-settings.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { addIcons } from 'ionicons';
 import { closeOutline, checkmarkOutline, filterOutline, refreshOutline, locationOutline, caretDownSharp } from 'ionicons/icons';
 import { AdminReferralsFilter } from '../../services/admin-referrals-state.service';
@@ -38,8 +39,20 @@ export class AdminReferralsFilterModalComponent implements OnInit, OnChanges {
   selectedState: string = '';
   selectedDistrict: string = '';
 
-  constructor(private settingsService: AdminSettingsService) {
+  constructor(
+    private settingsService: AdminSettingsService,
+    private appBackButtonService: AppBackButtonService,
+    private destroyRef: DestroyRef
+  ) {
     addIcons({ closeOutline, checkmarkOutline, filterOutline, refreshOutline, locationOutline, caretDownSharp });
+    const unregister = this.appBackButtonService.registerCustomOverlayDismissHandler(() => {
+      if (this.isOpen) {
+        this.cancel();
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(() => unregister());
   }
 
   ngOnInit() {

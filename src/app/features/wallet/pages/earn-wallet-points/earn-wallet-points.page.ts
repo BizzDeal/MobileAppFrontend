@@ -21,6 +21,7 @@ import {
   addCircleOutline
 } from 'ionicons/icons';
 import { WalletService } from '../../services/wallet.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-earn-wallet-points',
@@ -41,6 +42,7 @@ import { WalletService } from '../../services/wallet.service';
 })
 export class EarnWalletPointsPage {
   private readonly location = inject(Location);
+  private readonly backButtonService = inject(AppBackButtonService);
   readonly walletService = inject(WalletService);
   private readonly alertController = inject(AlertController);
 
@@ -58,7 +60,7 @@ export class EarnWalletPointsPage {
   }
 
   goBack(): void {
-    this.location.back();
+    this.backButtonService.back('/wallet/balance');
   }
 
   async openAddFundsPrompt(): Promise<void> {

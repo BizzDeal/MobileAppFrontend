@@ -33,6 +33,7 @@ import {
 } from 'ionicons/icons';
 import { ChatService } from '../../../chat/services/chat.service';
 import { ProfileService } from '../../../profile/services/profile.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { environment } from '../../../../../environments/environment';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
@@ -81,6 +82,11 @@ export class BusinessDirectoryPage implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private readonly http = inject(HttpClient);
+  private readonly appBackButtonService = inject(AppBackButtonService);
+
+  goBack(): void {
+    this.appBackButtonService.back('/home');
+  }
 
   readonly userRole = this.profileService.userRole;
   readonly profile = this.profileService.profile;

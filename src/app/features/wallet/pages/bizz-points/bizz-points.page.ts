@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { CommonModule, Location } from '@angular/common';
 import { Router } from '@angular/router';
 import {
-  IonButton,
   IonButtons,
   IonContent,
   IonHeader,
@@ -29,6 +28,7 @@ import {
   pricetagOutline,
 } from 'ionicons/icons';
 import { WalletService } from '../../services/wallet.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 export interface PointsActivityItem {
   id: string;
@@ -49,7 +49,6 @@ export interface PointsActivityItem {
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonButton,
     IonContent,
     IonIcon,
   ],
@@ -61,6 +60,7 @@ export class BizzPointsPage {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private readonly alertController = inject(AlertController);
+  private readonly backButtonService = inject(AppBackButtonService);
   readonly walletService = inject(WalletService);
 
   readonly pointsBalance = this.walletService.bizzCoinsBalance;
@@ -147,7 +147,7 @@ export class BizzPointsPage {
   }
 
   goBack(): void {
-    this.router.navigate(['/home'], { queryParams: { tab: 'wallet' } });
+    this.backButtonService.back('/home?tab=wallet');
   }
 
   onEarnPoints(): void {

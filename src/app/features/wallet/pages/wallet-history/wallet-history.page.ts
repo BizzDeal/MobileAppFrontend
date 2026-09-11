@@ -1,6 +1,6 @@
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, DestroyRef } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -25,6 +25,7 @@ import {
 } from 'ionicons/icons';
 import { WalletService } from '../../services/wallet.service';
 import { DisplayTransactionItem } from '../../components/wallet-view/wallet-view.component';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-wallet-history',
@@ -50,6 +51,8 @@ import { DisplayTransactionItem } from '../../components/wallet-view/wallet-view
 })
 export class WalletHistoryPage {
   private readonly location = inject(Location);
+  private readonly backButtonService = inject(AppBackButtonService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly walletService = inject(WalletService);
 
   readonly hasMore = this.walletService.hasMore;
@@ -66,6 +69,15 @@ export class WalletHistoryPage {
       bagHandleOutline,
       sparklesOutline
     });
+
+    const unregister = this.backButtonService.registerOverlayDismissHandler(() => {
+      if (this.selectedTransaction()) {
+        this.closeDetailsModal();
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(unregister);
   }
 
   private mapTransactionToDisplay(raw: any, isCoin: boolean): DisplayTransactionItem {
@@ -139,7 +151,11 @@ export class WalletHistoryPage {
   }
 
   goBack(): void {
-    this.location.back();
+    if (this.selectedTransaction()) {
+      this.closeDetailsModal();
+      return;
+    }
+    this.backButtonService.back('/home?tab=wallet');
   }
 
   viewTransactionDetails(tx: DisplayTransactionItem): void {

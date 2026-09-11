@@ -1,9 +1,9 @@
 <ion-header class="ion-no-border">
   <ion-toolbar class="page-toolbar">
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()" class="back-btn">
-        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
-      </ion-button>
+      <button type="button" class="header-back-btn" (click)="goBack()" aria-label="Go Back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
     </ion-buttons>
     <ion-title>Transaction History</ion-title>
   </ion-toolbar>

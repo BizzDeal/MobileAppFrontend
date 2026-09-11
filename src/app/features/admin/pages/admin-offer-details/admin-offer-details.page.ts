@@ -9,6 +9,7 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 import { CardSkeletonComponent } from '../../../../shared/components/skeletons/card-skeleton/card-skeleton.component';
 import { AdminLogoutButtonComponent } from '../../components/admin-logout-button/admin-logout-button.component';
 import { getAvatarColor, getInitials } from '../../../../shared/utils/avatar.util';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 import { addIcons } from 'ionicons';
 import { 
@@ -40,6 +41,7 @@ export class AdminOfferDetailsPage implements OnInit {
   private readonly location = inject(Location);
   private readonly adminBusinessesService = inject(AdminBusinessesService);
   private readonly alertController = inject(AlertController);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   offer: AdminOffer | null = null;
   business: AdminBusiness | null = null;
@@ -128,11 +130,7 @@ export class AdminOfferDetailsPage implements OnInit {
   }
 
   goBack(): void {
-    if (window.history.length > 1) {
-      this.location.back();
-    } else {
-      this.router.navigate(['/admin/offers']);
-    }
+    this.backButtonService.back('/admin/offers');
   }
 
   getInitials(name: string | null | undefined): string {

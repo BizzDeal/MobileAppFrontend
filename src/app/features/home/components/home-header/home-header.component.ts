@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal, DestroyRef } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { callOutline, mailOutline, globeOutline, shareSocialOutline, personOutline } from 'ionicons/icons';
@@ -8,6 +8,7 @@ import { CachedImgDirective } from '../../../../shared/directives/cached-img.dir
 import { ToastService } from '../../../../core/services/toast.service';
 import { ShareService } from '../../../../core/platform/share.service';
 import { UserInviteService } from '../../../auth/services/user-invite.service';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -23,6 +24,8 @@ export class HomeHeaderComponent {
   private readonly toastService = inject(ToastService);
   private readonly shareService = inject(ShareService);
   private readonly userInviteService = inject(UserInviteService);
+  private readonly appBackButtonService = inject(AppBackButtonService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly bizzCoinsBalance = this.walletService.bizzCoinsBalance;
 
   readonly customer = input.required<CustomerProfileDTO>();
@@ -42,6 +45,15 @@ export class HomeHeaderComponent {
 
   constructor() {
     addIcons({ callOutline, mailOutline, globeOutline, shareSocialOutline, personOutline });
+
+    const unregister = this.appBackButtonService.registerCustomOverlayDismissHandler(() => {
+      if (this.showSupportDialog()) {
+        this.closeSupportInfo();
+        return true;
+      }
+      return false;
+    });
+    this.destroyRef.onDestroy(() => unregister());
   }
 
   getFirstName(fullName?: string): string {

@@ -3,7 +3,9 @@
     <div class="web-header-content">
       <div class="header-left">
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/admin/businesses"></ion-back-button>
+          <button type="button" class="header-back-btn" (click)="goBack()" aria-label="Go Back">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </button>
         </ion-buttons>
         <ion-title class="page-title font-bold">Business Details</ion-title>
       </div>

@@ -3,7 +3,12 @@
   <div class="sticky-search-top">
     <!-- Search Input Area -->
     <div class="search-header">
-      <h2 class="search-title">Find Deals & Businesses</h2>
+      <div class="search-header-row">
+        <button type="button" class="header-back-btn" (click)="goBack()" aria-label="Go Back">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <h2 class="search-title">Find Deals & Businesses</h2>
+      </div>
       <ion-searchbar 
         mode="ios"
         placeholder="Search for store names, offers, keywords..." 

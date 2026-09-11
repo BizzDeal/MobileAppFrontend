@@ -1,7 +1,9 @@
 <ion-header class="ion-no-border premium-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" text="" color="dark"></ion-back-button>
+      <button type="button" class="header-back-btn" (click)="goBack()" aria-label="Go Back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
     </ion-buttons>
     <ion-title>{{ isEditMode() ? 'Edit Video' : 'Save & Post Video' }}</ion-title>
   </ion-toolbar>

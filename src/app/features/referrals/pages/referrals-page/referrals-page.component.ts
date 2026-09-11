@@ -46,7 +46,8 @@ import {
   documentTextOutline,
   cashOutline,
   informationCircleOutline,
-  shareSocialOutline
+  shareSocialOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 import { ReferralsService } from '../../services/referrals.service';
 import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils';
@@ -56,6 +57,7 @@ import { ReferralDTO } from '../../models/referral.model';
 import { ListSkeletonComponent } from '../../../../shared/components/skeletons/list-skeleton/list-skeleton.component';
 import { CachedImgDirective } from '../../../../shared/directives/cached-img.directive';
 import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
+import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 
 @Component({
   selector: 'app-referrals-page',
@@ -96,6 +98,7 @@ export class ReferralsPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly navCtrl = inject(NavController);
   private readonly ngZone = inject(NgZone);
+  private readonly backButtonService = inject(AppBackButtonService);
 
   readonly referrals = signal<ReferralDTO[]>([]);
   readonly loading = signal<boolean>(true);
@@ -165,7 +168,8 @@ export class ReferralsPageComponent implements OnInit {
       documentTextOutline,
       cashOutline,
       informationCircleOutline,
-      shareSocialOutline
+      shareSocialOutline,
+      arrowBackOutline
     });
   }
 
@@ -324,5 +328,9 @@ export class ReferralsPageComponent implements OnInit {
         this.submittingAppreciation.set(false);
       }
     });
+  }
+
+  goBack(): void {
+    this.backButtonService.back('/home');
   }
 }

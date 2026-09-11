@@ -161,6 +161,20 @@ export class MemberHomeComponent implements OnInit {
     return !!this.profile()?.is_featured;
   });
 
+  readonly activeFeaturedRequest = computed(() => {
+    const requests = this.dashboardData()?.featuredRequests || [];
+    const now = new Date();
+    return requests.find((r) =>
+      r.status === 'APPROVED' &&
+      new Date(r.start_date) <= now &&
+      new Date(r.end_date) >= now
+    ) || null;
+  });
+
+  readonly featuredBannerUrl = computed(() => {
+    return this.profile()?.featured_banner_url || this.activeFeaturedRequest()?.banner?.file_url || null;
+  });
+
   readonly hasActiveBizzCoinOffer = computed(() => {
     const offer = this.bizzCoinOffer();
     if (!offer || offer.status !== 'APPROVED') return false;

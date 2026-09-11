@@ -328,7 +328,10 @@
         <!-- Brand Banner (16:9 Rectangle) -->
         <div class="brand-banner-picker-wrapper">
           <div class="brand-media-header">
-            <span class="brand-media-label">Brand Banner</span>
+            <div class="brand-media-title-wrap">
+              <span class="brand-media-label">Business Brand Banner</span>
+              <span class="brand-media-sublabel">Your store's main profile banner</span>
+            </div>
             @if (selectedBusinessBannerUrl()) {
               <button
                 type="button"
@@ -348,6 +351,14 @@
               <ion-icon name="camera-outline"></ion-icon>
               <input type="file" id="businessBannerFile" accept="image/*" (change)="onBusinessBannerSelected($event)" style="display: none;" />
             </label>
+          </div>
+          <div class="banner-hint-text">
+            <span>Note: This is your store's primary banner. Your <strong>Featured Business Showcase banner</strong> is configured separately under Featured Business.</span>
+            @if (profile()?.featured_banner_url) {
+              <button type="button" class="featured-link-btn" (click)="onManageFeaturedRequest()">
+                <span>Manage Featured Showcase Banner</span> &rarr;
+              </button>
+            }
           </div>
         </div>
       </div>

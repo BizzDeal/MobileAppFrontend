@@ -731,4 +731,8 @@ export class ProfileViewComponent implements OnInit {
     const cat = this.onboardingService.categories().find(c => c.id === categoryId);
     return cat ? cat.name : (this.profile()?.primary_business_category_name || 'N/A');
   }
+
+  onManageFeaturedRequest(): void {
+    this.router.navigate(['/business/featured-request']);
+  }
 }

@@ -484,12 +484,25 @@
       }
     }
 
-    .brand-media-label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--bizzdeal-text-primary);
+    .brand-media-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
       margin-bottom: 6px;
+
+      .brand-media-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--bizzdeal-text-primary);
+        margin: 0;
+      }
+
+      .brand-media-sublabel {
+        display: block;
+        font-size: 11px;
+        color: var(--bizzdeal-text-secondary, #64748b);
+      }
     }
 
     .brand-banner-picker-wrapper {
@@ -518,6 +531,42 @@
           height: 100%;
           background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.4));
           pointer-events: none;
+        }
+      }
+
+      .banner-hint-text {
+        margin-top: 8px;
+        font-size: 11.5px;
+        color: var(--bizzdeal-text-secondary, #64748b);
+        line-height: 1.4;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        strong {
+          color: var(--bizzdeal-text-primary, #1e293b);
+        }
+
+        .featured-link-btn {
+          align-self: flex-start;
+          background: rgba(245, 158, 11, 0.12);
+          color: #d97706;
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          border-radius: 6px;
+          padding: 4px 10px;
+          font-size: 11px;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: inherit;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: rgba(245, 158, 11, 0.2);
+            color: #b45309;
+          }
         }
       }
     }

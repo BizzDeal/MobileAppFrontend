@@ -79,6 +79,40 @@
       </div>
     </section>
 
+    <!-- Dedicated Featured Business Spotlight Showcase Banner (Distinct & Separate from Store Banner) -->
+    @if (featuredBannerUrl() || (isBusinessFeatured() && activeFeaturedRequest())) {
+      <section class="featured-spotlight-banner" (click)="onFeaturedRequest()" role="button" tabindex="0">
+        <div class="featured-banner-bg">
+          @if (featuredBannerUrl()) {
+            <img loading="lazy" [appCachedImg]="featuredBannerUrl()!"
+              [fallbackName]="profile()?.business_name || 'Featured Store'" alt="Featured Business Banner" class="featured-bg-img" />
+          }
+          <div class="featured-gradient-scrim"></div>
+        </div>
+        <div class="featured-top-bar">
+          <span class="featured-spotlight-pill">
+            <ion-icon name="star" class="star-icon"></ion-icon>
+            <span>LIVE FEATURED SPOTLIGHT</span>
+          </span>
+          <span class="featured-manage-pill">
+            <span>Manage</span>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </span>
+        </div>
+        <div class="featured-bottom-bar">
+          <h3 class="featured-title">
+            {{ activeFeaturedRequest()?.title || (profile()?.business_name + ' Featured Showcase') }}
+          </h3>
+          @if (activeFeaturedRequest()?.start_date && activeFeaturedRequest()?.end_date) {
+            <span class="featured-dates">
+              <ion-icon name="calendar-outline"></ion-icon>
+              {{ activeFeaturedRequest()?.start_date | date:'d MMM' }} – {{ activeFeaturedRequest()?.end_date | date:'d MMM yyyy' }}
+            </span>
+          }
+        </div>
+      </section>
+    }
+
     <!-- Business & Bizz Rewards Section -->
     <section class="quick-actions-section">
       <div class="qa-card-container unified-rewards-card">

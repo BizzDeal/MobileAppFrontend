@@ -126,6 +126,7 @@ export class ProfileService {
         website: (currentUser as any).website || null,
         gst_number: (currentUser as any).gst_number || null,
         business_banner_url: (currentUser as any).business_banner_url || null,
+        featured_banner_url: (currentUser as any).featured_banner_url || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
@@ -157,6 +158,7 @@ export class ProfileService {
             website: p.website || (currentUser as any)?.website || null,
             gst_number: p.gst_number || (currentUser as any)?.gst_number || null,
             business_banner_url: p.business_banner_url || (currentUser as any)?.business_banner_url || null,
+            featured_banner_url: p.featured_banner_url || (currentUser as any)?.featured_banner_url || null,
             business_address: p.business_address || (currentUser as any)?.business_address || null,
             business_state_id: p.business_state_id || (currentUser as any)?.business_state_id || p.state_id || null,
             business_district_id: p.business_district_id || (currentUser as any)?.business_district_id || p.district_id || '',
@@ -198,6 +200,7 @@ export class ProfileService {
               ...((loaded.website ? { website: loaded.website } : {}) as any),
               ...((loaded.gst_number ? { gst_number: loaded.gst_number } : {}) as any),
               ...((loaded.business_banner_url ? { business_banner_url: loaded.business_banner_url } : {}) as any),
+              ...((loaded.featured_banner_url ? { featured_banner_url: loaded.featured_banner_url } : {}) as any),
               ...((loaded.category_id ? { category_id: loaded.category_id } : {}) as any),
             }).catch(() => {});
           }
@@ -271,6 +274,7 @@ export class ProfileService {
               ...((updated.website ? { website: updated.website } : {}) as any),
               ...((updated.gst_number ? { gst_number: updated.gst_number } : {}) as any),
               business_banner_url: updated.business_banner_url || undefined,
+              featured_banner_url: updated.featured_banner_url || undefined,
               ...((updated.category_id ? { category_id: updated.category_id } : {}) as any),
               is_profile_completed: updated.is_profile_completed,
               completion_score: updated.completion_score,

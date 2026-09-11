@@ -21,10 +21,10 @@ export class FeaturedBusinessService {
    */
   submitRequest(formData: FormData): Observable<FeaturedBusinessRequestDTO> {
     return this.http
-      .post<any>(`${this.apiUrl}/request`, formData, {
-        context: new HttpContext().set(SHOW_SUCCESS_TOAST, true),
+      .post<FeaturedBusinessRequestDTO | { data: FeaturedBusinessRequestDTO }>(`${this.apiUrl}/request`, formData, {
+        context: new HttpContext().set(SHOW_SUCCESS_TOAST, false),
       })
-      .pipe(map((res) => res?.data || res));
+      .pipe(map((res) => ('data' in res ? res.data : res)));
   }
 
   /**

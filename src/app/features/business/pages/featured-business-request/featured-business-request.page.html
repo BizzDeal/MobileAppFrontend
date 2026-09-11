@@ -19,23 +19,6 @@
       </div>
     }
 
-    <!-- Category Exclusivity Warning (If another business is currently live in category) -->
-    @if (isCategoryLocked() && categoryLiveInfo()?.live_request; as live) {
-      <div class="lock-banner">
-        <div class="lock-header">
-          <ion-icon name="lock-closed-outline" class="lock-icon"></ion-icon>
-          <strong>Category Featured Spot Occupied</strong>
-        </div>
-        <p class="lock-text">
-          A featured business (<strong>{{ live.business_name }}</strong>) is currently active in your category until 
-          <strong>{{ live.end_date | date:'mediumDate' }}</strong>.
-        </p>
-        <p class="lock-subtext">
-          Each category can have only one featured business at any given time. New requests for this category are locked until the live featured period concludes.
-        </p>
-      </div>
-    }
-
     <!-- Existing Request Status Badges -->
     @if (existingRequest(); as req) {
       @if (req.status === 'PENDING') {
@@ -91,14 +74,13 @@
         </label>
         <div class="input-wrapper" [class.invalid]="isFieldInvalid('title')">
           <ion-icon name="pricetag-outline" class="field-icon"></ion-icon>
-          <input
+          <ion-input
             id="title"
             type="text"
             formControlName="title"
             placeholder="e.g. Grand Festive Showcase & Member Privileges"
             class="custom-input"
-            [disabled]="isCategoryLocked()"
-          />
+          ></ion-input>
         </div>
         <div class="error-container">
           @if (isFieldInvalid('title')) {
@@ -114,14 +96,13 @@
         </label>
         <div class="input-wrapper textarea-wrapper" [class.invalid]="isFieldInvalid('description')">
           <ion-icon name="document-text-outline" class="field-icon"></ion-icon>
-          <textarea
+          <ion-textarea
             id="description"
             formControlName="description"
-            rows="4"
+            [rows]="4"
             placeholder="Highlight what makes your store special, member perks, and reasons to visit..."
             class="custom-textarea"
-            [disabled]="isCategoryLocked()"
-          ></textarea>
+          ></ion-textarea>
         </div>
         <div class="error-container">
           @if (isFieldInvalid('description')) {
@@ -149,46 +130,33 @@
                 type="button"
                 class="bd-btn-secondary change-btn"
                 (click)="bannerInput.click()"
-                [disabled]="isCategoryLocked()"
+                [disabled]="submitting()"
               >
                 <ion-icon name="image-outline"></ion-icon> Change Banner
               </button>
-              @if (selectedBannerFile() && existingRequest()) {
-                <button
-                  type="button"
-                  class="bd-btn-primary save-banner-btn"
-                  (click)="onSaveBannerOnly()"
-                  [disabled]="savingBannerOnly()"
-                >
-                  @if (savingBannerOnly()) {
-                    <ion-spinner name="crescent"></ion-spinner>
-                    <span>Saving...</span>
-                  } @else {
-                    <ion-icon name="save-outline"></ion-icon>
-                    <span>Save Banner Only</span>
-                  }
-                </button>
-              }
+              @if (selectedBannerFile()) {
               <button
                 type="button"
                 class="bd-btn-danger remove-btn"
                 (click)="clearSelectedBanner($event)"
-                [disabled]="isCategoryLocked()"
+                [disabled]="submitting()"
               >
-                <ion-icon name="close-circle-outline"></ion-icon> Remove
+                <ion-icon name="close-circle-outline"></ion-icon> Undo Selection
               </button>
+              }
             </div>
           </div>
         } @else {
-          <div
+          <button
+            type="button"
             class="upload-box"
-            (click)="!isCategoryLocked() && bannerInput.click()"
-            [class.disabled]="isCategoryLocked()"
+            (click)="bannerInput.click()"
+            [disabled]="submitting()"
           >
             <ion-icon name="image-outline" class="upload-icon"></ion-icon>
             <span class="upload-title">Tap to upload 16:9 banner image</span>
             <span class="upload-hint">Recommended resolution: 900x506 (JPG or PNG, max 10MB)</span>
-          </div>
+          </button>
         }
         <input
           #bannerInput
@@ -196,10 +164,10 @@
           accept="image/*"
           hidden
           (change)="onBannerSelected($event)"
-          [disabled]="isCategoryLocked()"
+          [disabled]="submitting()"
         />
         <div class="error-container">
-          @if (!selectedBannerPreview() && featuredForm.touched) {
+          @if (!isApproved() && !selectedBannerPreview() && featuredForm.touched) {
             <span class="error-text">Promotional banner image is required.</span>
           }
         </div>
@@ -214,14 +182,13 @@
           </label>
           <div class="input-wrapper" [class.invalid]="isFieldInvalid('start_date')">
             <ion-icon name="calendar-outline" class="field-icon"></ion-icon>
-            <input
+            <ion-input
               id="start_date"
               type="datetime-local"
               formControlName="start_date"
               [min]="minStartDateString"
               class="custom-input"
-              [disabled]="isCategoryLocked() || isApproved()"
-            />
+            ></ion-input>
           </div>
           <div class="error-container">
             @if (isFieldInvalid('start_date')) {
@@ -237,13 +204,12 @@
           </label>
           <div class="input-wrapper" [class.invalid]="isFieldInvalid('end_date')">
             <ion-icon name="calendar-outline" class="field-icon"></ion-icon>
-            <input
+            <ion-input
               id="end_date"
               type="datetime-local"
               formControlName="end_date"
               class="custom-input"
-              [disabled]="isCategoryLocked() || isApproved()"
-            />
+            ></ion-input>
           </div>
           <div class="error-container">
             @if (isFieldInvalid('end_date')) {
@@ -257,7 +223,7 @@
       @if (isApproved()) {
         <div class="dates-locked-notice">
           <ion-icon name="lock-closed-outline"></ion-icon>
-          <span>Showcase dates are locked because this featured campaign is approved. To choose different dates, you can cancel this showcase above and submit a new request.</span>
+          <span>Dates cannot be changed after approval. You can still update the title, description, and featured banner.</span>
         </div>
       }
 
@@ -275,14 +241,14 @@
         <button
           type="submit"
           class="submit-btn"
-          [disabled]="submitting() || isCategoryLocked() || featuredForm.invalid || (!selectedBannerFile() && !selectedBannerPreview())"
+          [disabled]="loading() || submitting() || featuredForm.invalid || (!isApproved() && !selectedBannerFile() && !selectedBannerPreview())"
         >
           @if (submitting()) {
             <ion-spinner name="crescent"></ion-spinner>
             <span>Submitting Request...</span>
           } @else {
             <ion-icon name="star"></ion-icon>
-            <span>{{ isCategoryLocked() ? 'Category Locked (Spot Occupied)' : (isApproved() ? 'Update Showcase Details' : (existingRequest() ? 'Update Featured Request' : 'Submit Featured Request')) }}</span>
+            <span>{{ isApproved() ? 'Update Showcase Details' : (existingRequest() ? 'Update Featured Request' : 'Submit Featured Request') }}</span>
           }
         </button>
       </div>

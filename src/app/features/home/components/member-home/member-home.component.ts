@@ -176,7 +176,7 @@ export class MemberHomeComponent implements OnInit {
   });
 
   readonly featuredBannerUrl = computed(() => {
-    return this.profile()?.featured_banner_url || this.activeFeaturedRequest()?.banner?.file_url || null;
+    return this.activeFeaturedRequest()?.banner?.file_url || null;
   });
 
   readonly hasActiveFeaturedShowcase = computed(() => {

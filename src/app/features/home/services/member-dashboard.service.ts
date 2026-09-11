@@ -10,6 +10,7 @@ import { ProfileService } from '../../profile/services/profile.service';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { AppSocketService } from '../../../core/services/app-socket.service';
 import { extractFriendlyErrorMessage } from '../../../core/utils/error.utils';
+import { FeaturedBusinessRequestDTO } from '../../business/models/featured-business.model';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +51,13 @@ export class MemberDashboardService {
         });
       }
     });
+  }
+
+  updateFeaturedRequest(request: FeaturedBusinessRequestDTO): void {
+    this._dashboardData.update((data) => data ? {
+      ...data,
+      featuredRequests: [request, ...(data.featuredRequests || []).filter((item) => item.id !== request.id)],
+    } : data);
   }
 
   loadDashboardData(): Observable<MemberDashboardData> {

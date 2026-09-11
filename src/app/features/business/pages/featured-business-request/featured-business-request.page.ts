@@ -21,7 +21,8 @@ import {
   IonTitle,
   IonToolbar,
   IonButtons,
-  IonBackButton,
+  IonInput,
+  IonTextarea,
   IonIcon,
   IonSpinner,
   ModalController,
@@ -34,7 +35,6 @@ import {
   pricetagOutline,
   documentTextOutline,
   calendarOutline,
-  saveOutline,
   imageOutline,
   closeCircleOutline,
   alertCircleOutline,
@@ -55,7 +55,6 @@ import { extractFriendlyErrorMessage } from '../../../../core/utils/error.utils'
 import { AppBackButtonService } from '../../../../core/platform/app-back-button.service';
 import {
   FeaturedBusinessRequestDTO,
-  CategoryLiveStatusDTO,
 } from '../../models/featured-business.model';
 
 @Component({
@@ -71,6 +70,8 @@ import {
     IonButtons,
     IonIcon,
     IonSpinner,
+    IonInput,
+    IonTextarea,
     CachedImgDirective,
   ],
   templateUrl: './featured-business-request.page.html',
@@ -93,14 +94,11 @@ export class FeaturedBusinessRequestPage implements OnInit {
   readonly errorMessage = signal<string | null>(null);
 
   readonly existingRequest = signal<FeaturedBusinessRequestDTO | null>(null);
-  readonly categoryLiveInfo = signal<CategoryLiveStatusDTO | null>(null);
-  readonly isCategoryLocked = signal(false);
   readonly isApproved = computed(() => this.existingRequest()?.status === 'APPROVED');
 
   readonly selectedBannerName = signal<string | null>(null);
   readonly selectedBannerPreview = signal<string | null>(null);
   readonly selectedBannerFile = signal<File | null>(null);
-  readonly savingBannerOnly = signal(false);
 
   featuredForm: FormGroup;
   minStartDateString = '';
@@ -112,7 +110,6 @@ export class FeaturedBusinessRequestPage implements OnInit {
       pricetagOutline,
       documentTextOutline,
       calendarOutline,
-      saveOutline,
       imageOutline,
       closeCircleOutline,
       alertCircleOutline,
@@ -162,7 +159,7 @@ export class FeaturedBusinessRequestPage implements OnInit {
       this.profileService.loadProfile().subscribe({
         next: (p) => {
           if (p?.business_id) {
-            this.fetchRequestsAndCategoryStatus(p.category_id);
+            this.fetchRequests(p.business_id);
           } else {
             this.loading.set(false);
             this.errorMessage.set(
@@ -181,57 +178,25 @@ export class FeaturedBusinessRequestPage implements OnInit {
         },
       });
     } else {
-      this.fetchRequestsAndCategoryStatus(profile.category_id);
+      this.fetchRequests(profile.business_id);
     }
   }
 
-  private fetchRequestsAndCategoryStatus(categoryId?: string) {
+  private fetchRequests(businessId: string) {
     this.featuredService.getMyRequests().subscribe({
       next: (requests) => {
-        if (requests && requests.length > 0) {
-          const latest = requests[0];
+        const businessRequests = requests.filter((req) => req.business_id === businessId);
+        const latest = businessRequests.find((req) => req.status === 'APPROVED')
+          || businessRequests.find((req) => req.status === 'PENDING')
+          || businessRequests[0];
+        if (latest) {
           this.existingRequest.set(latest);
           this.patchFormWithRequest(latest);
         }
-
-        const catId =
-          categoryId ||
-          this.existingRequest()?.category_id ||
-          this.profileService.profile()?.category_id;
-
-        if (catId) {
-          this.checkCategoryStatus(catId);
-        } else {
-          this.loading.set(false);
-        }
-      },
-      error: (err) => {
-        console.error('Failed to load my featured requests:', err);
-        this.loading.set(false);
-      },
-    });
-  }
-
-  private checkCategoryStatus(categoryId: string) {
-    this.featuredService.getCategoryLiveStatus(categoryId).subscribe({
-      next: (status) => {
-        this.categoryLiveInfo.set(status);
-        const myBizId = this.profileService.profile()?.business_id;
-
-        // If another business is currently live in this category, lock request submission
-        if (
-          status.is_live &&
-          status.live_request &&
-          status.live_request.business_id !== myBizId
-        ) {
-          this.isCategoryLocked.set(true);
-        } else {
-          this.isCategoryLocked.set(false);
-        }
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Failed to check category status:', err);
+        this.errorMessage.set(extractFriendlyErrorMessage(err, 'Failed to load your featured request.'));
         this.loading.set(false);
       },
     });
@@ -253,10 +218,7 @@ export class FeaturedBusinessRequestPage implements OnInit {
       this.featuredForm.get('end_date')?.enable();
     }
 
-    const bannerUrl = req.banner?.file_url;
-    if (bannerUrl) {
-      this.selectedBannerPreview.set(bannerUrl);
-    }
+    this.selectedBannerPreview.set(req.banner?.file_url || null);
   }
 
   dateValidator(group: AbstractControl) {
@@ -340,23 +302,18 @@ export class FeaturedBusinessRequestPage implements OnInit {
     event.stopPropagation();
     this.selectedBannerName.set(null);
     this.selectedBannerFile.set(null);
-    this.selectedBannerPreview.set(null);
+    this.selectedBannerPreview.set(this.existingRequest()?.banner?.file_url || null);
   }
 
   onSubmit() {
-    if (this.isCategoryLocked()) {
-      this.toastService.showError(
-        'A featured business is currently active in your category. New requests cannot be submitted while one is live.',
-      );
-      return;
-    }
+    if (this.submitting() || this.loading()) return;
 
     if (this.featuredForm.invalid) {
       this.featuredForm.markAllAsTouched();
       return;
     }
 
-    if (!this.selectedBannerFile() && !this.selectedBannerPreview()) {
+    if (!this.isApproved() && !this.selectedBannerFile() && !this.selectedBannerPreview()) {
       this.toastService.showError('Please upload a promotional banner image for your featured request.');
       return;
     }
@@ -368,21 +325,16 @@ export class FeaturedBusinessRequestPage implements OnInit {
     const formData = new FormData();
     formData.append('title', fv.title.trim());
     formData.append('description', fv.description.trim());
-    if (this.isApproved() && this.existingRequest()) {
-      formData.append('start_date', this.existingRequest()!.start_date);
-      formData.append('end_date', this.existingRequest()!.end_date);
-    } else {
-      formData.append('start_date', new Date(fv.start_date).toISOString());
-      formData.append('end_date', new Date(fv.end_date).toISOString());
+    const preservedStartDate = fv.start_date || this.existingRequest()?.start_date;
+    const preservedEndDate = fv.end_date || this.existingRequest()?.end_date;
+    if (preservedStartDate && preservedEndDate) {
+      formData.append('start_date', new Date(preservedStartDate).toISOString());
+      formData.append('end_date', new Date(preservedEndDate).toISOString());
     }
 
-    if (this.selectedBannerFile()) {
-      formData.append('banner', this.selectedBannerFile()!);
-    }
-
-    const profile = this.profileService.profile();
-    if (profile?.business_id) {
-      formData.append('business_id', profile.business_id);
+    const bannerFile = this.selectedBannerFile();
+    if (bannerFile) {
+      formData.append('banner', bannerFile);
     }
 
     const wasApproved = this.isApproved();
@@ -391,7 +343,7 @@ export class FeaturedBusinessRequestPage implements OnInit {
       next: (req) => {
         this.submitting.set(false);
         this.existingRequest.set(req);
-        this.dashboardService.loadDashboardData().subscribe();
+        this.dashboardService.updateFeaturedRequest(req);
         const successMsg = wasApproved
           ? '✨ Featured showcase details updated successfully!'
           : '🎉 Featured Business request submitted for Admin review!';
@@ -406,32 +358,6 @@ export class FeaturedBusinessRequestPage implements OnInit {
             err,
             'Failed to submit featured business request. Please check inputs and try again.',
           ),
-        );
-      },
-    });
-  }
-
-  onSaveBannerOnly() {
-    const file = this.selectedBannerFile();
-    const req = this.existingRequest();
-    if (!file || !req) return;
-
-    this.savingBannerOnly.set(true);
-    this.featuredService.updateBanner(req.id, file).subscribe({
-      next: (updated) => {
-        this.savingBannerOnly.set(false);
-        this.existingRequest.set(updated);
-        this.selectedBannerFile.set(null);
-        this.selectedBannerName.set(null);
-        if (updated.banner?.file_url) {
-          this.selectedBannerPreview.set(updated.banner.file_url);
-        }
-        this.toastService.showSuccess('📸 Banner updated and saved successfully!');
-      },
-      error: (err) => {
-        this.savingBannerOnly.set(false);
-        this.toastService.showError(
-          extractFriendlyErrorMessage(err, 'Failed to update banner.'),
         );
       },
     });

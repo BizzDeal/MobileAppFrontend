@@ -388,9 +388,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
               video_url: b.video_url || null,
               created_at: b.created_at || new Date().toISOString(),
               updated_at: b.updated_at || new Date().toISOString(),
-              categoryName: b.categoryName || 'Partner Business',
-              logoUrl: b.logoUrl || null,
-              bannerUrl: b.bannerUrl || null,
+              categoryName: b.categoryName || b.category_name || b.category?.name || 'Partner Business',
+              logoUrl: b.logoUrl || b.logo_url || b.logo?.file_url || null,
+              bannerUrl: b.bannerUrl || b.banner_url || b.banner?.file_url || null,
+              featuredBannerUrl: b.featuredBannerUrl || b.featured_banner_url || b.featured_banner?.file_url || null,
             };
             this.onBusinessClick(bizDto);
           }

@@ -54,8 +54,10 @@ export class MemberDashboardService {
   }
 
   updateFeaturedRequest(request: FeaturedBusinessRequestDTO): void {
+    const bannerUrl = request.banner?.file_url || null;
     this._dashboardData.update((data) => data ? {
       ...data,
+      featuredBannerUrl: bannerUrl || data.featuredBannerUrl,
       featuredRequests: [request, ...(data.featuredRequests || []).filter((item) => item.id !== request.id)],
     } : data);
   }

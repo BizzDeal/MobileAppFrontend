@@ -337,6 +337,8 @@ export class FeaturedBusinessRequestPage implements OnInit {
           this.selectedBannerName.set(null);
           this.selectedBannerPreview.set(updated.banner?.file_url || null);
           this.dashboardService.updateFeaturedRequest(updated);
+          this.profileService.updateFeaturedShowcaseBanner(updated.banner?.file_url || null);
+          this.profileService.loadProfile(true).subscribe();
           this.toastService.showSuccess('📸 Featured banner updated successfully!');
           this.router.navigate(['/home']);
         },
@@ -369,6 +371,10 @@ export class FeaturedBusinessRequestPage implements OnInit {
         this.submitting.set(false);
         this.existingRequest.set(req);
         this.dashboardService.updateFeaturedRequest(req);
+        if (req.banner?.file_url) {
+          this.profileService.updateFeaturedShowcaseBanner(req.banner.file_url);
+        }
+        this.profileService.loadProfile(true).subscribe();
         const successMsg = wasApproved
           ? '✨ Featured showcase details updated successfully!'
           : '🎉 Featured Business request submitted for Admin review!';

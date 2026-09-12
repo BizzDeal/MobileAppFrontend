@@ -315,4 +315,25 @@ export class ProfileService {
       }
     }
   }
+
+  updateFeaturedShowcaseBanner(fileUrl: string | null): void {
+    if (fileUrl) {
+      this.imageCache.invalidateImage(fileUrl);
+    }
+    const currentProfile = this._profile();
+    if (currentProfile) {
+      this._profile.set({
+        ...currentProfile,
+        featured_banner_url: fileUrl,
+        updated_at: new Date().toISOString(),
+      });
+      const cu = this.authSession.currentUser();
+      if (cu) {
+        this.authSession.updateCurrentUser({
+          ...cu,
+          featured_banner_url: fileUrl || undefined,
+        } as any).catch(() => {});
+      }
+    }
+  }
 }

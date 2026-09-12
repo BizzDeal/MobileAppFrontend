@@ -219,26 +219,26 @@ export class BusinessDirectoryPage implements OnInit, OnDestroy {
         });
 
         const mapped: DirectoryBusinessDTO[] = filteredList.map((b: any) => {
-          const ownerName = b.owner_name || b.owner?.profile?.full_name || b.owner?.full_name || b.name || 'Member';
+          const ownerName = b.owner_name || 'Member';
           const initials = getInitials(ownerName) || getInitials(b.name) || 'BD';
           return {
             id: b.id,
             name: b.name || 'Unnamed Business',
             owner_name: ownerName,
-            categoryName: b.categoryName || b.category_name || b.category?.name || 'General',
+            categoryName: b.categoryName || 'General',
             description: b.description || 'No description provided.',
-            phone: b.phone || b.owner_phone || b.owner?.phone || '',
-            whatsapp: b.whatsapp || b.owner?.whatsapp || b.phone || '',
+            phone: b.phone || '',
+            whatsapp: b.whatsapp || '',
             website: b.website || '',
-            owner_email: b.owner_email || b.owner?.email || '',
-            district_id: b.district_id || b.owner?.profile?.district_id || '',
-            district_name: b.district_name || b.owner?.profile?.district_name || '',
-            state_name: b.state_name || b.owner?.profile?.state_name || '',
-            address: b.address || b.owner?.profile?.address || '',
+            owner_email: b.owner_email || '',
+            district_id: b.district_id || '',
+            district_name: b.district_name || '',
+            state_name: b.state_name || '',
+            address: b.address || '',
             initials,
-            owner_id: b.owner_id || b.owner?.id || '',
-            logoUrl: b.logoUrl || b.logo_url || b.logo?.file_url || null,
-            profile_pic_url: b.profile_pic_url || b.owner?.profile_pic_url || null
+            owner_id: b.owner_id || '',
+            logoUrl: b.logoUrl || null,
+            profile_pic_url: b.profile_pic_url || null
           };
         });
 

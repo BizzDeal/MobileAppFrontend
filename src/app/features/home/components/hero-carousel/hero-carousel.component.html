@@ -16,8 +16,8 @@
       <div class="banner-card biz-banner" (click)="businessClick.emit(biz)">
         <div class="banner-bg" [style.background]="getAvatarColor(biz.name)">
           <span class="initials-text">{{ getInitials(biz.name) }}</span>
-          @if (biz.bannerUrl || biz.logoUrl) {
-            <img loading="lazy" [appCachedImg]="biz.bannerUrl || biz.logoUrl" [alt]="biz.name" class="banner-img" />
+          @if (biz.featuredBannerUrl) {
+            <img loading="lazy" [appCachedImg]="biz.featuredBannerUrl" [alt]="biz.name" class="banner-img" />
           }
         </div>
         <div class="banner-overlay biz-overlay"></div>

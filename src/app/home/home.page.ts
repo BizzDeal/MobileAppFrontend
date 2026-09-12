@@ -388,9 +388,9 @@ export class HomePage implements AfterViewInit, OnDestroy {
               video_url: b.video_url || null,
               created_at: b.created_at || new Date().toISOString(),
               updated_at: b.updated_at || new Date().toISOString(),
-              categoryName: b.categoryName || b.category?.name || 'Partner Business',
-              logoUrl: b.logoUrl || b.business_logo_url || null,
-              bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
+              categoryName: b.categoryName || 'Partner Business',
+              logoUrl: b.logoUrl || null,
+              bannerUrl: b.bannerUrl || null,
             };
             this.onBusinessClick(bizDto);
           }
@@ -474,10 +474,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
             gst_number: b.gst_number ?? current?.gst_number ?? null,
             address: b.address ?? current?.address ?? null,
             district_id: b.district_id || current?.district_id || '',
-            district_name: b.district_name || b.district?.name || current?.district_name || null,
-            state_name: b.state_name || b.state?.name || current?.state_name || null,
+            district_name: b.district_name || current?.district_name || null,
+            state_name: b.state_name || current?.state_name || null,
             pincode: b.pincode ?? current?.pincode ?? null,
-            phone: b.phone || b.owner_phone || current?.phone || null,
+            phone: b.phone || current?.phone || null,
             whatsapp: b.whatsapp || current?.whatsapp || null,
             owner_name: b.owner_name || current?.owner_name || null,
             logo_id: b.logo_id ?? current?.logo_id ?? null,
@@ -486,10 +486,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
             is_featured: b.is_featured ?? current?.is_featured ?? false,
             created_at: b.created_at || current?.created_at || new Date().toISOString(),
             updated_at: b.updated_at || current?.updated_at || new Date().toISOString(),
-            categoryName: b.categoryName || b.category?.name || current?.categoryName || 'Partner Store',
-            logoUrl: b.logoUrl || b.logo_url || b.profile_pic_url || current?.logoUrl,
-            bannerUrl: b.bannerUrl || b.banner_url || current?.bannerUrl,
-            location: [b.district_name || b.district?.name, b.state_name || b.state?.name].filter(Boolean).join(', ') || current?.location || null,
+            categoryName: b.categoryName || current?.categoryName || 'Partner Store',
+            logoUrl: b.logoUrl || current?.logoUrl || null,
+            bannerUrl: b.bannerUrl || current?.bannerUrl || null,
+            location: [b.district_name, b.state_name].filter(Boolean).join(', ') || current?.location || null,
           });
         }
       },

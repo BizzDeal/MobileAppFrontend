@@ -76,9 +76,9 @@
           <div class="member-list-item" (click)="openBusinessDetail(biz)">
             <!-- Circular Avatar with Photo or Gradient Fallback -->
             <div class="member-avatar-wrap" [style.background]="getAvatarGradient(biz)">
-              @if ((biz.profile_pic_url || biz.logoUrl) && !isImageFailed(biz.id)) {
+              @if (biz.profile_pic_url && !isImageFailed(biz.id)) {
                 <img
-                  [appCachedImg]="biz.profile_pic_url || biz.logoUrl!"
+                  [appCachedImg]="biz.profile_pic_url"
                   [fallbackName]="biz.owner_name || biz.name"
                   alt="{{ biz.owner_name || biz.name }}"
                   class="avatar-photo"
@@ -144,9 +144,9 @@
             <!-- Profile Hero -->
             <div class="modal-hero">
               <div class="modal-hero-avatar" [style.background]="getAvatarGradient(biz)">
-                @if ((biz.profile_pic_url || biz.logoUrl) && !isImageFailed(biz.id)) {
+                @if (biz.profile_pic_url && !isImageFailed(biz.id)) {
                   <img
-                    [appCachedImg]="biz.profile_pic_url || biz.logoUrl!"
+                    [appCachedImg]="biz.profile_pic_url"
                     [fallbackName]="biz.owner_name || biz.name"
                     alt="{{ biz.owner_name || biz.name }}"
                     class="hero-photo"
@@ -178,10 +178,10 @@
                     <span class="info-val">{{ biz.phone }}</span>
                   </a>
                 }
-                @if (biz.whatsapp || biz.phone) {
-                  <div class="info-row" (click)="openWhatsApp(biz.whatsapp || biz.phone)">
+                @if (biz.whatsapp) {
+                  <div class="info-row" (click)="openWhatsApp(biz.whatsapp)">
                     <span class="info-label">WhatsApp</span>
-                    <span class="info-val">{{ biz.whatsapp || biz.phone }}</span>
+                    <span class="info-val">{{ biz.whatsapp }}</span>
                   </div>
                 }
                 @if (biz.owner_email) {
@@ -222,8 +222,8 @@
                 <span class="action-label">Call</span>
               </a>
             }
-            @if (biz.whatsapp || biz.phone) {
-              <button type="button" class="action-tile whatsapp-action" (click)="openWhatsApp(biz.whatsapp || biz.phone)">
+            @if (biz.whatsapp) {
+              <button type="button" class="action-tile whatsapp-action" (click)="openWhatsApp(biz.whatsapp)">
                 <div class="action-circle">
                   <ion-icon name="logo-whatsapp"></ion-icon>
                 </div>

@@ -289,8 +289,8 @@ export class ProfileViewComponent implements OnInit {
 
         const states = this.profileService.states();
         const apState = states.find((s) => s.name.toLowerCase().includes('andhra pradesh'));
-        const targetStateId = apState?.id || p.state_id || p.business_state_id || '';
-        const targetBusinessStateId = apState?.id || p.business_state_id || p.state_id || '';
+        const targetStateId = apState?.id || p.state_id || '';
+        const targetBusinessStateId = apState?.id || p.business_state_id || '';
 
         this.profileForm.patchValue({
           full_name: p.full_name || '',
@@ -298,7 +298,7 @@ export class ProfileViewComponent implements OnInit {
           whatsapp: p.whatsapp || '',
           email: p.email || '',
           state_id: targetStateId,
-          district_id: p.district_id || p.business_district_id || '',
+          district_id: p.district_id || '',
           pincode: p.pincode || '',
           address: p.address || '',
           business_name: p.business_name || '',
@@ -307,8 +307,8 @@ export class ProfileViewComponent implements OnInit {
           gst_number: p.gst_number || '',
           category_id: p.category_id || '',
           business_state_id: targetBusinessStateId,
-          business_district_id: p.business_district_id || p.district_id || '',
-          business_pincode: p.business_pincode || p.pincode || '',
+          business_district_id: p.business_district_id || '',
+          business_pincode: p.business_pincode || '',
           business_address: p.business_address || '',
           video_url: p.video_url || ''
         }, { emitEvent: false });
@@ -683,8 +683,8 @@ export class ProfileViewComponent implements OnInit {
     if (p) {
       const states = this.profileService.states();
       const apState = states.find((s) => s.name.toLowerCase().includes('andhra pradesh'));
-      const targetStateId = apState?.id || p.state_id || p.business_state_id || '';
-      const targetBusinessStateId = apState?.id || p.business_state_id || p.state_id || '';
+      const targetStateId = apState?.id || p.state_id || '';
+      const targetBusinessStateId = apState?.id || p.business_state_id || '';
 
       this.profileForm.patchValue({
         full_name: p.full_name || '',
@@ -692,7 +692,7 @@ export class ProfileViewComponent implements OnInit {
         whatsapp: p.whatsapp || '',
         email: p.email || '',
         state_id: targetStateId,
-        district_id: p.district_id || p.business_district_id || '',
+        district_id: p.district_id || '',
         address: p.address || '',
         business_name: p.business_name || '',
         business_description: p.business_description || '',
@@ -700,7 +700,7 @@ export class ProfileViewComponent implements OnInit {
         gst_number: p.gst_number || '',
         category_id: p.category_id || '',
         business_state_id: targetBusinessStateId,
-        business_district_id: p.business_district_id || p.district_id || '',
+        business_district_id: p.business_district_id || '',
         business_address: p.business_address || '',
         video_url: p.video_url || ''
       }, { emitEvent: false });

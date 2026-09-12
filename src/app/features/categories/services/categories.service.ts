@@ -224,8 +224,8 @@ export class CategoriesService {
         const list: any[] = Array.isArray(res) ? res : res?.data || [];
         if (list.length > 0) {
           const b = list[0];
-          const ownerName = b.owner_name || b.owner?.profile?.full_name || b.name || 'Member';
-          const initials = (ownerName || b.name || 'BD')
+          const ownerName = b.owner_name || 'Member';
+          const initials = (ownerName || 'BD')
             .split(' ')
             .map((w: string) => w[0])
             .slice(0, 2)
@@ -237,8 +237,8 @@ export class CategoriesService {
             name: ownerName,
             business_name: b.name,
             profile_pic_url: b.profile_pic_url || null,
-            phone: b.phone || b.owner_phone || '',
-            whatsapp: b.whatsapp || b.phone || '',
+            phone: b.phone || '',
+            whatsapp: b.whatsapp || '',
             website: b.website || null,
             address: b.address || null,
             district_name: b.district_name || null,
@@ -246,8 +246,8 @@ export class CategoriesService {
             owner_id: b.owner_id,
             initials,
             description: b.description || null,
-            banner_url: b.banner_url || b.bannerUrl || null,
-            bannerUrl: b.bannerUrl || b.banner_url || null,
+            banner_url: b.banner_url || null,
+            bannerUrl: b.bannerUrl || null,
           };
           this._categories.update((cats) =>
             cats.map((c) => (c.id === categoryId ? { ...c, member } : c))
@@ -304,13 +304,9 @@ export class CategoriesService {
           approved_at: o.approved_at || null,
           created_at: o.created_at || new Date().toISOString(),
           updated_at: o.updated_at || new Date().toISOString(),
-          businessName: o.businessName || o.business?.name || 'Partner Business',
-          businessLogoUrl:
-            o.businessLogoUrl ||
-            o.business?.business_logo_url ||
-            o.business?.logoUrl ||
-            null,
-          imageUrl: o.imageUrl || o.image_url || null,
+          businessName: o.businessName || 'Partner Business',
+          businessLogoUrl: o.businessLogoUrl || null,
+          imageUrl: o.imageUrl || null,
           isClaimed: claimedOfferIds.has(o.id),
         }));
 

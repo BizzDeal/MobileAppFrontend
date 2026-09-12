@@ -57,10 +57,8 @@ export interface BusinessDTO {
   categoryName?: string;
   logoUrl?: string;
   bannerUrl?: string;
-  featured_banner_url?: string | null;
   featuredBannerUrl?: string | null;
   hasBizzCoinOffer?: boolean;
-  has_bizz_coin_offer?: boolean;
   phone?: string | null;
   whatsapp?: string | null;
   owner_name?: string | null;

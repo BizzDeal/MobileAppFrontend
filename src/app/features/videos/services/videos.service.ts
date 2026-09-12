@@ -294,7 +294,7 @@ export class VideosService {
             if (!seenVideoUrls.has(key)) {
               seenVideoUrls.add(key);
               const ytThumb = extractYtThumbnail(videoUrl);
-              const banner = b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url;
+              const banner = b.bannerUrl || null;
               const views = viewCounts[index % viewCounts.length];
               const dur = durations[index % durations.length];
 
@@ -307,8 +307,8 @@ export class VideosService {
                 source_type: 'BUSINESS',
                 source_id: b.id,
                 business_name: b.name,
-                business_logo_url: b.logoUrl || b.business_logo_url || null,
-                category_name: b.categoryName || b.category?.name || 'Store Highlights',
+                business_logo_url: b.logoUrl || null,
+                category_name: b.categoryName || 'Store Highlights',
                 discount_badge: b.is_featured ? '⭐ Featured Store' : '🏬 Store Tour',
                 video_type: 'LANDSCAPE',
                 category: 'BUSINESS_TOUR',
@@ -337,7 +337,7 @@ export class VideosService {
             if (!seenVideoUrls.has(key)) {
               seenVideoUrls.add(key);
               const ytThumb = extractYtThumbnail(videoUrl);
-              const img = o.imageUrl || o.image_url;
+              const img = o.imageUrl || null;
               let discountBadge = '🔥 Special Offer';
               if (o.offer_type === 'CASHBACK') {
                 discountBadge = `₹${o.discount_value || 0} Cashback`;
@@ -353,14 +353,14 @@ export class VideosService {
               videoList.push({
                 id: `offer_${o.id}`,
                 title: o.title,
-                description: o.description || `Special promotional offer at ${o.businessName || o.business?.name || 'BizzDeal'}.`,
+                description: o.description || `Special promotional offer at ${o.businessName || 'BizzDeal'}.`,
                 video_url: videoUrl,
                 thumbnail_url: ytThumb || img || null,
                 source_type: 'OFFER',
                 source_id: o.id,
-                business_name: o.businessName || o.business?.name || 'Partner Store',
-                business_logo_url: o.businessLogoUrl || o.business?.business_logo_url || null,
-                category_name: o.categoryName || o.business?.category?.name || 'Deals & Savings',
+                business_name: o.businessName || 'Partner Store',
+                business_logo_url: o.businessLogoUrl || null,
+                category_name: o.categoryName || 'Deals & Savings',
                 discount_badge: discountBadge,
                 video_type: 'LANDSCAPE',
                 category: 'OFFER',

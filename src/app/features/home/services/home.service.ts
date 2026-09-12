@@ -115,13 +115,11 @@ export class HomeService {
           video_url: b.video_url || null,
           created_at: b.created_at || new Date().toISOString(),
           updated_at: b.updated_at || new Date().toISOString(),
-          categoryName: b.categoryName || b.category?.name || 'Partner Business',
-          logoUrl: b.logoUrl || b.business_logo_url || null,
-          bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
-          featured_banner_url: b.featured_banner_url || b.featuredBannerUrl || null,
-          featuredBannerUrl: b.featuredBannerUrl || b.featured_banner_url || null,
-          hasBizzCoinOffer: b.hasBizzCoinOffer ?? b.has_bizz_coin_offer ?? false,
-          has_bizz_coin_offer: b.hasBizzCoinOffer ?? b.has_bizz_coin_offer ?? false,
+          categoryName: b.categoryName || 'Partner Business',
+          logoUrl: b.logoUrl || null,
+          bannerUrl: b.bannerUrl || null,
+          featuredBannerUrl: b.featuredBannerUrl || null,
+          hasBizzCoinOffer: b.hasBizzCoinOffer ?? false,
         }));
 
         // Map Top Businesses
@@ -142,11 +140,10 @@ export class HomeService {
           video_url: b.video_url || null,
           created_at: b.created_at || new Date().toISOString(),
           updated_at: b.updated_at || new Date().toISOString(),
-          categoryName: b.categoryName || b.category?.name || 'Partner Business',
-          logoUrl: b.logoUrl || b.business_logo_url || null,
-          bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
-          hasBizzCoinOffer: b.hasBizzCoinOffer ?? b.has_bizz_coin_offer ?? false,
-          has_bizz_coin_offer: b.hasBizzCoinOffer ?? b.has_bizz_coin_offer ?? false,
+          categoryName: b.categoryName || 'Partner Business',
+          logoUrl: b.logoUrl || null,
+          bannerUrl: b.bannerUrl || null,
+          hasBizzCoinOffer: b.hasBizzCoinOffer ?? false,
         }));
 
         const claimedOfferIds = new Set(this.customerVouchersService.vouchers().map(v => v.offer_id));
@@ -170,9 +167,9 @@ export class HomeService {
           approved_at: o.approved_at || null,
           created_at: o.created_at || new Date().toISOString(),
           updated_at: o.updated_at || new Date().toISOString(),
-          businessName: o.businessName || o.business?.name || 'Partner Business',
-          businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || o.business?.logoUrl || null,
-          imageUrl: o.imageUrl || o.image_url || null,
+          businessName: o.businessName || 'Partner Business',
+          businessLogoUrl: o.businessLogoUrl || null,
+          imageUrl: o.imageUrl || null,
           isClaimed: claimedOfferIds.has(o.id),
         }));
 
@@ -195,9 +192,9 @@ export class HomeService {
           approved_at: o.approved_at || null,
           created_at: o.created_at || new Date().toISOString(),
           updated_at: o.updated_at || new Date().toISOString(),
-          businessName: o.businessName || o.business?.name || 'Partner Business',
-          businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || o.business?.logoUrl || null,
-          imageUrl: o.imageUrl || o.image_url || null,
+          businessName: o.businessName || 'Partner Business',
+          businessLogoUrl: o.businessLogoUrl || null,
+          imageUrl: o.imageUrl || null,
           isClaimed: claimedOfferIds.has(o.id),
         }));
 
@@ -312,9 +309,9 @@ export class HomeService {
           video_url: b.video_url || null,
           created_at: b.created_at || new Date().toISOString(),
           updated_at: b.updated_at || new Date().toISOString(),
-          categoryName: b.categoryName || b.category?.name || 'Partner Business',
-          logoUrl: b.logoUrl || b.business_logo_url || null,
-          bannerUrl: b.bannerUrl || b.banner_url || b.logoUrl || b.business_logo_url || null,
+          categoryName: b.categoryName || 'Partner Business',
+          logoUrl: b.logoUrl || null,
+          bannerUrl: b.bannerUrl || null,
         }));
         
         return { data: mappedData, meta };
@@ -350,9 +347,9 @@ export class HomeService {
           approved_at: o.approved_at || null,
           created_at: o.created_at || new Date().toISOString(),
           updated_at: o.updated_at || new Date().toISOString(),
-          businessName: o.businessName || o.business?.name || 'Partner Business',
-          businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || o.business?.logoUrl || null,
-          imageUrl: o.imageUrl || o.image_url || null,
+          businessName: o.businessName || 'Partner Business',
+          businessLogoUrl: o.businessLogoUrl || null,
+          imageUrl: o.imageUrl || null,
           isClaimed: claimedOfferIds.has(o.id),
         }));
         
@@ -408,9 +405,9 @@ export class HomeService {
           approved_at: o.approved_at || null,
           created_at: o.created_at || new Date().toISOString(),
           updated_at: o.updated_at || new Date().toISOString(),
-          businessName: o.businessName || o.business?.name || 'Partner Business',
-          businessLogoUrl: o.businessLogoUrl || o.business?.business_logo_url || o.business?.logoUrl || null,
-          imageUrl: o.imageUrl || o.image_url || null,
+          businessName: o.businessName || 'Partner Business',
+          businessLogoUrl: o.businessLogoUrl || null,
+          imageUrl: o.imageUrl || null,
           isClaimed: claimedOfferIds.has(o.id),
         }));
 
